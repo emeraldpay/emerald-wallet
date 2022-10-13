@@ -16,7 +16,7 @@ export const traceValidate = (chain: BlockchainCode, tx: any, dispatch: any, est
       .then((gasEst: number) => {
         if (!gasEst) {
           reject('Invalid Transaction');
-        } else if (gasEst > tx.gas.toNumber()) {
+        } else if (gasEst > tx.gas) {
           reject(`Insufficient Gas. Expected ${gasEst}`);
         } else {
           resolve(gasEst);

@@ -36,7 +36,7 @@ interface OwnProps {
 
 interface StateProps {
   blockchain: BlockchainCode;
-  defaultFee: DefaultFee;
+  defaultFee: DefaultFee<number>;
   entry: BitcoinEntry;
   seedId: Uuid;
   utxo: BalanceUtxo[];
@@ -45,7 +45,7 @@ interface StateProps {
 interface DispatchProps {
   onBroadcast(data: BroadcastData): void;
   onCancel?(): void;
-  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): () => Promise<FeePrices<number>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee<number>): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
@@ -179,7 +179,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       entry,
       blockchain,
-      defaultFee: application.selectors.getDefaultFee(state, blockchain),
+      defaultFee: application.selectors.getDefaultFee<number>(state, blockchain),
       seedId: entry.key.seedId,
       utxo: accounts.selectors.getUtxo(state, entry.id),
     };

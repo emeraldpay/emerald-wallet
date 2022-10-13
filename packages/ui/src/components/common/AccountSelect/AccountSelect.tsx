@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { BigAmount } from '@emeraldpay/bigamount';
-import { Wei } from '@emeraldpay/bigamount-crypto';
 import { StyleRules, Theme } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,15 +23,15 @@ import { Account } from '../Account';
 
 const styles = (theme: Theme): StyleRules => ({
   root: {
-    width: '100%',
     backgroundColor: theme.palette.background.paper,
-    cursor: 'pointer',
+    width: '100%',
   },
 });
 
 interface OwnProps {
-  classes: Record<string, string>;
   accounts?: string[];
+  classes: Record<string, string>;
+  disabled?: boolean;
   selectedAccount?: string;
   getBalancesByAddress?(address: string): string[];
   onChange?(account: string): void;
@@ -95,7 +93,7 @@ export class AccountSelect extends React.Component<OwnProps, StateProps> {
   }
 
   public renderSelected(): React.ReactElement {
-    const { accounts = [] } = this.props;
+    const { accounts = [], disabled = false } = this.props;
 
     if (accounts.length === 0) {
       return <div>No accounts provided</div>;
@@ -112,6 +110,7 @@ export class AccountSelect extends React.Component<OwnProps, StateProps> {
         address={selected}
         addressProps={{ shortened: false }}
         addressWidth="200px"
+        disabled={disabled}
         identity={true}
         onClick={this.handleListItemClick}
       />

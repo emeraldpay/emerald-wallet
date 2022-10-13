@@ -1,37 +1,45 @@
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BigNumber } from 'bignumber.js';
+import { BigAmount } from '@emeraldpay/bigamount';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
+import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 import { DisplayEtherTx, IDisplayTx } from '..';
-import { targetFromNumber, Tx, TxDetailsPlain, TxTarget, ValidationResult } from './types';
+import { AnyTokenCode } from '../../Asset';
+import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
+import { EthereumTransactionType } from '../../transaction/ethereum';
 
 export interface TxDetails {
-  amount: Wei;
+  amount: WeiAny;
+  blockchain: BlockchainCode;
   from?: string;
-  gas: BigNumber;
-  gasPrice?: Wei;
-  maxGasPrice?: Wei;
-  priorityGasPrice?: Wei;
+  gas: number;
+  gasPrice?: WeiAny;
+  maxGasPrice?: WeiAny;
+  priorityGasPrice?: WeiAny;
   target: TxTarget;
   to?: string;
-  totalBalance?: Wei;
+  totalBalance?: WeiAny;
+  type: EthereumTransactionType;
 }
 
-const TxDefaults: TxDetails = {
-  amount: Wei.ZERO,
-  gas: new BigNumber(21000),
+const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
+  gas: 21000,
   target: TxTarget.MANUAL,
 };
 
 function fromPlainDetails(plain: TxDetailsPlain): TxDetails {
+  const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
+
   return {
-    amount: Wei.decode(plain.amount),
+    amount: decoder(plain.amount),
+    blockchain: plain.blockchain,
     from: plain.from,
-    gas: new BigNumber(plain.gas),
-    gasPrice: plain.gasPrice == null ? undefined : Wei.decode(plain.gasPrice),
-    maxGasPrice: plain.maxGasPrice == null ? undefined : Wei.decode(plain.maxGasPrice),
-    priorityGasPrice: plain.priorityGasPrice == null ? undefined : Wei.decode(plain.priorityGasPrice),
+    gas: plain.gas,
+    gasPrice: plain.gasPrice == null ? undefined : (decoder(plain.gasPrice) as WeiAny),
+    maxGasPrice: plain.maxGasPrice == null ? undefined : decoder(plain.maxGasPrice),
+    priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalEtherBalance == null ? undefined : Wei.decode(plain.totalEtherBalance),
+    totalBalance: plain.totalEtherBalance == null ? undefined : decoder(plain.totalEtherBalance),
+    type: parseInt(plain.type, 16) === 2 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
   };
 }
 
@@ -39,64 +47,82 @@ function toPlainDetails(tx: TxDetails): TxDetailsPlain {
   return {
     amount: tx.amount.encode(),
     amountDecimals: 18,
+    blockchain: tx.blockchain,
     from: tx.from,
-    gas: tx.gas.toNumber(),
+    gas: tx.gas,
     gasPrice: tx.gasPrice?.encode(),
     maxGasPrice: tx.maxGasPrice?.encode(),
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    tokenSymbol: 'ETH',
+    tokenSymbol: tx.amount.units.top.code as AnyTokenCode,
     totalEtherBalance: tx.totalBalance?.encode(),
+    type: `0x${tx.type.toString(16)}`,
   };
 }
 
-export class CreateEthereumTx implements TxDetails, Tx<Wei> {
-  public amount: Wei;
+export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
+  public amount: WeiAny;
+  public blockchain: BlockchainCode;
   public from?: string;
-  public gas: BigNumber;
-  public gasPrice?: Wei;
-  public maxGasPrice?: Wei;
-  public priorityGasPrice?: Wei;
+  public gas: number;
+  public gasPrice?: WeiAny;
+  public maxGasPrice?: WeiAny;
+  public priorityGasPrice?: WeiAny;
   public target: TxTarget;
   public to?: string;
-  public totalBalance?: Wei;
+  public totalBalance?: WeiAny;
+  public type: EthereumTransactionType;
 
-  constructor(source?: TxDetails | null, eip1559 = false) {
+  private readonly zeroAmount: WeiAny;
+
+  constructor(source?: TxDetails | null, blockchain?: BlockchainCode | null, type = EthereumTransactionType.EIP1559) {
     let details = source;
 
+    const blockchainCode = source?.blockchain ?? blockchain ?? BlockchainCode.Unknown;
+    const zeroAmount = amountFactory(blockchainCode)(0) as WeiAny;
+
     if (details == null) {
-      details = TxDefaults;
+      details = {
+        ...TxDefaults,
+        type,
+        amount: zeroAmount,
+        blockchain: blockchainCode,
+      };
     }
 
     this.amount = details.amount;
+    this.blockchain = blockchainCode;
     this.from = details.from;
     this.gas = details.gas;
     this.target = details.target;
     this.to = details.to;
     this.totalBalance = details.totalBalance;
+    this.type = details.type;
 
-    if (eip1559 || details.maxGasPrice != null) {
-      this.maxGasPrice = details.maxGasPrice ?? Wei.ZERO;
-      this.priorityGasPrice = details.priorityGasPrice ?? Wei.ZERO;
+    if (details.type === EthereumTransactionType.EIP1559) {
+      this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
+      this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
     } else {
-      this.gasPrice = details.gasPrice ?? Wei.ZERO;
+      this.gasPrice = details.gasPrice ?? zeroAmount;
     }
+
+    this.zeroAmount = zeroAmount;
   }
 
   public static fromPlain(details: TxDetailsPlain): CreateEthereumTx {
     return new CreateEthereumTx(fromPlainDetails(details));
   }
 
-  public getAmount(): Wei {
+  public getAmount(): WeiAny {
     return this.amount;
   }
 
-  public setAmount(amount: Wei): void {
+  public setAmount(amount: WeiAny): void {
     this.amount = amount;
   }
 
-  public getChange(): Wei | null {
+  public getChange(): WeiAny | null {
     if (this.totalBalance == null) {
       return null;
     }
@@ -104,8 +130,8 @@ export class CreateEthereumTx implements TxDetails, Tx<Wei> {
     return this.totalBalance.minus(this.getTotal());
   }
 
-  public getFees(): Wei {
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? Wei.ZERO;
+  public getFees(): WeiAny {
+    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }
@@ -114,19 +140,19 @@ export class CreateEthereumTx implements TxDetails, Tx<Wei> {
     return 'ETH';
   }
 
-  public getTotal(): Wei {
+  public getTotal(): WeiAny {
     return this.amount.plus(this.getFees());
   }
 
-  public getTotalBalance(): Wei {
-    return this.totalBalance ?? Wei.ZERO;
+  public getTotalBalance(): WeiAny {
+    return this.totalBalance ?? this.zeroAmount;
   }
 
-  public setTotalBalance(total: Wei): void {
+  public setTotalBalance(total: WeiAny): void {
     this.totalBalance = total;
   }
 
-  public setFrom(from: string | null, balance: Wei): void {
+  public setFrom(from: string | null, balance: WeiAny): void {
     if (from !== null) {
       this.from = from;
     }
@@ -191,14 +217,13 @@ export class CreateEthereumTx implements TxDetails, Tx<Wei> {
 
   public debug(): string {
     const change = this.getChange();
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? Wei.ZERO;
+    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
 
     return (
       `Send ${this.from} -> ${this.to} of ${this.amount.toString()} ` +
       `using ${this.gas} at ${gasPrice.toString()}.\n` +
       `Total to send: ${this.getTotal()} (${this.getFees()} are fees), ` +
-      `account has ${this.totalBalance ?? 0} (${this.totalBalance?.toString() ?? 0} Wei), ` +
-      `will have ${change ?? 0} (${change?.toString() ?? 0} Wei)`
+      `account has ${this.totalBalance ?? 0}, will have ${change ?? 0}`
     );
   }
 }

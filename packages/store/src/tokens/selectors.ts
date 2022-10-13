@@ -1,33 +1,51 @@
-import {BlockchainCode, tokenAmount} from '@emeraldwallet/core';
-import {IState} from '../types';
-import {ITokenBalance, ITokensState, moduleName} from './types';
-import {BigAmount} from "@emeraldpay/bigamount";
-import {registry} from "@emeraldwallet/erc20";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { BlockchainCode, tokenAmount } from '@emeraldwallet/core';
+import { TokenBalance, TokensState, moduleName } from './types';
+import { IState } from '../types';
 
-export function selectBalances(state: IState, address: string, chain: BlockchainCode): BigAmount[] | undefined {
-  const balances = state[moduleName] as ITokensState;
-  if (balances[chain]) {
-    const b = balances[chain];
-    if (b && b[address]) {
-      const values: ITokenBalance[] = Object.values(b[address]);
-      return values.map((token) => tokenAmount(token.unitsValue, token.symbol))
+export function selectBalances(state: IState, blockchain: BlockchainCode, address: string): BigAmount[] | undefined {
+  const balancesByBlockchains = state[moduleName] as TokensState;
+
+  if (balancesByBlockchains[blockchain] != null) {
+    const { [blockchain]: blockchainBalances } = balancesByBlockchains;
+
+    if (blockchainBalances != null) {
+      const { [address]: addressBalance } = blockchainBalances;
+
+      if (addressBalance != null) {
+        const values: TokenBalance[] = Object.values(addressBalance);
+
+        return values.map((token) => tokenAmount(token.unitsValue, token.symbol));
+      }
     }
   }
+
   return undefined;
 }
 
 export function selectBalance(
-  state: IState, tokenId: string, address: string, chain: BlockchainCode
+  state: IState,
+  blockchain: BlockchainCode,
+  address: string,
+  tokenId: string,
 ): BigAmount | undefined {
-  const balances = state[moduleName] as ITokensState;
-  if (balances && balances[chain]) {
-    const b = balances[chain];
-    if (b && b[address]) {
-      const token = b[address][tokenId];
-      if (typeof token == "object") {
-        return tokenAmount(token.unitsValue, token.symbol)
+  const balancesByBlockchains = state[moduleName] as TokensState;
+
+  if (balancesByBlockchains != null) {
+    const { [blockchain]: blockchainBalances } = balancesByBlockchains;
+
+    if (blockchainBalances != null) {
+      const { [address]: addressBalance } = blockchainBalances;
+
+      if (addressBalance != null) {
+        const { [tokenId]: token } = addressBalance;
+
+        if (token != null) {
+          return tokenAmount(token.unitsValue, token.symbol);
+        }
       }
     }
   }
+
   return undefined;
 }

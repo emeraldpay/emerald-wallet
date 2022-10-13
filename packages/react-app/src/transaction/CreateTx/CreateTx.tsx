@@ -1,6 +1,6 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
@@ -54,40 +54,35 @@ const { ValidationResult } = workflow;
 
 export interface Props {
   chain: BlockchainCode;
-  tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
-  token: string;
-
-  /** Available tokens / currencies for transfer */
-  tokenSymbols: string[];
-  currency?: string;
-  txFeeToken: string;
-  fiatBalance?: string;
-  ownAddresses?: string[];
-  onSubmit?: () => void;
-  onCancel?: () => void;
-  onChangeTo: (to: string) => void;
-  onChangeAmount?: (amount: BigAmount) => void;
-  onChangeFrom?: (from: string) => void;
-  onChangeGasLimit?: (value: string) => void;
-  onChangeToken?: (tokenSymbol: string) => void;
-  onMaxClicked?: () => void;
-  getBalancesByAddress?: (address: string) => string[];
-
   classes: Record<keyof typeof styles, string>;
-
+  currency?: string;
   eip1559: boolean;
-
+  fiatBalance?: string;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
+  ownAddresses?: string[];
   stdGasPrice: GasPrices;
-
-  onSetMaxGasPrice?: (value: number) => void;
-  onSetPriorityGasPrice?: (value: number) => void;
+  token: string;
+  tokenSymbols: string[];
+  tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
+  txFeeToken: string;
+  getBalancesByAddress?(address: string): string[];
+  onCancel?(): void;
+  onChangeAmount?(amount: BigAmount): void;
+  onChangeFrom?(from: string): void;
+  onChangeGasLimit?(value: string): void;
+  onChangeTo(to: string): void;
+  onChangeToken?(tokenSymbol: string): void;
+  onMaxClicked?(): void;
+  onSetMaxGasPrice?(value: number, unit: Unit): void;
+  onSetPriorityGasPrice?(value: number, unit: Unit): void;
+  onSubmit?(): void;
 }
 
 interface State {
   currentMaxGasPrice: number;
   currentPriorityGasPrice: number;
+  gasPriceUnit: Unit;
   useStdMaxGasPrice: boolean;
   useStdPriorityGasPrice: boolean;
 }
@@ -99,47 +94,81 @@ class CreateTransaction extends React.Component<Props, State> {
     this.state = {
       currentMaxGasPrice: 0,
       currentPriorityGasPrice: 0,
+      gasPriceUnit: Wei.ZERO.getOptimalUnit(),
       useStdMaxGasPrice: true,
       useStdPriorityGasPrice: true,
     };
   }
 
-  public componentDidUpdate(prevProps: Props): void {
-    const feeProp = this.props.eip1559 ? 'max' : 'expect';
+  public componentDidUpdate({ stdGasPrice: { max: prevMax } }: Props): void {
+    const {
+      chain,
+      stdGasPrice: { max, priority },
+    } = this.props;
 
-    if (prevProps.stdGasPrice[feeProp] !== this.props.stdGasPrice[feeProp]) {
-      const stdMaxGasPrice = new Wei(this.props.stdGasPrice[feeProp], 'Wei');
+    if (prevMax !== max) {
+      const factory = amountFactory(chain);
+
+      const stdMaxGasPrice = factory(max);
+      const stdPriorityGasPrice = factory(priority);
+
+      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit();
 
       this.setState({
-        currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(stdMaxGasPrice.getOptimalUnit()).toNumber(),
-      });
-    }
-
-    if (prevProps.stdGasPrice.priority !== this.props.stdGasPrice.priority) {
-      const stdPriorityGasPrice = new Wei(this.props.stdGasPrice.priority, 'Wei');
-
-      this.setState({
-        currentPriorityGasPrice: stdPriorityGasPrice.getNumberByUnit(stdPriorityGasPrice.getOptimalUnit()).toNumber(),
+        gasPriceUnit,
+        currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
+        currentPriorityGasPrice: stdPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
       });
     }
   }
 
   public getDisabled = (validate?: boolean): boolean => {
-    const gasPrice = new Wei(this.props.stdGasPrice[this.props.eip1559 ? 'max' : 'expect']);
+    const {
+      chain,
+      stdGasPrice: { max },
+    } = this.props;
+
+    const gasPrice = amountFactory(chain)(max);
 
     return gasPrice.isZero() || ((validate ?? true) && this.props.tx.validate() !== ValidationResult.OK);
   };
 
   public render(): React.ReactElement {
-    const feeProp = this.props.eip1559 ? 'max' : 'expect';
+    const {
+      chain,
+      classes,
+      currency,
+      eip1559,
+      fiatBalance,
+      highGasPrice,
+      lowGasPrice,
+      ownAddresses,
+      stdGasPrice,
+      token,
+      tokenSymbols,
+      tx,
+      getBalancesByAddress,
+      onCancel,
+      onChangeAmount,
+      onChangeFrom,
+      onChangeTo,
+      onChangeToken,
+      onMaxClicked,
+      onSetMaxGasPrice,
+      onSetPriorityGasPrice,
+      onSubmit,
+    } = this.props;
+    const { currentMaxGasPrice, currentPriorityGasPrice, useStdMaxGasPrice, useStdPriorityGasPrice } = this.state;
 
-    const highMaxGasPrice = new Wei(this.props.highGasPrice[feeProp], 'Wei');
-    const lowMaxGasPrice = new Wei(this.props.lowGasPrice[feeProp], 'Wei');
-    const stdMaxGasPrice = new Wei(this.props.stdGasPrice[feeProp], 'Wei');
+    const factory = amountFactory(chain);
 
-    const highPriorityGasPrice = new Wei(this.props.highGasPrice.priority, 'Wei');
-    const lowPriorityGasPrice = new Wei(this.props.lowGasPrice.priority, 'Wei');
-    const stdPriorityGasPrice = new Wei(this.props.stdGasPrice.priority, 'Wei');
+    const highMaxGasPrice = factory(highGasPrice.max);
+    const lowMaxGasPrice = factory(lowGasPrice.max);
+    const stdMaxGasPrice = factory(stdGasPrice.max);
+
+    const highPriorityGasPrice = factory(highGasPrice.priority);
+    const lowPriorityGasPrice = factory(lowGasPrice.priority);
+    const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
     const unit = stdMaxGasPrice.getOptimalUnit();
 
@@ -152,56 +181,57 @@ class CreateTransaction extends React.Component<Props, State> {
     const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(unit).toNumber();
 
     return (
-      <div className={this.props.classes.container}>
+      <div className={classes.container}>
         <FormFieldWrapper>
           <FromField
-            accounts={this.props.ownAddresses}
-            selectedAccount={this.props.tx.from}
-            onChangeAccount={this.props.onChangeFrom}
-            getBalancesByAddress={this.props.getBalancesByAddress}
+            accounts={ownAddresses}
+            disabled={this.getDisabled(false)}
+            selectedAccount={tx.from}
+            onChangeAccount={onChangeFrom}
+            getBalancesByAddress={getBalancesByAddress}
           />
         </FormFieldWrapper>
         <FormFieldWrapper>
           <TokenField
-            onChangeToken={this.props.onChangeToken}
-            selectedToken={this.props.token}
-            tokenSymbols={this.props.tokenSymbols}
-            balance={this.props.tx.getTotalBalance()}
-            fiatCurrency={this.props.currency}
-            fiatBalance={this.props.fiatBalance}
+            onChangeToken={onChangeToken}
+            selectedToken={token}
+            tokenSymbols={tokenSymbols}
+            balance={tx.getTotalBalance()}
+            fiatCurrency={currency}
+            fiatBalance={fiatBalance}
           />
         </FormFieldWrapper>
         <FormFieldWrapper>
-          <ToField blockchain={this.props.chain} to={this.props.tx.to} onChange={this.props.onChangeTo} />
+          <ToField blockchain={chain} to={tx.to} onChange={onChangeTo} />
         </FormFieldWrapper>
         <FormFieldWrapper>
           <AmountField
-            amount={this.props.tx.getAmount()}
-            units={this.props.tx.getAmount().units}
+            amount={tx.getAmount()}
+            units={tx.getAmount().units}
             onChangeAmount={
-              this.props.onChangeAmount ||
+              onChangeAmount ||
               ((): void => {
                 /* Do nothing */
               })
             }
-            onMaxClicked={this.props.onMaxClicked}
+            onMaxClicked={onMaxClicked}
           />
         </FormFieldWrapper>
         <FormFieldWrapper>
-          <FormLabel>{this.props.eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-          <Box className={this.props.classes.inputField}>
-            <Box className={this.props.classes.gasPriceTypeBox}>
+          <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
+          <Box className={classes.inputField}>
+            <Box className={classes.gasPriceTypeBox}>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={this.state.useStdMaxGasPrice}
+                    checked={useStdMaxGasPrice}
                     disabled={this.getDisabled(false)}
                     onChange={(event) => {
                       const checked = event.target.checked;
 
                       if (checked) {
                         this.setState({ currentMaxGasPrice: stdMaxGasPriceNumber });
-                        this.props.onSetMaxGasPrice?.(stdMaxGasPriceNumber);
+                        onSetMaxGasPrice?.(stdMaxGasPriceNumber, unit);
                       }
 
                       this.setState({ useStdMaxGasPrice: checked });
@@ -210,19 +240,19 @@ class CreateTransaction extends React.Component<Props, State> {
                     color="primary"
                   />
                 }
-                label={this.state.useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
+                label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
               />
             </Box>
-            {!this.state.useStdMaxGasPrice && (
-              <Box className={this.props.classes.gasPriceSliderBox}>
+            {!useStdMaxGasPrice && (
+              <Box className={classes.gasPriceSliderBox}>
                 <Slider
-                  className={this.props.classes.gasPriceSlider}
+                  className={classes.gasPriceSlider}
                   classes={{
-                    markLabel: this.props.classes.gasPriceMarkLabel,
-                    valueLabel: this.props.classes.gasPriceValueLabel,
+                    markLabel: classes.gasPriceMarkLabel,
+                    valueLabel: classes.gasPriceValueLabel,
                   }}
                   defaultValue={stdMaxGasPriceNumber}
-                  getAriaValueText={() => `${this.state.currentMaxGasPrice.toFixed(2)} ${unit.toString()}`}
+                  getAriaValueText={() => `${currentMaxGasPrice.toFixed(2)} ${unit.toString()}`}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   step={0.01}
@@ -234,35 +264,35 @@ class CreateTransaction extends React.Component<Props, State> {
                   max={highMaxGasPriceNumber}
                   onChange={(e, value) => {
                     this.setState({ currentMaxGasPrice: value as number });
-                    this.props.onSetMaxGasPrice?.(value as number);
+                    onSetMaxGasPrice?.(value as number, unit);
                   }}
                   valueLabelFormat={(value) => value.toFixed(2)}
                 />
               </Box>
             )}
-            <Box className={this.props.classes.gasPriceHelpBox}>
-              <FormHelperText className={this.props.classes.gasPriceHelp}>
-                {this.state.currentMaxGasPrice.toFixed(2)} {unit.toString()}
+            <Box className={classes.gasPriceHelpBox}>
+              <FormHelperText className={classes.gasPriceHelp}>
+                {currentMaxGasPrice.toFixed(2)} {unit.toString()}
               </FormHelperText>
             </Box>
           </Box>
         </FormFieldWrapper>
-        {this.props.eip1559 && (
+        {eip1559 && (
           <FormFieldWrapper>
             <FormLabel>Priority gas price</FormLabel>
-            <Box className={this.props.classes.inputField}>
-              <Box className={this.props.classes.gasPriceTypeBox}>
+            <Box className={classes.inputField}>
+              <Box className={classes.gasPriceTypeBox}>
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={this.state.useStdPriorityGasPrice}
+                      checked={useStdPriorityGasPrice}
                       disabled={this.getDisabled(false)}
                       onChange={(event) => {
                         const checked = event.target.checked;
 
                         if (checked) {
                           this.setState({ currentPriorityGasPrice: stdPriorityGasPriceNumber });
-                          this.props.onSetPriorityGasPrice?.(stdPriorityGasPriceNumber);
+                          onSetPriorityGasPrice?.(stdPriorityGasPriceNumber, unit);
                         }
 
                         this.setState({ useStdPriorityGasPrice: checked });
@@ -271,19 +301,19 @@ class CreateTransaction extends React.Component<Props, State> {
                       color="primary"
                     />
                   }
-                  label={this.state.useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                  label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
                 />
               </Box>
-              {!this.state.useStdPriorityGasPrice && (
-                <Box className={this.props.classes.gasPriceSliderBox}>
+              {!useStdPriorityGasPrice && (
+                <Box className={classes.gasPriceSliderBox}>
                   <Slider
-                    className={this.props.classes.gasPriceSlider}
+                    className={classes.gasPriceSlider}
                     classes={{
-                      markLabel: this.props.classes.gasPriceMarkLabel,
-                      valueLabel: this.props.classes.gasPriceValueLabel,
+                      markLabel: classes.gasPriceMarkLabel,
+                      valueLabel: classes.gasPriceValueLabel,
                     }}
                     defaultValue={stdPriorityGasPriceNumber}
-                    getAriaValueText={() => `${this.state.currentPriorityGasPrice.toFixed(2)} ${unit.toString()}`}
+                    getAriaValueText={() => `${currentPriorityGasPrice.toFixed(2)} ${unit.toString()}`}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
                     step={0.01}
@@ -295,15 +325,15 @@ class CreateTransaction extends React.Component<Props, State> {
                     max={highPriorityGasPriceNumber}
                     onChange={(e, value) => {
                       this.setState({ currentPriorityGasPrice: value as number });
-                      this.props.onSetPriorityGasPrice?.(value as number);
+                      onSetPriorityGasPrice?.(value as number, unit);
                     }}
                     valueLabelFormat={(value) => value.toFixed(2)}
                   />
                 </Box>
               )}
-              <Box className={this.props.classes.gasPriceHelpBox}>
-                <FormHelperText className={this.props.classes.gasPriceHelp}>
-                  {this.state.currentPriorityGasPrice.toFixed(2)} {unit.toString()}
+              <Box className={classes.gasPriceHelpBox}>
+                <FormHelperText className={classes.gasPriceHelp}>
+                  {currentPriorityGasPrice.toFixed(2)} {unit.toString()}
                 </FormHelperText>
               </Box>
             </Box>
@@ -312,13 +342,8 @@ class CreateTransaction extends React.Component<Props, State> {
         <FormFieldWrapper style={{ paddingBottom: 0 }}>
           <FormLabel />
           <ButtonGroup style={{ flexGrow: 5 }}>
-            <Button label="Cancel" onClick={this.props.onCancel} />
-            <Button
-              disabled={this.getDisabled()}
-              primary={true}
-              label="Create Transaction"
-              onClick={this.props.onSubmit}
-            />
+            <Button label="Cancel" onClick={onCancel} />
+            <Button disabled={this.getDisabled()} primary={true} label="Create Transaction" onClick={onSubmit} />
           </ButtonGroup>
         </FormFieldWrapper>
       </div>

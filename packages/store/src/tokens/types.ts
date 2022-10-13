@@ -1,19 +1,19 @@
-import {AnyTokenCode, BlockchainCode} from '@emeraldwallet/core';
-import {ITokenInfo} from "@emeraldwallet/erc20";
+import { AnyTokenCode, BlockchainCode } from '@emeraldwallet/core';
+import { TokenInfo } from '@emeraldwallet/erc20';
 
 export const moduleName = 'tokens';
 
-export interface ITokenBalance {
-    symbol: AnyTokenCode;
-    tokenId: string;
-    decimals: number;
-    unitsValue: string;
+export interface TokenBalance {
+  symbol: AnyTokenCode;
+  tokenId: string;
+  decimals: number;
+  unitsValue: string;
 }
 
-export type ITokensState = {
-  [chain in BlockchainCode]?: {
+export type TokensState = {
+  [blockchain in BlockchainCode]?: {
     [address: string]: {
-      [tokenId: string]: ITokenBalance
+      [tokenId: string]: TokenBalance;
     };
   };
 };
@@ -21,39 +21,34 @@ export type ITokensState = {
 export enum ActionTypes {
   SET_TOKEN_BALANCE = 'TOKENS/SET_TOKEN_BALANCE',
   REQUEST_TOKEN_BALANCE = 'TOKENS/REQUEST_TOKEN_BALANCE',
-  REQUEST_TOKENS_BALANCES = 'TOKENS/REQUEST_TOKENS_BALANCES'
-  // SET_TOKENS_BALANCES: 'TOKEN/SET_TOKENS_BALANCES',
-  // RESET_BALANCES: 'TOKEN/RESET_BALANCES',
-  // RESET: 'TOKEN/RESET',
-  // SET_INFO: 'TOKEN/SET_INFO',
-  // SET_LIST: 'TOKEN/SET_LIST',
-  // LOADING: 'TOKEN/LOADING',
+  REQUEST_TOKENS_BALANCES = 'TOKENS/REQUEST_TOKENS_BALANCES',
 }
 
-export interface ISetTokenBalanceAction {
+export interface SetTokenBalanceAction {
   type: ActionTypes.SET_TOKEN_BALANCE;
-  payload: any;
+  payload: {
+    address: string;
+    blockchain: BlockchainCode;
+    balance: TokenBalance;
+  };
 }
 
-export interface IRequestTokenBalanceAction {
+export interface RequestTokenBalanceAction {
   type: ActionTypes.REQUEST_TOKEN_BALANCE;
   payload: {
-    chain: BlockchainCode;
-    token: ITokenInfo;
     address: string;
+    blockchain: BlockchainCode;
+    token: TokenInfo;
   };
 }
 
-export interface IRequestTokensBalancesAction {
+export interface RequestTokensBalancesAction {
   type: ActionTypes.REQUEST_TOKENS_BALANCES;
   payload: {
-    chain: BlockchainCode;
-    tokens: ITokenInfo[];
     address: string;
+    blockchain: BlockchainCode;
+    tokens: TokenInfo[];
   };
 }
 
-export type TokensAction =
-  ISetTokenBalanceAction |
-  IRequestTokenBalanceAction |
-  IRequestTokensBalancesAction;
+export type TokensAction = SetTokenBalanceAction | RequestTokenBalanceAction | RequestTokensBalancesAction;

@@ -12,6 +12,7 @@ import {
   tokenUnits,
   workflow,
 } from '@emeraldwallet/core';
+import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
 import { registry } from '@emeraldwallet/erc20';
 import {
   DefaultFee,
@@ -135,15 +136,13 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [initializing, setInitializing] = useState(true);
 
   const [convertTx, setConvertTx] = React.useState(() => {
-    const tx = new workflow.CreateErc20WrappedTx(
-      {
-        blockchain,
-        address: address?.value,
-        totalBalance: getBalance(address?.value),
-        totalTokenBalance: getTokenBalanceByAddress(token, address?.value),
-      },
-      eip1559,
-    );
+    const tx = new workflow.CreateErc20WrappedTx({
+      blockchain,
+      address: address?.value,
+      totalBalance: getBalance(address?.value),
+      totalTokenBalance: getTokenBalanceByAddress(token, address?.value),
+      type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
+    });
 
     return tx.dump();
   });
@@ -156,6 +155,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroAmount);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroAmount);
 
+  const [gasPriceUnit, setGasPriceUnit] = useState(zeroAmount.getOptimalUnit());
   const [gasPriceUnits, setGasPriceUnits] = useState(zeroAmount.units);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(0);
@@ -229,7 +229,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     (price: number) => {
       const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      const gasPrice = new BigAmount(price, gasPriceUnits);
+      const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
 
       if (eip1559) {
         tx.gasPrice = undefined;
@@ -243,19 +243,19 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
       setConvertTx(tx.dump());
     },
-    [eip1559, gasPriceUnits, convertTx],
+    [blockchain, convertTx, eip1559, gasPriceUnit, gasPriceUnits],
   );
 
   const onChangePriorityGasPrice = useCallback(
     (price: number) => {
       const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.priorityGasPrice = new BigAmount(price, gasPriceUnits);
+      tx.priorityGasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
       tx.rebalance();
 
       setConvertTx(tx.dump());
     },
-    [gasPriceUnits, convertTx],
+    [blockchain, convertTx, gasPriceUnit, gasPriceUnits],
   );
 
   const onSignTransaction = useCallback(async () => {
@@ -288,38 +288,36 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         const fees = await getFees(blockchain, defaultFee);
 
         const { avgLast, avgMiddle, avgTail5 } = fees;
-        const feeProp = eip1559 ? 'max' : 'expect';
 
         const factory = amountFactory(blockchain);
 
-        const newStdMaxGasPrice = factory(avgTail5[feeProp]);
+        const newStdMaxGasPrice = factory(avgTail5.max);
         const newStdPriorityGasPrice = factory(avgTail5.priority);
 
         setStdMaxGasPrice(newStdMaxGasPrice);
-        setHighMaxGasPrice(factory(avgMiddle[feeProp]));
-        setLowMaxGasPrice(factory(avgLast[feeProp]));
+        setHighMaxGasPrice(factory(avgMiddle.max));
+        setLowMaxGasPrice(factory(avgLast.max));
 
         setStdPriorityGasPrice(newStdPriorityGasPrice);
         setHighPriorityGasPrice(factory(avgMiddle.priority));
         setLowPriorityGasPrice(factory(avgLast.priority));
 
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
+
+        setGasPriceUnit(gasPriceOptimalUnit);
         setGasPriceUnits(newStdMaxGasPrice.units);
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
-        const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-        const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-
-        setMaxGasPrice(maxGasPriceNumber);
-        setPriorityGasPrice(priorityGasPriceNumber);
+        setMaxGasPrice(newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
+        setPriorityGasPrice(newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
 
         const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
         if (eip1559) {
           tx.gasPrice = undefined;
-          tx.maxGasPrice = new BigAmount(maxGasPriceNumber, gasPriceUnits);
-          tx.priorityGasPrice = new BigAmount(priorityGasPriceNumber, gasPriceUnits);
+          tx.maxGasPrice = newStdMaxGasPrice;
+          tx.priorityGasPrice = newStdPriorityGasPrice;
         } else {
-          tx.gasPrice = new BigAmount(maxGasPriceNumber, gasPriceUnits);
+          tx.gasPrice = newStdMaxGasPrice;
           tx.maxGasPrice = undefined;
           tx.priorityGasPrice = undefined;
         }
@@ -354,7 +352,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         })();
       }
     }
-  }, [blockchain, convertable, convertTx, token, estimateGas]);
+  }, [blockchain, convertable, convertTx.amount, token, estimateGas]);
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
@@ -386,6 +384,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
           <FormFieldWrapper>
             <FromField
               accounts={addresses}
+              disabled={initializing}
               selectedAccount={convertTx.address}
               onChangeAccount={onChangeAddress}
               getBalancesByAddress={(address) => getBalancesByAddress(address, token)}
@@ -444,7 +443,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     step={0.01}
                     valueLabelDisplay="auto"
                     valueLabelFormat={(value): string => value.toFixed(2)}
-                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
+                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
                     onChange={(event, value): void => {
                       setMaxGasPrice(value as number);
                       onChangeMaxGasPrice(value as number);
@@ -454,7 +453,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               )}
               <Box className={classes.gasPriceHelpBox}>
                 <FormHelperText className={classes.gasPriceHelp}>
-                  {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
+                  {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
                 </FormHelperText>
               </Box>
             </Box>
@@ -504,7 +503,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       step={0.01}
                       valueLabelDisplay="auto"
                       valueLabelFormat={(value): string => value.toFixed(2)}
-                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
+                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
                       onChange={(event, value): void => {
                         setPriorityGasPrice(value as number);
                         onChangePriorityGasPrice(value as number);
@@ -514,7 +513,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 )}
                 <Box className={classes.gasPriceHelpBox}>
                   <FormHelperText className={classes.gasPriceHelp}>
-                    {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
+                    {priorityGasPrice.toFixed(2)} {gasPriceUnit.toString()}
                   </FormHelperText>
                 </Box>
               </Box>
@@ -606,11 +605,16 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
 
-        const tokenInfo = registry.bySymbol(blockchain, token);
+        const tokenInfo = registry.byTokenSymbol(blockchain, token);
+
+        if (tokenInfo == null) {
+          return [formatAmount(balance)];
+        }
+
         const zeroAmount = new BigAmount(0, tokenUnits(token));
 
         const tokensBalance =
-          tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain) ?? zeroAmount;
+          tokens.selectors.selectBalance(state, blockchain, address, tokenInfo.address) ?? zeroAmount;
 
         return [balance, tokensBalance].map(formatAmount);
       },
@@ -624,8 +628,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           return zero;
         }
 
-        const tokenInfo = registry.bySymbol(blockchain, token);
-        const tokenBalance = tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain);
+        const tokenInfo = registry.byTokenSymbol(blockchain, token);
+
+        if (tokenInfo == null) {
+          return zero;
+        }
+
+        const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, tokenInfo.address);
 
         return tokenBalance ?? zero;
       },
@@ -637,7 +646,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
     async estimateGas(blockchain, tx, tokenSymbol) {
-      const token = registry.bySymbol(blockchain, tokenSymbol);
+      const token = registry.byTokenSymbol(blockchain, tokenSymbol);
+
+      if (token == null) {
+        return Promise.resolve(0);
+      }
 
       const data = tx.amount.units.equals(tx.totalBalance.units)
         ? tokens.actions.createWrapTxData()
@@ -665,7 +678,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const blockchainCode = blockchainIdToCode(ownProps.entry.blockchain);
-      const token = registry.bySymbol(blockchainCode, tokenSymbol);
+      const token = registry.byTokenSymbol(blockchainCode, tokenSymbol);
+
+      if (token == null) {
+        return;
+      }
+
       const zeroAmount = amountFactory(blockchainCode)(0);
 
       const data = tx.amount.units.equals(tx.totalBalance.units)
@@ -682,6 +700,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           tx.gas,
           tx.amount.units.equals(tx.totalBalance.units) ? tx.amount : zeroAmount,
           data,
+          tx.type,
           tx.gasPrice == null ? undefined : tx.gasPrice,
           tx.maxGasPrice == null ? undefined : tx.maxGasPrice,
           tx.priorityGasPrice == null ? undefined : tx.priorityGasPrice,

@@ -1,7 +1,7 @@
 {
-    "default_fee.1": "{\"max\":8192,\"min\":1024,\"std\":2048}",
-    "default_fee.100": "{\"max\":6,\"min\":4,\"std\":5,\"priority_max\":2,\"priority_min\":0,\"priority_std\":1}",
-    "default_fee.101": "{\"max\":6,\"min\":4,\"std\":5}",
-    "default_fee.10003": "{\"max\":8192,\"min\":1024,\"std\":2048}",
-    "default_fee.10005": "{\"max\":3,\"min\":1,\"std\":1,\"priority_max\":2,\"priority_min\":0,\"priority_std\":0}"
+  "default_fee.1": "{\"max\":8192,\"min\":1024,\"std\":2048}",
+  "default_fee.100": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"1000000000\"}",
+  "default_fee.101": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\"}",
+  "default_fee.10003": "{\"max\":8192,\"min\":1024,\"std\":2048}",
+  "default_fee.10005": "{\"max\":\"3000000000\",\"min\":\"1000000000\",\"std\":\"1000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"0\"}"
 }

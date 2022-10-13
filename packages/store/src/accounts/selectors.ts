@@ -242,7 +242,7 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
 
       supportedTokens.forEach((token) => {
         blockchainAccounts.forEach((account: WalletEntry) => {
-          const balance = tokens.selectors.selectBalance(state, token.address, account.address!.value, code);
+          const balance = tokens.selectors.selectBalance(state, code, account.address!.value, token.address);
           if (balance && (includeEmpty || !balance.isZero())) {
             assets.push({
               balance

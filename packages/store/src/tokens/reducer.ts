@@ -1,52 +1,27 @@
-import { BlockchainCode } from '@emeraldwallet/core';
 import produce from 'immer';
-import { ActionTypes, ISetTokenBalanceAction, ITokensState, TokensAction } from './types';
+import { ActionTypes, SetTokenBalanceAction, TokensAction, TokensState } from './types';
 
-export const INITIAL_STATE: ITokensState = {};
+export const INITIAL_STATE: TokensState = {};
 
-// function onSetTokenBalance (state: ITokensState, action: ISetTokenBalanceAction): ITokensState {
-//
-//   const { chain, address, balance } = action.payload;
-//   const chainState = state[chain as BlockchainCode] || {};
-//   const addressState = chainState[address] || {};
-//
-//   const newState = {
-//     ...state,
-//     [chain]: {
-//       ...chainState,
-//       [address]: {
-//         ...addressState,
-//         [balance.tokenId]: { ...balance }
-//       }
-//     }
-//   };
-//   return newState;
-// }
-
-function onSetTokenBalance (state: ITokensState, action: ISetTokenBalanceAction): ITokensState {
-  const { chain, address, balance } = action.payload;
+function onSetTokenBalance(state: TokensState, action: SetTokenBalanceAction): TokensState {
+  const { blockchain, address, balance } = action.payload;
 
   return produce(state, (draft) => {
-    const chainCode = chain as BlockchainCode;
-    if (!draft[chainCode]) {
-      draft[chainCode] = {};
-    }
-    if (!draft[chainCode]![address]) {
-      draft[chainCode]![address] = {};
-    }
-    draft[chainCode]![address][balance.tokenId] = { ...balance };
+    draft[blockchain] = {
+      ...draft[blockchain],
+      [address]: {
+        ...draft[blockchain]?.[address],
+        [balance.tokenId]: { ...balance },
+      },
+    };
   });
 }
 
-export function reducer (
-  state: ITokensState = INITIAL_STATE,
-  action: TokensAction
-): ITokensState {
-
+export function reducer(state: TokensState = INITIAL_STATE, action: TokensAction): TokensState {
   switch (action.type) {
     case ActionTypes.SET_TOKEN_BALANCE:
       return onSetTokenBalance(state, action);
-
   }
+
   return state;
 }

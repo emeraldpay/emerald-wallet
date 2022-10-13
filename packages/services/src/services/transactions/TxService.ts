@@ -137,7 +137,8 @@ export class TxService implements IService {
                               const asset =
                                 (change.contractAddress == null
                                   ? Blockchains[blockchainCode].params.coinTicker
-                                  : registry.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+                                  : registry.byTokenAddress(blockchainCode, change.contractAddress)?.symbol) ??
+                                'UNKNOWN';
 
                               return {
                                 asset,

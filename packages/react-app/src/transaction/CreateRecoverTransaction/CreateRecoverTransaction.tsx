@@ -2,8 +2,9 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, IBlockchain, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
 import { CreateEthereumTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
-import { ITokenInfo, registry } from '@emeraldwallet/erc20';
+import { TokenInfo, registry } from '@emeraldwallet/erc20';
 import {
   DefaultFee,
   FEE_KEYS,
@@ -14,7 +15,8 @@ import {
   application,
   screen,
   tokens,
- transaction } from '@emeraldwallet/store';
+  transaction,
+} from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
@@ -28,7 +30,6 @@ import {
   withStyles,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
@@ -89,7 +90,7 @@ interface StateProps {
   eip1559: boolean;
   ownAddresses: string[];
   recoverBlockchain: IBlockchain;
-  tokensInfo: ITokenInfo[];
+  tokensInfo: TokenInfo[];
   wrongBlockchain: IBlockchain;
   getBalancesByAddress(address: string): string[];
 }
@@ -126,7 +127,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
 
-  const [transaction, setTransaction] = React.useState(new CreateEthereumTx(null, eip1559).dump());
+  const [transaction, setTransaction] = React.useState(new CreateEthereumTx(null).dump());
 
   const zeroWei = new Wei(0);
 
@@ -164,16 +165,15 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
     const balance = new Wei(balanceByToken[token.symbol]);
 
-    const tx = new CreateEthereumTx(
-      {
-        amount: balance,
-        from: fromAddress.value,
-        gas: new BigNumber(21000),
-        to: address,
-        target: TxTarget.SEND_ALL,
-      },
-      eip1559,
-    );
+    const tx = new CreateEthereumTx({
+      amount: balance,
+      blockchain: wrongBlockchain.params.code,
+      from: fromAddress.value,
+      gas: 21000,
+      to: address,
+      target: TxTarget.SEND_ALL,
+      type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
+    });
 
     if (eip1559) {
       tx.maxGasPrice = new Wei(maxGasPrice, gasPriceUnit);
@@ -188,7 +188,17 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     setTransaction(tx.dump());
 
     setStage(Stages.SIGN);
-  }, [address, eip1559, maxGasPrice, priorityGasPrice, token]);
+  }, [
+    address,
+    balanceByToken,
+    eip1559,
+    fromAddress,
+    gasPriceUnit,
+    maxGasPrice,
+    priorityGasPrice,
+    token.symbol,
+    wrongBlockchain,
+  ]);
 
   const onSignTransaction = useCallback(async () => {
     setPasswordError(undefined);
@@ -202,38 +212,41 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [password, transaction]);
+  }, [password, transaction, checkGlobalKey, signTransaction]);
 
-  React.useEffect(() => {
-    (async (): Promise<void> => {
-      const fees = await getFees(recoverBlockchain.params.code, defaultFee);
+  React.useEffect(
+    () => {
+      (async (): Promise<void> => {
+        const fees = await getFees(recoverBlockchain.params.code, defaultFee);
 
-      const { avgLast, avgMiddle, avgTail5 } = fees;
-      const feeProp = eip1559 ? 'max' : 'expect';
+        const { avgLast, avgMiddle, avgTail5 } = fees;
 
-      const newStdMaxGasPrice = new Wei(avgTail5[feeProp]);
-      const newStdPriorityGasPrice = new Wei(avgTail5.priority);
+        const newStdMaxGasPrice = new Wei(avgTail5.max);
+        const newStdPriorityGasPrice = new Wei(avgTail5.priority);
 
-      setStdMaxGasPrice(newStdMaxGasPrice);
-      setHighMaxGasPrice(new Wei(avgMiddle[feeProp]));
-      setLowMaxGasPrice(new Wei(avgLast[feeProp]));
+        setStdMaxGasPrice(newStdMaxGasPrice);
+        setHighMaxGasPrice(new Wei(avgMiddle.max));
+        setLowMaxGasPrice(new Wei(avgLast.max));
 
-      setStdPriorityGasPrice(newStdPriorityGasPrice);
-      setHighPriorityGasPrice(new Wei(avgMiddle.priority));
-      setLowPriorityGasPrice(new Wei(avgLast.priority));
+        setStdPriorityGasPrice(newStdPriorityGasPrice);
+        setHighPriorityGasPrice(new Wei(avgMiddle.priority));
+        setLowPriorityGasPrice(new Wei(avgLast.priority));
 
-      const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
-      const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-      const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
+        const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
+        const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
-      setGasPriceUnit(gasPriceOptimalUnit);
+        setGasPriceUnit(gasPriceOptimalUnit);
 
-      setMaxGasPrice(maxGasPriceNumber);
-      setPriorityGasPrice(priorityGasPriceNumber);
+        setMaxGasPrice(maxGasPriceNumber);
+        setPriorityGasPrice(priorityGasPriceNumber);
 
-      setInitializing(false);
-    })();
-  }, []);
+        setInitializing(false);
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const tx = CreateEthereumTx.fromPlain(transaction);
 
@@ -461,7 +474,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     let entryTokenBalances: BigAmount[] = [];
 
     if (entry.address != null) {
-      entryTokenBalances = tokens.selectors.selectBalances(state, entry.address?.value, recoverBlockchainCode) ?? [];
+      entryTokenBalances = tokens.selectors.selectBalances(state, recoverBlockchainCode, entry.address?.value) ?? [];
     }
 
     const balanceByToken = entryTokenBalances.reduce(
@@ -472,7 +485,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     );
 
     const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
-    const tokensInfo = registry.tokens[recoverBlockchainCode].filter(({ symbol }) => tokensUnit.includes(symbol));
+    const tokensInfo =
+      registry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
 
     return {
       balanceByToken,
@@ -536,9 +550,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           tx.from,
           password,
           tx.to,
-          tx.gas.toNumber(),
+          tx.gas,
           tx.amount,
           '',
+          tx.type,
           tx.gasPrice,
           tx.maxGasPrice,
           tx.priorityGasPrice,

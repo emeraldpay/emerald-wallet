@@ -1,6 +1,15 @@
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, EthereumTransaction } from '@emeraldwallet/core';
-import { IState, SignData, accounts, screen , transaction } from '@emeraldwallet/store';
+import { BigAmount } from '@emeraldpay/bigamount';
+import { BlockchainCode, EthereumTransaction, amountFactory } from '@emeraldwallet/core';
+import {
+  DefaultFee,
+  GasPriceType,
+  IState,
+  SignData,
+  accounts,
+  application,
+  screen,
+  transaction,
+} from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
@@ -43,7 +52,7 @@ const styles = createStyles({
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  getTopFee(blockchain: BlockchainCode, eip1559: boolean): Promise<number>;
+  getTopFee(blockchain: BlockchainCode, eip1559: boolean, defaultFee: DefaultFee): Promise<GasPriceType>;
   goBack(): void;
   signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
 }
@@ -54,6 +63,7 @@ interface OwnProps {
 
 interface StateProps {
   accountId?: string;
+  defaultFee: DefaultFee;
 }
 
 interface StylesProps {
@@ -63,19 +73,24 @@ interface StylesProps {
 const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps & StylesProps> = ({
   accountId,
   classes,
+  defaultFee,
   transaction,
   checkGlobalKey,
   getTopFee,
   goBack,
   signTransaction,
 }) => {
-  const txGasPrice = new Wei(transaction.maxGasPrice ?? transaction.gasPrice ?? 0);
+  const [initializing, setInitializing] = useState(true);
+
+  const factory = React.useMemo(() => amountFactory(transaction.blockchain), [transaction.blockchain]);
+
+  const txGasPrice = factory(transaction.maxGasPrice ?? transaction.gasPrice ?? defaultFee.std);
   const txGasPriceUnit = txGasPrice.getOptimalUnit();
 
   const minGasPriceNumber = txGasPrice.plus(txGasPrice.multiply(0.1)).getNumberByUnit(txGasPriceUnit).toNumber();
 
   const [gasPrice, setGasPrice] = React.useState(minGasPriceNumber);
-  const [maxGasPrice, setMaxGasPrice] = React.useState(txGasPrice.plus(txGasPrice.multiply(0.5)));
+  const [maxGasPrice, setMaxGasPrice] = React.useState<BigAmount>(txGasPrice.plus(txGasPrice.multiply(0.5)));
 
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
@@ -86,7 +101,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
     const correctPassword = await checkGlobalKey(password);
 
     if (correctPassword) {
-      const newGasPrice = new Wei(gasPrice, txGasPriceUnit).number;
+      const newGasPrice = BigAmount.createFor(gasPrice, factory(0).units, factory, txGasPriceUnit).number;
 
       let gasPrices: Record<'gasPrice', BigNumber> | Record<'maxGasPrice', BigNumber>;
 
@@ -107,19 +122,27 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [accountId, gasPrice, password, transaction]);
+  }, [accountId, factory, gasPrice, password, transaction, txGasPriceUnit, checkGlobalKey, signTransaction]);
 
-  React.useEffect(() => {
-    (async (): Promise<void> => {
-      const topFee = await getTopFee(transaction.blockchain, transaction.gasPrice == null);
+  React.useEffect(
+    () => {
+      (async (): Promise<void> => {
+        const { blockchain } = transaction;
 
-      const topGasPrice = new Wei(topFee);
+        const topFee = await getTopFee(blockchain, transaction.gasPrice == null, defaultFee);
 
-      if (topGasPrice.number.gt(0) && gasPrice <= topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber()) {
-        setMaxGasPrice(topGasPrice);
-      }
-    })();
-  }, []);
+        const topGasPrice = amountFactory(blockchain)(topFee);
+
+        if (topGasPrice.number.gt(0) && gasPrice <= topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber()) {
+          setMaxGasPrice(topGasPrice);
+        }
+
+        setInitializing(false);
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const maxGasPriceNumber = maxGasPrice.getNumberByUnit(txGasPriceUnit).toNumber();
 
@@ -137,6 +160,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
               }}
               className={classes.gasPriceSlider}
               defaultValue={minGasPriceNumber}
+              disabled={initializing}
               marks={[
                 { value: minGasPriceNumber, label: 'Normal' },
                 { value: maxGasPriceNumber, label: 'Urgent' },
@@ -167,7 +191,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
           <Button label="Cancel" onClick={goBack} />
           <Button
             label="Sign Transaction"
-            disabled={password.length === 0}
+            disabled={initializing || password.length === 0}
             primary={true}
             onClick={onSignTransaction}
           />
@@ -177,20 +201,23 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps, IState>(
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const { blockchain, from } = ownProps.transaction;
 
     const account = accounts.selectors.findAccountByAddress(state, from, blockchain);
 
-    return { accountId: account?.id };
+    return {
+      accountId: account?.id,
+      defaultFee: application.selectors.getDefaultFee(state, blockchain),
+    };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    async getTopFee(blockchain, eip1559) {
+    async getTopFee(blockchain, eip1559, defaultFee) {
       let avgTop: null | number = null;
 
       try {
@@ -198,7 +225,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           let { max: maxGasPrice } = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
 
           if (maxGasPrice == null || new BigNumber(maxGasPrice).eq(0)) {
-            maxGasPrice = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
+            ({ max: maxGasPrice } = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop')));
           }
 
           avgTop = maxGasPrice;
@@ -213,7 +240,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         // Nothing
       }
 
-      return avgTop ?? 0;
+      return avgTop ?? defaultFee.max;
     },
     goBack() {
       dispatch(screen.actions.goBack());
@@ -223,19 +250,21 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      let gasPrice: Wei | undefined;
-      let maxGasPrice: Wei | undefined;
-      let priorityGasPrice: Wei | undefined;
+      const factory = amountFactory(tx.blockchain);
+
+      let gasPrice: BigAmount | undefined;
+      let maxGasPrice: BigAmount | undefined;
+      let priorityGasPrice: BigAmount | undefined;
 
       if (tx.gasPrice == null) {
-        maxGasPrice = new Wei(tx.maxGasPrice ?? 0);
-        priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
+        maxGasPrice = factory(tx.maxGasPrice ?? 0);
+        priorityGasPrice = factory(tx.priorityGasPrice ?? 0);
       } else {
-        gasPrice = new Wei(tx.gasPrice ?? 0);
+        gasPrice = factory(tx.gasPrice ?? 0);
       }
 
       const gas = parseInt(tx.gas.toString(), 10);
-      const value = new Wei(tx.value);
+      const value = factory(tx.value);
 
       const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
@@ -247,6 +276,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           gas,
           value,
           tx.data,
+          tx.type,
           gasPrice,
           maxGasPrice,
           priorityGasPrice,
@@ -260,7 +290,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(gas),
+              fee: (maxGasPrice ?? gasPrice ?? factory(0)).multiply(gas),
               originalAmount: value,
             },
             null,

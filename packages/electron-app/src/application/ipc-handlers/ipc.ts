@@ -149,7 +149,6 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
             return fee.satPerKb;
           case 'ethereumExt':
             return {
-              expect: fee.expect,
               max: fee.max,
               priority: fee.priority,
             };

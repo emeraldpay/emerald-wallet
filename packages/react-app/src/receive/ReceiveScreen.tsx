@@ -113,7 +113,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   const tokenInfo = React.useMemo(
-    () => registry.tokens[currentBlockchain]?.find((token) => token.symbol === currentToken),
+    () => registry.byBlockchain(currentBlockchain)?.find(({ symbol }) => symbol === currentToken),
     [currentBlockchain, currentToken],
   );
 
