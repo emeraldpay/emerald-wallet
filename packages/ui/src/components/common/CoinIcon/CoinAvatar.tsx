@@ -1,4 +1,4 @@
-import { Avatar, makeStyles, Theme } from '@material-ui/core';
+import { Avatar, Theme, makeStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import * as React from 'react';

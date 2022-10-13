@@ -2,7 +2,15 @@ import { Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import * as React from 'react';
-import { CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt } from '../../../icons';
+import {
+  CurrencyBtc,
+  CurrencyDai,
+  CurrencyEtc,
+  CurrencyEth,
+  CurrencyUsd,
+  CurrencyUsdc,
+  CurrencyUsdt,
+} from '../../../icons';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,35 +47,34 @@ const CoinIcon: React.FC<OwnProps> = ({ chain, size }) => {
   const iconSize = styles[`${size ?? 'default'}Size`];
 
   switch (code) {
+    // Mainnet
     case 'BTC':
       return <CurrencyBtc className={iconSize} />;
     case 'ETC':
     case 'WETC':
       return <CurrencyEtc className={iconSize} />;
     case 'ETH':
+    case 'WETH':
       return <CurrencyEth className={iconSize} />;
     case 'DAI':
-      //TODO use icon
-      return <Typography className={classNames(iconSize, styles.onlyText)}>DAI</Typography>;
+      return <CurrencyDai className={iconSize} />;
+    case 'USD':
+      return <CurrencyUsd className={iconSize} />;
+    case 'USDC':
+      return <CurrencyUsdc className={iconSize} />;
+    case 'USDT':
+      return <CurrencyUsdt className={iconSize} />;
+    // Testnet
     case 'GOERLI':
       return <Typography className={styles.testnet}>Goerli</Typography>;
     case 'TESTBTC':
       return <Typography className={styles.testnet}>TBTC</Typography>;
-    case 'USD':
-      return <CurrencyUsd className={iconSize} />;
-    case 'USDC':
-      //TODO use icon
-      return <Typography className={classNames(iconSize, styles.onlyText)}>USDC</Typography>;
-    case 'USDT':
-      return <CurrencyUsdt className={iconSize} />;
     case 'WETG':
       return <Typography className={classNames(iconSize, styles.onlyText)}>WETG</Typography>;
-    case 'WETH':
-      //TODO use icon
-      return <Typography className={classNames(iconSize, styles.onlyText)}>WETH</Typography>;
+    // Other
+    default:
+      return null;
   }
-
-  return null;
 };
 
 export default CoinIcon;
