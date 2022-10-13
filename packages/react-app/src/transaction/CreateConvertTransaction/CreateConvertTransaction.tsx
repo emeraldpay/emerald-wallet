@@ -443,7 +443,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     step={0.01}
                     valueLabelDisplay="auto"
                     valueLabelFormat={(value): string => value.toFixed(2)}
-                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
                     onChange={(event, value): void => {
                       setMaxGasPrice(value as number);
                       onChangeMaxGasPrice(value as number);
@@ -453,7 +453,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               )}
               <Box className={classes.gasPriceHelpBox}>
                 <FormHelperText className={classes.gasPriceHelp}>
-                  {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+                  {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
                 </FormHelperText>
               </Box>
             </Box>
@@ -503,7 +503,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       step={0.01}
                       valueLabelDisplay="auto"
                       valueLabelFormat={(value): string => value.toFixed(2)}
-                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
                       onChange={(event, value): void => {
                         setPriorityGasPrice(value as number);
                         onChangePriorityGasPrice(value as number);
@@ -513,7 +513,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 )}
                 <Box className={classes.gasPriceHelpBox}>
                   <FormHelperText className={classes.gasPriceHelp}>
-                    {priorityGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+                    {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
                   </FormHelperText>
                 </Box>
               </Box>
