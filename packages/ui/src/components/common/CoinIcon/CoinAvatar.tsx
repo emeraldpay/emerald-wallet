@@ -1,3 +1,4 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import { Avatar, Theme, makeStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -14,6 +15,9 @@ const useStyle = makeStyles((theme: Theme) =>
     },
     eth: {
       backgroundColor: '#627eea',
+    },
+    goerli: {
+      backgroundColor: '#4a4f55',
     },
     testbtc: {
       backgroundColor: '#9a7e55',
@@ -41,13 +45,13 @@ const useStyle = makeStyles((theme: Theme) =>
 );
 
 interface OwnProps {
+  blockchain: BlockchainCode;
   center?: boolean;
-  chain: string;
   className?: string;
   size?: 'default' | 'small' | 'large';
 }
 
-const CoinAvatar: React.FC<OwnProps> = ({ center, chain, className, size = 'default' }) => {
+const CoinAvatar: React.FC<OwnProps> = ({ blockchain, center, className, size = 'default' }) => {
   const classes = useStyle();
 
   return (
@@ -55,11 +59,11 @@ const CoinAvatar: React.FC<OwnProps> = ({ center, chain, className, size = 'defa
       <Avatar
         className={classNames(
           classes[size + 'Size'],
-          classes[chain.toLowerCase()],
+          classes[blockchain.toLowerCase()],
           center === true ? classes.center : null,
         )}
       >
-        <CoinIcon chain={chain} size={size} />
+        <CoinIcon blockchain={blockchain} size={size} />
       </Avatar>
     </div>
   );

@@ -74,7 +74,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
             <Grid container key={'acc-balance-' + item.entry.id} className={styles.accountLine}>
               <Grid item xs={2} />
               <Grid item xs={1}>
-                <CoinAvatar chain={blockchainIdToCode(item.entry.blockchain)} />
+                <CoinAvatar blockchain={blockchainIdToCode(item.entry.blockchain)} />
               </Grid>
               <Grid item xs={6}>
                 <AccountBalance key={'main'} balance={item.balance} />

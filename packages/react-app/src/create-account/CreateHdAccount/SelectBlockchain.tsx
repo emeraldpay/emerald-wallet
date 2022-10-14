@@ -56,7 +56,7 @@ export default function SelectBlockchain (props: IProps) {
                 >
                   <ListItemAvatar>
                     <ListItemIcon>
-                      <CoinAvatar chain={b.code}/>
+                      <CoinAvatar blockchain={b.code}/>
                     </ListItemIcon>
                   </ListItemAvatar>
                   <ListItemText

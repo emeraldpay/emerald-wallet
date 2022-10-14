@@ -69,7 +69,7 @@ const Component = (({blockchains, enabled, onChange, multiple}: Props & Actions 
 
     const blockchainCard = <Grid item={true} xs={12} key={blockchain.params.code} className={styles.row}>
       <Grid container={true}>
-        <Grid item={true} xs={1} className={styles.iconBox}><CoinAvatar chain={blockchain.params.code} size="default"/></Grid>
+        <Grid item={true} xs={1} className={styles.iconBox}><CoinAvatar blockchain={blockchain.params.code} size="default"/></Grid>
         <Grid item={true} xs={8}
               className={blockchainNowEnabled ? styles.descriptionEnabled : styles.descriptionDisabled}>
           <Typography variant={"subtitle1"}>{blockchain.getTitle()}</Typography>

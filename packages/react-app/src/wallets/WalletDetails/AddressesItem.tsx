@@ -43,7 +43,7 @@ const AddressesItem: React.FC<OwnProps & StateProps> = ({
   return (
     <TableRow>
       <TableCell>
-        <CoinAvatar chain={blockchain} />
+        <CoinAvatar blockchain={blockchain} />
       </TableCell>
       <TableCell>{Blockchains[blockchain].getTitle()}</TableCell>
       <TableCell>{hdPath}</TableCell>

@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, CurrencyCode } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import { CoinAvatar } from '../../src/components/common/CoinIcon';
@@ -6,12 +6,12 @@ import { CoinAvatar } from '../../src/components/common/CoinIcon';
 storiesOf('CoinAvatar', module)
   .add('default', () => (
     <React.Fragment>
-      <CoinAvatar chain={BlockchainCode.BTC}/>
-      <CoinAvatar chain={BlockchainCode.TestBTC}/>
-      <CoinAvatar chain={BlockchainCode.ETC}/>
-      <CoinAvatar chain={BlockchainCode.ETH}/>
-      <CoinAvatar chain={"USD"}/>
-      <CoinAvatar chain={"USDT"}/>
-      <CoinAvatar chain={"DAI"}/>
+      <CoinAvatar code={BlockchainCode.BTC}/>
+      <CoinAvatar code={BlockchainCode.TestBTC}/>
+      <CoinAvatar code={BlockchainCode.ETC}/>
+      <CoinAvatar code={BlockchainCode.ETH}/>
+      <CoinAvatar code={CurrencyCode.USD}/>
+      <CoinAvatar code={'DAI'}/>
+      <CoinAvatar code={'USDT'}/>
     </React.Fragment>
   ));

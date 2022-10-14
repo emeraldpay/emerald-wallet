@@ -150,7 +150,7 @@ export const WEIS_GOERLI = new Units([
   new Unit(18, 'Goerli Ether', 'ETG'),
 ]);
 
-export const SATOSHIS_TEST = new Units([new Unit(0, 'Test Satoshi', 'tsat'), new Unit(8, 'Test Bitcoin', 'TBTC')]);
+export const SATOSHIS_TEST = new Units([new Unit(0, 'Test Satoshi', 'tsat'), new Unit(8, 'Test Bitcoin', 'TESTBTC')]);
 
 export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
   switch (code) {
