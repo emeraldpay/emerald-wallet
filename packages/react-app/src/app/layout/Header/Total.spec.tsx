@@ -86,7 +86,7 @@ describe('Header/Total', () => {
 
     // ETH => (1000000000000000 + 2000000000000000) / 10^18 × 234.56 = 0.70368
     // ETC => 3000000000000000 / 10^18 × 7.89 = 0.02367 => 0.70368 + 0.02367 = 0.72735
-    expect(component.find(Total).children().first().props().total.toString()).toEqual(
+    expect(component.find(Total).children().first().props().totalBalance.toString()).toEqual(
       CurrencyAmount.create(0.72735, 'USD').toString(),
     );
   });
