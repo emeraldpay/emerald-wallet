@@ -15,8 +15,8 @@
     "test:coverage": "jest --env=jsdom --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/bigamount": "^0.4.0",
-    "@emeraldpay/bigamount-crypto": "^0.4.0",
+    "@emeraldpay/bigamount": "^0.4.1",
+    "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldpay/hashicon": "^0.5.1",
     "@emeraldwallet/core": "^2.8.0-dev",
     "@emeraldwallet/erc20": "^2.8.0-dev",

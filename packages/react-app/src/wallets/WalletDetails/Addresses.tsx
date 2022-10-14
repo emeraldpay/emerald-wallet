@@ -121,7 +121,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
                 const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount);
                 const tokensBalance =
                   tokens.selectors
-                    .selectBalances(state, addressInfo.address, blockchainCode)
+                    .selectBalances(state, blockchainCode, addressInfo.address)
                     ?.filter((balance) => balance.isPositive()) ?? [];
 
                 addressInfo.balances[addressInfo.address] = [balance, ...tokensBalance];

@@ -1,11 +1,12 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { TxTarget } from './types';
 import { BlockchainCode, amountFactory } from '../../blockchains';
+import { EthereumTransactionType } from '../../transaction/ethereum';
 
 export interface Erc20WrappedDetails {
   address?: string;
-  blockchain: BlockchainCode;
   amount?: BigAmount;
+  blockchain: BlockchainCode;
   gas?: number;
   gasPrice?: BigAmount;
   maxGasPrice?: BigAmount;
@@ -13,34 +14,37 @@ export interface Erc20WrappedDetails {
   target?: TxTarget;
   totalBalance?: BigAmount;
   totalTokenBalance?: BigAmount;
+  type: EthereumTransactionType;
 }
 
 export class CreateErc20WrappedTx {
   public address?: string;
-  public blockchain: BlockchainCode;
   public amount: BigAmount;
-  public target: TxTarget;
+  public blockchain: BlockchainCode;
   public gas: number;
   public gasPrice?: BigAmount;
   public maxGasPrice?: BigAmount;
   public priorityGasPrice?: BigAmount;
+  public target: TxTarget;
   public totalBalance: BigAmount;
   public totalTokenBalance?: BigAmount;
+  public type: EthereumTransactionType;
 
   private readonly zeroAmount: BigAmount;
 
-  constructor(details: Erc20WrappedDetails, eip1559 = false) {
+  constructor(details: Erc20WrappedDetails) {
     const zeroAmount = amountFactory(details.blockchain)(0);
 
     this.address = details.address;
-    this.blockchain = details.blockchain;
     this.amount = details.amount ?? zeroAmount;
-    this.target = details.target ?? TxTarget.MANUAL;
+    this.blockchain = details.blockchain;
     this.gas = details.gas ?? 50000;
+    this.target = details.target ?? TxTarget.MANUAL;
     this.totalBalance = details.totalBalance ?? zeroAmount;
     this.totalTokenBalance = details.totalTokenBalance;
+    this.type = details.type;
 
-    if (eip1559 || details.maxGasPrice != null) {
+    if (details.type === EthereumTransactionType.EIP1559) {
       this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
       this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
     } else {
@@ -57,8 +61,8 @@ export class CreateErc20WrappedTx {
   public dump(): Erc20WrappedDetails {
     return {
       address: this.address,
-      blockchain: this.blockchain,
       amount: this.amount,
+      blockchain: this.blockchain,
       gas: this.gas,
       gasPrice: this.gasPrice,
       maxGasPrice: this.maxGasPrice,
@@ -66,6 +70,7 @@ export class CreateErc20WrappedTx {
       target: this.target,
       totalBalance: this.totalBalance,
       totalTokenBalance: this.totalTokenBalance,
+      type: this.type,
     };
   }
 

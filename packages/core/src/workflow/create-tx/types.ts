@@ -1,5 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { AnyCoinCode, AnyTokenCode } from '../../Asset';
+import { BlockchainCode } from '../../blockchains';
 
 export enum ValidationResult {
   INSUFFICIENT_FUNDS,
@@ -16,16 +17,17 @@ export enum TxTarget {
 }
 
 export interface Tx<T extends BigAmount> {
-  getAmount: () => T;
-  getTokenSymbol: () => string;
-  getTotalBalance: () => T;
-  setAmount: (amount: T, tokenSymbol?: AnyTokenCode) => void;
-  setTotalBalance: (total: T) => void;
+  getAmount(): T;
+  getTokenSymbol(): string;
+  getTotalBalance(): T;
+  setAmount(amount: T, tokenSymbol?: AnyTokenCode): void;
+  setTotalBalance(total: T): void;
 }
 
 export interface TxDetailsPlain {
   amount: string;
   amountDecimals: number;
+  blockchain: BlockchainCode;
   erc20?: string;
   from?: string;
   gas: number;
@@ -38,6 +40,7 @@ export interface TxDetailsPlain {
   totalEtherBalance?: string;
   totalTokenBalance?: string;
   transferType?: number;
+  type: string;
 }
 
 export function targetFromNumber(value: number): TxTarget {

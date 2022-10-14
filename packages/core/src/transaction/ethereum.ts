@@ -2,22 +2,30 @@ import BigNumber from 'bignumber.js';
 import { BlockchainCode } from '../blockchains';
 
 export interface EthereumRawTransaction {
+  accessList?: string;
   blockHash?: string;
   blockNumber?: string;
+  chainID?: string;
   from: string;
   gas: string;
-  gasPrice?: string;
-  maxGasPrice?: string;
-  priorityGasPrice?: string;
+  gasPrice: string;
   hash: string;
   input: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
   nonce: string;
   to?: string;
-  transactionIndex: string;
+  transactionIndex?: string;
+  type: string;
   value: string;
-  v: string;
   r: string;
   s: string;
+  v: string;
+}
+
+export enum EthereumTransactionType {
+  LEGACY = 0,
+  EIP1559 = 2,
 }
 
 export interface EthereumTransaction {
@@ -32,6 +40,7 @@ export interface EthereumTransaction {
   data: string;
   nonce: number | string;
   to?: string;
+  type: EthereumTransactionType;
   value: string | BigNumber;
 }
 

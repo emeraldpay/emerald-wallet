@@ -2,17 +2,17 @@ import {
   AddressRole,
   CurrentAddress,
   EntryId,
-  isBitcoinEntry,
-  isEthereumEntry,
   Uuid,
   Wallet,
+  isBitcoinEntry,
+  isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { AnyCoinCode, BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
-import { accounts, IBalanceValue, IState, screen } from '@emeraldwallet/store';
+import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
 import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
 import { Address, Back, Page, WalletReference } from '@emeraldwallet/ui';
-import { Box, Button, createStyles, FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
 import { clipboard } from 'electron';
@@ -113,7 +113,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   const tokenInfo = React.useMemo(
-    () => registry.tokens[currentBlockchain]?.find((token) => token.symbol === currentToken),
+    () => registry.byBlockchain(currentBlockchain)?.find(({ symbol }) => symbol === currentToken),
     [currentBlockchain, currentToken],
   );
 

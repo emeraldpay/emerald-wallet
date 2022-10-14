@@ -1,38 +1,35 @@
-import {BigAmount, CreateAmount} from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import {
-  amountDecoder,
-  amountFactory, BalanceUtxo,
-  BlockchainCode,
-  blockchainCodeToId,
-  blockchainIdToCode,
-  CurrencyAmount,
-  isBitcoin,
-  isEthereum
-} from '@emeraldwallet/core';
-import {registry} from '@emeraldwallet/erc20';
-import {createSelector} from 'reselect';
-import {settings, tokens} from '../index';
-import {IState} from '../types';
-import {BalanceValueConverted, IBalanceValue, moduleName} from './types';
-import * as accounts from "./index";
-import {
+  BitcoinEntry,
   EntryId,
   EntryIdOp,
-  EthereumEntry, isBitcoinEntry,
-  isEthereumEntry,
+  EthereumEntry,
   SeedDescription,
+  SeedReference,
   Uuid,
   Wallet,
   WalletEntry,
-  WalletOp
-} from "@emeraldpay/emerald-vault-core";
-import {
-  BitcoinEntry,
+  WalletOp,
+  isBitcoinEntry,
+  isEthereumEntry,
   isIdSeedReference,
   isLedger,
-  isSeedReference,
-  SeedReference
-} from "@emeraldpay/emerald-vault-core/lib/types";
+} from '@emeraldpay/emerald-vault-core';
+import {
+  BalanceUtxo,
+  BlockchainCode,
+  CurrencyAmount,
+  amountDecoder,
+  amountFactory,
+  blockchainCodeToId,
+  blockchainIdToCode,
+} from '@emeraldwallet/core';
+import { registry } from '@emeraldwallet/erc20';
+import { createSelector } from 'reselect';
+import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
+import * as accounts from './index';
+import { settings, tokens } from '../index';
+import { IState } from '../types';
 
 function sum<T extends BigAmount>(a: T | undefined, b: T | undefined): T {
   if (typeof a == 'undefined') {
@@ -46,7 +43,7 @@ function sum<T extends BigAmount>(a: T | undefined, b: T | undefined): T {
 
 export function zeroAmountFor<T extends BigAmount>(blockchain: BlockchainCode): T {
   const amountCreate = amountFactory(blockchain) as CreateAmount<T>;
-  return amountCreate(0)
+  return amountCreate(0);
 }
 
 export const allWallets = (state: IState): Wallet[] => state[moduleName].wallets;
@@ -55,12 +52,9 @@ export const allWallets = (state: IState): Wallet[] => state[moduleName].wallets
  * Returns all accounts from all wallets as flat array
  * @param state
  */
-export const allEntries = createSelector(
-  [allWallets],
-  (wallets) => {
-    return wallets.reduce((a: WalletEntry[], w) => a.concat(w.entries), []);
-  }
-);
+export const allEntries = createSelector([allWallets], (wallets) => {
+  return wallets.reduce((a: WalletEntry[], w) => a.concat(w.entries), []);
+});
 
 export const allEntriesByBlockchain = (state: IState, code: BlockchainCode) => {
   const accounts: WalletEntry[] = allEntries(state);
@@ -72,7 +66,7 @@ export function findWallet(state: IState, id: Uuid): Wallet | undefined {
 }
 
 export function findWalletByEntryId(state: IState, id: EntryId): Wallet | undefined {
-  const walletId = EntryIdOp.asOp(id).extractWalletId()
+  const walletId = EntryIdOp.asOp(id).extractWalletId();
 
   return findWallet(state, walletId);
 }
@@ -84,12 +78,11 @@ export function findEntry(state: IState, id: EntryId): WalletEntry | undefined {
     return undefined;
   }
 
-  return wallet.entries.find((entry) => entry.id === id)
+  return wallet.entries.find((entry) => entry.id === id);
 }
 
 export function allAsArray(state: IState): Wallet[] {
-  return (state[moduleName].wallets || [])
-    .filter((value: any) => typeof value !== 'undefined');
+  return (state[moduleName].wallets || []).filter((value: any) => typeof value !== 'undefined');
 }
 
 export const isLoading = (state: any): boolean => state[moduleName].loading;
@@ -99,8 +92,8 @@ export function findWalletByAddress(state: any, address: string, blockchain: Blo
     return undefined;
   }
 
-  return allWallets(state).find(
-    (wallet: Wallet) => WalletOp.of(wallet).findEntryByAddress(address, blockchainCodeToId(blockchain))
+  return allWallets(state).find((wallet: Wallet) =>
+    WalletOp.of(wallet).findEntryByAddress(address, blockchainCodeToId(blockchain)),
   );
 }
 
@@ -194,12 +187,11 @@ export function balanceByChain<T extends BigAmount>(state: IState, blockchain: B
  * Balances of all assets summarized by wallet
  * @param state
  */
-export function allBalances (state: IState): IBalanceValue[] {
+export function allBalances(state: IState): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
   state[moduleName].wallets.forEach((wallet) =>
-    getWalletBalances(state, wallet, false)
-      .forEach((asset) => assets.push(asset))
+    getWalletBalances(state, wallet, false).forEach((asset) => assets.push(asset)),
   );
 
   return assets;
@@ -212,45 +204,45 @@ export function allBalances (state: IState): IBalanceValue[] {
  * @param wallet
  * @param includeEmpty include zero balances
  */
-export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
+export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
-  if (typeof wallet == "undefined") {
+  if (typeof wallet == 'undefined') {
     return assets;
   }
   const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
-  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Goerli]
-    .forEach((code) => {
-      const zero = zeroAmountFor<BigAmount>(code);
+  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Goerli].forEach((code) => {
+    const zero = zeroAmountFor<BigAmount>(code);
 
-      const blockchainAccounts = ethereumAccounts
-        .filter((account: EthereumEntry) => account.blockchain === blockchainCodeToId(code));
+    const blockchainAccounts = ethereumAccounts.filter(
+      (account: EthereumEntry) => account.blockchain === blockchainCodeToId(code),
+    );
 
-      const balance = blockchainAccounts
-        .map((account) => getBalance(state, account.id, zero)!)
-        .reduce((a, b) => a.plus(b), zero);
+    const balance = blockchainAccounts
+      .map((account) => getBalance(state, account.id, zero)!)
+      .reduce((a, b) => a.plus(b), zero);
 
-      // show only assets that have at least one address in the wallet
-      if (typeof balance !== 'undefined' && (includeEmpty || blockchainAccounts.length > 0)) {
-        assets.push({
-          balance
-        });
-      }
-      const supportedTokens = registry.all()[code];
-      if (typeof supportedTokens === 'undefined') {
-        return;
-      }
+    // show only assets that have at least one address in the wallet
+    if (typeof balance !== 'undefined' && (includeEmpty || blockchainAccounts.length > 0)) {
+      assets.push({
+        balance,
+      });
+    }
+    const supportedTokens = registry.all()[code];
+    if (typeof supportedTokens === 'undefined') {
+      return;
+    }
 
-      supportedTokens.forEach((token) => {
-        blockchainAccounts.forEach((account: WalletEntry) => {
-          const balance = tokens.selectors.selectBalance(state, token.address, account.address!.value, code);
-          if (balance && (includeEmpty || !balance.isZero())) {
-            assets.push({
-              balance
-            });
-          }
-        });
+    supportedTokens.forEach((token) => {
+      blockchainAccounts.forEach((account: WalletEntry) => {
+        const balance = tokens.selectors.selectBalance(state, code, account.address!.value, token.address);
+        if (balance && (includeEmpty || !balance.isZero())) {
+          assets.push({
+            balance,
+          });
+        }
       });
     });
+  });
 
   const bitcoinAccounts = wallet.entries.filter((e) => isBitcoinEntry(e)) as BitcoinEntry[];
   bitcoinAccounts.forEach((entry) => {
@@ -258,8 +250,8 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
     const zero = zeroAmountFor<BigAmount>(code);
     const balance = getBalance(state, entry.id, zero);
     assets.push({
-      balance
-    })
+      balance,
+    });
   });
   return aggregateByAsset(assets);
 }
@@ -271,12 +263,11 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
  * @param state
  * @param assets
  */
-export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
-  const converted = assets
-    .map((asset) => {
-      const rate = settings.selectors.fiatRate(asset.balance.units.top.code, state) || 0;
-      return asset.balance.getNumberByUnit(asset.balance.units.top).multipliedBy(rate)
-    });
+export function fiatTotalBalance(state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
+  const converted = assets.map((asset) => {
+    const rate = settings.selectors.fiatRate(asset.balance.units.top.code, state) || 0;
+    return asset.balance.getNumberByUnit(asset.balance.units.top).multipliedBy(rate);
+  });
 
   if (converted.length === 0) {
     return undefined;
@@ -294,10 +285,10 @@ export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBala
  *
  * @param assets
  */
-export function aggregateByAsset (assets: IBalanceValue[]): IBalanceValue[] {
-  const group: {[key: string]: IBalanceValue[]} = {};
+export function aggregateByAsset(assets: IBalanceValue[]): IBalanceValue[] {
+  const group: { [key: string]: IBalanceValue[] } = {};
   assets.forEach((asset) => {
-    let token = asset.balance.units.top.code;
+    const token = asset.balance.units.top.code;
     let current = group[token];
     if (typeof current === 'undefined') {
       current = [];
@@ -307,12 +298,14 @@ export function aggregateByAsset (assets: IBalanceValue[]): IBalanceValue[] {
   });
   const result: IBalanceValue[] = [];
   Object.values(group)
-    .map((g) => g.reduce((a: IBalanceValue, b: IBalanceValue) => {
-      let balance = a.balance.plus(b.balance);
-      return {
-        balance
-      } as IBalanceValue;
-    }))
+    .map((g) =>
+      g.reduce((a: IBalanceValue, b: IBalanceValue) => {
+        const balance = a.balance.plus(b.balance);
+        return {
+          balance,
+        } as IBalanceValue;
+      }),
+    )
     .forEach((g) => result.push(g));
 
   return result;
@@ -323,36 +316,36 @@ export function aggregateByAsset (assets: IBalanceValue[]): IBalanceValue[] {
  * @param state
  * @param assets
  */
-export function withFiatConversion (state: IState, assets: IBalanceValue[]): BalanceValueConverted[] {
+export function withFiatConversion(state: IState, assets: IBalanceValue[]): BalanceValueConverted[] {
   return assets
     .map((asset) => {
       return {
         source: asset,
         converted: fiatTotalBalance(state, [asset]),
-        rate: settings.selectors.fiatRate(asset.balance.units.top.code, state)
+        rate: settings.selectors.fiatRate(asset.balance.units.top.code, state),
       } as BalanceValueConverted;
     })
     .filter((value) => typeof value.converted !== 'undefined' && typeof value.rate !== 'undefined');
 }
 
 export function getSeeds(state: IState): SeedDescription[] {
-  return state[accounts.moduleName].seeds || []
+  return state[accounts.moduleName].seeds || [];
 }
 
 export function getSeed(state: IState, id: Uuid): SeedDescription | undefined {
-  return getSeeds(state).find((seed) => seed.id === id)
+  return getSeeds(state).find((seed) => seed.id === id);
 }
 
 export function getUtxo(state: IState, entryId: EntryId): BalanceUtxo[] {
   return state[accounts.moduleName].details
     .filter((d) => d.entryId == entryId)
     .reduce((result, x) => {
-      return result.concat(x.utxo || [])
-    }, [] as BalanceUtxo[])
+      return result.concat(x.utxo || []);
+    }, [] as BalanceUtxo[]);
 }
 
 export function findLedgerSeed(state: IState): SeedDescription | undefined {
-  return getSeeds(state).find((s) => s.type == "ledger")
+  return getSeeds(state).find((s) => s.type == 'ledger');
 }
 
 export function isHardwareSeed(state: IState, seed: SeedReference): boolean {
@@ -360,7 +353,7 @@ export function isHardwareSeed(state: IState, seed: SeedReference): boolean {
     return true;
   }
   if (isIdSeedReference(seed)) {
-    return getSeed(state, seed.value)?.type === "ledger";
+    return getSeed(state, seed.value)?.type === 'ledger';
   }
-  return false
+  return false;
 }

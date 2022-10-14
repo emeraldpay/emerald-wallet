@@ -12,6 +12,7 @@ import {
   SeedDefinition,
   SeedDescription,
   SeedReference,
+  SignedTx,
   UnsignedTx,
   Uuid,
   Wallet,
@@ -19,23 +20,27 @@ import {
 import {
   AnyCoinCode,
   BlockchainCode,
-  blockchainCodeToId,
   EthereumRawReceipt,
   EthereumRawTransaction,
   IBackendApi,
   PersistentState,
   WalletApi,
+  blockchainCodeToId,
 } from '@emeraldwallet/core';
 
 export class MemoryAddressBook {
   storage: Record<string, PersistentState.AddressbookItem> = {};
 
-  async add(item: PersistentState.AddressbookItem): Promise<string> {
+  add(item: PersistentState.AddressbookItem): Promise<string> {
     const id = Math.random().toString(16).substring(7);
 
-    this.storage[item.address.address] = { id, ...item };
+    this.storage[id] = { id, ...item };
 
     return Promise.resolve(id);
+  }
+
+  get(id): Promise<PersistentState.AddressbookItem> {
+    return Promise.resolve(this.storage[id]);
   }
 
   async remove(id: string): Promise<void> {
@@ -44,7 +49,7 @@ export class MemoryAddressBook {
       .reduce((carry, item) => ({ ...carry, [item.address.address]: item }), {});
   }
 
-  async query(
+  query(
     filter?: PersistentState.AddressbookFilter,
   ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
     let items = Object.values(this.storage);
@@ -57,6 +62,19 @@ export class MemoryAddressBook {
       items,
       cursor: '0',
     });
+  }
+
+  update(id: string, item: Partial<PersistentState.AddressbookItem>): Promise<boolean> {
+    if (this.storage[id] == null) {
+      return Promise.resolve(false);
+    }
+
+    this.storage[id] = {
+      ...this.storage[id],
+      ...item,
+    };
+
+    return Promise.resolve(true);
   }
 }
 
@@ -138,7 +156,7 @@ export class MemoryXPubPos {
 
   async getNext(xpub: string): Promise<number> {
     const { [xpub]: current } = this.storage;
-    if (typeof current == "undefined" || current == null) {
+    if (typeof current == 'undefined' || current == null) {
       return Promise.resolve(0);
     }
     return Promise.resolve(current + 1);
@@ -187,6 +205,10 @@ export class AddressBookMock implements PersistentState.Addressbook {
     this.addressBook = addressBook;
   }
 
+  get(id: string): Promise<PersistentState.AddressbookItem> {
+    return this.addressBook.get(id);
+  }
+
   add(item: PersistentState.AddressbookItem): Promise<string> {
     return this.addressBook.add(item);
   }
@@ -199,6 +221,10 @@ export class AddressBookMock implements PersistentState.Addressbook {
     filter?: PersistentState.AddressbookFilter,
   ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
     return this.addressBook.query(filter);
+  }
+
+  update(id: string, item: Partial<PersistentState.AddressbookItem>): Promise<boolean> {
+    return this.addressBook.update(id, item);
   }
 }
 
@@ -390,14 +416,20 @@ export class VaultMock implements IEmeraldVault {
     return Promise.resolve(false);
   }
 
-  signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<string> {
+  signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<SignedTx> {
     console.log('Sign', entryId, tx, password);
 
     if (entryId == 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3') {
-      return Promise.resolve(REAL_BTC_TX);
+      return Promise.resolve({
+        raw: REAL_BTC_TX,
+        txid: '8d00cb652b9c4cf8b532964d789904388e322826d42a45bf848224dd99390bff',
+      });
     }
 
-    return Promise.resolve('');
+    return Promise.resolve({
+      raw: '',
+      txid: '',
+    });
   }
 
   getConnectedHWDetails(): Promise<LedgerDetails[]> {
@@ -440,6 +472,10 @@ export class VaultMock implements IEmeraldVault {
 
   snapshotRestore(sourceFile: string, password: string): Promise<boolean> {
     return Promise.resolve(password === 'password');
+  }
+
+  updateSeed(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 }
 
@@ -563,5 +599,9 @@ export class BackendMock implements IBackendApi {
 
   getEthTx(): Promise<EthereumRawTransaction | null> {
     return Promise.resolve(null);
+  }
+
+  getXPubLastIndex(): Promise<number | undefined> {
+    return Promise.resolve(1);
   }
 }

@@ -1,44 +1,49 @@
-import {AnyTokenCode, IBackendApi, toBigNumber} from '@emeraldwallet/core';
-import {all, call, put, takeEvery} from 'redux-saga/effects';
+import { AnyTokenCode, IBackendApi, toBigNumber } from '@emeraldwallet/core';
+import { SagaIterator } from 'redux-saga';
+import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { setTokenBalance } from './actions';
-import { ActionTypes, IRequestTokenBalanceAction, IRequestTokensBalancesAction, ITokenBalance } from './types';
+import { ActionTypes, RequestTokenBalanceAction, RequestTokensBalancesAction, TokenBalance } from './types';
 
-function* fetchBalanceInfo (backendApi: IBackendApi, action: IRequestTokenBalanceAction) {
-  const {token, address, chain} = action.payload;
-  const result = yield call(backendApi.getBalance, chain, address, [token.symbol as AnyTokenCode]);
-  const b: ITokenBalance = {
+function* fetchBalanceInfo(backendApi: IBackendApi, action: RequestTokenBalanceAction): SagaIterator {
+  const { token, address, blockchain } = action.payload;
+
+  const result = yield call(backendApi.getBalance, blockchain, address, [token.symbol as AnyTokenCode]);
+
+  const balance: TokenBalance = {
     decimals: token.decimals,
     symbol: token.symbol as AnyTokenCode,
     tokenId: token.address,
-    unitsValue: toBigNumber(result).toString()
+    unitsValue: toBigNumber(result).toString(),
   };
-  yield put(setTokenBalance(chain, b, address));
+
+  yield put(setTokenBalance(blockchain, balance, address));
 }
 
-function * fetchTokensBalances (backendApi: IBackendApi, action: IRequestTokensBalancesAction) {
-  const { tokens, address, chain } = action.payload;
+function* fetchTokensBalances(backendApi: IBackendApi, action: RequestTokensBalancesAction): SagaIterator {
+  const { tokens, address, blockchain } = action.payload;
 
-  const balances = yield call(backendApi.getBalance, chain, address, tokens.map(t => t.symbol));
+  const balances = yield call(
+    backendApi.getBalance,
+    blockchain,
+    address,
+    tokens.map((t) => t.symbol),
+  );
 
   for (const token of tokens) {
-    const balance: ITokenBalance = {
+    const balance: TokenBalance = {
       decimals: token.decimals,
       symbol: token.symbol as AnyTokenCode,
       tokenId: token.address,
-      unitsValue: toBigNumber(balances[token.symbol]).toString()
+      unitsValue: toBigNumber(balances[token.symbol]).toString(),
     };
 
-    yield put(setTokenBalance(chain, balance, address));
+    yield put(setTokenBalance(blockchain, balance, address));
   }
 }
 
-function* watchRequestBalance (backendApi: IBackendApi) {
-  yield takeEvery(ActionTypes.REQUEST_TOKEN_BALANCE, fetchBalanceInfo, backendApi);
-  yield takeEvery(ActionTypes.REQUEST_TOKENS_BALANCES, fetchTokensBalances, backendApi);
-}
-
-export function* root (backendApi: IBackendApi) {
+export function* root(backendApi: IBackendApi): SagaIterator {
   yield all([
-    watchRequestBalance(backendApi)
+    takeEvery(ActionTypes.REQUEST_TOKEN_BALANCE, fetchBalanceInfo, backendApi),
+    takeEvery(ActionTypes.REQUEST_TOKENS_BALANCES, fetchTokensBalances, backendApi),
   ]);
 }

@@ -1,8 +1,14 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
-import { ConvertableTokenCode, isConvertableToken } from '@emeraldwallet/core/lib/Asset';
+import {
+  BlockchainCode,
+  Blockchains,
+  ConvertableTokenCode,
+  blockchainIdToCode,
+  formatAmount,
+  isConvertableToken,
+} from '@emeraldwallet/core';
 import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { Button, Typography, createStyles } from '@material-ui/core';
@@ -167,7 +173,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return carry;
       }
 
-      const balances = tokens.selectors.selectBalances(state, item.address.value, blockchainCode) ?? [];
+      const balances = tokens.selectors.selectBalances(state, blockchainCode, item.address.value) ?? [];
 
       if (carry.length === 0) {
         return balances;

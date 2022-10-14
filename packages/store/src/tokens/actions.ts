@@ -1,55 +1,67 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ITokenInfo } from "@emeraldwallet/erc20";
+import { TokenInfo } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import { tokenContract, wrapTokenContract } from './erc20';
 import {
   ActionTypes,
-  IRequestTokenBalanceAction,
-  IRequestTokensBalancesAction,
-  ISetTokenBalanceAction,
-  ITokenBalance,
+  RequestTokenBalanceAction,
+  RequestTokensBalancesAction,
+  SetTokenBalanceAction,
+  TokenBalance,
 } from './types';
 
-export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: string): ISetTokenBalanceAction {
+export function setTokenBalance(
+  blockchain: BlockchainCode,
+  balance: TokenBalance,
+  address: string,
+): SetTokenBalanceAction {
   return {
     type: ActionTypes.SET_TOKEN_BALANCE,
     payload: {
-      chain,
       address,
-      balance: tokenBalance
-    }
+      blockchain,
+      balance,
+    },
   };
 }
 
-export function requestTokenBalance (chain: any, token: any, address: string): IRequestTokenBalanceAction {
+export function requestTokenBalance(
+  blockchain: BlockchainCode,
+  token: TokenInfo,
+  address: string,
+): RequestTokenBalanceAction {
   return {
     type: ActionTypes.REQUEST_TOKEN_BALANCE,
     payload: {
-      chain,
+      address,
+      blockchain,
       token,
-      address
-    }
+    },
   };
 }
 
 export function requestTokensBalances(
-  chain: BlockchainCode, tokens: ITokenInfo[], address: string
-): IRequestTokensBalancesAction {
+  blockchain: BlockchainCode,
+  tokens: TokenInfo[],
+  address: string,
+): RequestTokensBalancesAction {
   return {
     type: ActionTypes.REQUEST_TOKENS_BALANCES,
     payload: {
-      chain,
+      address,
+      blockchain,
       tokens,
-      address
-    }
+    },
   };
 }
 
-export function createTokenTxData (to: string, amount: any, isTransfer: boolean): string {
+export function createTokenTxData(to: string, amount: BigNumber, isTransfer: boolean): string {
   const value = amount.toString(10);
+
   if (isTransfer) {
     return tokenContract.functionToData('transfer', { _to: to, _value: value });
   }
+
   return tokenContract.functionToData('approve', { _spender: to, _amount: value });
 }
 

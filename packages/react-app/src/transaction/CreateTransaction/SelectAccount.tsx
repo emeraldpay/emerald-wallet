@@ -1,9 +1,9 @@
 import { BigAmount } from '@emeraldpay/bigamount/lib/amount';
-import { isBitcoinEntry, isEthereumEntry, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { Uuid, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode } from '@emeraldwallet/core';
-import { accounts, IBalanceValue, IState, screen, tokens } from '@emeraldwallet/store';
+import { IBalanceValue, IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { Back, CoinAvatar, Page, WalletReference } from '@emeraldwallet/ui';
-import { Button, createStyles, Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -117,7 +117,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           let tokenBalances: BigAmount[] = [];
 
           if (isEthereumEntry(entry) && entry.address != null) {
-            tokenBalances = tokens.selectors.selectBalances(state, entry.address.value, blockchainCode) ?? [];
+            tokenBalances = tokens.selectors.selectBalances(state, blockchainCode, entry.address.value) ?? [];
           }
 
           const accountBalance = carry[entry.blockchain];

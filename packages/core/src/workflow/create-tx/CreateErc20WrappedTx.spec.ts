@@ -2,12 +2,14 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { CreateErc20WrappedTx } from './CreateErc20WrappedTx';
 import { TxTarget } from './types';
 import { BlockchainCode, amountFactory, tokenUnits } from '../../blockchains';
+import { EthereumTransactionType } from '../../transaction/ethereum';
 
 describe('CreateErc20WrappedTx', () => {
   it('creates legacy tx', () => {
     const tx = new CreateErc20WrappedTx({
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       blockchain: BlockchainCode.Goerli,
+      type: EthereumTransactionType.LEGACY,
     });
 
     expect(tx.amount.number.toNumber()).toBe(0);
@@ -18,13 +20,11 @@ describe('CreateErc20WrappedTx', () => {
   });
 
   it('creates eip1559 tx', () => {
-    const tx = new CreateErc20WrappedTx(
-      {
-        address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
-        blockchain: BlockchainCode.Goerli,
-      },
-      true,
-    );
+    const tx = new CreateErc20WrappedTx({
+      address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
+      blockchain: BlockchainCode.Goerli,
+      type: EthereumTransactionType.EIP1559,
+    });
 
     expect(tx.amount.number.toNumber()).toBe(0);
     expect(tx.gas).toBe(50000);
@@ -41,6 +41,7 @@ describe('CreateErc20WrappedTx', () => {
       totalBalance,
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       blockchain: BlockchainCode.Goerli,
+      type: EthereumTransactionType.EIP1559,
     });
 
     expect(tx.target).toBe(TxTarget.MANUAL);
@@ -63,6 +64,7 @@ describe('CreateErc20WrappedTx', () => {
       amount: new BigAmount(0, units),
       blockchain: BlockchainCode.Goerli,
       totalTokenBalance: new BigAmount(1, units),
+      type: EthereumTransactionType.EIP1559,
     });
 
     expect(tx.target).toBe(TxTarget.MANUAL);

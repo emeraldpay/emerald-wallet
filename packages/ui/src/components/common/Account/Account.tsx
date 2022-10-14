@@ -60,18 +60,18 @@ export const styles = createStyles({
   },
   root: {
     alignItems: 'center',
+    cursor: 'default',
     display: 'flex',
     width: '100%',
   },
 });
-
-const noop = (): void => undefined;
 
 interface OwnProps {
   address: string;
   addressProps?: Record<string, unknown>;
   addressWidth?: string;
   classes: Record<keyof typeof styles, string>;
+  disabled?: boolean;
   editable?: boolean;
   identity?: boolean;
   identityProps?: Record<string, unknown>;
@@ -84,10 +84,9 @@ interface OwnProps {
 export class Account extends React.PureComponent<OwnProps> {
   public static defaultProps = {
     addressWidth: 'auto',
+    disabled: false,
     editable: false,
     name: null,
-    onClick: noop,
-    onEditClick: noop,
   };
 
   constructor(props) {
@@ -142,7 +141,7 @@ export class Account extends React.PureComponent<OwnProps> {
   }
 
   public render(): React.ReactElement {
-    const { address, addressProps, addressWidth, classes, getBalancesByAddress, onClick } = this.props;
+    const { address, addressProps, addressWidth, classes, disabled, getBalancesByAddress, onClick } = this.props;
 
     const newAddressProps = {
       hideCopy: true,
@@ -151,10 +150,11 @@ export class Account extends React.PureComponent<OwnProps> {
       ...addressProps,
     };
 
-    const isClickable = typeof onClick === 'function' && onClick !== noop;
-
     return (
-      <div onClick={onClick} className={cx(classes.root, { [classes.clickable]: isClickable })}>
+      <div
+        className={cx(classes.root, { [classes.clickable]: !disabled })}
+        onClick={(event) => !disabled && onClick?.(event)}
+      >
         {this.getIdentityIcon()}
         <div className={classes.accountContainer} style={{ width: addressWidth }}>
           {this.getNameField()}

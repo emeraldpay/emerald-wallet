@@ -1,3 +1,23 @@
+import * as blockchains from './blockchains';
+import * as utils from './utils';
+import * as workflow from './workflow';
+
+export { blockchains, workflow, utils };
+
+export {
+  ConvertableTokenCode,
+  StableCoinCode,
+  SupportedTokenCode,
+  AnyTokenCode,
+  AnyCoinCode,
+  isConvertableToken,
+  isStableCoinCode,
+  isAnyTokenCode,
+  isSupportedTokenCode,
+  AssetDetail,
+  AssetDetails,
+  getStandardUnits,
+} from './Asset';
 export {
   BlockchainCode,
   Blockchains,
@@ -14,25 +34,6 @@ export {
   ledgerByBlockchain,
   tokenUnits,
 } from './blockchains';
-import * as blockchains from './blockchains';
-import * as utils from './utils';
-import * as workflow from './workflow';
-
-export { blockchains, workflow, utils };
-
-export {
-  ConvertableTokenCode,
-  StableCoinCode,
-  SupportedTokenCode,
-  AnyTokenCode,
-  AnyCoinCode,
-  isStableCoinCode,
-  isAnyTokenCode,
-  isSupportedTokenCode,
-  AssetDetail,
-  AssetDetails,
-  getStandardUnits,
-} from './Asset';
 export { Contract } from './Contract';
 export { Currency, CurrencyCode, CurrencyAmount } from './Currency';
 export { IServerConnect } from './IServerConnect';
@@ -54,5 +55,6 @@ export {
   EthereumReceipt,
   EthereumRawTransaction,
   EthereumTransaction,
+  EthereumTransactionType,
 } from './transaction/ethereum';
 export { default as WithDefaults } from './withDefaults';

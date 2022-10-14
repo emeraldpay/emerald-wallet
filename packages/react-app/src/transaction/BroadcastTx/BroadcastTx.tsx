@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { AnyCoinCode, Blockchains, EthereumTx, toNumber } from '@emeraldwallet/core';
-import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
+import { AnyCoinCode, Blockchains, EthereumTx, toNumber, tokenUnits } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
 import { BroadcastData, screen, transaction } from '@emeraldwallet/store';
 import { Account, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
@@ -55,7 +54,7 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
         txTo = decodedData.inputs[0].toString(16);
         txValue = toNumber('0x' + decodedData.inputs[1].toString(16)).toString();
 
-        const tokenInfo = registry.byAddress(chain.params.code, decoded.getRecipientAddress().toString());
+        const tokenInfo = registry.byTokenAddress(chain.params.code, decoded.getRecipientAddress().toString());
 
         if (tokenInfo) {
           coinSymbol = tokenInfo.symbol;

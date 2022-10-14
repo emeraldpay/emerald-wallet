@@ -14,8 +14,8 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/bigamount": "^0.4.0",
-    "@emeraldpay/bigamount-crypto": "^0.4.0",
+    "@emeraldpay/bigamount": "^0.4.1",
+    "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldpay/emerald-vault-core": "^0.9.0",
     "@ethereumjs/common": "^2.6.2",
     "@ethereumjs/tx": "^3.5.0",

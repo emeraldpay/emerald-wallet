@@ -3,7 +3,6 @@ import { BlockchainCode, workflow } from '@emeraldwallet/core';
 import * as addressBook from '@emeraldwallet/store/lib/address-book';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
-import BigNumber from 'bignumber.js';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -12,9 +11,9 @@ import { createTestStore } from '../../_tests';
 
 describe('CreateTx', () => {
   it('it renders without crash', () => {
-    const tx = new workflow.CreateEthereumTx();
+    const tx = new workflow.CreateEthereumTx(null, BlockchainCode.ETH);
     tx.amount = new Wei(1, 'ETHER');
-    tx.gas = new BigNumber(100000);
+    tx.gas = 100000;
     tx.gasPrice = new Wei(0.0001, 'ETHER');
     tx.totalBalance = new Wei(5, 'ETHER');
 
@@ -30,9 +29,9 @@ describe('CreateTx', () => {
             txFeeToken="ETH"
             tokenSymbols={[]}
             eip1559={false}
-            highGasPrice={{ expect: 100, max: 0, priority: 0 }}
-            lowGasPrice={{ expect: 1, max: 0, priority: 0 }}
-            stdGasPrice={{ expect: 50, max: 0, priority: 0 }}
+            highGasPrice={{ max: 0, priority: 0 }}
+            lowGasPrice={{ max: 0, priority: 0 }}
+            stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
           />
         </ThemeProvider>
@@ -50,9 +49,9 @@ describe('CreateTx', () => {
             txFeeToken="ETH"
             tokenSymbols={[]}
             eip1559={false}
-            highGasPrice={{ expect: 100, max: 0, priority: 0 }}
-            lowGasPrice={{ expect: 1, max: 0, priority: 0 }}
-            stdGasPrice={{ expect: 50, max: 0, priority: 0 }}
+            highGasPrice={{ max: 0, priority: 0 }}
+            lowGasPrice={{ max: 0, priority: 0 }}
+            stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
           />
         </ThemeProvider>

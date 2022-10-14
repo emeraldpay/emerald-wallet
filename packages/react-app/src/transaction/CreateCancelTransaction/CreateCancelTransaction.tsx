@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumTransaction } from '@emeraldwallet/core';
-import { IState, SignData, accounts, screen , transaction } from '@emeraldwallet/store';
+import { IState, SignData, accounts, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -42,7 +42,7 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [accountId, password, transaction]);
+  }, [accountId, password, transaction, checkGlobalKey, signTransaction]);
 
   return (
     <Page title="Cancel Transaction" leftIcon={<Back onClick={goBack} />}>
@@ -111,6 +111,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           21000,
           Wei.ZERO,
           '',
+          tx.type,
           gasPrice,
           maxGasPrice,
           priorityGasPrice,

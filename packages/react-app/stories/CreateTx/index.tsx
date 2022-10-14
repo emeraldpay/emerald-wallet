@@ -1,11 +1,10 @@
 import { Satoshi, WEIS } from '@emeraldpay/bigamount-crypto';
 import { Wei } from '@emeraldpay/bigamount-crypto/lib/ethereum';
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core/lib/types';
-import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, EthereumTransactionType, workflow } from '@emeraldwallet/core';
 import { CreateBitcoinTx } from '@emeraldwallet/core/lib/workflow';
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import Confirm from '../../src/transaction/CreateBitcoinTransaction/Confirm';
 import CreateBitcoinTransaction from '../../src/transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
@@ -25,9 +24,11 @@ backend.vault.setSeedPassword('b00e3378-40e7-4eca-b287-a5ead2f747d4', 'test');
 
 const ethereumTx = new workflow.CreateEthereumTx({
   amount: new Wei('1.23', 'ETHER'),
-  gas: new BigNumber('100'),
+  blockchain: BlockchainCode.Goerli,
+  gas: 100,
   gasPrice: new Wei('20', 'GWEI'),
   target: workflow.TxTarget.MANUAL,
+  type: EthereumTransactionType.EIP1559,
 });
 
 storiesOf('CreateTx Ethereum', module)
@@ -35,28 +36,32 @@ storiesOf('CreateTx Ethereum', module)
   .addDecorator(withTheme)
   .add('Create ETC', () => (
     <CreateTx
+      chain={BlockchainCode.Goerli}
       eip1559={false}
-      highGasPrice={{ expect: '30000000000', max: 0, priority: 0 }}
-      lowGasPrice={{ expect: '10000000000', max: 0, priority: 0 }}
-      stdGasPrice={{ expect: '20000000000', max: 0, priority: 0 }}
+      highGasPrice={{ max: 0, priority: 0 }}
+      lowGasPrice={{ max: 0, priority: 0 }}
+      stdGasPrice={{ max: 0, priority: 0 }}
       tokenSymbols={['ETC']}
       token={'ETC'}
       tx={ethereumTx}
       txFeeToken="ETH"
       onChangeAmount={action('onChangeAmount')}
+      onChangeTo={action('onChangeTo')}
     />
   ))
   .add('Create EIP-1559', () => (
     <CreateTx
+      chain={BlockchainCode.Goerli}
       eip1559={true}
-      highGasPrice={{ expect: 0, max: '30000000000', priority: '3000000000' }}
-      lowGasPrice={{ expect: 0, max: '10000000000', priority: '1000000000' }}
-      stdGasPrice={{ expect: 0, max: '20000000000', priority: '2000000000' }}
+      highGasPrice={{ max: '30000000000', priority: '3000000000' }}
+      lowGasPrice={{ max: '10000000000', priority: '1000000000' }}
+      stdGasPrice={{ max: '20000000000', priority: '2000000000' }}
       tokenSymbols={['ETC']}
       token={'ETC'}
       tx={ethereumTx}
       txFeeToken="ETH"
       onChangeAmount={action('onChangeAmount')}
+      onChangeTo={action('onChangeTo')}
     />
   ))
   .add('AmountField', () => <AmountField units={WEIS} onChangeAmount={action('onChangeAmount')} />)
@@ -64,7 +69,7 @@ storiesOf('CreateTx Ethereum', module)
     <AmountField units={WEIS} amount={new Wei('101.202', 'ETHER')} onChangeAmount={action('onChangeAmount')} />
   ))
   .add('FromField', () => <FromField accounts={['0x1', '02']} />)
-  .add('ToField', () => <ToField />);
+  .add('ToField', () => <ToField blockchain={BlockchainCode.Goerli} onChange={action('onChangeToField')} />);
 
 const bitcoinTx = new CreateBitcoinTx(
   wallet3.entries[1] as BitcoinEntry,
@@ -95,7 +100,7 @@ const bitcoinTx = new CreateBitcoinTx(
     },
   ],
 );
-bitcoinTx.requiredAmountBitcoin = 1.2;
+bitcoinTx.requiredAmount = Satoshi.fromBitcoin(1.2);
 bitcoinTx.address = 'bc1q5c4g4njf4g7a2ugu0tq5rjjdg3j0yexus7x3f4';
 
 storiesOf('CreateTx Bitcoin', module)

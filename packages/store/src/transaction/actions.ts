@@ -1,8 +1,6 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
-import { SignedTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
-import { EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core/lib/types';
-import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
+import { EntryId, IEmeraldVault, SignedTx, UnsignedBitcoinTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
@@ -10,6 +8,7 @@ import {
   EthereumAddress,
   EthereumReceipt,
   EthereumTransaction,
+  EthereumTransactionType,
   EthereumTx,
   Logger,
   PersistentState,
@@ -109,6 +108,7 @@ export function signTransaction(
   gas: number,
   value: BigAmount,
   data: string,
+  type: EthereumTransactionType,
   gasPrice?: BigAmount,
   maxGasPrice?: BigAmount,
   priorityGasPrice?: BigAmount,
@@ -121,6 +121,7 @@ export function signTransaction(
     gas,
     nonce,
     to,
+    type,
     gasPrice: gasPrice?.number,
     maxGasPrice: maxGasPrice?.number,
     priorityGasPrice: priorityGasPrice?.number,
@@ -344,87 +345,78 @@ export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Disp
     let [avgLast, avgTail5, avgMiddle] = results.map((result) => {
       const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
 
-      let expect: GasPriceType;
       let max: GasPriceType;
       let priority: GasPriceType;
 
       if (typeof value === 'string') {
-        ({ expect, max, priority } = { ...DEFAULT_FEE, expect: value });
+        ({ max, priority } = { ...DEFAULT_FEE, max: value });
       } else {
-        ({ expect, max, priority } = value);
+        ({ max, priority } = value);
       }
 
       return {
-        expect: new BigNumber(expect),
         max: new BigNumber(max),
         priority: new BigNumber(priority),
       };
     });
 
-    let { expects, highs, priorities } = [avgLast, avgTail5, avgMiddle].reduce<PriceSort>(
+    let { highs, priorities } = [avgLast, avgTail5, avgMiddle].reduce<PriceSort>(
       (carry, item) => ({
-        expects: [...carry.expects, item.expect],
         highs: [...carry.highs, item.max],
         priorities: [...carry.priorities, item.priority],
       }),
       {
-        expects: [],
         highs: [],
         priorities: [],
       },
     );
 
-    expects = expects.sort(sortBigNumber);
     highs = highs.sort(sortBigNumber);
     priorities = priorities.sort(sortBigNumber);
 
-    [avgLast, avgTail5, avgMiddle] = expects.reduce<Array<GasPrices<BigNumber>>>(
+    [avgLast, avgTail5, avgMiddle] = highs.reduce<Array<GasPrices<BigNumber>>>(
       (carry, item, index) => [
         ...carry,
         {
-          expect: item,
-          max: highs[index],
+          max: item,
           priority: priorities[index],
         },
       ],
       [],
     );
 
-    if (avgTail5.expect.eq(0) && avgTail5.max.eq(0)) {
+    if (avgTail5.max.eq(0)) {
       return {
         avgLast: {
           expect: defaultFee.min,
           max: defaultFee.min,
-          priority: defaultFee.priority_min ?? 0,
+          priority: defaultFee.priority_min ?? '0',
         },
         avgMiddle: {
           expect: defaultFee.max,
           max: defaultFee.max,
-          priority: defaultFee.priority_max ?? 0,
+          priority: defaultFee.priority_max ?? '0',
         },
         avgTail5: {
           expect: defaultFee.std,
           max: defaultFee.std,
-          priority: defaultFee.priority_std ?? 0,
+          priority: defaultFee.priority_std ?? '0',
         },
       };
     }
 
     return {
       avgLast: {
-        expect: avgLast.expect.toNumber(),
-        max: avgLast.max.toNumber(),
-        priority: avgLast.priority.toNumber(),
+        max: avgLast.max.toString(),
+        priority: avgLast.priority.toString(),
       },
       avgMiddle: {
-        expect: avgMiddle.expect.toNumber(),
-        max: avgMiddle.max.toNumber(),
-        priority: avgMiddle.priority.toNumber(),
+        max: avgMiddle.max.toString(),
+        priority: avgMiddle.priority.toString(),
       },
       avgTail5: {
-        expect: avgTail5.expect.toNumber(),
-        max: avgTail5.max.toNumber(),
-        priority: avgTail5.priority.toNumber(),
+        max: avgTail5.max.toString(),
+        priority: avgTail5.priority.toString(),
       },
     };
   };
@@ -465,11 +457,12 @@ export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<E
       from: rawTx.from,
       gas: parseInt(rawTx.gas, 16),
       gasPrice: rawTx.gasPrice == null ? undefined : toBigNumber(rawTx.gasPrice),
-      maxGasPrice: rawTx.maxGasPrice == null ? undefined : toBigNumber(rawTx.maxGasPrice),
-      priorityGasPrice: rawTx.priorityGasPrice == null ? undefined : toBigNumber(rawTx.priorityGasPrice),
+      maxGasPrice: rawTx.maxFeePerGas == null ? undefined : toBigNumber(rawTx.maxFeePerGas),
+      priorityGasPrice: rawTx.maxPriorityFeePerGas == null ? undefined : toBigNumber(rawTx.maxPriorityFeePerGas),
       hash: rawTx.hash,
       nonce: parseInt(rawTx.nonce, 16),
       to: rawTx.to,
+      type: parseInt(rawTx.type, 16) === 2 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
       value: toBigNumber(rawTx.value),
     };
   };
