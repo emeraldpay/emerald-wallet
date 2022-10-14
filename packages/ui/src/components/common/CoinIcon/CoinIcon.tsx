@@ -1,4 +1,4 @@
-import { createStyles, Typography } from '@material-ui/core';
+import { Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -42,6 +42,7 @@ const CoinIcon: React.FC<OwnProps> = ({ chain, size }) => {
     case 'BTC':
       return <CurrencyBtc className={iconSize} />;
     case 'ETC':
+    case 'WETC':
       return <CurrencyEtc className={iconSize} />;
     case 'ETH':
       return <CurrencyEth className={iconSize} />;
