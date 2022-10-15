@@ -1,116 +1,82 @@
-import {BigAmount, FormatterBuilder} from "@emeraldpay/bigamount";
-import {CurrencyEtc, CurrencyEth} from '@emeraldwallet/ui';
-import {AnyCoinCode, CurrencyAmount, CurrencyCode, StableCoinCode} from '@emeraldwallet/core';
-import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@material-ui/core';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
+import { AnyCoinCode, CurrencyAmount, CurrencyCode, formatAmount } from '@emeraldwallet/core';
+import { Button, CurrencyIcon } from '@emeraldwallet/ui';
+import { List, ListItem, ListItemAvatar, ListItemText, Menu, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
-const styles = createStyles({
-  label: {
-    textTransform: 'none',
-    fontWeight: 'normal',
-    fontSize: '16px'
-  },
-  root: {
-    lineHeight: 'inherit'
-  }
-});
+const useStyles = makeStyles(() =>
+  createStyles({
+    label: {
+      textTransform: 'none',
+      fontWeight: 'normal',
+      fontSize: 16,
+    },
+    root: {
+      lineHeight: 'inherit',
+    },
+  }),
+);
 
-const CoinSymbol: React.FC<{coinTicker: string}> = ({ coinTicker }: { coinTicker: string }) => {
-  if (coinTicker === 'ETH') {
-    return (<CurrencyEth />);
-  }
-  if (coinTicker === 'ETC') {
-    return (<CurrencyEtc />);
-  }
-  return null;
-};
-
-const format = {
-  decimalSeparator: '.',
-  groupSeparator: ',',
-  groupSize: 3
-};
-
-export interface IProps {
+export interface FiatCurrencies {
+  fiatAmount: BigAmount;
+  fiatRate: number;
   total: BigAmount;
-  fiatCurrency?: CurrencyCode | StableCoinCode;
-  byChain: Array<{
-    token: AnyCoinCode;
-    total: BigAmount;
-    fiatRate: number;
-    fiatAmount: BigAmount;
-  }>;
-  classes?: any;
+  token: AnyCoinCode;
 }
 
-const fiatFormatter = new FormatterBuilder()
-  .useTopUnit()
-  .number(2)
-  .append(' ')
-  .unitCode()
-  .build()
+export interface StateProps {
+  fiatCurrencies: FiatCurrencies[];
+  totalBalance: BigAmount;
+}
 
-const coinFormatter = new FormatterBuilder()
-  .number(3, true, 2, format)
-  .append(' ')
-  .unitCode()
-  .build()
+const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
 
-function TotalButton(props: IProps): React.ReactElement {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const {total, byChain, fiatCurrency, classes} = props;
+const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, totalBalance }) => {
+  const styles = useStyles();
 
-  const handleClose = (): void => {
-    setAnchorEl(null);
-  };
+  const fiatCurrency = React.useMemo(() => totalBalance.units.top.code as CurrencyCode, [totalBalance]);
 
-  const handleToggle = (event: any): void => {
-    if (byChain.length > 0) {
-      setAnchorEl(event.currentTarget);
-    }
-  };
+  const [menuElement, setMenuElement] = React.useState<HTMLButtonElement | null>(null);
 
-  const totalFormatted = fiatFormatter.format(new CurrencyAmount(total.number, fiatCurrency as string));
+  const handleOpen = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      if (fiatCurrencies.length > 0) {
+        setMenuElement(event.currentTarget);
+      }
+    },
+    [fiatCurrencies],
+  );
+
+  const totalFormatted = fiatFormatter.format(new CurrencyAmount(totalBalance.number, fiatCurrency));
 
   return (
     <div>
-      <Button
-        variant='text'
-        disabled={false}
-        label={totalFormatted}
-        classes={classes}
-        onClick={handleToggle}
-        icon={<CoinSymbol coinTicker={fiatCurrency as string}/>}
-      />
+      <Button classes={styles} disabled={false} label={totalFormatted} variant="text" onClick={handleOpen} />
       <Menu
-        elevation={0}
-        getContentAnchorEl={null}
+        anchorEl={menuElement}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left'
+          horizontal: 'left',
         }}
+        getContentAnchorEl={null}
+        open={menuElement != null}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'left'
+          horizontal: 'left',
         }}
-        id='totals'
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={() => setMenuElement(null)}
       >
         <List>
-          {byChain.map((c) => {
-            const coins = coinFormatter.format(c.total);
-            const fiat = fiatFormatter.format(new CurrencyAmount(c.fiatAmount.number, fiatCurrency as string));
+          {fiatCurrencies.map((currency) => {
+            const coinBalance = formatAmount(currency.total);
+            const fiatBalance = fiatFormatter.format(new CurrencyAmount(currency.fiatAmount.number, fiatCurrency));
 
             return (
-              <ListItem key={c.total.units.base.code}>
+              <ListItem key={currency.token}>
                 <ListItemAvatar>
-                  <CoinAvatar chain={c.token}/>
+                  <CurrencyIcon currency={currency.token} />
                 </ListItemAvatar>
-                <ListItemText primary={coins} secondary={fiat}/>
+                <ListItemText primary={coinBalance} secondary={fiatBalance} />
               </ListItem>
             );
           })}
@@ -118,13 +84,8 @@ function TotalButton(props: IProps): React.ReactElement {
       </Menu>
     </div>
   );
-}
+};
 
-const StyledTotalButton = withStyles(styles)(TotalButton);
-
-function propsAreEqual (prev: IProps, next: IProps): boolean {
-  // We re-render only if total amount changed
-  return prev.total.equals(next.total);
-}
-
-export default React.memo(StyledTotalButton, propsAreEqual);
+export default React.memo(TotalButton, (prev: StateProps, next: StateProps): boolean =>
+  prev.totalBalance.equals(next.totalBalance),
+);

@@ -1,16 +1,8 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import { Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
 import * as React from 'react';
-import {
-  CurrencyBtc,
-  CurrencyDai,
-  CurrencyEtc,
-  CurrencyEth,
-  CurrencyUsd,
-  CurrencyUsdc,
-  CurrencyUsdt,
-} from '../../../icons';
+import { CurrencyBtc, CurrencyEtc, CurrencyEth } from '../../../icons';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,9 +12,6 @@ const useStyles = makeStyles(() =>
     largeSize: {
       fill: 'none',
       fontSize: '1.2em',
-    },
-    onlyText: {
-      color: '#f0f0f0',
     },
     smallSize: {
       fill: 'none',
@@ -36,41 +25,28 @@ const useStyles = makeStyles(() =>
 );
 
 interface OwnProps {
-  chain: string;
+  blockchain: BlockchainCode;
   size?: 'small' | 'large' | 'default';
 }
 
-const CoinIcon: React.FC<OwnProps> = ({ chain, size }) => {
+const CoinIcon: React.FC<OwnProps> = ({ blockchain, size }) => {
   const styles = useStyles();
 
-  const code = chain.toUpperCase();
   const iconSize = styles[`${size ?? 'default'}Size`];
 
-  switch (code) {
+  switch (blockchain) {
     // Mainnet
-    case 'BTC':
+    case BlockchainCode.BTC:
       return <CurrencyBtc className={iconSize} />;
-    case 'ETC':
-    case 'WETC':
+    case BlockchainCode.ETC:
       return <CurrencyEtc className={iconSize} />;
-    case 'ETH':
-    case 'WETH':
+    case BlockchainCode.ETH:
       return <CurrencyEth className={iconSize} />;
-    case 'DAI':
-      return <CurrencyDai className={iconSize} />;
-    case 'USD':
-      return <CurrencyUsd className={iconSize} />;
-    case 'USDC':
-      return <CurrencyUsdc className={iconSize} />;
-    case 'USDT':
-      return <CurrencyUsdt className={iconSize} />;
     // Testnet
-    case 'GOERLI':
+    case BlockchainCode.Goerli:
       return <Typography className={styles.testnet}>Goerli</Typography>;
-    case 'TESTBTC':
+    case BlockchainCode.TestBTC:
       return <Typography className={styles.testnet}>TBTC</Typography>;
-    case 'WETG':
-      return <Typography className={classNames(iconSize, styles.onlyText)}>WETG</Typography>;
     // Other
     default:
       return null;

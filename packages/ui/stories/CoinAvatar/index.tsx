@@ -6,12 +6,10 @@ import { CoinAvatar } from '../../src/components/common/CoinIcon';
 storiesOf('CoinAvatar', module)
   .add('default', () => (
     <React.Fragment>
-      <CoinAvatar chain={BlockchainCode.BTC}/>
-      <CoinAvatar chain={BlockchainCode.TestBTC}/>
-      <CoinAvatar chain={BlockchainCode.ETC}/>
-      <CoinAvatar chain={BlockchainCode.ETH}/>
-      <CoinAvatar chain={"USD"}/>
-      <CoinAvatar chain={"USDT"}/>
-      <CoinAvatar chain={"DAI"}/>
+      <CoinAvatar blockchain={BlockchainCode.BTC}/>
+      <CoinAvatar blockchain={BlockchainCode.ETC}/>
+      <CoinAvatar blockchain={BlockchainCode.ETH}/>
+      <CoinAvatar blockchain={BlockchainCode.Goerli}/>
+      <CoinAvatar blockchain={BlockchainCode.TestBTC}/>
     </React.Fragment>
   ));

@@ -267,6 +267,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       <div className={styles.progress}>
         <ProgressPie progress={Math.min(100, (100 / Confirmations[blockchainCode]) * confirmations)}>
           <CoinAvatar
+            blockchain={blockchainCode}
             className={classNames(
               styles.progressStatus,
               tx.status === Status.OK
@@ -275,7 +276,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 ? styles.progressStatusFail
                 : styles.progressStatusUnknown,
             )}
-            chain={blockchainCode}
           />
         </ProgressPie>
       </div>

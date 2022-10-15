@@ -109,7 +109,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <CoinAvatar chain={blockchainCode} />
+        <CoinAvatar blockchain={blockchainCode} />
       </div>
       <div className={styles.account}>
         <Typography variant="body1">{label ?? currentAddress ?? address}</Typography>

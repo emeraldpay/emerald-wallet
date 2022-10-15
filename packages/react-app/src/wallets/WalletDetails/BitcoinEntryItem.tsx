@@ -64,7 +64,7 @@ const Component: React.FC<StateProps & OwnProps> = ({ balance, blockchainCode })
   return (
     <div className={styles.container}>
       <div className={styles.icon}>
-        <CoinAvatar chain={blockchainCode} />
+        <CoinAvatar blockchain={blockchainCode} />
       </div>
       <div className={styles.title}>
         <Typography>{blockchain.getTitle()}</Typography>

@@ -26,7 +26,7 @@ const Component = (({blockchain, tx}: Props & Actions & OwnProps) => {
 
   return <Grid container={true}>
     <Grid item={true} xs={1}>
-      <CoinAvatar chain={blockchain} center={true}/>
+      <CoinAvatar blockchain={blockchain} center={true}/>
     </Grid>
     <Grid item={true} xs={11}>
       <Typography variant={"h5"}>

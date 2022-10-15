@@ -59,7 +59,7 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
                 >
                   <ListItemAvatar>
                     <ListItemIcon>
-                      <CoinAvatar chain={b.code}/>
+                      <CoinAvatar blockchain={b.code}/>
                     </ListItemIcon>
                   </ListItemAvatar>
                   <ListItemText

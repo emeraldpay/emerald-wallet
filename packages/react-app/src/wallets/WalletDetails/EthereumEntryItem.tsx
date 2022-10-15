@@ -131,7 +131,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   ) : (
     <div className={styles.container}>
       <div className={styles.icon}>
-        <CoinAvatar chain={blockchainCode} />
+        <CoinAvatar blockchain={blockchainCode} />
       </div>
       <div className={styles.title}>
         <Typography>{blockchain.getTitle()}</Typography>

@@ -1,37 +1,25 @@
-import { accounts, BalanceValueConverted, IState } from '@emeraldwallet/store';
+import { AnyCoinCode, CurrencyAmount } from '@emeraldwallet/core';
+import { BalanceValueConverted, IState, accounts } from '@emeraldwallet/store';
+import { connect } from 'react-redux';
 import TotalButton from './TotalButton';
-import {connect} from 'react-redux';
-import {CurrencyAmount} from "@emeraldwallet/core";
+import { FiatCurrencies, StateProps } from './TotalButton/TotalButton';
 
-export default connect<any, any, any, IState>(
-  (state, ownProps) => {
-    // Sum of balances of all known accounts.
-    const byChain: any[] = [];
+export default connect<StateProps, {}, {}, IState>((state) => {
+  const balances = accounts.selectors.allBalances(state);
+  const total = accounts.selectors.fiatTotalBalance(state, balances);
 
-    const allAssets = accounts.selectors.allBalances(state);
-    const totalBalance = accounts.selectors.fiatTotalBalance(state, allAssets);
-    const total = typeof totalBalance === 'undefined'
-      ? new CurrencyAmount(0, state.settings.localeCurrency) : totalBalance.balance;
-    const fiatCurrency = typeof totalBalance === 'undefined'
-      ? '' : totalBalance.balance.units.top.code;
+  const assets = accounts.selectors.aggregateByAsset(balances);
+  const summary = accounts.selectors.withFiatConversion(state, assets);
 
-    const aggregatedAssets = accounts.selectors.aggregateByAsset(allAssets);
-    const assetsSummary = accounts.selectors.withFiatConversion(state, aggregatedAssets);
+  const fiatCurrencies: FiatCurrencies[] = summary.map((value: BalanceValueConverted) => ({
+    fiatAmount: value.converted.balance,
+    fiatRate: value.rate,
+    token: value.source.balance.units.top.code as AnyCoinCode,
+    total: value.source.balance,
+  }));
 
-    assetsSummary.forEach((value: BalanceValueConverted) => {
-      byChain.push({
-        token: value.source.balance.units.top.code,
-        total: value.source.balance,
-        fiatRate: value.rate,
-        fiatAmount: value.converted.balance
-      });
-    });
-
-    return {
-      fiatCurrency,
-      byChain,
-      total
-    };
-  },
-  null
-)(TotalButton);
+  return {
+    fiatCurrencies,
+    totalBalance: total?.balance ?? new CurrencyAmount(0, state.settings.localeCurrency),
+  };
+})(TotalButton);
