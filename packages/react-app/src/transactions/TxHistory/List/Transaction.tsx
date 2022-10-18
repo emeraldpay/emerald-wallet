@@ -303,6 +303,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
               size="small"
               value={label}
               onChange={({ target: { value } }) => setLabel(value)}
+              onKeyDown={({ key }) => key === 'Enter' && onSaveLabel()}
             />
           ) : (
             <>

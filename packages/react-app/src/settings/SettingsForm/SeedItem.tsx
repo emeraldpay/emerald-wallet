@@ -147,6 +147,7 @@ const SeedItem: React.FC<OwnProps> = ({ seed, updateSeed }) => {
             size="small"
             value={label}
             onChange={({ target: { value } }) => setLabel(value)}
+            onKeyDown={({ key }) => key === 'Enter' && onSeedUpdate()}
           />
         ) : (
           <div className={styles.seedLabel}>
