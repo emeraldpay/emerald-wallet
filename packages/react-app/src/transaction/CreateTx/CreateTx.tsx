@@ -1,6 +1,13 @@
 import { BigAmount, Unit } from '@emeraldpay/bigamount';
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, amountFactory, workflow } from '@emeraldwallet/core';
+import { Wei, WeiAny } from '@emeraldpay/bigamount-crypto';
+import {
+  AnyCoinCode,
+  AnyTokenCode,
+  BlockchainCode,
+  amountFactory,
+  isAnyTokenCode,
+  workflow,
+} from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
@@ -66,7 +73,9 @@ export interface Props {
   tokenSymbols: string[];
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   txFeeToken: string;
+  getBalance(address: string): WeiAny;
   getBalancesByAddress?(address: string): string[];
+  getTokenBalanceForAddress(address: string, token: AnyCoinCode): BigAmount;
   onCancel?(): void;
   onChangeAmount?(amount: BigAmount): void;
   onChangeFrom?(from: string): void;
@@ -133,6 +142,20 @@ class CreateTransaction extends React.Component<Props, State> {
     return gasPrice.isZero() || ((validate ?? true) && this.props.tx.validate() !== ValidationResult.OK);
   };
 
+  public getBalanceByToken = (token: string): BigAmount => {
+    const { tx, getBalance, getTokenBalanceForAddress } = this.props;
+
+    if (tx.from == null) {
+      return amountFactory(tx.blockchain)(0);
+    }
+
+    if (isAnyTokenCode(token.toUpperCase())) {
+      return getTokenBalanceForAddress(tx.from, token as AnyTokenCode);
+    }
+
+    return getBalance(tx.from);
+  };
+
   public render(): React.ReactElement {
     const {
       chain,
@@ -193,12 +216,13 @@ class CreateTransaction extends React.Component<Props, State> {
         </FormFieldWrapper>
         <FormFieldWrapper>
           <TokenField
-            onChangeToken={onChangeToken}
+            balance={tx.getTotalBalance()}
+            fiatBalance={fiatBalance}
+            fiatCurrency={currency}
             selectedToken={token}
             tokenSymbols={tokenSymbols}
-            balance={tx.getTotalBalance()}
-            fiatCurrency={currency}
-            fiatBalance={fiatBalance}
+            getBalanceByToken={this.getBalanceByToken}
+            onChangeToken={onChangeToken}
           />
         </FormFieldWrapper>
         <FormFieldWrapper>

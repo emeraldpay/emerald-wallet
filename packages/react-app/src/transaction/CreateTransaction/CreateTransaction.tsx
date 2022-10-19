@@ -431,7 +431,9 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onMaxClicked={this.onMaxClicked}
             onSetMaxGasPrice={this.onSetMaxGasPrice}
             onSetPriorityGasPrice={this.onSetPriorityGasPrice}
+            getBalance={this.props.getBalance}
             getBalancesByAddress={this.props.getBalancesByAddress}
+            getTokenBalanceForAddress={this.props.getTokenBalanceForAddress}
           />
         );
       case PAGES.SIGN:
