@@ -87,10 +87,6 @@ export default function (window: BrowserWindow, options: MenuOptions): MenuItemC
       ],
     },
     {
-      label: '&Wallets',
-      submenu: walletsMenu,
-    },
-    {
       label: 'Edit',
       submenu: [
         {
@@ -125,6 +121,10 @@ export default function (window: BrowserWindow, options: MenuOptions): MenuItemC
     {
       label: '&View',
       submenu: viewMenu,
+    },
+    {
+      label: '&Wallets',
+      submenu: walletsMenu,
     },
     {
       label: '&Help',
