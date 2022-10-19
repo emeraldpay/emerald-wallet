@@ -97,7 +97,17 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
 }) => {
   const styles = useStyles();
 
+  const currentWallet = React.useRef(walletId);
+
   const [tab, setTab] = React.useState(initialTab ?? WalletTabs.BALANCE);
+
+  React.useEffect(() => {
+    if (currentWallet.current !== walletId) {
+      currentWallet.current = walletId;
+
+      setTab(WalletTabs.BALANCE);
+    }
+  }, [walletId]);
 
   React.useEffect(() => {
     (async () => {

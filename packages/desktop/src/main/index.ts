@@ -1,19 +1,20 @@
-import { enable as remoteEnable, initialize as initRemote } from '@electron/remote/main';
+import { join as joinPath, resolve as resolvePath } from 'path';
+import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
 import {
   Application,
+  LocalConnector,
+  MainWindowOptions,
+  Settings,
   assertSingletonWindow,
   getMainWindow,
-  LocalConnector,
   protocol,
-  Settings,
 } from '@emeraldwallet/electron-app';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
 import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
-import { join as joinPath, resolve as resolvePath } from 'path';
-import gitVersion from '../../gitversion.json';
 import { DevelopmentMode, ProductionMode, sendMode } from './utils/api-modes';
+import gitVersion from '../../gitversion.json';
 
 const { startProtocolHandler } = protocol;
 
@@ -59,12 +60,12 @@ app.on('ready', () => {
     chromeVer: process.versions.chrome,
   };
 
-  const options = {
+  const options: MainWindowOptions = {
+    isDevelopMode,
     aboutWndPath: resolvePath(__dirname, '../renderer/about.html'),
     appIconPath: resolvePath(__dirname, '../../resources/icon.png'),
     mainWndPath: resolvePath(__dirname, '../renderer/index.html'),
     logFile: logger.transports.file.getFile().path,
-    openDevTools: isDevelopMode,
   };
 
   const application = new Application(settings, parameters);
@@ -85,6 +86,8 @@ app.on('ready', () => {
 
   const vault = new LocalConnector(dataDir ? resolvePath(joinPath(dataDir, 'vault')) : null);
 
+  const vaultProvider = vault.getProvider();
+
   logger.info('Setup Server connect');
 
   const serverConnect = new ServerConnect(parameters.version, parameters.locale, logger, apiAccess.blockchainClient);
@@ -97,7 +100,7 @@ app.on('ready', () => {
 
   logger.info('Create main window');
 
-  const { webContents } = getMainWindow(application, options);
+  const { webContents } = getMainWindow(application, vaultProvider, logger, options);
 
   remoteEnable(webContents);
 
@@ -105,14 +108,14 @@ app.on('ready', () => {
 
   const persistentState = new PersistentStateImpl(resolvePath(joinPath(dataDir, 'persistentState')));
 
-  application.run(webContents, apiAccess, apiMode, persistentState, vault.getProvider(), rpcConnections);
+  application.run(webContents, apiAccess, apiMode, persistentState, vaultProvider, rpcConnections);
 
   let initialized = false;
 
   ipcMain.on('emerald-ready', () => {
     logger.info('Emerald app launched');
 
-    const { webContents } = getMainWindow(application, options);
+    const { webContents } = getMainWindow(application, vaultProvider, logger, options);
 
     if (webContents != null) {
       try {
@@ -130,7 +133,7 @@ app.on('ready', () => {
   });
 
   app.on('activate', () => {
-    getMainWindow(application, options);
+    getMainWindow(application, vaultProvider, logger, options);
 
     application.reconnect();
   });
