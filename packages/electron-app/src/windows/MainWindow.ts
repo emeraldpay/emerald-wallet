@@ -1,17 +1,40 @@
-import { BrowserWindow, Menu, shell } from 'electron';
-import Application from '../application/Application';
-import darwinMenu from '../menus/darwin';
-import winLinuxMenu from '../menus/win-linux';
 import * as url from 'url';
+import { Wallet } from '@emeraldpay/emerald-vault-core';
+import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
+import { BrowserWindow, Menu, ipcMain, shell } from 'electron';
+import { ElectronLog } from 'electron-log';
+import createMainMenu from './MainMenu';
+import Application from '../application/Application';
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+export interface MainWindowOptions {
+  aboutWndPath: string;
+  appIconPath: string;
+  mainWndPath: string;
+  isDevelopMode: boolean;
+  logFile: string;
+}
+
+export interface MenuOptions {
+  isDevelopMode: boolean;
+  wallets: Wallet[];
+  onAbout(): void;
+  onOpenLog(): void;
+}
+
 let mainWindow: BrowserWindow | null;
-let menu;
+let menu: Menu | null;
 
-const createWindow = (app: Application, options: any): BrowserWindow => {
-  // Create the browser window.
-  const win = new BrowserWindow({
+export function getMainWindow(
+  app: Application,
+  vault: IEmeraldVault,
+  logger: ElectronLog,
+  options: MainWindowOptions,
+): BrowserWindow {
+  if (mainWindow) {
+    return mainWindow;
+  }
+
+  const window = new BrowserWindow({
     show: false,
     width: 1200,
     height: 720,
@@ -22,56 +45,60 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-    }
+    },
   });
 
-  // and load the index.html of the app.
-  win.loadURL(url.format({
-    pathname: options.mainWndPath,
-    protocol: 'file:',
-    slashes: true
-  }));
+  const { isDevelopMode } = options;
 
-  // Open the DevTools.
-  if (options.openDevTools) {
-    win.webContents.openDevTools();
-  }
+  const setupMainMenu = (): void => {
+    vault.listWallets().then((wallets) => {
+      const menuOptions: MenuOptions = {
+        isDevelopMode,
+        wallets,
+        onAbout() {
+          app.showAbout();
+        },
+        onOpenLog() {
+          shell.openPath(options.logFile).catch(({ message }) => logger.error(message));
+        },
+      };
 
-  const menuHandlers = {
-    onAbout: () => {
-      app.showAbout();
-      // createAboutPage(options);
-    },
-    onOpenLog: () => {
-      shell.openPath(options.logFile);
-    }
+      menu = Menu.buildFromTemplate(createMainMenu(window, menuOptions));
+
+      Menu.setApplicationMenu(menu);
+      window.setMenu(menu);
+    });
   };
 
-  // Menu
-  if (process.platform === 'darwin') {
-    menu = Menu.buildFromTemplate(darwinMenu(win, menuHandlers));
-  } else {
-    menu = Menu.buildFromTemplate(winLinuxMenu(win, menuHandlers));
-  }
-  Menu.setApplicationMenu(menu);
-  win.setMenu(menu);
-  return win;
-};
+  setupMainMenu();
 
-export function getMainWindow (app: Application, options: any): BrowserWindow {
-  if (mainWindow) {
-    return mainWindow;
+  ipcMain.handle('vault/updateMainMenu', setupMainMenu);
+
+  window
+    .loadURL(
+      url.format({
+        pathname: options.mainWndPath,
+        protocol: 'file:',
+        slashes: true,
+      }),
+    )
+    .catch(({ message }) => logger.error(message));
+
+  app.setWebContents(window.webContents);
+
+  if (isDevelopMode) {
+    window.webContents.openDevTools();
   }
-  mainWindow = createWindow(app, options);
-  app.setWebContents(mainWindow.webContents);
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+
+  window.on('closed', () => {
     mainWindow = null;
   });
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-  })
-  return mainWindow;
+
+  window.once('ready-to-show', () => {
+    window?.show();
+  });
+
+  mainWindow = window;
+
+  return window;
 }
