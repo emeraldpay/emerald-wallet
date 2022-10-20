@@ -1,22 +1,12 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { formatAmount } from '@emeraldwallet/core';
-import { MenuItem, TextField, createStyles } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { ListItemText, MenuItem, StyleRules, TextField, Theme, createStyles } from '@material-ui/core';
+import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import FormLabel from '../FormLabel';
 
-interface Props {
-  balance?: BigAmount;
-  classes?: any;
-  fiatBalance?: string;
-  fiatCurrency?: string;
-  selectedToken: string;
-  tokenSymbols: string[];
-  onChangeToken?: any;
-}
-
-const styles = (theme?: any): Record<string, any> =>
+const styles = (theme: Theme): StyleRules =>
   createStyles({
     balance: {
       color: theme.palette && theme.palette.text.secondary,
@@ -27,25 +17,38 @@ const styles = (theme?: any): Record<string, any> =>
     },
   });
 
-export class TokenField extends React.Component<Props> {
-  public onChangeToken = (event: any): void => {
-    if (this.props.onChangeToken) {
-      this.props.onChangeToken(event.target.value);
-    }
+interface Props {
+  balance?: BigAmount;
+  fiatBalance?: string;
+  fiatCurrency?: string;
+  selectedToken: string;
+  tokenSymbols: string[];
+  getBalanceByToken(token: string): BigAmount;
+  onChangeToken?(token: string): void;
+}
+
+export class TokenField extends React.Component<Props & WithStyles<typeof styles>> {
+  public onChangeToken = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+    this.props.onChangeToken?.(value);
   };
 
   public render(): ReactElement {
-    const { classes, selectedToken, balance } = this.props;
+    const { classes, selectedToken, balance, getBalanceByToken } = this.props;
 
     const tokenSymbols = this.props.tokenSymbols ?? [];
 
     return (
-      <React.Fragment>
+      <>
         <FormLabel>Token</FormLabel>
-        <TextField select={true} value={selectedToken} onChange={this.onChangeToken}>
+        <TextField
+          select
+          value={selectedToken}
+          onChange={this.onChangeToken}
+          SelectProps={{ renderValue: (value) => <>{value}</> }}
+        >
           {tokenSymbols.map((symbol) => (
             <MenuItem key={symbol} value={symbol}>
-              {symbol}
+              <ListItemText primary={symbol} secondary={formatAmount(getBalanceByToken(symbol))} />
             </MenuItem>
           ))}
         </TextField>
@@ -53,7 +56,7 @@ export class TokenField extends React.Component<Props> {
           {balance == null ? '?' : formatAmount(balance)}
           {` / ${this.props.fiatBalance} ${this.props.fiatCurrency}`}
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }
