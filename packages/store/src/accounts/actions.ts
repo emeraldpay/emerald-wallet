@@ -239,6 +239,7 @@ export function exportKeyFile(accountId: EntryId, password: string): any {
 export function updateWallet(walletId: Uuid, name: string): Dispatched<IUpdateWalletAction> {
   return async (dispatch: any, getState, extra) => {
     const result = await extra.api.vault.setWalletLabel(walletId, name);
+    await ipcRenderer.invoke('vault/updateMainMenu');
     if (result) {
       dispatch({
         type: ActionTypes.WALLET_UPDATED,

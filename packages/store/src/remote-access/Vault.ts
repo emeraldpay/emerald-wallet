@@ -16,7 +16,8 @@ import {
   SeedReference,
   SignedTx,
   UnsignedTx,
-  Uuid, Wallet,
+  Uuid,
+  Wallet,
 } from '@emeraldpay/emerald-vault-core';
 import { ipcRenderer } from 'electron';
 
@@ -113,7 +114,9 @@ class Vault implements IEmeraldVault {
     // return ipcRenderer.invoke(PREFIX + "setState", state);
   }
 
-  setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
+  async setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
+    await ipcRenderer.invoke(PREFIX + 'updateMainMenu');
+
     return ipcRenderer.invoke(PREFIX + 'setWalletLabel', walletId, label);
   }
 
