@@ -1,4 +1,4 @@
-import { Blockchains, isBitcoin, Logger } from '@emeraldwallet/core';
+import { Blockchains, Logger, isBitcoin } from '@emeraldwallet/core';
 import { mergeAddress } from './reducerUtil';
 import {
   ActionTypes,
@@ -39,8 +39,10 @@ function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreview
 
       try {
         newState = mergeAddress(newState, update);
-      } catch (e) {
-        log.warn('Failed to set new address. ' + e.message);
+      } catch (exception) {
+        if (exception instanceof Error) {
+          log.warn('Failed to set new address. ' + exception.message);
+        }
       }
     });
   });
@@ -58,8 +60,10 @@ function onSetBalance(state: IHDPreviewState, action: ISetBalance): IHDPreviewSt
 
   try {
     return mergeAddress(state, update);
-  } catch (e) {
-    log.warn('Trying to set balance for unknown address. ' + e.message);
+  } catch (exception) {
+    if (exception instanceof Error) {
+      log.warn('Trying to set balance for unknown address. ' + exception.message);
+    }
   }
 
   return state;

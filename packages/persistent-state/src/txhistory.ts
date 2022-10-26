@@ -1,5 +1,6 @@
+import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
 import { PersistentState } from '@emeraldwallet/core';
-import { PersistentStateImpl, createDateReviver, neonToPromise } from './api';
+import { PersistentStateImpl, createDateReviver } from './api';
 
 /**
  * Manage Transaction History
@@ -12,59 +13,35 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
   }
 
   submit(tx: PersistentState.Transaction): Promise<PersistentState.Transaction> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.txhistory_submit(
-          JSON.stringify(tx),
-          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp']))
-        );
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return neonFrameHandlerCall(
+      this.manager.addon,
+      'txhistory_submit',
+      [JSON.stringify(tx)],
+      createDateReviver(['sinceTimestamp', 'confirmTimestamp']),
+    );
   }
 
   remove(blockchain: number, txid: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.txhistory_remove(blockchain, txid, neonToPromise(resolve, reject));
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_remove', [blockchain, txid]);
   }
 
-  query(filter?: PersistentState.TxHistoryFilter, page?: PersistentState.PageQuery): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.txhistory_query(
-          JSON.stringify(filter),
-          JSON.stringify(page),
-          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp', 'block.timestamp'])),
-        );
-      } catch (e) {
-        reject(e);
-      }
-    });
+  query(
+    filter?: PersistentState.TxHistoryFilter,
+    page?: PersistentState.PageQuery,
+  ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+    return neonFrameHandlerCall(
+      this.manager.addon,
+      'txhistory_query',
+      [JSON.stringify(filter), JSON.stringify(page)],
+      createDateReviver(['sinceTimestamp', 'confirmTimestamp', 'block.timestamp']),
+    );
   }
 
   getCursor(target: string): Promise<string | null> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.txhistory_get_cursor(target, neonToPromise(resolve, reject));
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_get_cursor', [target]);
   }
 
   setCursor(target: string, cursor: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.txhistory_set_cursor(target, cursor, neonToPromise(resolve, reject));
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_set_cursor', [target, cursor]);
   }
 }

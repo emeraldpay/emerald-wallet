@@ -13,23 +13,24 @@
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
-    "@emeraldpay/api": "0.3.0-alpha.2",
-    "@emeraldpay/api-node": "0.3.0-alpha.2",
+    "@emeraldpay/api": "*",
+    "@emeraldpay/api-node": "*",
     "@emeraldpay/bigamount": "^0.4.1",
     "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldwallet/core": "^2.8.0-dev",
     "@emeraldwallet/store": "^2.8.0-dev",
-    "@grpc/grpc-js": "^1.5.1",
-    "google-protobuf": "^3.10.0",
-    "text-encoding": "0.7.0"
+    "@grpc/grpc-js": "^1.7.3",
+    "google-protobuf": "^3.21.2",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
-    "@types/node": "16.11.22",
-    "@types/text-encoding": "0.0.35",
-    "jest": "^27.5.0",
-    "rimraf": "^2.6.3",
-    "ts-jest": "^27.1.3"
+    "@types/jest": "^27.5.2",
+    "@types/node": "^18.11.5",
+    "@types/text-encoding": "^0.0.36",
+    "jest": "^27.5.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.4"
   },
   "jest": {
     "preset": "ts-jest",

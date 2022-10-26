@@ -1,4 +1,5 @@
-import { BlockchainCode, amountFactory } from '@emeraldwallet/core';
+import { BlockchainCode, EthereumTransactionType, amountFactory } from '@emeraldwallet/core';
+import { BroadcastData } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import '@testing-library/jest-dom/extend-expect';
@@ -10,7 +11,7 @@ import BroadcastTx from './BroadcastTx';
 import { createTestStore } from '../../_tests';
 
 describe('BroadcastTx', () => {
-  const data = {
+  const data: BroadcastData = {
     blockchain: BlockchainCode.Goerli,
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
     fee: amountFactory(BlockchainCode.Goerli)(1 ** 18),
@@ -28,6 +29,7 @@ describe('BroadcastTx', () => {
       nonce: '0x0',
       priorityGasPrice: new BigNumber('1000000000'),
       to: '0xe7f129f88b57e902cb18baeecd43f17449419ae2',
+      type: EthereumTransactionType.EIP1559,
       value: new BigNumber('50000000000000000'),
     },
     txId: '0xc9c924dd7f4ffe61d653718b204d6aae514736db227fdb0297b76cd8f3f1f203',

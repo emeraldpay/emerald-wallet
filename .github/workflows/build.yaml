@@ -29,8 +29,8 @@ jobs:
         with:
           python-version: 3.7
 
-      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-      - name: Setup GCP (windows)
+      # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Setup GCP (Windows)
         uses: google-github-actions/setup-gcloud@v0
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
@@ -40,7 +40,7 @@ jobs:
           export_default_credentials: true
         if: runner.os == 'Windows'
 
-      - name: Setup GCP (non windows)
+      - name: Setup GCP (non Windows)
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -82,7 +82,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16.x"
+          node-version: "18.x"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -91,34 +91,30 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install LLVM
-        run: choco install -y llvm
-        if: runner.os == 'Windows'
-
       - name: Install system libs
         run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
         if: runner.os == 'Linux'
 
       - name: Install Global JS components
-        run: npm install -g node-gyp codecov yarn lerna typescript
+        run: npm install -g codecov yarn
 
       - name: Install JS dependencies
-        run: yarn install --network-timeout 1000000
+        run: yarn install
 
       - name: Build
         run: yarn build:dist
         env:
           APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
 
-      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-      - name: Upload to GCP (windows)
+      # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Upload to GCP (Windows)
         run: |
           gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
-      - name: Upload to GCP (non windows)
+      - name: Upload to GCP (non Windows)
         run: |
           gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os != 'Windows'

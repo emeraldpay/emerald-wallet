@@ -155,7 +155,9 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
             return fee.fee;
         }
       } catch (exception) {
-        log.error('Cannot estimate fee: ', exception.message);
+        if (exception instanceof Error) {
+          log.error('Cannot estimate fee: ', exception.message);
+        }
       }
 
       return null;

@@ -38,7 +38,7 @@ interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-const dateFormatOptions = {
+const dateFormatOptions: Intl.DateTimeFormatOptions = {
   day: 'numeric',
   hour: 'numeric',
   minute: 'numeric',
@@ -98,7 +98,7 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
           ).join('\n---\n'),
           '-- Seeds --',
           (seeds != null && seeds.length > 0
-            ? seeds?.map((seed) =>
+            ? seeds.map((seed) =>
                 [
                   `ID: ${seed.id}`,
                   `Label: ${seed.label ?? 'Not set'}`,

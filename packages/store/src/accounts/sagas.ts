@@ -163,7 +163,9 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     yield put(hdAccountCreated(wallet.id, account));
     yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
   } catch (error) {
-    yield put(screen.actions.showError(error));
+    if (error instanceof Error) {
+      yield put(screen.actions.showError(error));
+    }
   }
 }
 

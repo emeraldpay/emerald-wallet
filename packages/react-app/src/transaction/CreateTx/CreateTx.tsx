@@ -1,5 +1,5 @@
 import { BigAmount, Unit } from '@emeraldpay/bigamount';
-import { Wei, WeiAny } from '@emeraldpay/bigamount-crypto';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import {
   AnyCoinCode,
   AnyTokenCode,
@@ -91,7 +91,6 @@ export interface Props {
 interface State {
   currentMaxGasPrice: number;
   currentPriorityGasPrice: number;
-  gasPriceUnit: Unit;
   useStdMaxGasPrice: boolean;
   useStdPriorityGasPrice: boolean;
 }
@@ -103,7 +102,6 @@ class CreateTransaction extends React.Component<Props, State> {
     this.state = {
       currentMaxGasPrice: 0,
       currentPriorityGasPrice: 0,
-      gasPriceUnit: Wei.ZERO.getOptimalUnit(),
       useStdMaxGasPrice: true,
       useStdPriorityGasPrice: true,
     };
@@ -124,7 +122,6 @@ class CreateTransaction extends React.Component<Props, State> {
       const gasPriceUnit = stdMaxGasPrice.getOptimalUnit();
 
       this.setState({
-        gasPriceUnit,
         currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
         currentPriorityGasPrice: stdPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
       });

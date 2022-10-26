@@ -287,7 +287,9 @@ export function broadcastTx({
 
       dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(transaction, null)));
     } catch (exception) {
-      dispatch(showError(exception));
+      if (exception instanceof Error) {
+        dispatch(showError(exception));
+      }
     }
   };
 }

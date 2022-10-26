@@ -6,22 +6,25 @@
   "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
-    "build:ts": "yarn clean && tsc -b",
-    "build:rs": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics",
-    "build:rs:release": "yarn run build:rs --release",
-    "build": "yarn run build:ts && yarn run build:rs:release",
+    "build": "yarn clean && yarn compile",
+    "build:native": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics --release",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
-    "cargo:update": "cd native && cargo update",
+    "compile": "tsc -b",
     "test": "jest --passWithNoTests"
   },
-  "dependencines": {
-    "@emeraldwallet/core": "^2.7.0-dev",
-    "@emeraldpay/emerald-vault-core": "^0.8.3"
+  "dependencies": {
+    "@emeraldpay/emerald-vault-core": "*",
+    "@emeraldpay/neon-frame": "^0.1.1",
+    "@emeraldwallet/core": "^2.8.0-dev"
   },
   "devDependencies": {
-    "cargo-cp-artifact": "^0.1",
-    "jest-serial-runner": "1.1.0",
-    "ts-jest": "^27.1.3"
+    "cargo-cp-artifact": "^0.1.6",
+    "jest": "^27.5.1",
+    "jest-runner": "^27.5.1",
+    "jest-serial-runner": "^1.2.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.4"
   },
   "jest": {
     "preset": "ts-jest",

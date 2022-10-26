@@ -8,19 +8,32 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
+    "build:native": "cd $PROJECT_CWD/node_modules/@emeraldpay/emerald-vault-native && yarn build:rs",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
+  "dependencies": {
+    "@emeraldpay/emerald-vault-core": "*",
+    "@emeraldpay/emerald-vault-native": "*",
+    "@emeraldwallet/core": "^2.8.0-dev",
+    "@emeraldwallet/erc20": "^2.8.0-dev",
+    "@emeraldwallet/services": "^2.8.0-dev",
+    "@emeraldwallet/store": "^2.8.0-dev",
+    "electron-log": "^4.4.8",
+    "electron-store": "^8.1.0",
+    "uuid": "^9.0.0"
+  },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
-    "@types/node": "16.11.22",
-    "@types/uuid": "^3.4.4",
-    "electron": "15.3.5",
-    "jest": "^27.5.0",
-    "rimraf": "^2.6.3",
-    "ts-jest": "^27.1.3"
+    "@types/jest": "^27.5.2",
+    "@types/node": "^18.11.5",
+    "@types/uuid": "^3.4.10",
+    "electron": "^21.2.0",
+    "jest": "^27.5.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.4"
   },
   "jest": {
     "preset": "ts-jest",
@@ -43,16 +56,5 @@
     "collectCoverageFrom": [
       "src/**/*.ts"
     ]
-  },
-  "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.9.0",
-    "@emeraldpay/emerald-vault-native": "^0.9.0",
-    "@emeraldwallet/core": "^2.8.0-dev",
-    "@emeraldwallet/erc20": "^2.8.0-dev",
-    "@emeraldwallet/services": "^2.8.0-dev",
-    "@emeraldwallet/store": "^2.8.0-dev",
-    "electron-log": "4.0.7",
-    "electron-store": "5.1.0",
-    "uuid": "^3.3.2"
   }
 }

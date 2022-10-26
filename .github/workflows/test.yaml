@@ -27,7 +27,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16.x"
+          node-version: "18.x"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -35,10 +35,6 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-
-      - name: Install LLVM
-        run: choco install -y llvm
-        if: runner.os == 'Windows'
 
       - name: Install system libs
         run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
@@ -49,11 +45,14 @@ jobs:
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
 
-      - name: Install Global JS componebts
-        run: npm install -g node-gyp codecov yarn lerna typescript
+      - name: Install Global JS components
+        run: npm install -g codecov yarn
 
       - name: Install JS dependencies
-        run: yarn install --network-timeout 1000000
+        run: yarn install
+
+      - name: Build native
+        run: yarn build:native
 
       - name: Build
         run: yarn build

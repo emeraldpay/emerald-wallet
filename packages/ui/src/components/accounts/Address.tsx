@@ -1,7 +1,6 @@
 import { Box, Typography, createStyles } from '@material-ui/core';
 import { ClassNameMap, makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import { clipboard } from 'electron';
 import * as React from 'react';
 import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../icons';
 import { Theme } from '../../index';
@@ -51,8 +50,8 @@ const Component: React.FC<OwnProps> = ({ address, classes, disableCopy, label, l
       ) : (
         disableCopy !== true && (
           <ToggledIconButton
-            onClick={() => {
-              clipboard.writeText(address);
+            onClick={async () => {
+              await navigator.clipboard.writeText(address);
 
               onCopy?.(address);
             }}
