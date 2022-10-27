@@ -15,19 +15,16 @@ jobs:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ "windows-latest", "macos-latest", "ubuntu-latest" ]
+        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
-
-      - name: Setup caches for Yarn
-        uses: c-hive/gha-yarn-cache@v1
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: '3.7'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (Windows)
@@ -53,14 +50,14 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.9
+        uses: gittools/actions/gitversion/setup@v0.9.14
         with:
           versionSpec: '5.x'
 
         # step id used as reference for output values
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.9
+        uses: gittools/actions/gitversion/execute@v0.9.14
 
       - name: Show Version
         run: |
@@ -80,9 +77,10 @@ jobs:
         run: cat packages/desktop/gitversion.json
 
       - name: Install Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: "18.x"
+          cache: 'yarn'
+          node-version: '18.x'
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -104,7 +102,7 @@ jobs:
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
+          APP_VERSION_GIT_TAG: '${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (Windows)
