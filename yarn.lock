@@ -3216,7 +3216,7 @@ __metadata:
   dependencies:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": "*"
+    "@emeraldpay/emerald-vault-core": ^0.9.0
     "@ethereumjs/common": ^3.0.1
     "@ethereumjs/tx": ^4.0.1
     "@types/bn.js": ^4.11.6
@@ -3280,8 +3280,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/electron-app@workspace:packages/electron-app"
   dependencies:
-    "@emeraldpay/emerald-vault-core": "*"
-    "@emeraldpay/emerald-vault-native": "*"
+    "@emeraldpay/emerald-vault-core": ^0.9.0
+    "@emeraldpay/emerald-vault-native": ^0.9.0
     "@emeraldwallet/core": ^2.8.0-dev
     "@emeraldwallet/erc20": ^2.8.0-dev
     "@emeraldwallet/services": ^2.8.0-dev
@@ -3319,7 +3319,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/persistent-state@workspace:packages/persistent-state"
   dependencies:
-    "@emeraldpay/emerald-vault-core": "*"
+    "@emeraldpay/emerald-vault-core": ^0.9.0
     "@emeraldpay/neon-frame": ^0.1.1
     "@emeraldwallet/core": ^2.8.0-dev
     cargo-cp-artifact: ^0.1.6
@@ -3340,7 +3340,7 @@ __metadata:
     "@electron/remote": ^2.0.8
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": "*"
+    "@emeraldpay/emerald-vault-core": ^0.9.0
     "@emeraldwallet/core": ^2.8.0-dev
     "@emeraldwallet/erc20": ^2.8.0-dev
     "@emeraldwallet/store": ^2.8.0-dev
@@ -3408,8 +3408,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/services@workspace:packages/services"
   dependencies:
-    "@emeraldpay/api": "*"
-    "@emeraldpay/api-node": "*"
+    "@emeraldpay/api": ^0.3.0-alpha.2
+    "@emeraldpay/api-node": ^0.3.0-alpha.2
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldwallet/core": ^2.8.0-dev
@@ -3433,7 +3433,7 @@ __metadata:
   dependencies:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": "*"
+    "@emeraldpay/emerald-vault-core": ^0.9.0
     "@emeraldwallet/core": ^2.8.0-dev
     "@emeraldwallet/erc20": ^2.8.0-dev
     "@types/color-hash": ^1.0.2
