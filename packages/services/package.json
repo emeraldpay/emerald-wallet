@@ -13,8 +13,8 @@
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
-    "@emeraldpay/api": "*",
-    "@emeraldpay/api-node": "*",
+    "@emeraldpay/api": "^0.3.0-alpha.2",
+    "@emeraldpay/api-node": "^0.3.0-alpha.2",
     "@emeraldpay/bigamount": "^0.4.1",
     "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldwallet/core": "^2.8.0-dev",

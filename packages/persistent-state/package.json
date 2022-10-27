@@ -13,7 +13,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "*",
+    "@emeraldpay/emerald-vault-core": "^0.9.0",
     "@emeraldpay/neon-frame": "^0.1.1",
     "@emeraldwallet/core": "^2.8.0-dev"
   },
