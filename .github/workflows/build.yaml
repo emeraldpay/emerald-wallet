@@ -96,7 +96,7 @@ jobs:
         run: npm install -g codecov yarn
 
       - name: Install JS dependencies
-        run: yarn install
+        run: yarn install --inline-builds
 
       - name: Build
         run: yarn build:dist
