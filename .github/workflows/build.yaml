@@ -96,7 +96,13 @@ jobs:
         run: npm install -g codecov yarn
 
       - name: Install JS dependencies
-        run: yarn install --inline-builds
+        run: yarn install
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: yarn-install-log
+          path: C:\Users\runneradmin\AppData\Local\Temp\xfs-*\build.log
+        if: runner.os == 'Windows'
 
       - name: Build
         run: yarn build:dist
