@@ -3251,7 +3251,7 @@ __metadata:
     copyfiles: ^2.4.1
     core-js: ^3.26.0
     css-loader: ^6.7.1
-    electron: ^21.2.0
+    electron: ^20.3.3
     electron-builder: ^23.6.0
     electron-log: ^4.4.8
     jest: ^27.5.1
@@ -3289,7 +3289,7 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/uuid": ^3.4.10
-    electron: ^21.2.0
+    electron: ^20.3.3
     electron-log: ^4.4.8
     electron-store: ^8.1.0
     jest: ^27.5.1
@@ -3369,7 +3369,7 @@ __metadata:
     classnames: ^2.3.2
     copyfiles: ^2.4.1
     dotenv-webpack: ^8.0.1
-    electron: ^21.2.0
+    electron: ^20.3.3
     electron-devtools-installer: ^3.2.0
     enzyme: ^3.11.0
     enzyme-adapter-react-16: ^1.15.6
@@ -3444,7 +3444,7 @@ __metadata:
     "@types/uuid": ^8.3.4
     bignumber.js: 8.0.2
     color-hash: ^2.0.1
-    electron: ^21.2.0
+    electron: ^20.3.3
     immer: ^9.0.16
     jest: ^27.5.1
     lodash: ^4.17.21
@@ -11426,16 +11426,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^21.2.0":
-  version: 21.2.0
-  resolution: "electron@npm:21.2.0"
+"electron@npm:^20.3.3":
+  version: 20.3.3
+  resolution: "electron@npm:20.3.3"
   dependencies:
     "@electron/get": ^1.14.1
     "@types/node": ^16.11.26
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 46a8285db5b5c574576f7f46d09cf08bd00a1d39537b46519072e4a54ec803542d75f14baf2aba4c7dffdbc09f19b1e6a1177c4f1584e8775e53f7a20ffb6821
+  checksum: 93afac6f5bcb6c707c6a805f54ed258be1b72a2eca980f7119a3afc32e3c8477a49da5e8321284f1ca25d8b1e189da145f6bc913bbe40dc38f91cd470184d771
   languageName: node
   linkType: hard
 
