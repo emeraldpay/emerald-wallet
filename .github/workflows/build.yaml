@@ -102,7 +102,7 @@ jobs:
         with:
           name: yarn-install-log
           path: C:\Users\runneradmin\AppData\Local\Temp\xfs-*\build.log
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && failure()
 
       - name: Build
         run: yarn build:dist
