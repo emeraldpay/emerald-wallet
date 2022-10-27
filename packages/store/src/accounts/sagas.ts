@@ -67,16 +67,24 @@ function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
 
   let wallets: Wallet[] = yield call(vault.listWallets);
 
-  wallets = wallets.map((wallet) => ({
-    ...wallet,
-    entries: wallet.entries.filter((entry) => {
-      try {
-        return typeof blockchainIdToCode(entry.blockchain) === 'string';
-      } catch (exception) {
-        return false;
+  wallets = wallets
+    .map((wallet) => ({
+      ...wallet,
+      entries: wallet.entries.filter((entry) => {
+        try {
+          return typeof blockchainIdToCode(entry.blockchain) === 'string';
+        } catch (exception) {
+          return false;
+        }
+      }),
+    }))
+    .sort((first, second) => {
+      if (first.createdAt === second.createdAt) {
+        return 0;
       }
-    }),
-  }));
+
+      return first.createdAt > second.createdAt ? 1 : -1;
+    });
 
   yield put(setWalletsAction(wallets));
   yield put(fetchErc20BalancesAction());
