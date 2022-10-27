@@ -54,7 +54,13 @@ export function getMainWindow(
     vault.listWallets().then((wallets) => {
       const menuOptions: MenuOptions = {
         isDevelopMode,
-        wallets,
+        wallets: wallets.sort((first, second) => {
+          if (first.createdAt === second.createdAt) {
+            return 0;
+          }
+
+          return first.createdAt > second.createdAt ? 1 : -1;
+        }),
         onAbout() {
           app.showAbout();
         },
