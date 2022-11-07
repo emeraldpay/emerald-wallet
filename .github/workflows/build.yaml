@@ -95,6 +95,12 @@ jobs:
       - name: Install Global JS components
         run: npm install -g codecov yarn
 
+      - name: Set cache folder for Electron
+        run: |
+          mkdir $HOME\electron_cache
+          echo "electron_config_cache=$HOME\electron_cache" >> $env:GITHUB_ENV
+        if: runner.os == 'Windows'
+
       - name: Install JS dependencies
         run: yarn install
 
