@@ -11,7 +11,7 @@ on:
       - master
 
 env:
-  force_no_cache=true
+  force_no_cache: 'true'
 
 jobs:
   test:
