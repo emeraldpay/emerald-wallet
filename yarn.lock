@@ -3289,7 +3289,6 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/uuid": ^3.4.10
-    electron: ^21.2.0
     electron-log: ^4.4.8
     electron-store: ^8.1.0
     jest: ^27.5.1
@@ -3297,6 +3296,8 @@ __metadata:
     ts-jest: ^27.1.5
     typescript: ^4.8.4
     uuid: ^9.0.0
+  peerDependencies:
+    electron: ^21.2.0
   languageName: unknown
   linkType: soft
 
@@ -3369,7 +3370,6 @@ __metadata:
     classnames: ^2.3.2
     copyfiles: ^2.4.1
     dotenv-webpack: ^8.0.1
-    electron: ^21.2.0
     electron-devtools-installer: ^3.2.0
     enzyme: ^3.11.0
     enzyme-adapter-react-16: ^1.15.6
@@ -3401,6 +3401,8 @@ __metadata:
     ts-node: ^10.9.1
     typescript: ^4.8.4
     webpack: ^5.74.0
+  peerDependencies:
+    electron: ^21.2.0
   languageName: unknown
   linkType: soft
 
@@ -3444,7 +3446,6 @@ __metadata:
     "@types/uuid": ^8.3.4
     bignumber.js: 8.0.2
     color-hash: ^2.0.1
-    electron: ^21.2.0
     immer: ^9.0.16
     jest: ^27.5.1
     lodash: ^4.17.21
@@ -3457,6 +3458,8 @@ __metadata:
     ts-jest: ^27.1.5
     typescript: ^4.8.4
     uuid: ^9.0.0
+  peerDependencies:
+    electron: ^21.2.0
   languageName: unknown
   linkType: soft
 
