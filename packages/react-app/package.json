@@ -13,8 +13,8 @@
     "resources": "copyfiles -u 1 src/**/*.png lib/",
     "storybook": "start-storybook -p 9001 -c .storybook --ci",
     "storybook:electron": "electron stories/electron_index.js",
-    "test": "jest --passWithNoTests",
-    "test:coverage": "jest --passWithNoTests --coverage && codecov"
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",

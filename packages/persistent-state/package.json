@@ -10,7 +10,8 @@
     "build:native": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics --release",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
-    "test": "jest --passWithNoTests"
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.9.0",

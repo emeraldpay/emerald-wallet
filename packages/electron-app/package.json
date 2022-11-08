@@ -10,9 +10,7 @@
     "build": "yarn clean && yarn compile",
     "build:native": "cd $PROJECT_CWD/node_modules/@emeraldpay/emerald-vault-native && yarn build:rs",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
-    "compile": "tsc -b",
-    "test": "jest --passWithNoTests",
-    "test:coverage": "jest --passWithNoTests --coverage && codecov"
+    "compile": "tsc -b"
   },
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.9.0",

@@ -9,8 +9,8 @@
     "build": "yarn clean && yarn compile",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
-    "test": "jest --passWithNoTests",
-    "test:coverage": "jest --coverage --passWithNoTests && codecov"
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "@emeraldpay/api": "^0.3.0-alpha.2",

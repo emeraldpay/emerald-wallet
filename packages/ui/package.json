@@ -11,7 +11,7 @@
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
     "storybook": "start-storybook -p 9001 -c .storybook",
-    "test": "jest --no-cache --env=jsdom",
+    "test": "jest --env=jsdom",
     "test:coverage": "jest --env=jsdom --coverage && codecov"
   },
   "dependencies": {

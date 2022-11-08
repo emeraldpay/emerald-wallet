@@ -45,7 +45,9 @@
     "compile": "tsc -b",
     "resources": "copyfiles resources/**/* app/",
     "start": "electron --trace-warnings .",
-    "start:dev": "NODE_ENV=development yarn start"
+    "start:dev": "NODE_ENV=development yarn start",
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",

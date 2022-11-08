@@ -9,8 +9,8 @@
     "build:native": "yarn workspaces foreach run build:native",
     "clean": "yarn workspaces foreach run clean",
     "clean:modules": "rimraf node_modules packages/*/node_modules",
-    "test": "yarn workspaces foreach run test -- --stream",
-    "test:coverage": "yarn workspaces foreach run test:coverage -- --stream --concurrency 1"
+    "test": "yarn workspaces foreach run test",
+    "test:coverage": "yarn workspaces foreach run test:coverage"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.40.1",
