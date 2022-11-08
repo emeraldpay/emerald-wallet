@@ -42,9 +42,6 @@
     "ts-jest": "^27.1.5",
     "typescript": "^4.8.4"
   },
-  "peerDependencies": {
-    "electron": "^21.2.0"
-  },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
