@@ -3355,6 +3355,7 @@ __metadata:
     "@testing-library/jest-dom": ^4.2.4
     "@testing-library/react": ^9.5.0
     "@types/classnames": ^2.3.1
+    "@types/enzyme": ^3.10.12
     "@types/jest": ^27.5.2
     "@types/luxon": ^3.0.2
     "@types/node": ^18.11.5
@@ -6077,7 +6078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cheerio@npm:^0.22.31":
+"@types/cheerio@npm:*, @types/cheerio@npm:^0.22.31":
   version: 0.22.31
   resolution: "@types/cheerio@npm:0.22.31"
   dependencies:
@@ -6115,6 +6116,16 @@ __metadata:
   dependencies:
     "@types/ms": "*"
   checksum: 0a7b89d8ed72526858f0b61c6fd81f477853e8c4415bb97f48b1b5545248d2ae389931680b94b393b993a7cfe893537a200647d93defe6d87159b96812305adc
+  languageName: node
+  linkType: hard
+
+"@types/enzyme@npm:^3.10.12":
+  version: 3.10.12
+  resolution: "@types/enzyme@npm:3.10.12"
+  dependencies:
+    "@types/cheerio": "*"
+    "@types/react": "*"
+  checksum: 356e9142566b68c9b324ae71a7b93f03512a1c009a1d337a25ce4f495590f3e79de08aa4a0016d6224cb228c27832d92b6d7d3276ba5962302c41d0577e8a912
   languageName: node
   linkType: hard
 
