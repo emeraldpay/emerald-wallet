@@ -71,7 +71,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "copyfiles": "^2.4.1",
     "css-loader": "^6.7.1",
-    "electron": "^21.2.0",
+    "electron": "21.2.2",
     "electron-builder": "^23.6.0",
     "jest": "^27.5.1",
     "node-notifier-cli": "^2.0.0",
@@ -87,9 +87,6 @@
   },
   "optionalDependencies": {
     "win-node-env": "^0.6.1"
-  },
-  "installConfig": {
-    "hoistingLimits": "workspaces"
   },
   "build": {
     "appId": "cash.emerald.desktop-wallet",

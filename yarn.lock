@@ -3251,7 +3251,7 @@ __metadata:
     copyfiles: ^2.4.1
     core-js: ^3.26.0
     css-loader: ^6.7.1
-    electron: ^21.2.0
+    electron: 21.2.2
     electron-builder: ^23.6.0
     electron-log: ^4.4.8
     jest: ^27.5.1
@@ -3289,6 +3289,7 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/uuid": ^3.4.10
+    electron: 21.2.2
     electron-log: ^4.4.8
     electron-store: ^8.1.0
     jest: ^27.5.1
@@ -3368,6 +3369,7 @@ __metadata:
     classnames: ^2.3.2
     copyfiles: ^2.4.1
     dotenv-webpack: ^8.0.1
+    electron: 21.2.2
     electron-devtools-installer: ^3.2.0
     enzyme: ^3.11.0
     enzyme-adapter-react-16: ^1.15.6
@@ -3442,6 +3444,7 @@ __metadata:
     "@types/uuid": ^8.3.4
     bignumber.js: 8.0.2
     color-hash: ^2.0.1
+    electron: 21.2.2
     immer: ^9.0.16
     jest: ^27.5.1
     lodash: ^4.17.21
@@ -11448,6 +11451,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron@npm:21.2.2":
+  version: 21.2.2
+  resolution: "electron@npm:21.2.2"
+  dependencies:
+    "@electron/get": ^1.14.1
+    "@types/node": ^16.11.26
+    extract-zip: ^2.0.1
+  bin:
+    electron: cli.js
+  checksum: 29f2671209b698a15def5dab205f543b6b7d0c6f93a455e0146ba7debd6d01d2bad628b82863668cb5074b08b6ab4e0a6c7e8531e1a265c08f4a94b45e98fbe5
+  languageName: node
+  linkType: hard
+
 "electron@npm:^17.1.0":
   version: 17.4.11
   resolution: "electron@npm:17.4.11"
@@ -11458,19 +11474,6 @@ __metadata:
   bin:
     electron: cli.js
   checksum: 2aad627183577d514ad79cb3f99eaa24e8acdba74e464eb62e699ebfe0ce1c12a7890ee5d6f2d5ab32daed0e449f9e161a21fb61841b3931438f215e1ad8099e
-  languageName: node
-  linkType: hard
-
-"electron@npm:^21.2.0":
-  version: 21.2.0
-  resolution: "electron@npm:21.2.0"
-  dependencies:
-    "@electron/get": ^1.14.1
-    "@types/node": ^16.11.26
-    extract-zip: ^2.0.1
-  bin:
-    electron: cli.js
-  checksum: 46a8285db5b5c574576f7f46d09cf08bd00a1d39537b46519072e4a54ec803542d75f14baf2aba4c7dffdbc09f19b1e6a1177c4f1584e8775e53f7a20ffb6821
   languageName: node
   linkType: hard
 

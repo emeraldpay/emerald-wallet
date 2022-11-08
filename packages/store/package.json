@@ -37,6 +37,7 @@
     "@types/node": "^18.11.5",
     "@types/redux-logger": "^3.0.9",
     "@types/uuid": "^8.3.4",
+    "electron": "21.2.2",
     "jest": "^27.5.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.5",

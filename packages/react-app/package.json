@@ -8,7 +8,6 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile && yarn resources",
-    "build:native": "cd $PROJECT_CWD/node_modules/@emeraldpay/emerald-vault-native && yarn build:rs",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
     "resources": "copyfiles -u 1 src/**/*.png lib/",
@@ -69,6 +68,7 @@
     "@types/sortablejs": "^1.15.0",
     "copyfiles": "^2.4.1",
     "dotenv-webpack": "^8.0.1",
+    "electron": "21.2.2",
     "electron-devtools-installer": "^3.2.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
