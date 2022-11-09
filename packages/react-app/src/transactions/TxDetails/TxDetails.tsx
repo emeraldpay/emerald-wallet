@@ -150,15 +150,15 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
               ))}
             </>
           )}
+          <br />
+          {txFee != null && (
+            <FormRow
+              leftColumn={<div className={classes.nameField}>Transaction Fee</div>}
+              rightColumn={<Typography>{formatAmount(txFee)}</Typography>}
+            />
+          )}
           {ethTx != null && (
             <>
-              <br />
-              {txFee && (
-                <FormRow
-                  leftColumn={<div className={classes.nameField}>Transaction Fee</div>}
-                  rightColumn={<Typography>{formatAmount(txFee)}</Typography>}
-                />
-              )}
               {ethTx.gasPrice == null ? (
                 <>
                   <FormRow

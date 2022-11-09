@@ -74,8 +74,8 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  onReceive: () => void;
-  onSend: () => void;
+  onReceive(event: React.MouseEvent): void;
+  onSend(event: React.MouseEvent): void;
 }
 
 const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -101,12 +101,13 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
       variant={'elevation'}
       elevation={current ? 3 : 0}
       className={styles.root}
+      onClick={onDetails}
       onMouseOver={() => setCurrent(true)}
       onMouseOut={() => setCurrent(false)}
     >
       <CardContent>
         <Grid container={true}>
-          <Grid item={true} xs={2} className={styles.walletIcon} onClick={onDetails}>
+          <Grid item={true} xs={2} className={styles.walletIcon}>
             <HashIcon value={'WALLET/' + wallet.id} size={100} />
           </Grid>
           <Grid item={true} xs={7} onClick={onDetails}>
@@ -150,10 +151,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return { total, assets };
   },
   (dispatch, ownProps) => ({
-    onReceive() {
+    onReceive(event) {
+      event.stopPropagation();
+
       dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.wallet.id));
     },
-    onSend() {
+    onSend(event) {
+      event.stopPropagation();
+
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.wallet.id, null, true));
     },
   }),
