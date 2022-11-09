@@ -71,7 +71,7 @@ const allCodes = [
 
 const allChains = allCodes.map((code) => Blockchains[code]);
 
-export function isValidChain(code: BlockchainCode): boolean {
+export function isValidChain(code: BlockchainCode | string): boolean {
   return Blockchains[code] != null;
 }
 
