@@ -17,7 +17,6 @@ limitations under the License.
 import { Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import { clipboard } from 'electron';
 import * as React from 'react';
 import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../../icons';
 import ToggledIconButton from '../ToggledIconButton';
@@ -65,7 +64,7 @@ const Address: React.FC<OwnProps> = ({ hideCopy, id, shortened }) => {
         <ToggledIconButton
           icon={<CloneIcon color="secondary" />}
           toggledIcon={<CheckCircle color="primary" />}
-          onClick={() => clipboard.writeText(id)}
+          onClick={() => navigator.clipboard.writeText(id)}
         />
       )}
     </div>

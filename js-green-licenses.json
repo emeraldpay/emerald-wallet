@@ -1,27 +1,19 @@
 {
   "greenLicenses": [
-    //SIL Open Font License
-    "OFL-1.1",
     "Apache-2.0",
-    "MIT",
+    "0BSD",
     "BSD-2-Clause",
     "BSD-3-Clause",
-    "MPL-2.0",
     "ISC",
-    "0BSD"
+    "MIT",
+    "MPL-2.0",
+    // SIL Open Font License
+    "OFL-1.1"
   ],
   "packageAllowlist": [
-    //MIT
-    "coinstring",
-    //MIT
+    // MIT
     "bs58",
-    //MIT
-    "buffers",
-    //CC
-    "bzip-deflate",
-    //MIT
-    "keybase-ecurve",
-    //CC-0, used by ethereum-cryptography
+    // CC-0, used by ethereum-cryptography
     "blakejs"
   ]
 }

@@ -15,22 +15,19 @@ jobs:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ "windows-latest", "macos-latest", "ubuntu-latest" ]
+        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
-
-      - name: Setup caches for Yarn
-        uses: c-hive/gha-yarn-cache@v1
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: '3.7'
 
-      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-      - name: Setup GCP (windows)
+      # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Setup GCP (Windows)
         uses: google-github-actions/setup-gcloud@v0
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
@@ -40,7 +37,7 @@ jobs:
           export_default_credentials: true
         if: runner.os == 'Windows'
 
-      - name: Setup GCP (non windows)
+      - name: Setup GCP (non Windows)
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -53,14 +50,14 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.9
+        uses: gittools/actions/gitversion/setup@v0.9.14
         with:
           versionSpec: '5.x'
 
         # step id used as reference for output values
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.9
+        uses: gittools/actions/gitversion/execute@v0.9.14
 
       - name: Show Version
         run: |
@@ -80,9 +77,9 @@ jobs:
         run: cat packages/desktop/gitversion.json
 
       - name: Install Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
+          node-version: '18.x'
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -91,34 +88,30 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install LLVM
-        run: choco install -y llvm
-        if: runner.os == 'Windows'
-
       - name: Install system libs
         run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
         if: runner.os == 'Linux'
 
       - name: Install Global JS components
-        run: npm install -g node-gyp codecov yarn lerna typescript
+        run: npm install -g codecov yarn
 
       - name: Install JS dependencies
-        run: yarn install --network-timeout 1000000
+        run: yarn install
 
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
+          APP_VERSION_GIT_TAG: '${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}'
 
-      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-      - name: Upload to GCP (windows)
+      # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Upload to GCP (Windows)
         run: |
           gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
-      - name: Upload to GCP (non windows)
+      - name: Upload to GCP (non Windows)
         run: |
           gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os != 'Windows'

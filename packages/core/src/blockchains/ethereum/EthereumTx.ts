@@ -1,7 +1,7 @@
-import Common, { Hardfork } from '@ethereumjs/common';
+import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
-import { ITransaction } from '../ITransaction';
 import { EthereumAddress } from './Address';
+import { ITransaction } from '../ITransaction';
 
 class EthereumTx implements ITransaction {
   static eip1559mark = Buffer.from('02', 'hex');
@@ -12,7 +12,7 @@ class EthereumTx implements ITransaction {
     this.internalTx = tx;
   }
 
-  public static fromRaw(hex: string, chainId: any): ITransaction {
+  public static fromRaw(hex: string, chainId: number): ITransaction {
     const data = Buffer.from(hex.slice(2), 'hex');
 
     let hardfork: Hardfork | undefined = undefined;
@@ -56,7 +56,7 @@ class EthereumTx implements ITransaction {
   }
 
   public getValue(): string {
-    return '0x' + this.internalTx.value.toString('hex');
+    return '0x' + this.internalTx.value.toString(16);
   }
 
   public getData(): string {
@@ -64,7 +64,7 @@ class EthereumTx implements ITransaction {
   }
 
   public getNonce(): number {
-    return parseInt(this.internalTx.nonce.toString('hex'), 16);
+    return parseInt(this.internalTx.nonce.toString(10), 10);
   }
 }
 

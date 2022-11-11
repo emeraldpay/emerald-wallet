@@ -1,5 +1,6 @@
-import {PersistentState} from "@emeraldwallet/core";
-import {PersistentStateImpl, neonToPromise} from "./api";
+import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
+import { PersistentState } from '@emeraldwallet/core';
+import { PersistentStateImpl } from './api';
 
 /**
  * Manage XPub Position
@@ -12,16 +13,7 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
   }
 
   getNext(xpub: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.xpubpos_get_next(
-          xpub,
-          neonToPromise(resolve, reject)
-        );
-      } catch (e) {
-        reject(e)
-      }
-    });
+    return neonFrameHandlerCall(this.manager.addon, 'xpubpos_get_next', [xpub]);
   }
 
   setNextAddressAtLeast(xpub: string, pos: number): Promise<void> {
@@ -29,16 +21,6 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
   }
 
   setCurrentAddressAt(xpub: string, pos: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.manager.addon.xpubpos_set_current(
-          xpub, pos,
-          neonToPromise(resolve, reject)
-        );
-      } catch (e) {
-        reject(e)
-      }
-    });
+    return neonFrameHandlerCall(this.manager.addon, 'xpubpos_set_current', [xpub, pos]);
   }
-
 }

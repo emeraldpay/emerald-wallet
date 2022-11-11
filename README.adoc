@@ -23,7 +23,7 @@ Features:
 
 The project is based on
 
-- Electron + NodeJS (the required version of NodeJS >= `v12`.)
+- Electron + NodeJS (the required version of NodeJS >= `v18`.)
 - Typescript
 - React + Redux
 - Rust for some modules
@@ -39,16 +39,19 @@ You need `libudev`, `libusb-1.0-0`, `libusb-1.0-0-dev` installed on Linux
 sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev
 ----
 
+==== Install Rust
+
+Since the Emerald Wallet now contains a code written in Rust you need to have Rust compiler installed,
+please follow instructions at https://rustup.rs
+
+You may also need to have Visual Studio Build Tools with "Desktop development with C++" component,
+install it from https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+
 ==== Install NPM packages
 
 .Install development tools
 ----
-npm install -g node-gyp lerna yarn
-----
-
-.For windows run also:
-----
-npm install -g npm windows-build-tools@4.0.0
+npm install -g yarn
 ----
 
 .Install dependencies:
@@ -60,7 +63,8 @@ yarn install
 
 .Build sources
 ----
-yarn run build
+yarn build:native
+yarn build
 ----
 
 Optionally you can build desktop app with automatic rebuild on change.
@@ -68,20 +72,15 @@ Please note that it rebuilds only main Desktop module, and you have responsibili
 
 .Continuous rebuild of Desktop (optional):
 ----
-lerna run build:watch
+yarn build:watch
 ----
 
 .or
 ----
-yarn workspace @emeraldwallet/desktop run build:watch
+yarn workspace @emeraldwallet/desktop build:watch
 ----
 
 .Start Electron application:
-----
-lerna run start
-----
-
-.or
 ----
 yarn workspace @emeraldwallet/desktop start
 ----
@@ -92,33 +91,14 @@ yarn workspace @emeraldwallet/desktop start
 
 If you're facing some weird problem it makes sense to make a full cleanup and then rebuild everything from scratch.
 
-.To erase NPM modules (may be needed when you build under different NodeJS version):
-----
-yarn run clean:node_modules
-----
-
 .Erase compiled Javascript (it's also done automatically on `build`):
 ----
 yarn clean
 ----
 
-==== Emerald Vault module error
-
-Electron may show error, like:
-
-> _[emerald-vault-native] was compiled against a different Node.js version using NODE_MODULE_VERSION 64. This version of Node.js requires NODE_MODULE_VERSION 69. Please try re-compiling or re-installing the module (for instance, using npm rebuild or npm install)_
-
-At this case you'll need to recompile Emerald Vault for your platform and version of Electron.
-You will need to have Rust
-compiler and LLVM installed, please follow instructions on:
-
-- https://rustup.rs/
-- http://releases.llvm.org/download.html
-
-After installing Rust and LLVM run following to recompile the module:
+.To erase NPM modules (may be needed when you build under different NodeJS version):
 ----
-export RUSTFLAGS=-C target-feature=+crt-static
-npm run build:neon
+yarn run clean:modules
 ----
 
 === Logs

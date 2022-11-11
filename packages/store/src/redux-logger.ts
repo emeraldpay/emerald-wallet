@@ -1,6 +1,5 @@
+import ColorHash from 'color-hash';
 import { createLogger } from 'redux-logger';
-
-const ColorHash = require('color-hash');
 
 const colorHash = new ColorHash({
   lightness: [0.2, 0.3, 0.4, 0.5]
@@ -8,7 +7,7 @@ const colorHash = new ColorHash({
 
 const LOGGING_MAX_STATE_DEPTH = 5;
 
-const toJs = (state: any, depth: number = 0): any => {
+const toJs = (state: any, depth = 0): any => {
   if (depth >= LOGGING_MAX_STATE_DEPTH) {
     return state;
   }

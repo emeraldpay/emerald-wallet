@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { PersistentState } from '@emeraldwallet/core';
 import { AddressbookImpl } from './addressbook';
 import { TxHistoryImpl } from './txhistory';
 import { TxMetaStoreImpl } from './txmeta';
 import { XPubPositionImpl } from './xpubpos';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const addon = require('../index.node');
 
@@ -22,18 +23,7 @@ export type StatusFail = {
 
 export type Status<T> = StatusOk<T> | StatusFail;
 
-type PromiseCallback<T> = (value?: T) => void;
-// Neon Callback for Status<T>
-type NeonCallback<T> = (status: any) => void;
-
 type JsonReviver = (key: string, value: any) => any;
-
-function resolveStatus<T>(status: Status<T>, resolve: PromiseCallback<T>, reject: PromiseCallback<Error>): void {
-  if (!status.succeeded) {
-    return reject(new Error(status.error?.message ?? 'State Manager Error'));
-  }
-  resolve(status.result);
-}
 
 function recursiveDateFormatter(value: Record<string, any>, selectors: string[]): Record<string, any> | Date {
   const [selector, ...restSelectors] = selectors;
@@ -73,14 +63,6 @@ export function createDateReviver(names: string[]): JsonReviver {
   };
 }
 
-export function neonToPromise<T>(
-  resolve: PromiseCallback<T>,
-  reject: PromiseCallback<Error>,
-  reviver?: JsonReviver,
-): NeonCallback<T> {
-  return (status) => resolveStatus(JSON.parse(status ?? '{"succeeded": false}', reviver), resolve, reject);
-}
-
 export class PersistentStateImpl implements PersistentState.PersistentState {
   /**
    * Mapping to the Rust module through NAPI
@@ -89,11 +71,8 @@ export class PersistentStateImpl implements PersistentState.PersistentState {
   addon = addon;
 
   readonly txhistory: PersistentState.TxHistory = new TxHistoryImpl(this);
-
   readonly txmeta: PersistentState.TxMetaStore = new TxMetaStoreImpl(this);
-
   readonly addressbook: PersistentState.Addressbook = new AddressbookImpl(this);
-
   readonly xpubpos: PersistentState.XPubPosition = new XPubPositionImpl(this);
 
   /**

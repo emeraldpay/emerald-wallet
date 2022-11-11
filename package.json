@@ -2,34 +2,28 @@
   "name": "emerald-wallet",
   "private": true,
   "license": "Apache-2.0",
+  "packageManager": "yarn@3.2.4",
   "scripts": {
     "build": "yarn workspace @emeraldwallet/desktop run build",
-    "build:dist": "yarn workspace @emeraldwallet/desktop run build:dist",
-    "build:vault": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
-    "build:persistent-state": "yarn workspace @emeraldwallet/persistent-state run build:rs:release",
-    "clean": "lerna run clean --stream",
-    "clean:node_modules": "rimraf node_modules packages/*/node_modules",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "yarn build:persistent-state && yarn build:vault",
-    "prebuilt:vault": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
-    "test": "lerna run test --stream",
-    "test:coverage": "lerna run test:coverage --stream --concurrency 1"
+    "build:dist": "yarn build:native && yarn workspace @emeraldwallet/desktop run build:dist",
+    "build:native": "yarn workspaces foreach run build:native",
+    "clean": "yarn workspaces foreach run clean",
+    "clean:modules": "rimraf node_modules packages/*/node_modules",
+    "test": "yarn workspaces foreach run test",
+    "test:coverage": "yarn workspaces foreach run test:coverage"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
-    "electron-build-env": "0.2.0",
-    "eslint": "^7.0.0",
-    "eslint-import-resolver-typescript": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "eslint": "^8.26.0",
+    "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "lerna": "3.20.2",
-    "neon-cli": "0.10.1",
-    "node-pre-gyp": "^0.17.0",
-    "prettier": "^2.5.1",
-    "typescript": "3.9.10"
+    "neon-cli": "^0.10.1",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2"
   },
   "workspaces": [
     "packages/*"
@@ -38,7 +32,6 @@
     "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-v0.3.0-alpha.2.tgz",
     "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-node-v0.3.0-alpha.2.tgz",
     "@emeraldpay/emerald-vault-core": "https://artifacts.emerald.cash/builds/vault-node/41f90950/emeraldpay-emerald-vault-core-v0.10.0-dev.tgz",
-    "@emeraldpay/emerald-vault-native": "https://artifacts.emerald.cash/builds/vault-node/41f90950/emeraldpay-emerald-vault-native-v0.10.0-dev.tgz",
-    "tslib": "2.3.1"
+    "@emeraldpay/emerald-vault-native": "https://artifacts.emerald.cash/builds/vault-node/41f90950/emeraldpay-emerald-vault-native-v0.10.0-dev.tgz"
   }
 }
