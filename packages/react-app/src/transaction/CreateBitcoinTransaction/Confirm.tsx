@@ -1,85 +1,68 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { EntryId, EntryIdOp } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { screen } from '@emeraldwallet/store';
+import { Button, ButtonGroup } from '@emeraldwallet/ui';
+import { Box, Grid, Theme, createStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Box, createStyles, Grid, Theme} from "@material-ui/core";
-import {IState, screen} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import RawTxDetails from "./RawTxDetails";
-import RawTx from "./RawTx";
-import {ButtonGroup} from "@emeraldwallet/ui";
-import {Button} from "@emeraldwallet/ui";
-import {EntryId, EntryIdOp} from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode} from "@emeraldwallet/core";
+import { connect } from 'react-redux';
+import RawTx from './RawTx';
+import RawTxDetails from './RawTxDetails';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     buttonsRow: {
       paddingLeft: theme.spacing(),
-      paddingTop: theme.spacing(2)
+      paddingTop: theme.spacing(2),
     },
-  })
+  }),
 );
 
-/**
- *
- */
-const Component = (({rawtx, entryId, blockchain, onConfirm, onCancel}: Props & Actions & OwnProps) => {
+interface OwnProps {
+  blockchain: BlockchainCode;
+  entryId: EntryId;
+  rawTx: string;
+  onConfirm(): void;
+}
+
+interface DispatchProps {
+  onCancel(): void;
+}
+
+const Confirm: React.FC<OwnProps & DispatchProps> = ({ entryId, blockchain, rawTx, onCancel, onConfirm }) => {
   const styles = useStyles();
+
   const [showRaw, setShowRaw] = React.useState(false);
 
-  let raw = null;
-  if (showRaw) {
-    raw = <Box>
-      <RawTx rawtx={rawtx}/>
-      <Button variant={"text"} onClick={() => setShowRaw(false)} label={"Hide Raw"}/>
-    </Box>
-  } else {
-    raw = <Button variant={"text"} onClick={() => setShowRaw(true)} label={"Show Raw"}/>
-  }
-
-  return <Grid container={true}>
-    <Grid item={true} xs={12}>
-      <RawTxDetails rawtx={rawtx} entryId={entryId} blockchain={blockchain}/>
+  return (
+    <Grid container>
+      <Grid item xs={12}>
+        <RawTxDetails rawTx={rawTx} entryId={entryId} blockchain={blockchain} />
+      </Grid>
+      <Grid item xs={12}>
+        {showRaw ? (
+          <Box>
+            <RawTx rawTx={rawTx} />
+            <Button label="Hide Raw" variant="text" onClick={() => setShowRaw(false)} />
+          </Box>
+        ) : (
+          <Button label="Show Raw" variant="text" onClick={() => setShowRaw(true)} />
+        )}
+      </Grid>
+      <Grid item xs={12} className={styles.buttonsRow}>
+        <ButtonGroup>
+          <Button label="Cancel" onClick={onCancel} />
+          <Button label="Send" primary onClick={onConfirm} />
+        </ButtonGroup>
+      </Grid>
     </Grid>
-    <Grid item={true} xs={12}>
-      {raw}
-    </Grid>
-    <Grid item={true} xs={12} className={styles.buttonsRow}>
-      <ButtonGroup>
-        <Button label={'Cancel'} onClick={onCancel}/>
-        <Button label={'Send'} primary={true} onClick={onConfirm}/>
-      </ButtonGroup>
-    </Grid>
-  </Grid>
-})
+  );
+};
 
-// State Properties
-interface Props {
-}
+export default connect<unknown, DispatchProps, OwnProps>(null, (dispatch, ownProps) => ({
+  onCancel() {
+    const walletId = EntryIdOp.asOp(ownProps.entryId).extractWalletId();
 
-// Actions
-interface Actions {
-  onCancel: () => void;
-}
-
-// Component properties
-interface OwnProps {
-  rawtx: string;
-  entryId: EntryId;
-  blockchain: BlockchainCode;
-  onConfirm: () => void;
-}
-
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
+    dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {
-      onCancel: () => {
-        const walletId = EntryIdOp.asOp(ownProps.entryId).extractWalletId();
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
-      }
-    }
-  }
-)((Component));
+}))(Confirm);

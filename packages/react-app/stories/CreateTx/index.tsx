@@ -125,6 +125,6 @@ storiesOf('CreateTx Bitcoin', module)
       onConfirm={action('confirm')}
       blockchain={BlockchainCode.BTC}
       entryId={'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3'}
-      rawtx={REAL_BTC_TX}
+      rawTx={REAL_BTC_TX}
     />
   ));

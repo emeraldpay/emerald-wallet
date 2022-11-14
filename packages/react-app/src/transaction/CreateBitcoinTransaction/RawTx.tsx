@@ -16,32 +16,30 @@ const useStyles = makeStyles<typeof Theme>((theme) =>
 );
 
 interface OwnProps {
-  rawtx: string;
+  rawTx: string;
 }
 
-const Component: React.FC<OwnProps> = ({ rawtx }) => {
+const RawTx: React.FC<OwnProps> = ({ rawTx }) => {
   const styles = useStyles();
   return (
     <Box>
       <TextField
+        fullWidth
+        multiline
         classes={{ root: styles.fieldRoot }}
         label="Raw Tx"
-        value={rawtx}
-        multiline={true}
-        rows={4}
-        fullWidth
-        InputLabelProps={{
-          shrink: true,
-        }}
+        minRows={4}
+        value={rawTx}
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
         InputProps={{
           classes: {
             input: styles.value,
           },
         }}
-        variant="outlined"
       />
     </Box>
   );
 };
 
-export default Component;
+export default RawTx;
