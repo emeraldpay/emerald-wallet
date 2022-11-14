@@ -76,7 +76,15 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
   );
   const txChanges = React.useMemo(
     () =>
-      transaction?.changes.filter((change) => change.type !== ChangeType.FEE && change.amountValue.isPositive()) ?? [],
+      transaction?.changes
+        .filter((change) => change.type !== ChangeType.FEE && change.amountValue.isPositive())
+        .sort((first, second) => {
+          if (first.direction === second.direction) {
+            return 0;
+          }
+
+          return first.direction > second.direction ? -1 : 1;
+        }) ?? [],
     [transaction],
   );
   const txFee = React.useMemo(
