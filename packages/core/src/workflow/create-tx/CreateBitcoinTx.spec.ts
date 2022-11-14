@@ -278,11 +278,11 @@ describe('CreateBitcoinTx', () => {
     create.requiredAmount = Satoshi.fromBitcoin(0.08);
     create.address = 'AAA';
 
-    // ((2 * 120) + (2 * 80)) * 100 * 1024 == 40000
-    expect(create.estimateFees(100 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0004).toString());
-    expect(create.estimateFees(150 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0006).toString());
-    expect(create.estimateFees(200 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0008).toString());
-    expect(create.estimateFees(2000 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.008).toString());
+    // ((2 * 120) + (2 * 80)) * 100 * 1024 / 4 == 10000
+    expect(create.estimateFees(100 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0001).toString());
+    expect(create.estimateFees(150 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.00015).toString());
+    expect(create.estimateFees(200 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0002).toString());
+    expect(create.estimateFees(2000 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.002).toString());
   });
 
   it('total available', () => {
