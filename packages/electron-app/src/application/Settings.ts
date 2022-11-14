@@ -1,25 +1,15 @@
+import { SettingsManager, SettingsStore } from '@emeraldwallet/core';
 import ElectronStore from 'electron-store';
 import { v4 as uuid } from 'uuid';
 
-interface StoreType {
-  id: string;
-  lastCursor?: number;
-  terms: string;
-  version: number;
-  // @deprecated
-  chain?: any;
-  // @deprecated
-  geth?: any;
-}
-
-const DEFAULTS: StoreType = {
+const DEFAULTS: SettingsStore = {
   id: uuid(),
   version: 1,
   terms: 'none',
 };
 
-export default class Settings {
-  private settings: ElectronStore<StoreType>;
+export default class Settings implements SettingsManager {
+  private settings: ElectronStore<SettingsStore>;
 
   constructor() {
     this.settings = new ElectronStore({
@@ -32,27 +22,27 @@ export default class Settings {
     this.settings.delete('chain');
   }
 
-  public getId(): string {
+  getId(): string {
     return this.settings.get('id');
   }
 
-  public getLastCursor(): number | undefined {
+  getLastCursor(): number | undefined {
     return this.settings.get('lastCursor');
   }
 
-  public setLastCursor(timestamp: number): Settings {
+  setLastCursor(timestamp: number): Settings {
     this.settings.set('lastCursor', timestamp);
 
     return this;
   }
 
-  public setTerms(version: string): Settings {
+  setTerms(version: string): Settings {
     this.settings.set('terms', version);
 
     return this;
   }
 
-  public toJS(): StoreType {
+  toJS(): SettingsStore {
     return this.settings.store;
   }
 }

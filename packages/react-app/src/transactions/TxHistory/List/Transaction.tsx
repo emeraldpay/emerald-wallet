@@ -236,6 +236,19 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       }),
     [tx.sinceTimestamp],
   );
+  const statusClass = React.useMemo(() => {
+    if (tx.state === State.CONFIRMED) {
+      if (tx.status === Status.OK) {
+        return styles.progressStatusOk;
+      }
+
+      if (tx.status === Status.FAILED) {
+        return styles.progressStatusFail;
+      }
+    }
+
+    return styles.progressStatusUnknown;
+  }, [styles, tx]);
 
   const onEditLabel = React.useCallback(() => {
     setLabelEdit(!labelEdit);
@@ -266,17 +279,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     <div className={styles.container} style={style}>
       <div className={styles.progress}>
         <ProgressPie progress={Math.min(100, (100 / Confirmations[blockchainCode]) * confirmations)}>
-          <CoinAvatar
-            blockchain={blockchainCode}
-            className={classNames(
-              styles.progressStatus,
-              tx.status === Status.OK
-                ? styles.progressStatusOk
-                : tx.status === Status.FAILED
-                ? styles.progressStatusFail
-                : styles.progressStatusUnknown,
-            )}
-          />
+          <CoinAvatar blockchain={blockchainCode} className={classNames(styles.progressStatus, statusClass)} />
         </ProgressPie>
       </div>
       <div className={styles.transaction}>
