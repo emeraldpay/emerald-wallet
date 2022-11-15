@@ -131,7 +131,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
         <Confirm
           blockchain={blockchain}
           entryId={entry.id}
-          rawtx={signed}
+          rawTx={signed}
           onConfirm={() =>
             onBroadcast({
               blockchain,
@@ -195,7 +195,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
           ]);
 
-          const [avgLast, avgMiddle, avgTail5] = fees.sort((first, second) => {
+          const [avgLast, avgTail5, avgMiddle] = fees.sort((first, second) => {
             if (first === second) {
               return 0;
             }

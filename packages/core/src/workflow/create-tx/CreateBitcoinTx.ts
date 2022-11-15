@@ -152,7 +152,7 @@ export class CreateBitcoinTx {
   }
 
   get totalToSpend(): BigAmount {
-    return this.totalUtxo(this.tx.from ?? []);
+    return this.totalUtxo(this.tx.from);
   }
 
   get transaction(): BitcoinTxDetails<BigAmount> {
@@ -197,9 +197,9 @@ export class CreateBitcoinTx {
   }
 
   estimateFees(price: number): BigAmount {
-    const size = this.metric.weightOf(this.tx.from ?? [], this.outputs);
+    const size = this.metric.weightOf(this.tx.from, this.outputs);
 
-    return this.amountFactory(price).multiply(size).divide(1024);
+    return this.amountFactory(price).multiply(convertWUToVB(size)).divide(1024);
   }
 
   rebalance(): boolean {
@@ -226,9 +226,11 @@ export class CreateBitcoinTx {
       send = this.totalUtxo(from);
     }
 
-    const { address = '?' } = this.tx.to;
+    const { address } = this.tx.to;
 
-    const weight = this.metric.weightOf(from, [{ address, amount: 0 }]);
+    const to = address == null ? [] : [{ address, amount: 0 }];
+
+    const weight = this.metric.weightOf(from, to);
     const fees = this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
 
     let { amount } = this.tx.to;
@@ -243,7 +245,7 @@ export class CreateBitcoinTx {
       if (amount.plus(fees).isLessOrEqualTo(send)) {
         // sending more that receive + fees ==> keep change
         const changeWeight = this.metric.weightOf(from, [
-          { address, amount: 0 },
+          ...to,
           { address: this.changeAddress, amount: 0, entryId: this.source.id },
         ]);
         const changeFees = this.vkbPrice.multiply(convertWUToVB(changeWeight)).divide(1024);
