@@ -50,6 +50,7 @@ export { default as DefaultLogger } from './logging/DefaultLogger';
 export { default as ILogger } from './logging/ILogger';
 export { default as Logger } from './logging/Logger';
 export * as PersistentState from './persistentState';
+export { SettingsManager, SettingsStore } from './settings';
 export {
   EthereumRawReceipt,
   EthereumReceipt,

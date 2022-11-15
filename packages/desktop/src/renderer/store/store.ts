@@ -40,7 +40,7 @@ function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
 
   ipcRenderer.on('store', (event, action) => {
-    logger.debug(`Got from IPC, event: ${event}, action: ${JSON.stringify(action)}`);
+    logger.debug(`Got action from IPC: ${JSON.stringify(action)}`);
 
     store.dispatch(action);
 

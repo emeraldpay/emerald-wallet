@@ -1,73 +1,62 @@
-import {
-  BlockchainClient,
-} from '@emeraldpay/api-node';
-import {
-  BalanceRequest, AddressBalance, Publisher, Utxo
-} from '@emeraldpay/api';
-import {BlockchainCode, blockchainCodeToId, isBitcoin, isEthereum} from "@emeraldwallet/core";
-import {AssetCode} from "@emeraldpay/api/lib/typesCommon";
+import { AddressBalance, AssetCode, BalanceRequest, Publisher, Utxo } from '@emeraldpay/api';
+import { BlockchainClient } from '@emeraldpay/api-node';
+import { BlockchainCode, Logger, blockchainCodeToId, isBitcoin, isEthereum } from '@emeraldwallet/core';
 
 interface IAccountStatusEvent {
   address: string;
   balance: string;
   asset: string;
-  utxo?: Utxo[] | undefined
+  utxo?: Utxo[];
 }
 
 type HeadListener = (status: IAccountStatusEvent) => void;
 
+const log = Logger.forCategory('AddressService');
+
 export class AddressListener {
   public client: BlockchainClient;
-  public response?: Publisher<AddressBalance>;
 
-  constructor (client: BlockchainClient) {
+  public response: Publisher<AddressBalance> | null = null;
+
+  constructor(client: BlockchainClient) {
     this.client = client;
   }
 
-  public stop() {
-    if (this.response) {
-      this.response.cancel();
-    }
-    this.response = undefined;
+  getBalance(blockchain: BlockchainCode, addresses: string | string[], token?: AssetCode): Promise<AddressBalance[]> {
+    const request: BalanceRequest = this.makeRequest(blockchain, addresses, token);
+
+    return this.client.getBalance(request);
   }
 
-  public makeRequest(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): BalanceRequest {
+  stop(): void {
+    this.response?.cancel();
+    this.response = null;
+  }
+
+  subscribe(chainCode: BlockchainCode, addresses: string | string[], handler: HeadListener, token?: AssetCode): void {
+    const request: BalanceRequest = this.makeRequest(chainCode, addresses, token);
+
+    this.response = this.client
+      .subscribeBalance(request)
+      .onData(({ address, asset, balance, utxo }) => handler({ address, balance, utxo, asset: asset.code }))
+      .onError((error) => {
+        const addressesList = Array.isArray(addresses) ? addresses.join(', ') : addresses;
+
+        log.warn(`Error while subscribing for addresses ${addressesList}`, error);
+      });
+  }
+
+  private makeRequest(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): BalanceRequest {
     const isEthereumChain = isEthereum(chainCode);
     const isBitcoinChain = isBitcoin(chainCode);
+
     return {
       address: addresses,
       asset: {
         blockchain: blockchainCodeToId(chainCode),
-        code: isEthereumChain ?
-          (token || "ETHER") : "BTC",
+        code: isEthereumChain ? token ?? 'ETHER' : 'BTC',
       },
-      includeUtxo: isBitcoinChain
-    }
+      includeUtxo: isBitcoinChain,
+    };
   }
-
-  public getBalance(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): Promise<AddressBalance[]> {
-    const request: BalanceRequest = this.makeRequest(chainCode, addresses, token);
-    return this.client.getBalance(request);
-  }
-
-  public subscribe(chainCode: BlockchainCode, addresses: string | string[], token: AssetCode | undefined, handler: HeadListener) {
-    const request: BalanceRequest = this.makeRequest(chainCode, addresses, token);
-
-    this.response = this.client.subscribeBalance(request)
-      .onData((data) => {
-        const address = data.address;
-        if (handler && data && address) {
-          handler({
-            address,
-            balance: data.balance,
-            asset: data.asset.code,
-            utxo: data.utxo
-          });
-        }
-      })
-      .onError((err) => {
-        console.warn('response error addr', err);
-      });
-  }
-
 }
