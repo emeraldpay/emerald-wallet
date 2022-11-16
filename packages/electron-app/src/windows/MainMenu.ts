@@ -1,4 +1,3 @@
-import { screen } from '@emeraldwallet/store';
 import { BrowserWindow, MenuItemConstructorOptions } from 'electron';
 import { MenuOptions } from './MainWindow';
 
@@ -37,7 +36,7 @@ export default function (window: BrowserWindow, options: MenuOptions): MenuItemC
       accelerator: index > 9 ? undefined : `${controlButton}+${index === 9 ? 0 : index + 1}`,
       label: wallet.name ?? `Wallet ${index + 1}`,
       click() {
-        window.webContents.send('store', screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
+        window.webContents.send('store', { type: 'SCREEN/OPEN', screen: 'wallet', item: wallet.id });
       },
     }));
   }
