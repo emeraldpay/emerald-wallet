@@ -3285,7 +3285,6 @@ __metadata:
     "@emeraldwallet/core": ^2.8.0-dev
     "@emeraldwallet/erc20": ^2.8.0-dev
     "@emeraldwallet/services": ^2.8.0-dev
-    "@emeraldwallet/store": ^2.8.0-dev
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/uuid": ^3.4.10
@@ -3414,7 +3413,6 @@ __metadata:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldwallet/core": ^2.8.0-dev
-    "@emeraldwallet/store": ^2.8.0-dev
     "@grpc/grpc-js": ^1.7.3
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
