@@ -1,4 +1,4 @@
-import { BlockchainCode, isEthereum, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
 import { IState, addressBook, blockchains } from '@emeraldwallet/store';
 import { Input } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -50,7 +50,7 @@ class ToField extends React.Component<Props, State> {
 
     const { blockchain, onChange, resolveName } = this.props;
 
-    if (isEthereum(blockchain) && /\.eth$/.test(value)) {
+    if ((blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) && /\.eth$/.test(value)) {
       onChange(undefined);
 
       const resolved = await resolveName(this.props.blockchain, value);
