@@ -1,5 +1,4 @@
 import { BlockchainCode, Logger, amountFactory } from '@emeraldwallet/core';
-import { accounts } from '@emeraldwallet/store';
 import { IpcMain, WebContents } from 'electron';
 import { AddressListener } from './AddressListener';
 import { EmeraldApiAccess } from '../..';
@@ -67,27 +66,27 @@ export class BalanceListener implements IService {
   }
 
   subscribeBalance(entry: Subscription): void {
-    const amountReader = amountFactory(entry.blockchain);
     const subscriber = this.apiAccess.newAddressListener();
 
-    subscriber.subscribe(entry.blockchain, entry.address, (event) => {
-      const action = accounts.actions.setBalanceAction({
-        entryId: entry.entryId,
-        value: amountReader(event.balance).encode(),
-        utxo: event.utxo?.map((tx) => {
-          return {
-            address: event.address,
-            txid: tx.txid,
-            value: amountReader(tx.value).encode(),
-            vout: tx.vout,
-          };
-        }),
-      });
+    const amountReader = amountFactory(entry.blockchain);
 
+    subscriber.subscribe(entry.blockchain, entry.address, (event) => {
       try {
-        this.webContents?.send('store', action);
-      } catch (e) {
-        log.warn('Cannot send to the UI', e);
+        this.webContents?.send('store', {
+          type: 'ACCOUNT/SET_BALANCE',
+          payload: {
+            entryId: entry.entryId,
+            value: amountReader(event.balance).encode(),
+            utxo: event.utxo?.map((tx) => ({
+              address: event.address,
+              txid: tx.txid,
+              value: amountReader(tx.value).encode(),
+              vout: tx.vout,
+            })),
+          },
+        });
+      } catch (exception) {
+        log.warn('Cannot send to the UI', exception);
       }
     });
 

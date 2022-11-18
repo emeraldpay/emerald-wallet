@@ -1,6 +1,5 @@
 import { AnyCurrency } from '@emeraldpay/api';
 import { Logger } from '@emeraldwallet/core';
-import { settings } from '@emeraldwallet/store';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess, PriceListener } from '../..';
 import { IService } from '../Services';
@@ -58,9 +57,9 @@ class PricesService implements IService {
 
     this.listener?.request(this.from, this.to, (result) => {
       try {
-        this.webContents?.send('store', settings.actions.setRatesAction(result));
-      } catch (e) {
-        log.warn('Cannot send to the UI', e);
+        this.webContents?.send('store', { type: 'ACCOUNT/EXCHANGE_RATES', payload: result });
+      } catch (exception) {
+        log.warn('Cannot send to the UI', exception);
       }
     });
 
@@ -87,7 +86,7 @@ class PricesService implements IService {
   }
 
   reconnect(): void {
-    // timer based, so doesn't matter
+    // Timer based, so doesn't matter
   }
 }
 

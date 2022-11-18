@@ -2,7 +2,6 @@ import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { Logger } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
-import { screen } from '@emeraldwallet/store';
 import { WebContents, ipcMain } from 'electron';
 import { setIpcHandlers } from './ipc-handlers/ipc';
 import Settings from './Settings';
@@ -66,7 +65,7 @@ export default class Application {
   public showAbout(): void {
     if (this.webContents != null) {
       try {
-        this.webContents.send('store', screen.actions.showDialog('about'));
+        this.webContents.send('store', { type: 'SCREEN/DIALOG', value: 'about' });
       } catch (exception) {
         this.log.error(exception);
       }

@@ -18,7 +18,6 @@
     "@emeraldwallet/core": "^2.8.0-dev",
     "@emeraldwallet/erc20": "^2.8.0-dev",
     "@emeraldwallet/services": "^2.8.0-dev",
-    "@emeraldwallet/store": "^2.8.0-dev",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
     "uuid": "^9.0.0"

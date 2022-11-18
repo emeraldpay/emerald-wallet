@@ -1,9 +1,8 @@
-import {blockchains} from '@emeraldwallet/store';
-import {ChainListener} from '../ChainListener';
-import {IService} from './Services';
-import {WebContents} from 'electron';
-import {BlockchainCode, Logger} from "@emeraldwallet/core";
-import {EmeraldApiAccess} from "..";
+import { BlockchainCode, Logger } from '@emeraldwallet/core';
+import { WebContents } from 'electron';
+import { IService } from './Services';
+import { EmeraldApiAccess } from '..';
+import { ChainListener } from '../ChainListener';
 
 const log = Logger.forCategory('BlockchainStatusService');
 
@@ -21,27 +20,28 @@ export class BlockchainStatusService implements IService {
     this.apiAccess = apiAccess;
   }
 
-  public start () {
+  start(): void {
     this.stop();
+
     this.listener = this.apiAccess.newChainListener();
-    this.listener!.subscribe(this.chain,(head) => {
-      const action = blockchains.actions.blockAction({
-        blockchain: this.chain,
-        height: head.height,
-        hash: head.hash
-      });
+    this.listener.subscribe(this.chain, (head) => {
       try {
-        this.webContents?.send('store', action);
-      } catch (e) {
-        log.warn("Cannot send to the UI", e)
+        this.webContents?.send('store', {
+          type: 'BLOCKCHAINS/BLOCK',
+          payload: {
+            blockchain: this.chain,
+            height: head.height,
+            hash: head.hash,
+          },
+        });
+      } catch (exception) {
+        log.warn('Cannot send to the UI', exception);
       }
     });
   }
 
-  public stop() {
-    if (this.listener) {
-      this.listener.stop();
-    }
+  stop(): void {
+    this.listener?.stop();
     this.listener = null;
   }
 

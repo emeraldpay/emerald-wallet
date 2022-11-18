@@ -3,7 +3,6 @@ import { EntryIdOp, IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emer
 import { Blockchains, Logger, PersistentState, SettingsManager, blockchainIdToCode } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
-import { txhistory } from '@emeraldwallet/store';
 import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
@@ -93,7 +92,7 @@ export class TxService implements IService {
               transactions.map(({ blockchain: txBlockchain, txId }) =>
                 this.persistentState.txhistory
                   .remove(txBlockchain, txId)
-                  .then(() => this.webContents?.send('store', txhistory.actions.removeTransaction(txId))),
+                  .then(() => this.webContents?.send('store', { type: 'WALLET/HISTORY/REMOVE_STORED_TX', txId })),
               ),
             ),
           )
@@ -203,7 +202,12 @@ export class TxService implements IService {
                     this.persistentState.txmeta
                       .get(blockchainIdToCode(merged.blockchain), merged.txId)
                       .then((meta) =>
-                        this.webContents?.send('store', txhistory.actions.updateTransaction(walletId, merged, meta)),
+                        this.webContents?.send('store', {
+                          type: 'WALLET/HISTORY/UPDATE_STORED_TX',
+                          meta,
+                          walletId,
+                          transaction: merged,
+                        }),
                       )
                       .catch((error) =>
                         log.error(`Error while getting transaction meta for address ${identifier}:`, error),

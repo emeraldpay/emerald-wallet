@@ -1,31 +1,32 @@
-import { connection } from '@emeraldwallet/store';
-import {IService} from './Services';
-import {WebContents} from 'electron';
-import {EmeraldApiAccess} from "..";
+import { IpcMain, WebContents } from 'electron';
+import { IService } from './Services';
+import { EmeraldApiAccess } from '..';
 
 export class ConnStatus implements IService {
   public id: string;
-  private webContents?: WebContents;
-  private apiAccess: EmeraldApiAccess;
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess) {
-    this.webContents = webContents;
-    this.apiAccess = apiAccess;
+  private apiAccess: EmeraldApiAccess;
+  private webContents?: WebContents;
+
+  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess) {
     this.id = 'ConnectionStatusService';
+
+    this.apiAccess = apiAccess;
+    this.webContents = webContents;
   }
 
   public start(): void {
-    this.apiAccess.statusListener((status: any) => {
-      const action = connection.actions.setConnStatus(status);
+    this.apiAccess.statusListener((status) => {
       try {
-        this.webContents?.send('store', action);
-      } catch (e) {
-        console.warn("Cannot send to the UI", e)
+        this.webContents?.send('store', { type: 'CONN/SET_STATUS', payload: { status } });
+      } catch (exception) {
+        console.warn('Cannot send to the UI', exception);
       }
     });
   }
 
-  public stop(): void {
+  stop(): void {
+    // Nothing
   }
 
   setWebContents(webContents: WebContents): void {
@@ -33,6 +34,6 @@ export class ConnStatus implements IService {
   }
 
   reconnect(): void {
+    // Nothing
   }
-
 }
