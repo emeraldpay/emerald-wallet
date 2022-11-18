@@ -209,7 +209,7 @@ export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: b
   if (typeof wallet == 'undefined') {
     return assets;
   }
-  const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
+  const ethereumAccounts = wallet.entries.filter((e) => !e.receiveDisabled && isEthereumEntry(e)) as EthereumEntry[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Goerli].forEach((code) => {
     const zero = zeroAmountFor<BigAmount>(code);
 
@@ -244,7 +244,7 @@ export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: b
     });
   });
 
-  const bitcoinAccounts = wallet.entries.filter((e) => isBitcoinEntry(e)) as BitcoinEntry[];
+  const bitcoinAccounts = wallet.entries.filter((e) => !e.receiveDisabled && isBitcoinEntry(e)) as BitcoinEntry[];
   bitcoinAccounts.forEach((entry) => {
     const code = blockchainIdToCode(entry.blockchain);
     const zero = zeroAmountFor<BigAmount>(code);
