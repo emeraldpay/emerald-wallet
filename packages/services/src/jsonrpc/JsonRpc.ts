@@ -18,6 +18,12 @@ import { ILogger } from '@emeraldwallet/core';
 import { providers } from 'ethers';
 import { Batch, BatchItem, DefaultBatch, RawBatchResponse } from './Batch';
 
+export interface JsonRpc {
+  batch(): Batch;
+  call(method: string, params: any): Promise<any>;
+  execute(batch: Batch): Promise<RawBatchResponse>;
+}
+
 export interface JsonRpcRequest {
   id: number;
   jsonrpc: string;
@@ -38,20 +44,14 @@ export class JsonRpcError extends Error {
 }
 
 export interface JsonRpcResponse {
-  id: number;
   error?: JsonRpcError;
+  id: number;
   jsonrpc: string;
   result?: any;
 }
 
 export interface Transport {
   request(req: Array<JsonRpcRequest>): Promise<Array<JsonRpcResponse>>;
-}
-
-export interface JsonRpc {
-  batch(): Batch;
-  call(method: string, params: any): Promise<any>;
-  execute(batch: Batch): Promise<RawBatchResponse>;
 }
 
 export abstract class AbstractJsonRpc implements JsonRpc {
