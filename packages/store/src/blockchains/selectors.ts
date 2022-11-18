@@ -1,13 +1,13 @@
 import { createSelector } from 'reselect';
-import {IBlockchainsState, moduleName} from './types';
+import {BlockchainsState, moduleName} from './types';
 
-export function all (state: any): IBlockchainsState {
+export function all (state: any): BlockchainsState {
   return state[moduleName];
 }
 
 export const getCurrentInfo = createSelector(
   [all],
-  (state: IBlockchainsState) => {
+  (state: BlockchainsState) => {
     return Object.keys(state).map((chainCode) => ({
       id: chainCode,
       title: chainCode,

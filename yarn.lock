@@ -3417,6 +3417,7 @@ __metadata:
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/text-encoding": ^0.0.36
+    ethers: ^5.7.2
     google-protobuf: ^3.21.2
     jest: ^27.5.1
     rimraf: ^3.0.2
@@ -12389,7 +12390,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.7.1":
+"ethers@npm:^5.7.1, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:

@@ -19,6 +19,7 @@
     "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldwallet/core": "^2.8.0-dev",
     "@grpc/grpc-js": "^1.7.3",
+    "ethers": "^5.7.2",
     "google-protobuf": "^3.21.2",
     "text-encoding": "^0.7.0"
   },

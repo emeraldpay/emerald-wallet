@@ -51,4 +51,6 @@ export enum Commands {
   XPUB_POSITION_NEXT_SET = 'xpub-position-next-set',
 
   XPUB_LAST_INDEX = 'xpub-last-index',
+
+  RESOLVE_NAME = 'RESOLVE_NAME',
 }

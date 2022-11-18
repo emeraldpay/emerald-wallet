@@ -1,17 +1,18 @@
-import {BlockchainClient} from '@emeraldpay/api-node';
-import {BlockchainCode, ILogger, IServerConnect} from '@emeraldwallet/core';
 import * as os from 'os';
+import { BlockchainClient } from '@emeraldpay/api-node';
+import { BlockchainCode, ILogger, IServerConnect, isEthereum } from '@emeraldwallet/core';
 import ChainRpcConnections from './ChainRpcConnections';
+import EthRpc from './ethrpc';
+import { DefaultJsonRpc } from './jsonrpc';
+import { EthersJsonRpc } from './jsonrpc/JsonRpc';
 import GrpcTransport from './transports/GrpcTransport';
-import EthRpc from "./ethrpc";
-import {DefaultJsonRpc} from "./jsonrpc";
 
 class ServerConnect implements IServerConnect {
-  public headers: Record<string, string>;
   public appVersion: string;
+  public blockchainClient: BlockchainClient;
+  public headers: Record<string, string>;
   public locale: string;
   public log: ILogger;
-  public blockchainClient: BlockchainClient;
 
   constructor(appVersion: string, locale: string, log: ILogger, blockchainClient: BlockchainClient) {
     this.appVersion = appVersion;
@@ -21,7 +22,7 @@ class ServerConnect implements IServerConnect {
     this.log = log;
   }
 
-  public init(versions: NodeJS.ProcessVersions): void {
+  init(versions: NodeJS.ProcessVersions): void {
     const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
 
     this.headers['User-Agent'] = [
@@ -31,25 +32,29 @@ class ServerConnect implements IServerConnect {
     ].join(' ');
   }
 
-  public connectEthChain(name: BlockchainCode): null | EthRpc {
-    return new EthRpc(new DefaultJsonRpc(new GrpcTransport(name, this.blockchainClient)));
+  connectEthChain(blockchain: BlockchainCode): EthRpc {
+    const jsonRpc = new DefaultJsonRpc(new GrpcTransport(blockchain, this.blockchainClient), this.log);
+
+    return new EthRpc(jsonRpc, new EthersJsonRpc(jsonRpc));
   }
 
-  public connectTo(chains: string[]): ChainRpcConnections {
-    const conns = new ChainRpcConnections();
+  connectTo(blockchains: string[]): ChainRpcConnections {
+    const connections = new ChainRpcConnections();
 
-    chains.forEach((chain) => {
-      const chainCode = chain.toLowerCase();
+    blockchains.forEach((blockchain) => {
+      const code = blockchain.toLowerCase() as BlockchainCode;
 
-      conns.add(chainCode, this.connectEthChain(chainCode as BlockchainCode));
+      if (isEthereum(code)) {
+        connections.add(code, this.connectEthChain(code));
 
-      this.log.info(`Creating connection to ${chainCode}`);
+        this.log.info(`Creating connection to ${code}`);
+      }
     });
 
-    return conns;
+    return connections;
   }
 
-  public getUserAgent(): string {
+  getUserAgent(): string {
     return this.headers['User-Agent'];
   }
 }

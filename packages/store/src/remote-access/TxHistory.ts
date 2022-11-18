@@ -1,5 +1,4 @@
 import { Commands, PersistentState } from '@emeraldwallet/core';
-import { Transaction } from '@emeraldwallet/core/src/persistentState';
 import { ipcRenderer } from 'electron';
 
 class TxHistory implements PersistentState.TxHistory {

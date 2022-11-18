@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, tokenAmount, workflow } from '@emeraldwallet/core';
 import * as addressBook from '@emeraldwallet/store/lib/address-book';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
@@ -33,6 +33,8 @@ describe('CreateTx', () => {
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
+            getBalance={() => new Wei(0)}
+            getTokenBalanceForAddress={() => tokenAmount(0, 'dai')}
           />
         </ThemeProvider>
       </Provider>,
@@ -53,6 +55,8 @@ describe('CreateTx', () => {
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
+            getBalance={() => new Wei(0)}
+            getTokenBalanceForAddress={() => tokenAmount(0, 'dai')}
           />
         </ThemeProvider>
       </Provider>,

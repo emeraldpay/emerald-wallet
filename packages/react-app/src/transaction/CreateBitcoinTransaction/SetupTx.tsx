@@ -105,8 +105,8 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   );
 
   const onSetTo = React.useCallback(
-    (value: string) => {
-      const validation = validate(value);
+    (value: string | undefined) => {
+      const validation = validate(value ?? '');
 
       create.address = validation === false ? '' : validation.address;
     },

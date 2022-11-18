@@ -1,19 +1,26 @@
 export const moduleName = 'blockchains';
 
-export interface IBlockchain {
+export interface Blockchain {
   height: number | null;
 }
 
-export interface IBlockchainsState {
-  [code: string]: IBlockchain;
+export interface BlockchainsState {
+  [code: string]: Blockchain;
 }
+
 export enum ActionTypes {
   BLOCK = 'BLOCKCHAINS/BLOCK',
 }
 
-export interface IBlockAction {
-  type: ActionTypes.BLOCK;
-  payload: any;
+export interface Block {
+  blockchain: string;
+  hash?: string;
+  height: number;
 }
 
-export type BlockchainsAction = IBlockAction;
+export interface BlockAction {
+  type: ActionTypes.BLOCK;
+  payload: Block;
+}
+
+export type BlockchainsAction = BlockAction;

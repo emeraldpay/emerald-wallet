@@ -19,18 +19,18 @@ import {
 } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess } from '@emeraldwallet/services';
+import { PartialTx } from '@emeraldwallet/services/lib/ethrpc';
 import { ipcMain } from 'electron';
 import Application from '../Application';
 
-interface BalanceResult {
-  asset: AnyCoinCode;
-  balance: string;
-}
-
 const log = Logger.forCategory('IPC Handlers');
 
-export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, persistentState: PersistentStateImpl) {
-  ipcMain.handle(Commands.GET_VERSION, (event, args) => ({
+export function setIpcHandlers(
+  app: Application,
+  apiAccess: EmeraldApiAccess,
+  persistentState: PersistentStateImpl,
+): void {
+  ipcMain.handle(Commands.GET_VERSION, () => ({
     gitVersion: app.versions?.gitVersion,
     os: {
       arch: os.arch(),
@@ -42,51 +42,48 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
 
   ipcMain.handle(Commands.GET_APP_SETTINGS, () => app.settings.toJS());
 
-  ipcMain.handle(Commands.SET_TERMS, (event: any, v: string) => app.settings.setTerms(v));
+  ipcMain.handle(Commands.SET_TERMS, (event, version: string) => app.settings.setTerms(version));
 
   ipcMain.handle(
     Commands.LOAD_TX_HISTORY,
-    (event: any, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) =>
+    (event, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) =>
       persistentState.txhistory.query(filter, query),
   );
 
-  ipcMain.handle(Commands.SUBMIT_TX_HISTORY, (event: any, tx: PersistentState.Transaction) =>
+  ipcMain.handle(Commands.SUBMIT_TX_HISTORY, (event, tx: PersistentState.Transaction) =>
     persistentState.txhistory.submit(tx),
   );
 
-  ipcMain.handle(
-    Commands.GET_BALANCE,
-    (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
-      const addressListener = apiAccess.newAddressListener();
+  ipcMain.handle(Commands.GET_BALANCE, (event, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
+    const addressListener = apiAccess.newAddressListener();
 
-      const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
-        let asset = token as AssetCode;
+    const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
+      let asset = token as AssetCode;
 
-        if (asset.toLowerCase() === 'testbtc') {
-          // it always BTC for bitcoin networks, TESTBTC is our internal code
-          asset = 'BTC';
-        }
+      if (asset.toLowerCase() === 'testbtc') {
+        // It's always BTC for bitcoin networks, TESTBTC is our internal code
+        asset = 'BTC';
+      }
 
-        return addressListener.getBalance(blockchain, address, asset);
-      });
+      return addressListener.getBalance(blockchain, address, asset);
+    });
 
-      return Promise.all(calls)
-        .then((balances: AddressBalance[][]) =>
-          balances.flat().reduce((carry, balance) => {
-            let code = balance.asset.code as AnyCoinCode;
+    return Promise.all(calls)
+      .then((balances: AddressBalance[][]) =>
+        balances.flat().reduce((carry, balance) => {
+          let code = balance.asset.code as AnyCoinCode;
 
-            if (code == 'BTC' && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
-              code = 'TESTBTC';
-            }
+          if (code == 'BTC' && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
+            code = 'TESTBTC';
+          }
 
-            return { ...carry, [code]: balance.balance };
-          }, {}),
-        )
-        .catch((err) => console.warn('Failed to get balances', err));
-    },
-  );
+          return { ...carry, [code]: balance.balance };
+        }, {}),
+      )
+      .catch((err) => console.warn('Failed to get balances', err));
+  });
 
-  ipcMain.handle(Commands.BROADCAST_TX, (event: any, blockchain: BlockchainCode, tx: string) => {
+  ipcMain.handle(Commands.BROADCAST_TX, (event, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
     } else if (isBitcoin(blockchain)) {
@@ -117,25 +114,25 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     }
   });
 
-  ipcMain.handle(Commands.ESTIMATE_TX, (event: any, blockchain: BlockchainCode, tx: any) =>
+  ipcMain.handle(Commands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: PartialTx) =>
     app.rpc.chain(blockchain).eth.estimateGas(tx),
   );
 
-  ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) =>
+  ipcMain.handle(Commands.GET_NONCE, (event, blockchain: BlockchainCode, address: string) =>
     app.rpc.chain(blockchain).eth.getTransactionCount(address),
   );
 
-  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event: any, blockchain: BlockchainCode, hash: string) =>
+  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event, blockchain: BlockchainCode, hash: string) =>
     app.rpc.chain(blockchain).eth.getTransactionReceipt(hash),
   );
 
-  ipcMain.handle(Commands.GET_ETH_TX, (event: any, blockchain: BlockchainCode, hash: string) =>
+  ipcMain.handle(Commands.GET_ETH_TX, (event, blockchain: BlockchainCode, hash: string) =>
     app.rpc.chain(blockchain).eth.getTransaction(hash),
   );
 
   ipcMain.handle(
     Commands.ESTIMATE_FEE,
-    async (event: any, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
+    async (event, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
       try {
         const fee = await apiAccess.blockchainClient.estimateFees({
           blocks,
@@ -204,4 +201,8 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
 
     return state.lastIndex;
   });
+
+  ipcMain.handle(Commands.RESOLVE_NAME, (event, blockchain: BlockchainCode, name: string) =>
+    app.rpc.chain(blockchain).ethers.resolveName(name),
+  );
 }

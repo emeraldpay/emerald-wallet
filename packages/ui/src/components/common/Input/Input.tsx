@@ -13,104 +13,81 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
+import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import * as React from 'react';
 
-const getErrorProps = ({errorText}) => {
-  const propsToAdd: any = {};
+interface OwnProps {
+  disabled?: boolean;
+  errorText?: string | null;
+  hintText?: string | null;
+  leftIcon?: React.ReactElement;
+  max?: number | string;
+  maxRows?: number;
+  min?: number | string;
+  minRows?: number;
+  multiline?: boolean;
+  placeholder?: string;
+  rightIcon?: React.ReactElement;
+  type?: string;
+  value?: string | number;
+  onChange?(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
+}
 
-  if (errorText) {
-    propsToAdd.helperText = errorText;
-    propsToAdd.error = true;
+export const Input: React.FC<OwnProps> = ({
+  disabled,
+  errorText,
+  hintText,
+  leftIcon,
+  max,
+  min,
+  maxRows,
+  minRows,
+  multiline,
+  placeholder,
+  rightIcon,
+  type,
+  value,
+  onChange,
+}) => {
+  let props: TextFieldProps = { InputProps: {} };
+
+  if (errorText != null) {
+    props.helperText = errorText;
+    props.error = true;
+  } else if (hintText != null) {
+    props.helperText = hintText;
   }
 
-  return propsToAdd;
-};
-
-const getAdornments = ({rightIcon, leftIcon}) => {
-  const adornments: any = {};
+  if (multiline === true) {
+    props = { ...props, maxRows, minRows, multiline };
+  }
 
   if (leftIcon) {
-    adornments.startAdornment = (<InputAdornment position='start'> {leftIcon} </InputAdornment>);
+    props.InputProps.startAdornment = <InputAdornment position="start"> {leftIcon} </InputAdornment>;
   }
 
   if (rightIcon) {
-    adornments.endAdornment = (<InputAdornment position='end'>{rightIcon}</InputAdornment>);
+    props.InputProps.endAdornment = <InputAdornment position="end">{rightIcon}</InputAdornment>;
   }
-
-  return adornments;
-};
-
-const getInputProps = (props) => ({
-  InputProps: {...getAdornments(props)}
-});
-
-const getMultilineProps = ({multiline, rows, rowsMax}) => {
-  let props: any = {};
-
-  if (multiline) {
-    props = {rows, rowsMax, multiline};
-  }
-
-  return props;
-};
-
-interface IInputProps {
-  classes?: any;
-  value?: string | number;
-  multiline?: boolean;
-  rowsMax?: number;
-  rows?: number;
-  disabled?: boolean;
-  rightIcon?: any;
-  leftIcon?: any;
-  placeholder?: string;
-  onChange?: any;
-  errorText?: any;
-  type?: string;
-  min?: number | string;
-  max?: number | string;
-}
-
-export function Input(props: IInputProps) {
-
-  // public static defaultProps = {
-  //   value: '',
-  //   multiline: false,
-  //   rowsMax: null,
-  //   rows: null,
-  //   disabled: false,
-  //   rightIcon: null,
-  //   leftIcon: null,
-  //   placeholder: '',
-  //   onChange: () => {}
-  // };
-
-  const multilineProps = getMultilineProps(props as { multiline: any, rows: any, rowsMax: any });
-  const errorProps = getErrorProps(props as { errorText: any });
-  const inputProps = getInputProps(props);
 
   return (
     <TextField
-      type={props.type}
-      value={props.value || ''}
+      {...props}
+      disabled={disabled ?? false}
       fullWidth={true}
-      margin='normal'
-      rows={props.rows}
-      rowsMax={props.rowsMax}
-      disabled={props.disabled || false}
-      placeholder={props.placeholder || ''}
-      onChange={props.onChange}
-      inputProps={{
-        min: props.min,
-        max: props.max
-      }}
-      {...inputProps}
-      {...errorProps}
-      {...multilineProps}
+      inputProps={{ max, min }}
+      margin="normal"
+      maxRows={maxRows}
+      minRows={minRows}
+      placeholder={placeholder ?? ''}
+      type={type}
+      value={value ?? ''}
+      onChange={onChange}
     />
   );
-}
+};
 
 export default Input;
