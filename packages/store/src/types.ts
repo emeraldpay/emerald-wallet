@@ -8,7 +8,7 @@ import { IAddAccountState } from './add-account/types';
 import * as addressBook from './address-book';
 import { AddressBookState } from './address-book/types';
 import * as application from './application';
-import { IBlockchainsState } from './blockchains/types';
+import { BlockchainsState } from './blockchains/types';
 import * as conn from './conn/types';
 import { IHDPreviewState } from './hdpath-preview/types';
 import { IHWKeyState } from './hwkey/types';
@@ -27,7 +27,7 @@ export interface IState {
   [application.moduleName]: any;
   [conn.moduleName]: any;
   addAccount?: IAddAccountState;
-  blockchains: IBlockchainsState;
+  blockchains: BlockchainsState;
   hdpathPreview?: IHDPreviewState;
   history: HistoryState;
   hwkey: IHWKeyState;

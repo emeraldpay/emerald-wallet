@@ -13,19 +13,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {BatchItem, DefaultBatch} from './Batch';
+
+import { BatchItem, DefaultBatch } from './Batch';
+import { JsonRpcError } from './JsonRpc';
 
 describe('DefaultBatch', () => {
   it('DefaultBatch: Call Added', () => {
     const batch = new DefaultBatch();
+
     const promise = batch.addCall('test_foo', ['bar', 'baz']);
+
     expect(promise).toBeDefined();
+
     expect(batch.getItems()).toHaveLength(1);
-    expect(batch.getItems()[0].request).toEqual({id: 0, jsonrpc: '2.0', method: 'test_foo', params: ['bar', 'baz']});
+    expect(batch.getItems()[0].request).toEqual({ id: 0, jsonrpc: '2.0', method: 'test_foo', params: ['bar', 'baz'] });
   });
 
   it('DefaultBatch: Process : empty', () => {
     const batch = new DefaultBatch();
+
     const item: BatchItem = {
       request: {
         jsonrpc: '2.0',
@@ -35,102 +41,122 @@ describe('DefaultBatch', () => {
       reject: jest.fn(),
       resolve: jest.fn(),
     };
+
     batch.processResponse(item);
+
     expect(item.reject).toBeCalled();
     expect(item.resolve).not.toBeCalled();
   });
 
   it('DefaultBatch: Process : string', () => {
     const batch = new DefaultBatch();
+
     const item: BatchItem = {
       request: {
+        id: 0,
         jsonrpc: '2.0',
         method: 'test_foo',
-        id: 0,
       },
       response: {
+        id: 0,
         jsonrpc: '2.0',
         result: 'foo',
       },
       reject: jest.fn(),
       resolve: jest.fn(),
     };
+
     batch.processResponse(item);
+
     expect(item.reject).not.toBeCalled();
     expect(item.resolve).toBeCalledWith('foo');
   });
 
   it('DefaultBatch: Process : false', () => {
     const batch = new DefaultBatch();
+
     const item: BatchItem = {
       request: {
+        id: 0,
         jsonrpc: '2.0',
         method: 'test_foo',
-        id: 0,
       },
       response: {
+        id: 0,
         jsonrpc: '2.0',
         result: false,
       },
       reject: jest.fn(),
       resolve: jest.fn(),
     };
+
     batch.processResponse(item);
+
     expect(item.reject).not.toBeCalled();
     expect(item.resolve).toBeCalledWith(false);
   });
 
   it('DefaultBatch: Process : object', () => {
     const batch = new DefaultBatch();
+
     const item: BatchItem = {
       request: {
+        id: 0,
         jsonrpc: '2.0',
         method: 'test_foo',
-        id: 0,
       },
       response: {
+        id: 0,
         jsonrpc: '2.0',
-        result: {foo: 'bar'},
+        result: { foo: 'bar' },
       },
       reject: jest.fn(),
       resolve: jest.fn(),
     };
+
     batch.processResponse(item);
+
     expect(item.reject).not.toBeCalled();
-    expect(item.resolve).toBeCalledWith({foo: 'bar'});
+    expect(item.resolve).toBeCalledWith({ foo: 'bar' });
   });
 
   it('DefaultBatch: Process : error', () => {
     const batch = new DefaultBatch();
+
     const item: BatchItem = {
       request: {
+        id: 0,
         jsonrpc: '2.0',
         method: 'test_foo',
-        id: 0,
       },
       response: {
+        error: new JsonRpcError({ code: -1, message: '' }),
+        id: 0,
         jsonrpc: '2.0',
-        error: {code: -1}
       },
       reject: jest.fn(),
       resolve: jest.fn(),
     };
+
     batch.processResponse(item);
+
     expect(item.reject).toBeCalled();
     expect(item.resolve).not.toBeCalled();
   });
 
-
   it('DefaultBatch: resolves all', () => {
     const batch = new DefaultBatch();
+
     batch.addCall('test_foo', ['1']);
     batch.addCall('test_foo', ['2']);
 
     batch.getItems()[0].response = {
+      id: 0,
       jsonrpc: '2.0',
       result: 'bar',
     };
     batch.getItems()[1].response = {
+      id: 0,
       jsonrpc: '2.0',
       result: 'baz',
     };
@@ -145,6 +171,7 @@ describe('DefaultBatch', () => {
 
   it('DefaultBatch: rejects all', () => {
     const batch = new DefaultBatch();
+
     batch.addCall('test_foo', ['1']);
     batch.addCall('test_foo', ['2']);
 
@@ -156,5 +183,4 @@ describe('DefaultBatch', () => {
     expect(batch.getItems()[0].reject).toBeCalledWith('bar');
     expect(batch.getItems()[1].reject).toBeCalledWith('bar');
   });
-
 });

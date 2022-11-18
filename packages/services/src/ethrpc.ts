@@ -1,23 +1,37 @@
 import { toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
 import { JsonRpc } from './jsonrpc';
+import { EthersJsonRpc } from './jsonrpc/JsonRpc';
 
-export type CallObject = {
-  to: string;
+export interface PartialTx {
   data?: string;
-  nonce?: number;
   gas?: number;
-};
+  nonce?: number;
+  to: string;
+  [key: string]: any;
+}
 
-function formatBlock(b: any): any {
+interface PartialBlock<P, E = P> {
+  difficulty: E;
+  gasLimit: P;
+  gasUsed: P;
+  number: P;
+  size: P;
+  timestamp: P;
+  totalDifficulty: E;
+  [key: string]: any;
+}
+
+function formatBlock(block: PartialBlock<string>): PartialBlock<number, BigNumber> {
   return {
-    ...b,
-    difficulty: toBigNumber(b.difficulty),
-    totalDifficulty: toBigNumber(b.totalDifficulty),
-    gasLimit: toNumber(b.gasLimit),
-    gasUsed: toNumber(b.gasUsed),
-    size: toNumber(b.size),
-    timestamp: toNumber(b.timestamp),
-    number: toNumber(b.number),
+    ...block,
+    difficulty: toBigNumber(block.difficulty),
+    gasLimit: toNumber(block.gasLimit),
+    gasUsed: toNumber(block.gasUsed),
+    number: toNumber(block.number),
+    size: toNumber(block.size),
+    timestamp: toNumber(block.timestamp),
+    totalDifficulty: toBigNumber(block.totalDifficulty),
   };
 }
 
@@ -51,22 +65,23 @@ export class EthApi {
   }
 
   /**
-   * Executes a new message call immediately without creating a transaction on the block chain
+   * Executes a new message call immediately without creating a transaction on the blockchain
    */
-  call(callData: CallObject, blockNumber: number | string = 'latest'): Promise<any> {
+  call(callData: PartialTx, blockNumber: number | string = 'latest'): Promise<any> {
     return this.rpc.call('eth_call', [{ to: callData.to, data: callData.data }, blockNumber]);
   }
 
   /**
    * Executes a message call or transaction and returns the amount of the gas used
    */
-  estimateGas(call: CallObject): Promise<number> {
+  estimateGas(call: PartialTx): Promise<number> {
     const txData = {
       ...call,
       gas: call.gas !== undefined ? toHex(call.gas) : call.gas,
       nonce: call.nonce !== undefined ? toHex(call.nonce) : call.nonce,
     };
-    return this.rpc.call('eth_estimateGas', [txData]).then((gas: any) => toNumber(gas));
+
+    return this.rpc.call('eth_estimateGas', [txData]).then(toNumber);
   }
 
   /**
@@ -83,7 +98,7 @@ export class EthApi {
    *       we call it getBlockNumber(), FEF
    */
   getBlockNumber(): Promise<number> {
-    return this.rpc.call('eth_blockNumber', []).then((result: any) => toNumber(result));
+    return this.rpc.call('eth_blockNumber', []).then(toNumber);
   }
 
   /**
@@ -104,13 +119,16 @@ export class EthApi {
       typeof hashOrNumber === 'string' && hashOrNumber.indexOf('0x') === 0
         ? 'eth_getBlockByHash'
         : 'eth_getBlockByNumber';
+
     let block = hashOrNumber;
+
     if (method === 'eth_getBlockByNumber') {
       if (!isPredefinedBlockNumber(hashOrNumber)) {
         block = toHex(hashOrNumber);
       }
     }
-    return this.rpc.call(method, [block, full]).then((b: any) => formatBlock(b));
+
+    return this.rpc.call(method, [block, full]).then(formatBlock);
   }
 
   /**
@@ -142,12 +160,14 @@ export class EthApi {
 }
 
 export default class EthRpc {
-  rpc: JsonRpc;
   eth: EthApi;
+  ethers: EthersJsonRpc;
+  rpc: JsonRpc;
 
-  constructor(jsonRpc: JsonRpc) {
-    this.rpc = jsonRpc;
+  constructor(jsonRpc: JsonRpc, ethers: EthersJsonRpc) {
     this.eth = new EthApi(jsonRpc);
+    this.ethers = ethers;
+    this.rpc = jsonRpc;
   }
 
   raw(method: string, params: any): Promise<any> {

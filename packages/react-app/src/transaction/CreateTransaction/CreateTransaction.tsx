@@ -237,9 +237,9 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   };
 
-  public onChangeTo = (to: string) => {
+  public onChangeTo = (to: string | undefined) => {
     const tx = this.transaction;
-    tx.to = to;
+    tx.to = to ?? undefined;
     this.transaction = tx;
   };
 

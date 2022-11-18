@@ -1,18 +1,21 @@
-import {BlockchainCode} from '@emeraldwallet/core';
-import EthRpc from "./ethrpc";
+import { BlockchainCode } from '@emeraldwallet/core';
+import EthRpc from './ethrpc';
 
 export default class ChainRpcConnections {
-  private connections: Map<any, any> = new Map();
+  private connections: Map<string, EthRpc> = new Map();
 
-  public add (chainCode: any, connection: any) {
-    this.connections.set(chainCode.toLowerCase(), connection);
+  add(code: string, connection: EthRpc): void {
+    this.connections.set(code.toLowerCase(), connection);
   }
 
-  public chain (code: BlockchainCode): EthRpc {
-    const codeStr = code.toLowerCase();
-    if (!this.connections.has(codeStr)) {
-      throw new Error(`Unsupported chain: ${codeStr}`);
+  chain(blockchain: BlockchainCode): EthRpc {
+    const code = blockchain.toLowerCase();
+    const connection = this.connections.get(code);
+
+    if (connection == null) {
+      throw new Error(`Unsupported chain: ${code}`);
     }
-    return this.connections.get(codeStr);
+
+    return connection;
   }
 }

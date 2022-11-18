@@ -1,5 +1,5 @@
 import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
-import { IState, addressBook } from '@emeraldwallet/store';
+import { IState, addressBook, blockchains } from '@emeraldwallet/store';
 import { Input } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -9,19 +9,24 @@ import FormLabel from '../FormLabel';
 interface OwnProps {
   blockchain: BlockchainCode;
   to?: string;
-  onChange(value: string): void;
+  onChange(value: string | undefined): void;
 }
 
 interface StateProps {
   contacts: PersistentState.AddressbookItem[];
 }
 
+interface DispatchProps {
+  resolveName(blockchain: BlockchainCode, name: string): Promise<string | null>;
+}
+
 interface State {
   error: string | null;
+  resolved: string | null;
   value: string;
 }
 
-type Props = OwnProps & StateProps;
+type Props = OwnProps & StateProps & DispatchProps;
 
 class ToField extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -29,6 +34,7 @@ class ToField extends React.Component<Props, State> {
 
     this.state = {
       error: null,
+      resolved: null,
       value: props.to ?? '',
     };
   }
@@ -39,26 +45,41 @@ class ToField extends React.Component<Props, State> {
     return <AddressBookMenu contacts={contacts} onChange={(value) => this.onChange(value)} />;
   };
 
-  onChange = (value: string): void => {
-    this.setState({ value });
+  onChange = async (value: string): Promise<void> => {
+    this.setState({ value, error: null, resolved: null });
 
-    this.props.onChange(value);
+    const { blockchain, onChange, resolveName } = this.props;
 
-    if (value.length === 0) {
-      this.setState({ error: 'Required' });
+    if ((blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) && /\.eth$/.test(value)) {
+      onChange(undefined);
+
+      const resolved = await resolveName(this.props.blockchain, value);
+
+      if (resolved == null) {
+        this.setState({ error: 'Name not found' });
+      } else {
+        onChange(resolved);
+
+        this.setState({ resolved });
+      }
     } else {
-      this.setState({ error: null });
+      onChange(value);
+
+      if (value.length === 0) {
+        this.setState({ error: 'Required' });
+      }
     }
   };
 
   public render(): React.ReactElement {
-    const { error, value } = this.state;
+    const { error, resolved, value } = this.state;
 
     return (
       <>
         <FormLabel>To</FormLabel>
         <Input
           errorText={error}
+          hintText={resolved}
           rightIcon={this.getRightIcon()}
           value={value}
           onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => this.onChange(value)}
@@ -68,6 +89,14 @@ class ToField extends React.Component<Props, State> {
   }
 }
 
-export default connect<StateProps, {}, OwnProps, IState>((state, ownProps) => ({
-  contacts: addressBook.selectors.byBlockchain(state, ownProps.blockchain),
-}))(ToField);
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => ({
+    contacts: addressBook.selectors.byBlockchain(state, ownProps.blockchain),
+  }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
+    resolveName(blockchain, name) {
+      return dispatch(blockchains.actions.resolveName(blockchain, name));
+    },
+  }),
+)(ToField);

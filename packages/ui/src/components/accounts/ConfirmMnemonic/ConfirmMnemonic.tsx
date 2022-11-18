@@ -58,9 +58,9 @@ export function ConfirmMnemonic (props: IConfirmProps) {
               <div className={classes.mnemonicLabel}>Confirm your mnemonic phrase</div>
               <div>
                 <Input
+                  maxRows={4}
+                  minRows={4}
                   multiline={true}
-                  rowsMax={4}
-                  rows={4}
                   value={mnemonic}
                 />
               </div>

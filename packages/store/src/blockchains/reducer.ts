@@ -1,9 +1,9 @@
 import produce from 'immer';
-import { ActionTypes, BlockchainsAction, IBlockchainsState } from './types';
+import { ActionTypes, BlockchainsAction, BlockchainsState } from './types';
 
-export const INITIAL_STATE: IBlockchainsState = {};
+export const INITIAL_STATE: BlockchainsState = {};
 
-function onBlock (state: IBlockchainsState, payload: any): IBlockchainsState {
+function onBlock (state: BlockchainsState, payload: any): BlockchainsState {
   return produce(state, (draft) => {
     if (!draft[payload.blockchain]) {
       draft[payload.blockchain] = {
@@ -17,9 +17,9 @@ function onBlock (state: IBlockchainsState, payload: any): IBlockchainsState {
 
 
 export function reducer (
-  state: IBlockchainsState = INITIAL_STATE,
+  state: BlockchainsState = INITIAL_STATE,
   action: BlockchainsAction
-): IBlockchainsState {
+): BlockchainsState {
   if (!state) {
     state = INITIAL_STATE;
   }

@@ -13,27 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {shallow} from 'enzyme';
-import * as React from 'react';
-import {Input} from './Input';
 
-const reduceClasses = (prev, curr) => ({...prev, [curr]: curr});
-const classes = Object.keys({}).reduce(reduceClasses, {});
-const build = () => shallow(<Input classes={classes}/>);
+import { shallow } from 'enzyme';
+import * as React from 'react';
+import { Input } from './Input';
 
 describe('Input', () => {
   it('Renders', () => {
-    const component = build();
+    const component = shallow(<Input />);
+
     expect(component).toBeDefined();
   });
 
   it('should wrap TextField', () => {
-    const wrapper = shallow(<Input classes={classes}/>);
-    expect(wrapper.first().name()).toContain('TextField');
+    const component = shallow(<Input />);
+
+    expect(component.first().name()).toContain('TextField');
   });
 
   it('should has type prop', () => {
-    const component = shallow(<Input type='number' classes={classes}/>);
+    const component = shallow(<Input type="number" />);
+
     expect(component).toBeDefined();
   });
 });
