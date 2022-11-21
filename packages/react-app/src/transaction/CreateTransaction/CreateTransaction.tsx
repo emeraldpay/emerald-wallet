@@ -174,7 +174,13 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
 
     let { amount } = this.state.transaction;
 
+    // The user may switch from one asset to another. i.e., initially he entered an amount for ETH then switched the
+    // token to USDT. Which also suppose to switch to different decimals (18 -> 6) but keep the same human-readable
+    // value (i.e. entered 123.45 ETH which should became 123.45 USDT)
+
+    // here we have a ERC20 to transfer
     if (Blockchains[blockchain].params.coinTicker !== token) {
+      // and asset has changed
       if (token !== transactionToken) {
         amount = new BigAmount(decoder(amount).toEther().valueOf(), tokenUnits(token)).encode();
       }
@@ -182,6 +188,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       return workflow.CreateERC20Tx.fromPlain({ ...this.state.transaction, amount, tokenSymbol: token });
     }
 
+    // here we have a native ETH, but switched from ERC20
     if (token !== transactionToken && !isCoinTickerCode(transactionToken)) {
       const units = tokenUnits(transactionToken);
 
