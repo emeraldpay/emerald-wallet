@@ -1,8 +1,15 @@
 import { SeedDescription, Uuid } from "@emeraldpay/emerald-vault-core";
 import { BlockchainCode } from "@emeraldwallet/core";
-import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
+import { HDPathIndexes } from '@emeraldwallet/store';
 import { ImportPkType } from '@emeraldwallet/ui';
 import {
+  KeySourceType,
+  KeysSource,
+  Result,
+  SeedCreate,
+  StepDescription,
+  StepDetails,
+  TWalletOptions,
   defaultResult,
   isLedger,
   isLedgerStart,
@@ -11,13 +18,6 @@ import {
   isPkRaw,
   isSeedCreate,
   isSeedSelected,
-  KeySourceType,
-  KeysSource,
-  Result,
-  SeedCreate,
-  StepDescription,
-  StepDetails,
-  TWalletOptions,
 } from "./types";
 
 export enum STEP_CODE {
@@ -103,7 +103,6 @@ export class CreateWalletFlow {
     const useSeedBased = isSeedCreate(this.result.type) || isSeedSelected(this.result.type);
     const useLedger = isLedgerStart(this.result.type) || isLedger(this.result.type);
     const needHdAccount = useSeedBased || useLedger;
-    const needBlockchain = this.result.type != "empty";
 
     const result: StepDescription[] = [];
     result.push(STEPS[STEP_CODE.KEY_SOURCE]);
@@ -122,9 +121,8 @@ export class CreateWalletFlow {
       result.push(STEPS[STEP_CODE.LEDGER_OPEN]);
     }
 
-    if (needBlockchain) {
-      result.push(STEPS[STEP_CODE.SELECT_BLOCKCHAIN]);
-    }
+    result.push(STEPS[STEP_CODE.SELECT_BLOCKCHAIN]);
+
     if (isSeedSelected(this.result.type)) {
       result.push(STEPS[STEP_CODE.UNLOCK_SEED]);
     }
@@ -212,10 +210,7 @@ export class CreateWalletFlow {
     const copy = this.copy();
 
     if (this.step == STEP_CODE.OPTIONS) {
-      if (this.result.type == 'empty') {
-        this.onCreate(this.result);
-        copy.step = STEP_CODE.CREATED;
-      } else if (isSeedSelected(this.result.type)) {
+      if (isSeedSelected(this.result.type)) {
         copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
       } else if (isSeedCreate(this.result.type)) {
         if (this.result.type.type == KeySourceType.SEED_GENERATE) {

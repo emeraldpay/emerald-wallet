@@ -51,6 +51,8 @@ export {
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';
 
+export { HDPathIndexes } from './hdpath-preview/types';
+
 export { StoredTransaction } from './txhistory/types';
 
 export { default as rootReducer } from './root-reducer';

@@ -77,8 +77,7 @@ function isValidMnemonic(text: string): boolean {
 }
 
 /**
- * Multistep wizard to create a new Wallet. The wallet can be created from an existing or new seed, private key, or just
- * empty without any account initially.
+ * Multistep wizard to create a new Wallet. The wallet can be created from an existing/new seed or private key.
  */
 export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
   blockchains,
