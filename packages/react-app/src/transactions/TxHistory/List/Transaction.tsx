@@ -339,8 +339,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
         {tx.changes
           .filter((change) => change.amountValue.isPositive())
           .reduce<Change[]>((carry, change) => {
-            // TODO Remove second condition
-            if (change.wallet == null || change.wallet === '-0') {
+            if (change.wallet == null) {
               return carry;
             }
 
