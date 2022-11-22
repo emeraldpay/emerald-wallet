@@ -1,8 +1,10 @@
-import { workflow } from '@emeraldwallet/core';
+import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { blockchains } from '@emeraldwallet/store';
 import { ArrowRight, Button, ButtonGroup, IdentityIcon, PasswordInput } from '@emeraldwallet/ui';
 import { Divider, List, ListItem, ListItemText, StyleRules, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
+import { connect } from 'react-redux';
 
 const styles = (theme: Theme): StyleRules => ({
   formRow: {
@@ -28,7 +30,11 @@ const styles = (theme: Theme): StyleRules => ({
   },
 });
 
-interface IProps {
+interface DispatchProps {
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
+}
+
+interface IProps extends DispatchProps {
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   fiatCurrency?: any;
   fiatRate?: any;
@@ -43,10 +49,11 @@ interface IProps {
 }
 
 interface IState {
+  nameByAddress: Record<string, string>;
   password: string;
 }
 
-const HorizontalAddressWithIdentity = (props: { hide: boolean; address: string }) => {
+const HorizontalAddressWithIdentity = (props: { hide: boolean; address: string; name?: string }) => {
   if (props.hide) {
     return null;
   }
@@ -54,6 +61,7 @@ const HorizontalAddressWithIdentity = (props: { hide: boolean; address: string }
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
       <IdentityIcon size={60} id={props.address} />
       <div style={{ paddingTop: '10px' }}>{props.address}</div>
+      <div style={{ paddingTop: '10px' }}>{props.name == null ? <>&nbsp;</> : props.name}</div>
     </div>
   );
 };
@@ -123,7 +131,38 @@ const getTypedDataOrDeploy = (props: IProps) => {
 class SignTx extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { password: '' };
+
+    this.state = {
+      nameByAddress: {},
+      password: '',
+    };
+  }
+
+  async componentDidMount() {
+    const {
+      tx: { blockchain, from, to },
+      lookupAddress,
+    } = this.props;
+
+    const nameByAddress: Record<string, string> = {};
+
+    if (from != null) {
+      const name = await lookupAddress(blockchain, from);
+
+      if (name != null) {
+        nameByAddress[from] = name;
+      }
+    }
+
+    if (to != null) {
+      const name = await lookupAddress(blockchain, to);
+
+      if (name != null) {
+        nameByAddress[to] = name;
+      }
+    }
+
+    this.setState({ nameByAddress });
   }
 
   public handlePasswordChange = (password: string) => {
@@ -135,8 +174,8 @@ class SignTx extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { classes, tx } = this.props;
-    const { onCancel, onSubmit } = this.props;
+    const { classes, tx, onCancel, onSubmit } = this.props;
+    const { nameByAddress } = this.state;
     // const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
     const hideAccounts = tx.to === '0';
     const display = tx.display();
@@ -144,7 +183,7 @@ class SignTx extends React.Component<IProps, IState> {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-          <HorizontalAddressWithIdentity address={tx.from!} hide={hideAccounts} />
+          <HorizontalAddressWithIdentity address={tx.from!} hide={hideAccounts} name={nameByAddress[tx.from!]} />
           <div
             style={{
               display: 'flex',
@@ -163,7 +202,7 @@ class SignTx extends React.Component<IProps, IState> {
               <ArrowRight />
             </div>
           </div>
-          <HorizontalAddressWithIdentity address={tx.to!} hide={hideAccounts} />
+          <HorizontalAddressWithIdentity address={tx.to!} hide={hideAccounts} name={nameByAddress[tx.to!]} />
         </div>
         <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
           <span className={classes.fee}>
@@ -202,4 +241,12 @@ class SignTx extends React.Component<IProps, IState> {
   }
 }
 
-export default withStyles(styles)(SignTx);
+export default connect<unknown, DispatchProps>(
+  null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
+    lookupAddress(blockchain, address) {
+      return dispatch(blockchains.actions.lookupAddress(blockchain, address));
+    },
+  }),
+)(withStyles(styles)(SignTx));

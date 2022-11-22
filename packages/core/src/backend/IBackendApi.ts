@@ -12,5 +12,6 @@ export default interface IBackendApi {
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null>;
   getEthTx(blockchain: BlockchainCode, hash: string): Promise<EthereumRawTransaction | null>;
   getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Promise<number | undefined>;
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
   resolveName(blockchain: BlockchainCode, name: string): Promise<string | null>;
 }

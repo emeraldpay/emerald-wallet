@@ -9,6 +9,10 @@ export function blockAction(block: Block): BlockAction {
   };
 }
 
-export function resolveName(blockchain: BlockchainCode, address: string): Dispatched<string | null> {
-  return (dispatch, getState, extra) => extra.backendApi.resolveName(blockchain, address);
+export function lookupAddress(blockchain: BlockchainCode, address: string): Dispatched<string | null> {
+  return (dispatch, getState, extra) => extra.backendApi.lookupAddress(blockchain, address);
+}
+
+export function resolveName(blockchain: BlockchainCode, name: string): Dispatched<string | null> {
+  return (dispatch, getState, extra) => extra.backendApi.resolveName(blockchain, name);
 }
