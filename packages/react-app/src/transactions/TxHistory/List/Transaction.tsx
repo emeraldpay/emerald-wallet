@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) =>
     changeItemAmount: {
       alignItems: 'center',
       display: 'flex',
+      justifyContent: 'space-between',
       lineHeight: '24px',
       marginTop: 5,
     },
@@ -338,6 +339,13 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       <div className={styles.changes}>
         {tx.changes
           .filter((change) => change.amountValue.isPositive())
+          .sort((first, second) => {
+            if (first.direction === second.direction) {
+              return 0;
+            }
+
+            return first.direction > second.direction ? -1 : 1;
+          })
           .reduce<Change[]>((carry, change) => {
             if (change.wallet == null) {
               return carry;

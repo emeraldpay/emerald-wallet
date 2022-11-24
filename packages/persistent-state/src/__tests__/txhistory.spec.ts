@@ -1,4 +1,4 @@
-import { BlockchainCode , PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { tempPath } from './_commons';
 import { PersistentStateImpl } from '../api';
 
@@ -10,7 +10,8 @@ describe('Tx History', () => {
   beforeEach(() => {
     state = new PersistentStateImpl(tempPath('tx-history'));
   });
-  afterEach( () => {
+
+  afterEach(() => {
     state.close();
   });
 
@@ -51,10 +52,10 @@ describe('Tx History', () => {
 
     await state.txhistory.submit(tx);
 
-    const actPrepared = await state.txhistory.query({state: State.PREPARED});
+    const actPrepared = await state.txhistory.query({ state: State.PREPARED });
     expect(actPrepared).toEqual({ items: [tx], cursor: null });
 
-    const actDropped = await state.txhistory.query({state: State.DROPPED});
+    const actDropped = await state.txhistory.query({ state: State.DROPPED });
     expect(actDropped).toEqual({ items: [], cursor: null });
 
     const actAll = await state.txhistory.query();
@@ -73,17 +74,17 @@ describe('Tx History', () => {
 
     await state.txhistory.submit(tx);
 
-    const actUnknown = await state.txhistory.query({status: Status.UNKNOWN});
+    const actUnknown = await state.txhistory.query({ status: Status.UNKNOWN });
     expect(actUnknown).toEqual({ items: [tx], cursor: null });
 
-    const actOk = await state.txhistory.query({status: Status.OK});
+    const actOk = await state.txhistory.query({ status: Status.OK });
     expect(actOk).toEqual({ items: [], cursor: null });
 
     const actAll = await state.txhistory.query();
     expect(actAll).toEqual({ items: [tx], cursor: null });
   });
 
-  test("add a tx and query using cursor", async () => {
+  test('add a tx and query using cursor', async () => {
     for (let i = 0; i < 10; i++) {
       const tx: PersistentState.Transaction = {
         blockchain: blockchainCodeToId(BlockchainCode.ETH),
@@ -91,7 +92,7 @@ describe('Tx History', () => {
         state: State.PREPARED,
         sinceTimestamp: new Date(`2021-03-05T10:00:${25 - i}`),
         status: Status.UNKNOWN,
-        changes: []
+        changes: [],
       };
 
       await state.txhistory.submit(tx);
@@ -100,31 +101,31 @@ describe('Tx History', () => {
     const page1 = await state.txhistory.query({}, { limit: 5 });
 
     expect(page1.items.length).toBe(5);
-    expect(page1.items[0].txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44000");
+    expect(page1.items[0].txId).toBe('0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44000');
     expect(page1.cursor).toBeDefined();
 
-    const page2 = await state.txhistory.query({}, { cursor: page1.cursor, limit: 5});
+    const page2 = await state.txhistory.query({}, { cursor: page1.cursor, limit: 5 });
 
     expect(page2.items.length).toBe(5);
-    expect(page2.items[0].txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44005");
+    expect(page2.items[0].txId).toBe('0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44005');
   });
 
-  test("add a tx returns itself", async () => {
+  test('add a tx returns itself', async () => {
     const tx: PersistentState.Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
-      txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
+      txId: '0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
       state: State.PREPARED,
-      sinceTimestamp: new Date("2021-03-05T10:11:12Z"),
+      sinceTimestamp: new Date('2021-03-05T10:11:12Z'),
       status: Status.UNKNOWN,
-      changes: []
+      changes: [],
     };
 
     const act = await state.txhistory.submit(tx);
 
     expect(act).toBeDefined();
-    expect(act.txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563");
+    expect(act.txId).toBe('0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563');
     // make sure it's actual date, not a string. a date keeps timezone and millis
-    expect(act.sinceTimestamp.toISOString()).toBe("2021-03-05T10:11:12.000Z");
+    expect(act.sinceTimestamp.toISOString()).toBe('2021-03-05T10:11:12.000Z');
   });
 
   test('add a tx, remove it and query all', async () => {
@@ -217,6 +218,7 @@ describe('Tx History', () => {
     };
 
     let act = await state.txhistory.query(filter);
+
     expect(act.items.length).toBe(1);
     expect(act.items[0].txId).toBe(tx1.txId);
     expect(act.items[0].changes.length).toBe(1);
@@ -348,5 +350,54 @@ describe('Tx History', () => {
     expect(act.items[0].changes[0].address).toBe('0xf958f1dc9290422d3624b72fc871a8ebb0387f56');
     expect(act.items[0].changes[0].wallet).toBe('e4bf870e-6247-4465-a476-ad99716c38ce-0');
     expect(act.items[0].changes[1].wallet).toBeUndefined();
+  });
+
+  test('merge tx', async () => {
+    let txBefore: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: '0xf5292c8d395b4f19a64fe0bbe8c9a59f046c9dc00752455a90507540a130fa69',
+      state: State.PREPARED,
+      status: Status.UNKNOWN,
+      sinceTimestamp: new Date('2022-11-23T10:11:12Z'),
+      changes: [
+        {
+          asset: 'ETH',
+          address: '0xf958f1dc9290422d3624b72fc871a8ebb0387f56',
+          amount: '50000000000000000000',
+          direction: Direction.SPEND,
+          type: ChangeType.TRANSFER,
+          wallet: 'e4bf870e-6247-4465-a476-ad99716c38ce-0',
+        },
+        {
+          asset: 'ETH',
+          address: '0xf958f1dc9290422d3624b72fc871a8ebb0387f56',
+          amount: '50000000000',
+          direction: Direction.SPEND,
+          type: ChangeType.FEE,
+          wallet: 'e4bf870e-6247-4465-a476-ad99716c38ce-0',
+        },
+        {
+          asset: 'ETH',
+          address: '0x8ebb0387f56f958f1d3624b72fc871ac9290422d',
+          amount: '50000000000000000000',
+          direction: Direction.EARN,
+          type: ChangeType.TRANSFER,
+        },
+      ],
+    };
+
+    txBefore = await state.txhistory.submit(txBefore);
+
+    let txAfter = { ...txBefore };
+
+    txAfter.changes = txAfter.changes.filter((change) => change.type !== ChangeType.FEE);
+    txAfter.state = State.CONFIRMED;
+    txAfter.status = Status.OK;
+
+    txAfter = await state.txhistory.submit(txAfter);
+
+    expect(txAfter.changes).toEqual(expect.arrayContaining([expect.objectContaining({ type: ChangeType.FEE })]));
+    expect(txAfter.state).toEqual(State.CONFIRMED);
+    expect(txAfter.status).toEqual(Status.OK);
   });
 });

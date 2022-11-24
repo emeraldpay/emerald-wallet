@@ -127,6 +127,7 @@ export interface Transaction {
    * Changes and references to the user wallets
    */
   changes: Change[];
+  version?: number;
 }
 
 /**

@@ -56,6 +56,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   state: PersistentState.State;
   status: PersistentState.Status;
   txId: string;
+  version?: number;
 
   changes: StoredTransactionChange[];
   meta: PersistentState.TxMeta | null;
@@ -68,6 +69,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
     this.state = tx.state;
     this.status = tx.status;
     this.txId = tx.txId;
+    this.version = tx.version;
 
     this.changes = tx.changes.map((change) => new StoredTransactionChange(tx.blockchain, change));
     this.meta = meta;
