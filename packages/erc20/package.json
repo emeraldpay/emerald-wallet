@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/erc20",
-  "version": "2.8.0-dev",
+  "version": "2.8.0",
   "description": "ERC20 Tokens",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldwallet/core": "^2.8.0-dev",
+    "@emeraldwallet/core": "^2.8.0",
     "@ethersproject/abi": "^5.7.0"
   },
   "devDependencies": {
