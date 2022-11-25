@@ -30,4 +30,4 @@ jobs:
         run: jsgl --local .
 
       - name: Check dependencies
-        run: paranoid -p -e @emeraldpay/*,@emeraldwallet/* .
+        run: paranoid -p -u -e @emeraldpay/*,@emeraldwallet/* .

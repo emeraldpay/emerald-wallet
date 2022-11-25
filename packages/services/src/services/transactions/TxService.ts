@@ -193,7 +193,7 @@ export class TxService implements IService {
                     txId: tx.txId,
                   })
                   .then((merged) => {
-                    if ((tx.cursor?.length ?? 0) > 0) {
+                    if (tx.cursor != null && tx.cursor.length > 0) {
                       this.persistentState.txhistory.setCursor(identifier, tx.cursor);
                     }
 
