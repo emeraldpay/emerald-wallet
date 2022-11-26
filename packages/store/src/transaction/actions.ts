@@ -181,119 +181,111 @@ export function broadcastTx({
     try {
       await extra.backendApi.broadcastSignedTx(blockchain, signed);
 
-      const state = getState();
+      let changes: PersistentState.Change[] = [];
 
-      let storedTransaction = state.history.transactions.find((tx) => tx.txId === txId);
+      const feeChange = {
+        asset: fee.units.top.code as AnyCoinCode,
+        amount: fee.number.toString(),
+        direction: Direction.SPEND,
+        type: ChangeType.FEE,
+      };
 
-      if (storedTransaction == null) {
-        let changes: PersistentState.Change[] = [];
+      if (isBitcoin(blockchain)) {
+        const asset = blockchain === BlockchainCode.TestBTC ? 'TESTBTC' : 'BTC';
+        const bitcoinTx = tx as UnsignedBitcoinTx;
 
-        const feeChange = {
-          asset: fee.units.top.code as AnyCoinCode,
-          amount: fee.number.toString(),
-          direction: Direction.SPEND,
-          type: ChangeType.FEE,
-        };
+        changes = [feeChange]
+          .concat(
+            bitcoinTx.inputs.map<PersistentState.Change>((input) => ({
+              asset,
+              address: input.address,
+              amount: input.amount.toString(),
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+              wallet: input.entryId,
+            })),
+          )
+          .concat(
+            bitcoinTx.outputs.map((output) => ({
+              asset,
+              address: output.address,
+              amount: output.amount.toString(),
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+              wallet: output.entryId,
+            })),
+          );
+      } else if (isEthereum(blockchain)) {
+        const ethereumTx = tx as EthereumTransaction;
 
-        if (isBitcoin(blockchain)) {
-          const asset = blockchain === BlockchainCode.TestBTC ? 'TESTBTC' : 'BTC';
-          const bitcoinTx = tx as UnsignedBitcoinTx;
+        if (originalAmount != null) {
+          const amount = originalAmount.number.toString();
+          const asset = originalAmount.units.top.code as AnyCoinCode;
 
-          changes = [feeChange]
-            .concat(
-              bitcoinTx.inputs.map<PersistentState.Change>((input) => ({
-                asset,
-                address: input.address,
-                amount: input.amount.toString(),
-                direction: Direction.SPEND,
-                type: ChangeType.TRANSFER,
-                wallet: input.entryId,
-              })),
-            )
-            .concat(
-              bitcoinTx.outputs.map((output) => ({
-                asset,
-                address: output.address,
-                amount: output.amount.toString(),
-                direction: Direction.EARN,
-                type: ChangeType.TRANSFER,
-                wallet: output.entryId,
-              })),
-            );
-        } else if (isEthereum(blockchain)) {
-          const ethereumTx = tx as EthereumTransaction;
-
-          if (originalAmount != null) {
-            const amount = originalAmount.number.toString();
-            const asset = originalAmount.units.top.code as AnyCoinCode;
-
-            changes = [
-              {
-                ...feeChange,
-                address: ethereumTx.from,
-              },
-              {
-                amount,
-                asset,
-                address: ethereumTx.from,
-                direction: Direction.SPEND,
-                type: ChangeType.TRANSFER,
-                wallet: entryId,
-              },
-              {
-                amount,
-                asset,
-                address: ethereumTx.to,
-                direction: Direction.EARN,
-                type: ChangeType.TRANSFER,
-              },
-            ];
-          }
-
-          if (tokenAmount != null) {
-            const amount = tokenAmount.number.toString();
-            const asset = tokenAmount.units.top.code as AnyCoinCode;
-
-            changes = [
-              ...changes,
-              {
-                amount,
-                asset,
-                address: ethereumTx.to,
-                direction: Direction.SPEND,
-                type: ChangeType.TRANSFER,
-              },
-              {
-                amount,
-                asset,
-                address: ethereumTx.from,
-                direction: Direction.EARN,
-                type: ChangeType.TRANSFER,
-                wallet: entryId,
-              },
-            ];
-          }
+          changes = [
+            {
+              ...feeChange,
+              address: ethereumTx.from,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.from,
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+              wallet: entryId,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.to,
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+            },
+          ];
         }
 
-        const transaction = await extra.api.txHistory.submit({
-          changes,
-          txId,
-          blockchain: blockchainCodeToId(blockchain),
-          sinceTimestamp: new Date(),
-          state: State.SUBMITTED,
-          status: Status.UNKNOWN,
-        });
+        if (tokenAmount != null) {
+          const amount = tokenAmount.number.toString();
+          const asset = tokenAmount.units.top.code as AnyCoinCode;
 
-        storedTransaction = new StoredTransaction(transaction, null);
-
-        const wallet = findWalletByEntryId(state, entryId);
-
-        if (wallet != null) {
-          dispatch(updateTransaction(wallet.id, transaction, null));
+          changes = [
+            ...changes,
+            {
+              amount,
+              asset,
+              address: ethereumTx.to,
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.from,
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+              wallet: entryId,
+            },
+          ];
         }
       }
 
-      dispatch(gotoScreen(Pages.TX_DETAILS, storedTransaction));
+      const transaction = await extra.api.txHistory.submit({
+        changes,
+        txId,
+        blockchain: blockchainCodeToId(blockchain),
+        sinceTimestamp: new Date(),
+        state: State.SUBMITTED,
+        status: Status.UNKNOWN,
+      });
+
+      const wallet = findWalletByEntryId(getState(), entryId);
+
+      if (wallet != null) {
+        dispatch(updateTransaction(wallet.id, transaction, null));
+      }
+
+      dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(transaction, null)));
     } catch (exception) {
       if (exception instanceof Error) {
         dispatch(showError(exception));
