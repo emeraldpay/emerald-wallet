@@ -26,6 +26,7 @@ import { catchError, gotoScreen, showError } from '../screen/actions';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction } from '../txhistory/types';
 import { DEFAULT_FEE, DefaultFee, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
+import { WrappedError } from '../WrappedError';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -288,7 +289,9 @@ export function broadcastTx({
       dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(transaction, null)));
     } catch (exception) {
       if (exception instanceof Error) {
-        dispatch(showError(exception));
+        const transaction = getState().history.transactions.find((tx) => tx.txId === txId);
+
+        dispatch(showError(new WrappedError(exception, transaction)));
       }
     }
   };
