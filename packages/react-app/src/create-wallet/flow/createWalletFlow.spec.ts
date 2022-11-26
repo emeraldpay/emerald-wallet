@@ -1,26 +1,12 @@
-import {CreateWalletFlow, STEP_CODE} from "./createWalletFlow";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {defaultResult, KeySourceType, Result} from "./types";
+import {CreateWalletFlow, STEP_CODE} from "./createWalletFlow";
+import {KeySourceType, Result, defaultResult} from "./types";
 
-const noCreate = () => {
+const noCreate = (): void => {
+  // Nothing
 };
 
 describe("Select Source Type", () => {
-
-  it("when empty selected", () => {
-    const start = new CreateWalletFlow(noCreate);
-    expect(start.canGoNext()).toBeFalsy();
-    const act = start
-      .applySource("empty");
-
-    expect(act.getCurrentStep().code).toBe(STEP_CODE.OPTIONS);
-    expect(act.getCurrentStep().index).toBe(1);
-
-    expect(act.getSteps().length).toBe(3);
-    expect(act.getSteps()[0].code).toBe(STEP_CODE.KEY_SOURCE);
-    expect(act.getSteps()[1].code).toBe(STEP_CODE.OPTIONS);
-    expect(act.getSteps()[2].code).toBe(STEP_CODE.CREATED);
-  });
 
   it("when seed selected", () => {
     const start = new CreateWalletFlow(noCreate);
@@ -70,21 +56,6 @@ describe("Select Options", () => {
     expect(act.getSteps().length).toBe(6);
   });
 
-  it("creates if empty source", () => {
-    const initial: Result = {
-      ...defaultResult(),
-      type: 'empty'
-    }
-    let result: Result | undefined = undefined;
-    const start = CreateWalletFlow.create(initial, STEP_CODE.OPTIONS, (it) => result = it);
-    const act = start
-      .applyOptions({label: "test"})
-      .applyNext();
-    expect(result).toBeDefined();
-    expect(result!.type).toBe("empty");
-    expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED)
-  });
-
   it("goes to import key", () => {
     const initial: Result = {
       ...defaultResult(),
@@ -108,7 +79,7 @@ describe("Generate Mnemonic", () => {
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_GENERATE, noCreate);
     expect(start.canGoNext()).toBeFalsy();
-    let act = start
+    const act = start
       .applyMnemonic("test test test", undefined);
     expect(act.getMnemonic()).toEqual({
       type: KeySourceType.SEED_GENERATE,
@@ -160,7 +131,7 @@ describe("Import Mnemonic", () => {
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_IMPORT, noCreate);
     expect(start.canGoNext()).toBeFalsy();
-    let act = start
+    const act = start
       .applyMnemonic("test test test", "test");
     expect(act.getMnemonic()).toEqual({
       type: KeySourceType.SEED_IMPORT,
@@ -179,7 +150,7 @@ describe("Lock seed", () => {
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.LOCK_SEED, noCreate);
     expect(start.canGoNext()).toBeFalsy();
-    let act = start
+    const act = start
       .applyMnemonicSaved("test-uuid", "testpwd");
     expect(act.getResult().seed).toEqual({
       type: "id", value: "test-uuid", password: "testpwd"
@@ -223,6 +194,7 @@ describe("Select Blockchain", () => {
       ...defaultResult(),
       type: {
         json: "{}",
+        jsonPassword: "",
         password: "",
         type: KeySourceType.PK_WEB3_JSON,
       },
@@ -268,7 +240,7 @@ describe("Account", () => {
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_HD_ACCOUNT, (it) => result = it);
     expect(start.canGoNext()).toBeFalsy();
     let act = start
-      .applyHDAccount(1);
+      .applyHDAccount(1, { [BlockchainCode.ETH]: '' }, { [BlockchainCode.ETH]: 1 });
     expect(act.canGoNext()).toBeTruthy();
     act = act.applyNext();
     expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED)

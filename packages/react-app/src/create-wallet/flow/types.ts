@@ -52,9 +52,8 @@ export type KeysSource =
   | PkImportJson
   | PkImportRaw
   | PkImportAny
-  | 'empty'
-  | 'start-ledger'
-  | LedgerSeed;
+  | LedgerSeed
+  | 'start-ledger';
 
 export function isSeedSelected(obj: KeysSource): obj is SeedSelected {
   return typeof obj == 'object' && obj.type == KeySourceType.SEED_SELECTED
@@ -102,7 +101,9 @@ export interface Result {
 
 export function defaultResult(): Result {
   return {
-    type: 'empty',
+    type: {
+      type: KeySourceType.SEED_GENERATE
+    },
     options: {},
     blockchains: [],
     addresses: {},

@@ -2,7 +2,6 @@ import * as vault from "@emeraldpay/emerald-vault-core";
 import {Ledger} from '@emeraldwallet/ui';
 import {List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import AddBoxIcon from '@material-ui/icons/AddBox';
-import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import * as React from "react";
@@ -120,19 +119,6 @@ const Component: React.FC<OwnProps> = (
       />
     </ListItem>
 
-    const nothing = <ListItem
-      key={"nothing"}
-      onClick={() => onSelect('empty')}
-    >
-      <ListItemIcon>
-        <ExposureZeroIcon />
-      </ListItemIcon>
-      <ListItemText
-        primary={"Create empty wallet"}
-        secondary={"Create a new empty wallet and add coins and addresses later"}
-      />
-    </ListItem>
-
     return <List>
       {seedsList}
       {importLedger}
@@ -140,7 +126,6 @@ const Component: React.FC<OwnProps> = (
       {importSeed}
       {useKey}
       {useJson}
-      {nothing}
     </List>
 
   }
