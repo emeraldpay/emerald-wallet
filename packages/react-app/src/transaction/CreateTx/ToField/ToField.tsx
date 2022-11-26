@@ -1,4 +1,4 @@
-import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, PersistentState } from '@emeraldwallet/core';
 import { IState, addressBook, blockchains } from '@emeraldwallet/store';
 import { Input } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -17,12 +17,13 @@ interface StateProps {
 }
 
 interface DispatchProps {
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
   resolveName(blockchain: BlockchainCode, name: string): Promise<string | null>;
 }
 
 interface State {
   error: string | null;
-  resolved: string | null;
+  hint: string | null;
   value: string;
 }
 
@@ -34,7 +35,7 @@ class ToField extends React.Component<Props, State> {
 
     this.state = {
       error: null,
-      resolved: null,
+      hint: null,
       value: props.to ?? '',
     };
   }
@@ -46,21 +47,33 @@ class ToField extends React.Component<Props, State> {
   };
 
   onChange = async (value: string): Promise<void> => {
-    this.setState({ value, error: null, resolved: null });
+    this.setState({ value, error: null, hint: null });
 
-    const { blockchain, onChange, resolveName } = this.props;
+    const { blockchain, onChange, lookupAddress, resolveName } = this.props;
 
-    if ((blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) && /\.eth$/.test(value)) {
-      onChange(undefined);
+    if (blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) {
+      if (/\.eth$/.test(value)) {
+        onChange(undefined);
 
-      const resolved = await resolveName(this.props.blockchain, value);
+        const address = await resolveName(blockchain, value);
 
-      if (resolved == null) {
-        this.setState({ error: 'Name not found' });
+        if (address == null) {
+          this.setState({ error: 'Name not found' });
+        } else {
+          onChange(address);
+
+          this.setState({ hint: address });
+        }
       } else {
-        onChange(resolved);
+        onChange(value);
 
-        this.setState({ resolved });
+        if (Blockchains[blockchain].isValidAddress(value)) {
+          const name = await lookupAddress(blockchain, value);
+
+          if (name != null) {
+            this.setState({ hint: name });
+          }
+        }
       }
     } else {
       onChange(value);
@@ -72,14 +85,14 @@ class ToField extends React.Component<Props, State> {
   };
 
   public render(): React.ReactElement {
-    const { error, resolved, value } = this.state;
+    const { error, hint, value } = this.state;
 
     return (
       <>
         <FormLabel>To</FormLabel>
         <Input
           errorText={error}
-          hintText={resolved}
+          hintText={hint}
           rightIcon={this.getRightIcon()}
           value={value}
           onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => this.onChange(value)}
@@ -95,6 +108,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
+    lookupAddress(blockchain, address) {
+      return dispatch(blockchains.actions.lookupAddress(blockchain, address));
+    },
     resolveName(blockchain, name) {
       return dispatch(blockchains.actions.resolveName(blockchain, name));
     },

@@ -1,5 +1,6 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import {
+  BlockchainCode,
   EthereumReceipt,
   EthereumTransaction,
   PersistentState,
@@ -8,7 +9,7 @@ import {
   formatAmount,
   isEthereum,
 } from '@emeraldwallet/core';
-import { IState, StoredTransaction, screen, transaction, txhistory } from '@emeraldwallet/store';
+import { IState, StoredTransaction, blockchains, screen, transaction, txhistory } from '@emeraldwallet/store';
 import { Address, Back, Balance, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { Typography, createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -20,6 +21,11 @@ const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
 const styles = createStyles({
+  addressField: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+  },
   idField: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -33,6 +39,8 @@ const styles = createStyles({
     width: '100%',
   },
 });
+
+type EnsLookup = { address: string; name: string };
 
 interface OwnProps {
   tx?: StoredTransaction;
@@ -50,6 +58,7 @@ interface DispatchProps {
   goToDashboard(): void;
   goToReceipt(tx: StoredTransaction): void;
   goToSpeedUpTx(tx: EthereumTransaction): void;
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
 }
 
 interface StylesProps {
@@ -66,7 +75,9 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
   goToDashboard,
   goToReceipt,
   goToSpeedUpTx,
+  lookupAddress,
 }) => {
+  const [nameByAddress, setNameByAddress] = React.useState<Record<string, string>>({});
   const [ethReceipt, setEthReceipt] = React.useState<EthereumReceipt | null>(null);
   const [ethTx, setEthTx] = React.useState<EthereumTransaction | null>(null);
 
@@ -108,9 +119,31 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
 
         setEthReceipt(receipt);
         setEthTx(tx);
+
+        const ensLookup: Array<EnsLookup | null> = await Promise.all(
+          transaction.changes.map(async ({ address }) => {
+            if (address == null) {
+              return null;
+            }
+
+            const name = await lookupAddress(blockchain.params.code, address);
+
+            if (name == null) {
+              return null;
+            }
+
+            return { address, name };
+          }, []),
+        );
+
+        setNameByAddress(
+          ensLookup
+            .filter((item): item is EnsLookup => item != null)
+            .reduce((carry, { address, name }) => ({ ...carry, [address]: name }), {}),
+        );
       })();
     }
-  }, [blockchain, transaction, getEthReceipt, getEthTx]);
+  }, [blockchain, transaction, getEthReceipt, getEthTx, lookupAddress]);
 
   return (
     <Page title="Transaction Details" leftIcon={<Back onClick={() => goBack()} />}>
@@ -141,21 +174,31 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
           {txChanges.length > 0 && (
             <>
               <br />
-              {txChanges.map((change, index) => (
-                <div key={`${change.address}-${index}`}>
-                  <FormRow
-                    leftColumn={
-                      <div className={classes.nameField}>{change.direction === Direction.EARN ? 'To' : 'From'}</div>
-                    }
-                    rightColumn={
-                      <>
-                        <Address address={change.address ?? 'Unknown address'} disableCopy={change.address == null} />
-                        <Balance balance={change.amountValue} />
-                      </>
-                    }
-                  />
-                </div>
-              ))}
+              {txChanges.map((change, index) => {
+                const name = change.address == null ? undefined : nameByAddress[change.address];
+
+                return (
+                  <div key={`${change.address}-${index}`}>
+                    <FormRow
+                      leftColumn={
+                        <div className={classes.nameField}>{change.direction === Direction.EARN ? 'To' : 'From'}</div>
+                      }
+                      rightColumn={
+                        <>
+                          <div className={classes.addressField}>
+                            <Address
+                              address={change.address ?? 'Unknown address'}
+                              disableCopy={change.address == null}
+                            />
+                            {name != null && <Address address={name} />}
+                          </div>
+                          <Balance balance={change.amountValue} />
+                        </>
+                      }
+                    />
+                  </div>
+                );
+              })}
             </>
           )}
           <br />
@@ -245,6 +288,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     goToSpeedUpTx(tx) {
       dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx, null, true));
+    },
+    lookupAddress(blockchain, address) {
+      return dispatch(blockchains.actions.lookupAddress(blockchain, address));
     },
   }),
 )(withStyles(styles)(TxDetails));

@@ -202,6 +202,10 @@ export function setIpcHandlers(
     return state.lastIndex;
   });
 
+  ipcMain.handle(Commands.LOOKUP_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
+    app.rpc.chain(blockchain).ethers.lookupAddress(address),
+  );
+
   ipcMain.handle(Commands.RESOLVE_NAME, (event, blockchain: BlockchainCode, name: string) =>
     app.rpc.chain(blockchain).ethers.resolveName(name),
   );

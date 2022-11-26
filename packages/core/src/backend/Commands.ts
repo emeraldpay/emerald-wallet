@@ -52,5 +52,6 @@ export enum Commands {
 
   XPUB_LAST_INDEX = 'xpub-last-index',
 
-  RESOLVE_NAME = 'RESOLVE_NAME',
+  LOOKUP_ADDRESS = 'lookup-address',
+  RESOLVE_NAME = 'resolve-name',
 }

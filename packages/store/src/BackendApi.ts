@@ -45,7 +45,11 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.XPUB_LAST_INDEX, blockchain, xpub, start);
   }
 
-  resolveName(blockchain: BlockchainCode, address: string): Promise<string | null> {
-    return ipcRenderer.invoke(Commands.RESOLVE_NAME, blockchain, address);
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null> {
+    return ipcRenderer.invoke(Commands.LOOKUP_ADDRESS, blockchain, address);
+  }
+
+  resolveName(blockchain: BlockchainCode, name: string): Promise<string | null> {
+    return ipcRenderer.invoke(Commands.RESOLVE_NAME, blockchain, name);
   }
 }
