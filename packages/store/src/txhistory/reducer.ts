@@ -38,6 +38,8 @@ function onUpdateStoreTransaction(
   { meta, transaction, walletId }: UpdateStoredTxAction,
 ): HistoryState {
   if (state.walletId === walletId) {
+    // TODO Add TX version check
+
     const storedTransaction = new StoredTransaction(transaction, meta);
     const storedTransactions = [...state.transactions];
 
