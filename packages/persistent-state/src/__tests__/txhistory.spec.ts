@@ -35,7 +35,7 @@ describe('Tx History', () => {
 
     const act = await state.txhistory.query();
 
-    expect(act).toEqual({ items: [tx], cursor: null });
+    expect(act).toEqual({ items: [{ ...tx, version: 0 }], cursor: null });
     // make sure it's actual date, not a string. a date keeps timezone and millis
     expect(act.items[0].sinceTimestamp.toISOString()).toBe('2021-03-05T10:11:12.000Z');
   });
@@ -53,13 +53,13 @@ describe('Tx History', () => {
     await state.txhistory.submit(tx);
 
     const actPrepared = await state.txhistory.query({ state: State.PREPARED });
-    expect(actPrepared).toEqual({ items: [tx], cursor: null });
+    expect(actPrepared).toEqual({ items: [{ ...tx, version: 0 }], cursor: null });
 
     const actDropped = await state.txhistory.query({ state: State.DROPPED });
     expect(actDropped).toEqual({ items: [], cursor: null });
 
     const actAll = await state.txhistory.query();
-    expect(actAll).toEqual({ items: [tx], cursor: null });
+    expect(actAll).toEqual({ items: [{ ...tx, version: 0 }], cursor: null });
   });
 
   test('filter by state', async () => {
@@ -75,13 +75,13 @@ describe('Tx History', () => {
     await state.txhistory.submit(tx);
 
     const actUnknown = await state.txhistory.query({ status: Status.UNKNOWN });
-    expect(actUnknown).toEqual({ items: [tx], cursor: null });
+    expect(actUnknown).toEqual({ items: [{ ...tx, version: 0 }], cursor: null });
 
     const actOk = await state.txhistory.query({ status: Status.OK });
     expect(actOk).toEqual({ items: [], cursor: null });
 
     const actAll = await state.txhistory.query();
-    expect(actAll).toEqual({ items: [tx], cursor: null });
+    expect(actAll).toEqual({ items: [{ ...tx, version: 0 }], cursor: null });
   });
 
   test('add a tx and query using cursor', async () => {
@@ -173,7 +173,7 @@ describe('Tx History', () => {
 
     const act = await state.txhistory.query(filter);
 
-    expect(act).toEqual({ items: [tx2], cursor: null });
+    expect(act).toEqual({ items: [{ ...tx2, version: 0 }], cursor: null });
   });
 
   test('add couple of txes and query by wallet', async () => {
