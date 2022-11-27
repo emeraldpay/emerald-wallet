@@ -51,6 +51,7 @@ pub struct TransactionJson {
   state: usize,
   status: usize,
   changes: Vec<ChangeJson>,
+  version: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -115,6 +116,7 @@ impl TryFrom<Transaction> for TransactionJson {
       state: value.state.value() as usize,
       status: value.status.value() as usize,
       changes: value.changes.iter().map(|x| ChangeJson::from(x)).collect(),
+      version: Some(value.version),
     })
   }
 }

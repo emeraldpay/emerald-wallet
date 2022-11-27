@@ -53,6 +53,10 @@ function onUpdateStoreTransaction(
     const txIndex = storedTransactions.findIndex((tx) => tx.txId === transaction.txId);
 
     if (txIndex > -1) {
+      if ((storedTransactions[txIndex].version ?? 0) > (storedTransaction.version ?? 0)) {
+        return state;
+      }
+
       storedTransactions.splice(txIndex, 1, storedTransaction);
 
       return {
