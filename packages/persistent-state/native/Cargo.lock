@@ -980,7 +980,7 @@ dependencies = [
 
 [[package]]
 name = "persistent-state"
-version = "2.7.0-dev"
+version = "2.8.0"
 dependencies = [
  "chrono",
  "emerald-wallet-state",
