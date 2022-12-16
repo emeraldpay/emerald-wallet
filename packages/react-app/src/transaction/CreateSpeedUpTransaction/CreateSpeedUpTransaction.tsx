@@ -1,5 +1,5 @@
-import { BigAmount } from '@emeraldpay/bigamount';
-import { BlockchainCode, EthereumTransaction, amountFactory } from '@emeraldwallet/core';
+import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BlockchainCode, EthereumTransaction, EthereumTransactionType, amountFactory } from '@emeraldwallet/core';
 import {
   DefaultFee,
   GasPriceType,
@@ -46,16 +46,9 @@ const styles = createStyles({
     opacity: 0.8,
   },
   gasPriceValueLabel: {
-    fontSize: '0.7em',
+    fontSize: '0.55em',
   },
 });
-
-interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
-  getTopFee(blockchain: BlockchainCode, eip1559: boolean, defaultFee: DefaultFee): Promise<GasPriceType>;
-  goBack(): void;
-  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
-}
 
 interface OwnProps {
   transaction: EthereumTransaction;
@@ -66,11 +59,20 @@ interface StateProps {
   defaultFee: DefaultFee;
 }
 
+interface DispatchProps {
+  checkGlobalKey(password: string): Promise<boolean>;
+  getTopFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<GasPriceType>;
+  goBack(): void;
+  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
+}
+
 interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps & StylesProps> = ({
+const minimalUnit = new Unit(9, '', undefined);
+
+const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps & StylesProps> = ({
   accountId,
   classes,
   defaultFee,
@@ -85,7 +87,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
   const factory = React.useMemo(() => amountFactory(transaction.blockchain), [transaction.blockchain]);
 
   const txGasPrice = factory(transaction.maxGasPrice ?? transaction.gasPrice ?? defaultFee.std);
-  const txGasPriceUnit = txGasPrice.getOptimalUnit();
+  const txGasPriceUnit = txGasPrice.getOptimalUnit(minimalUnit);
 
   const minGasPriceNumber = txGasPrice.plus(txGasPrice.multiply(0.1)).getNumberByUnit(txGasPriceUnit).toNumber();
 
@@ -105,7 +107,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
 
       let gasPrices: Record<'gasPrice', BigNumber> | Record<'maxGasPrice', BigNumber>;
 
-      if (transaction.gasPrice == null) {
+      if (transaction.type === EthereumTransactionType.EIP1559) {
         gasPrices = { maxGasPrice: newGasPrice };
       } else {
         gasPrices = { gasPrice: newGasPrice };
@@ -129,11 +131,12 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
       (async (): Promise<void> => {
         const { blockchain } = transaction;
 
-        const topFee = await getTopFee(blockchain, transaction.gasPrice == null, defaultFee);
+        const topFee = await getTopFee(blockchain, defaultFee);
 
         const topGasPrice = amountFactory(blockchain)(topFee);
+        const maxGasPrice = topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber();
 
-        if (topGasPrice.number.gt(0) && gasPrice <= topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber()) {
+        if (maxGasPrice > 0 && minGasPriceNumber > maxGasPrice && gasPrice <= maxGasPrice) {
           setMaxGasPrice(topGasPrice);
         }
 
@@ -217,30 +220,22 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    async getTopFee(blockchain, eip1559, defaultFee) {
-      let avgTop: null | number = null;
+    async getTopFee(blockchain, defaultFee) {
+      let max: string | null = null;
 
       try {
-        if (eip1559) {
-          let { max: maxGasPrice } = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
+        let avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
 
-          if (maxGasPrice == null || new BigNumber(maxGasPrice).eq(0)) {
-            ({ max: maxGasPrice } = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop')));
-          }
-
-          avgTop = maxGasPrice;
-        } else {
-          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
-
-          if (avgTop == null || new BigNumber(avgTop).eq(0)) {
-            avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
-          }
+        if (avgTop == null || new BigNumber(avgTop).eq(0)) {
+          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
         }
+
+        ({ max = avgTop } = avgTop);
       } catch (exception) {
         // Nothing
       }
 
-      return avgTop ?? defaultFee.max;
+      return max ?? defaultFee.max;
     },
     goBack() {
       dispatch(screen.actions.goBack());
@@ -256,7 +251,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       let maxGasPrice: BigAmount | undefined;
       let priorityGasPrice: BigAmount | undefined;
 
-      if (tx.gasPrice == null) {
+      if (tx.type === EthereumTransactionType.EIP1559) {
         maxGasPrice = factory(tx.maxGasPrice ?? 0);
         priorityGasPrice = factory(tx.priorityGasPrice ?? 0);
       } else {

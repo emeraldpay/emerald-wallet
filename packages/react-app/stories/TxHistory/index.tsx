@@ -1,11 +1,12 @@
 import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
+import { txhistory } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import TxHistory from '../../src/transactions/TxHistory';
 import { BackendMock } from '../backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
-import { createWallets, setup, wallet3 } from '../wallets';
+import { createWallets, setRates, wallet3 } from '../wallets';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 
@@ -124,5 +125,11 @@ backend.txHistory.insertTransactions([txEthereum1, txBitcoin1, txEthereum2, txBi
 
 storiesOf('TxHistory', module)
   .addDecorator(withTheme)
-  .addDecorator(providerForStore(backend, [...setup, ...createWallets]))
-  .add('transactions', () => <TxHistory walletId={wallet3.id} />);
+  .addDecorator(
+    providerForStore(backend, [...setRates, ...createWallets, txhistory.actions.loadTransactions(wallet3.id, true)]),
+  )
+  .add('transactions', () => (
+    <div style={{ height: '100vh' }}>
+      <TxHistory walletId={wallet3.id} />
+    </div>
+  ));

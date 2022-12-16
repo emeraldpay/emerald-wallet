@@ -1,5 +1,5 @@
-import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
-import { StoredTransaction } from '@emeraldwallet/store/lib/txhistory/types';
+import { BlockchainCode, PersistentState, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
+import { StoredTransaction } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import TxDetails from '../../src/transactions/TxDetails';
@@ -10,8 +10,10 @@ import withTheme from '../themeProvider';
 const { ChangeType, Direction, State, Status } = PersistentState;
 
 const backend = new BackendMock();
+const tokenRegistry = new TokenRegistry([]);
 
 const txEthereum = new StoredTransaction(
+  tokenRegistry,
   {
     blockchain: blockchainCodeToId(BlockchainCode.ETH),
     changes: [
@@ -32,6 +34,7 @@ const txEthereum = new StoredTransaction(
 );
 
 const txBitcoin1 = new StoredTransaction(
+  tokenRegistry,
   {
     blockchain: blockchainCodeToId(BlockchainCode.BTC),
     changes: [
@@ -52,6 +55,7 @@ const txBitcoin1 = new StoredTransaction(
 );
 
 const txBitcoin2 = new StoredTransaction(
+  tokenRegistry,
   {
     blockchain: blockchainCodeToId(BlockchainCode.BTC),
     changes: [

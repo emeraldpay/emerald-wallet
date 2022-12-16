@@ -9,6 +9,7 @@ import {
   OptionsAction,
   SettingsAction,
   TermsAction,
+  TokensAction,
 } from './types';
 
 export const INITIAL_STATE: ApplicationState = {
@@ -22,16 +23,17 @@ export const INITIAL_STATE: ApplicationState = {
   options: {},
   settingsUpdated: false,
   terms: 'none',
+  tokens: [],
 };
 
-function onConfig(state: ApplicationState, { payload: { terms } }: ConfigAction): ApplicationState {
-  return produce(state, (draft) => {
-    draft.configured = true;
-
-    if (terms != null) {
-      draft.terms = terms;
-    }
-  });
+function onConfig(state: ApplicationState, { payload: { options, terms, tokens } }: ConfigAction): ApplicationState {
+  return {
+    ...state,
+    configured: true,
+    options: options ?? state.options,
+    terms: terms ?? state.terms,
+    tokens: tokens ?? state.tokens,
+  };
 }
 
 function onConnecting(state: ApplicationState, action: ConnectingAction): ApplicationState {
@@ -71,6 +73,13 @@ function onTerms(state: ApplicationState, action: TermsAction): ApplicationState
   };
 }
 
+function onTokens(state: ApplicationState, action: TokensAction): ApplicationState {
+  return {
+    ...state,
+    tokens: action.payload,
+  };
+}
+
 export function reducer(state = INITIAL_STATE, action: ApplicationAction): ApplicationState {
   switch (action.type) {
     case ActionTypes.CONFIG:
@@ -85,6 +94,8 @@ export function reducer(state = INITIAL_STATE, action: ApplicationAction): Appli
       return onSetting(state, action);
     case ActionTypes.TERMS:
       return onTerms(state, action);
+    case ActionTypes.TOKENS:
+      return onTokens(state, action);
     default:
       return state;
   }

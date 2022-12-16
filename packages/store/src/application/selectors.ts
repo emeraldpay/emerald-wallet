@@ -3,7 +3,7 @@ import { ApplicationMessage, moduleName } from './types';
 import { DefaultFee, GasPriceType, IState } from '../types';
 
 export function getDefaultFee<T = GasPriceType>(state: IState, blockchain: BlockchainCode): DefaultFee<T> {
-  return JSON.parse(state[moduleName].options[`default_fee.${blockchainCodeToId(blockchain)}`]);
+  return JSON.parse(state[moduleName].options[`default_fee.${blockchainCodeToId(blockchain)}`] as string);
 }
 
 export function getMessage(state: IState): ApplicationMessage {

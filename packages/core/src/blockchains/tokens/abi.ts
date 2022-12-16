@@ -1,7 +1,7 @@
 /**
  * Abbreviated ABI for ERC20-compatible tokens
  */
-const TokenAbi = [
+export const tokenAbi = [
   {
     name: 'approve',
     inputs: [
@@ -73,8 +73,8 @@ const TokenAbi = [
 /**
  * Abbreviated ABI for ERC20-compatible wrap tokens
  */
-export const WrapTokenAbi = [
-  ...TokenAbi,
+export const wrapTokenAbi = [
+  ...tokenAbi,
   {
     name: 'deposit',
     inputs: [],
@@ -90,5 +90,3 @@ export const WrapTokenAbi = [
     type: 'function',
   },
 ];
-
-export default TokenAbi;

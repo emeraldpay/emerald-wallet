@@ -1,3 +1,4 @@
+import { IpcCommands } from '@emeraldwallet/core';
 import * as url from 'url';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
@@ -78,7 +79,7 @@ export function getMainWindow(
 
   setupMainMenu();
 
-  ipcMain.handle('vault/updateMainMenu', setupMainMenu);
+  ipcMain.on(IpcCommands.UPDATE_MAIN_MENU, setupMainMenu);
 
   window
     .loadURL(

@@ -1,5 +1,6 @@
-import { Dispatch, Store } from 'redux';
+import { Store } from 'redux';
 import { TERMS_VERSION } from './config';
+import { Dispatcher } from './types';
 import { IState, accounts, application, blockchains, settings } from './index';
 
 /**
@@ -17,7 +18,7 @@ export type TriggerState = (state: IState) => string | undefined;
  *
  * @return status (continue or stop)
  */
-export type TriggerProcess = (state: IState, dispatch: Dispatch) => TriggerStatus;
+export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
 
 export enum TriggerStatus {
   CONTINUE,
@@ -57,7 +58,7 @@ export function onceModeSet(store: Store<IState>): Promise<void> {
   return new Promise((resolve) =>
     handleTrigger(
       () => {
-        const mode = settings.selectors.mode(store.getState());
+        const mode = settings.selectors.getMode(store.getState());
 
         const { id, chains } = mode;
 

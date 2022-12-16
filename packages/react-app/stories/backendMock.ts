@@ -18,11 +18,10 @@ import {
   Wallet,
 } from '@emeraldpay/emerald-vault-core';
 import {
-  AnyCoinCode,
+  BackendApi,
   BlockchainCode,
   EthereumRawReceipt,
   EthereumRawTransaction,
-  IBackendApi,
   PersistentState,
   WalletApi,
   blockchainCodeToId,
@@ -182,7 +181,7 @@ export class MemoryXPubPos {
 export class BlockchainMock {
   balances: Record<string, Record<string, string>> = {};
 
-  setBalance(address: string, coin: AnyCoinCode, balance: string): void {
+  setBalance(address: string, coin: string, balance: string): void {
     if (typeof this.balances[address] == 'undefined') {
       this.balances[address] = {};
     }
@@ -287,8 +286,6 @@ export class VaultMock implements IEmeraldVault {
     blockchain: number,
     hdpaths: string[],
   ): Promise<{ [key: string]: string }> {
-    console.log('list addresses', seedId);
-
     if (typeof seedId == 'object') {
       if (seedId.type == 'id') {
         const seed: IdSeedReference = seedId;
@@ -525,7 +522,7 @@ export class ApiMock implements WalletApi {
   }
 }
 
-export class BackendMock implements IBackendApi {
+export class BackendMock implements BackendApi {
   readonly addressBook = new MemoryAddressBook();
   readonly blockchains: Record<string, BlockchainMock> = {};
   readonly txHistory = new MemoryTxHistory();
@@ -541,7 +538,7 @@ export class BackendMock implements IBackendApi {
     return Promise.resolve(0);
   }
 
-  getBalance(blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]): Promise<Record<string, string>> {
+  getBalance(blockchain: BlockchainCode, address: string, tokens: string[]): Promise<Record<string, string>> {
     const state = this.blockchains[blockchain.toLowerCase()];
 
     if (typeof state == 'undefined') {
@@ -603,5 +600,13 @@ export class BackendMock implements IBackendApi {
 
   getXPubLastIndex(): Promise<number | undefined> {
     return Promise.resolve(1);
+  }
+
+  lookupAddress(): Promise<string> {
+    return Promise.resolve('address.eth');
+  }
+
+  resolveName(): Promise<string> {
+    return Promise.resolve('0x0');
   }
 }

@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { EthereumTransaction } from '@emeraldwallet/core';
+import { EthereumTransaction, EthereumTransactionType } from '@emeraldwallet/core';
 import { IState, SignData, accounts, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -94,7 +94,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       let maxGasPrice: Wei | undefined;
       let priorityGasPrice: Wei | undefined;
 
-      if (tx.gasPrice == null) {
+      if (tx.type === EthereumTransactionType.EIP1559) {
         maxGasPrice = cancelGasPrice;
         priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
       } else {

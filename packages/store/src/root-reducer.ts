@@ -15,7 +15,7 @@ import {
   txhistory,
 } from './';
 
-const root = combineReducers<IState>({
+export const rootReducer = combineReducers<IState>({
   [accounts.moduleName]: accounts.reducer,
   [addressBook.moduleName]: addressBook.reducer,
   [application.moduleName]: application.reducer,
@@ -29,5 +29,3 @@ const root = combineReducers<IState>({
   hwkey: hwkey.reducer,
   settings: settings.reducer,
 });
-
-export default root;

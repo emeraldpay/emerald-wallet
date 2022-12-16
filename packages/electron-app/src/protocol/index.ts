@@ -1,29 +1,26 @@
-import { app, webContents } from 'electron';
+import { IpcCommands } from '@emeraldwallet/core';
+import { Event, app, webContents } from 'electron';
 
-const getMainWebContents = () => webContents
-  .getAllWebContents()
-  .find((webcontent: any) => !!webcontent.browserWindowOptions);
+export function protocolHandler(event: Event | null, url: string): void {
+  event?.preventDefault();
 
-export function protocolHandler (event: any, url: string) {
-  if (event) { event.preventDefault(); }
+  const [webContent] = webContents.getAllWebContents();
 
-  const wc = getMainWebContents();
-  if (!wc) {
+  if (webContent == null) {
     setTimeout(() => protocolHandler(null, url), 500);
-    return;
+  } else {
+    webContent.send(IpcCommands.HANDLE_URL, { url });
   }
-  wc.send('protocol', { url });
-  wc.on('did-finish-load', () => wc.send('protocol', { url }));
 }
 
-export function startProtocolHandler () {
+export function startProtocolHandler(): void {
   app.setAsDefaultProtocolClient('ethereum');
 
-  app.on('will-finish-launching', () => {
-    app.on('open-url', protocolHandler);
-  });
+  app.on('will-finish-launching', () => app.on('open-url', protocolHandler));
 
-  if (process.argv[1] && process.argv[1].includes('ethereum:')) {
-    protocolHandler(null, process.argv[1]);
+  const [, arg] = process.argv;
+
+  if (arg?.includes('ethereum:') === true) {
+    protocolHandler(null, arg);
   }
 }

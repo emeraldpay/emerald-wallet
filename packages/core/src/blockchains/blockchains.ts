@@ -1,11 +1,11 @@
 import { BigAmount, CreateAmount, Unit, Units } from '@emeraldpay/bigamount';
 import { Satoshi, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { LedgerApp } from '@emeraldpay/emerald-vault-core';
-import { Bitcoin } from './bitcoin';
+import { Bitcoin } from './Bitcoin';
 import { CoinTicker } from './CoinTicker';
 import Ethereum from './ethereum/Ethereum';
 import EthereumParams from './ethereum/EthereumParams';
-import { HDPath } from './hdpath';
+import { HDPath } from './HDPath';
 import { IBlockchain } from './IBlockchain';
 
 export enum BlockchainCode {
@@ -24,12 +24,10 @@ export const Blockchains: { [key: string]: IBlockchain } = {
   [BlockchainCode.ETH]: new Ethereum(
     new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1, HDPath.default().forCoin(BlockchainCode.ETH), 12, true),
     'Ethereum',
-    ['DAI', 'USDC', 'USDT', 'WETH'],
   ),
   [BlockchainCode.ETC]: new Ethereum(
     new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, HDPath.default().forCoin(BlockchainCode.ETC), 250),
     'Ethereum Classic',
-    ['WETC'],
   ),
   [BlockchainCode.Goerli]: new Ethereum(
     new EthereumParams(
@@ -41,7 +39,6 @@ export const Blockchains: { [key: string]: IBlockchain } = {
       true,
     ),
     'Ethereum Goerli Testnet',
-    ['WEENUS', 'WETH', 'WETG'],
   ),
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
@@ -70,10 +67,6 @@ const allCodes = [
 ];
 
 const allChains = allCodes.map((code) => Blockchains[code]);
-
-export function isValidChain(code: BlockchainCode | string): boolean {
-  return Blockchains[code] != null;
-}
 
 export function blockchainCodeByName(name: string): string {
   if (!name) {

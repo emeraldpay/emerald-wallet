@@ -12,7 +12,7 @@ import {
   ISetBalance,
 } from './types';
 
-const log = Logger.forCategory('store.hdpathPreview');
+const log = Logger.forCategory('Store::HDPathPreview');
 
 export const INITIAL_STATE: IHDPreviewState = {
   accounts: [],
@@ -28,7 +28,7 @@ function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreview
   let newState = state;
 
   Object.entries(action.addresses).forEach(([hdpath, address]) => {
-    Blockchains[action.blockchain].getAssets().forEach((asset) => {
+    action.assets.forEach((asset) => {
       const update: IAddressState = {
         address,
         asset,
@@ -41,7 +41,7 @@ function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreview
         newState = mergeAddress(newState, update);
       } catch (exception) {
         if (exception instanceof Error) {
-          log.warn('Failed to set new address. ' + exception.message);
+          log.warn('Failed to set new address.', exception.message);
         }
       }
     });

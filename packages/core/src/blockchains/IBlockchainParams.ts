@@ -1,6 +1,6 @@
 import { BlockchainCode } from './blockchains';
 import { CoinTicker } from './CoinTicker';
-import { HDPath } from './hdpath';
+import { HDPath } from './HDPath';
 
 /**
  * Parameters of particular blockchain

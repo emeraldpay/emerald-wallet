@@ -1,7 +1,6 @@
 import { SeedDescription, Wallet, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
-import { Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
-import { parseDate } from '@emeraldwallet/core/lib/utils';
+import { Blockchains, blockchainIdToCode, utils } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Back, Button, Page } from '@emeraldwallet/ui';
 import { Divider, Table, TableBody, TableCell, TableRow, createStyles, withStyles } from '@material-ui/core';
@@ -75,7 +74,9 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
           `ID: ${wallet?.id}`,
           `Name: ${wallet?.name}`,
           `Created At: ${wallet?.createdAt}`,
-          `HD Account: ${wallet?.reserved?.map((reserved) => `m/x’/x’/${reserved.accountId}’/0/0`).join(', ')}`,
+          wallet?.reserved != null && wallet.reserved.length > 0
+            ? `HD Account: ${wallet.reserved.map((reserved) => `m/x’/x’/${reserved.accountId}’/0/0`).join(', ')}`
+            : null,
           '-- Entries --',
           (wallet?.entries != null && wallet.entries.length > 0
             ? wallet.entries.map((entry) =>
@@ -108,7 +109,9 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
               )
             : ['# No seeds']
           ).join('\n---\n'),
-        ].join('\n'),
+        ]
+          .filter((line) => line != null)
+          .join('\n'),
       ),
     [seeds, wallet],
   );
@@ -135,15 +138,17 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
           <TableRow>
             <TitleTableCell>Created Date</TitleTableCell>
             <ValueTableCell>
-              {parseDate(wallet?.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
+              {utils.parseDate(wallet?.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
             </ValueTableCell>
           </TableRow>
-          <TableRow>
-            <TitleTableCell>HD Account</TitleTableCell>
-            <ValueTableCell>
-              {wallet?.reserved?.map((reserved) => `m/x’/x’/${reserved.accountId}’/0/0`).join(', ')}
-            </ValueTableCell>
-          </TableRow>
+          {wallet?.reserved != null && wallet.reserved.length > 0 && (
+            <TableRow>
+              <TitleTableCell>HD Account</TitleTableCell>
+              <ValueTableCell>
+                {wallet.reserved.map((reserved) => `m/x’/x’/${reserved.accountId}’/0/0`).join(', ')}
+              </ValueTableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <h2>Entries</h2>
@@ -164,7 +169,7 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
               <TableRow>
                 <TitleTableCell>Creation Date</TitleTableCell>
                 <ValueTableCell>
-                  {parseDate(entry.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
+                  {utils.parseDate(entry.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
                 </ValueTableCell>
               </TableRow>
               <TableRow>
@@ -228,7 +233,7 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
                   <TableRow>
                     <TitleTableCell>Creation Date</TitleTableCell>
                     <ValueTableCell>
-                      {parseDate(seed.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
+                      {utils.parseDate(seed.createdAt)?.toLocaleDateString(language, dateFormatOptions)}
                     </ValueTableCell>
                   </TableRow>
                   <TableRow>

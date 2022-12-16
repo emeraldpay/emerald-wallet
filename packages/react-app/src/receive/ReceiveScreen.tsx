@@ -7,10 +7,8 @@ import {
   isBitcoinEntry,
   isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
+import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
 import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
-import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
 import { Address, Back, Page, WalletReference } from '@emeraldwallet/ui';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,7 +33,7 @@ const useStyles = makeStyles(
 interface BaseAccept {
   blockchain: BlockchainCode;
   entryId: EntryId;
-  token: AnyCoinCode;
+  token: string;
 }
 
 interface BitcoinAccept extends BaseAccept {
@@ -55,6 +53,7 @@ interface OwnProps {
 interface StateProps {
   accepted: Accept[];
   assets: IBalanceValue[];
+  tokenRegistry: TokenRegistry;
   wallet?: Wallet;
 }
 
@@ -64,7 +63,7 @@ interface DispatchProps {
   onSave(entryId: EntryId): void;
 }
 
-function anyToken(accepted: Accept[], blockchain: BlockchainCode): AnyCoinCode | undefined {
+function anyToken(accepted: Accept[], blockchain: BlockchainCode): string | undefined {
   const [accepts] = accepted.filter((item) => item.blockchain === blockchain);
 
   return accepts?.token;
@@ -81,6 +80,7 @@ function isBitcoinAccept(accept: Accept): accept is BitcoinAccept {
 const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   accepted,
   assets,
+  tokenRegistry,
   wallet,
   getXPubPositionalAddress,
   onCancel,
@@ -112,11 +112,6 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
     [accepted, currentBlockchain],
   );
 
-  const tokenInfo = React.useMemo(
-    () => registry.byBlockchain(currentBlockchain)?.find(({ symbol }) => symbol === currentToken),
-    [currentBlockchain, currentToken],
-  );
-
   const selectBlockchain = React.useCallback(
     (blockchain: BlockchainCode): void => {
       const token = anyToken(accepted, blockchain);
@@ -130,7 +125,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   const selectToken = React.useCallback(
-    (token: AnyCoinCode): void => {
+    (token: string): void => {
       const [address] = availableAddresses;
 
       setCurrentAddress(address);
@@ -164,9 +159,15 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   let qrCodeValue = currentAddress;
 
-  if (tokenInfo != null) {
-    //TODO there is no standards for that, check later
-    qrCodeValue = `${qrCodeValue}?erc20=${tokenInfo.symbol}`;
+  if (currentToken != null) {
+    try {
+      const tokenData = tokenRegistry.bySymbol(currentBlockchain, currentToken);
+
+      //TODO there is no standards for that, check later
+      qrCodeValue = `${qrCodeValue}?erc20=${tokenData.symbol}`;
+    } catch (exception) {
+      // Nothing
+    }
   }
 
   const qrCode = useQRCode(qrCodeValue ?? '');
@@ -201,7 +202,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   disabled={availableCoins.length <= 1}
                   labelId="coin-select-label"
                   value={currentToken}
-                  onChange={(event) => selectToken(event.target.value as AnyCoinCode)}
+                  onChange={(event) => selectToken(event.target.value as string)}
                 >
                   {availableCoins.map((token) => (
                     <MenuItem key={token} value={token}>
@@ -263,6 +264,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
     const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet, false);
 
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
+
     const accepted =
       wallet?.entries
         .filter((entry) => !entry.receiveDisabled)
@@ -293,7 +296,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             return carry;
           }
 
-          const accepts = Blockchains[blockchain].getAssets().reduce<Accept[]>((carry, token) => {
+          const accepts = tokenRegistry.getStablecoins(blockchain).reduce<Accept[]>((carry, { symbol }) => {
             if (address == null) {
               return carry;
             }
@@ -302,9 +305,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               ...carry,
               {
                 blockchain,
-                token,
                 addresses: [address],
                 entryId: entry.id,
+                token: symbol,
               },
             ];
           }, []);
@@ -324,13 +327,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       accepted,
       assets,
+      tokenRegistry,
       wallet,
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
     getXPubPositionalAddress(entryId, xPub, role) {
-      return dispatch(getXPubPositionalAddress(entryId, xPub, role));
+      return dispatch(accounts.actions.getXPubPositionalAddress(entryId, xPub, role));
     },
     onCancel() {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));

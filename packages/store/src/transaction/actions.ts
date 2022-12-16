@@ -2,7 +2,6 @@ import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, IEmeraldVault, SignedTx, UnsignedBitcoinTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import {
-  AnyCoinCode,
   BlockchainCode,
   Blockchains,
   EthereumAddress,
@@ -11,7 +10,9 @@ import {
   EthereumTransactionType,
   EthereumTx,
   Logger,
+  PartialEthereumTransaction,
   PersistentState,
+  TokenRegistry,
   blockchainCodeToId,
   isBitcoin,
   isEthereum,
@@ -23,12 +24,13 @@ import { BroadcastData, SignData } from './types';
 import { findWalletByEntryId } from '../accounts/selectors';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
+import { IErrorAction, IOpenAction } from '../screen/types';
 import { updateTransaction } from '../txhistory/actions';
-import { StoredTransaction } from '../txhistory/types';
+import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
 import { DEFAULT_FEE, DefaultFee, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
 import { WrappedError } from '../WrappedError';
 
-const log = Logger.forCategory('store.transaction');
+const log = Logger.forCategory('Store::Transaction');
 
 const { Direction, ChangeType, State, Status } = PersistentState;
 
@@ -72,7 +74,7 @@ function signTx(
 
   let gasPrices: Record<'gasPrice', string> | Record<'maxGasPrice' | 'priorityGasPrice', string>;
 
-  if (tx.gasPrice == null) {
+  if (tx.type === EthereumTransactionType.EIP1559) {
     const maxGasPrice = typeof tx.maxGasPrice === 'string' ? tx.maxGasPrice : tx.maxGasPrice?.toString() ?? '0';
     const priorityGasPrice =
       typeof tx.priorityGasPrice === 'string' ? tx.priorityGasPrice : tx.priorityGasPrice?.toString() ?? '0';
@@ -114,7 +116,7 @@ export function signTransaction(
   maxGasPrice?: BigAmount,
   priorityGasPrice?: BigAmount,
   nonce: number | string = '',
-): Dispatched<SignData> {
+): Dispatched<SignData | undefined> {
   const originalTx: EthereumTransaction = {
     blockchain,
     data,
@@ -130,21 +132,29 @@ export function signTransaction(
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (dispatch: any, getState, extra) => {
+  return (dispatch, getState, extra) => {
     const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
       signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
         .then(({ raw, txid }) => verifySender(from)(txid, raw, blockchain))
         .then(({ raw: signed, txid: txId }) => ({ blockchain, tx, txId, signed, entryId: accountId }));
 
     if (nonce.toString().length > 0) {
-      return callSignTx(originalTx).catch(catchError(dispatch));
+      return callSignTx(originalTx).catch((error) => {
+        catchError(dispatch)(error);
+
+        return undefined;
+      });
     }
 
     return extra.backendApi
       .getNonce(blockchain, from)
       .then(withNonce(originalTx))
       .then(callSignTx)
-      .catch(catchError(dispatch));
+      .catch((error) => {
+        catchError(dispatch)(error);
+
+        return undefined;
+      });
   };
 }
 
@@ -155,15 +165,16 @@ export function signBitcoinTransaction(
   tx: UnsignedBitcoinTx,
   password: string,
   handler: SignHandler,
-): Dispatched<SignHandler> {
+): Dispatched {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch: any, getState, extra) => {
     extra.api.vault
       .signTx(entryId, tx, password)
       .then(({ raw, txid }) => handler(txid, raw))
-      .catch((err) => {
-        handler(null, null, 'Internal error. ' + err?.message);
-        dispatch(showError(err));
+      .catch((error) => {
+        dispatch(showError(error));
+
+        return handler(null, null, 'Internal error. ' + error?.message);
       });
   };
 }
@@ -177,7 +188,7 @@ export function broadcastTx({
   tokenAmount,
   tx,
   txId,
-}: BroadcastData): Dispatched<void> {
+}: BroadcastData): Dispatched<void, IErrorAction | IOpenAction | UpdateStoredTxAction> {
   return async (dispatch, getState, extra) => {
     try {
       await extra.backendApi.broadcastSignedTx(blockchain, signed);
@@ -185,7 +196,7 @@ export function broadcastTx({
       let changes: PersistentState.Change[] = [];
 
       const feeChange = {
-        asset: fee.units.top.code as AnyCoinCode,
+        asset: fee.units.top.code,
         amount: fee.number.toString(),
         direction: Direction.SPEND,
         type: ChangeType.FEE,
@@ -221,7 +232,7 @@ export function broadcastTx({
 
         if (originalAmount != null) {
           const amount = originalAmount.number.toString();
-          const asset = originalAmount.units.top.code as AnyCoinCode;
+          const asset = originalAmount.units.top.code;
 
           changes = [
             {
@@ -248,7 +259,7 @@ export function broadcastTx({
 
         if (tokenAmount != null) {
           const amount = tokenAmount.number.toString();
-          const asset = tokenAmount.units.top.code as AnyCoinCode;
+          const asset = tokenAmount.units.top.code;
 
           changes = [
             ...changes,
@@ -280,13 +291,16 @@ export function broadcastTx({
         status: Status.UNKNOWN,
       });
 
-      const wallet = findWalletByEntryId(getState(), entryId);
+      const state = getState();
+      const wallet = findWalletByEntryId(state, entryId);
 
       if (wallet != null) {
         dispatch(updateTransaction(wallet.id, transaction, null));
       }
 
-      dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(transaction, null)));
+      const tokenRegistry = new TokenRegistry(state.application.tokens);
+
+      dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(tokenRegistry, transaction, null)));
     } catch (exception) {
       if (exception instanceof Error) {
         const transaction = getState().history.transactions.find((tx) => tx.txId === txId);
@@ -297,24 +311,39 @@ export function broadcastTx({
   };
 }
 
-type Tx = {
-  gas: BigNumber;
-  to: string;
-  data?: string;
-  from?: string;
-  value?: BigAmount;
-};
+function toEthereumHex(value: BigNumber | number | string | undefined): string | undefined {
+  if (value == null) {
+    return undefined;
+  }
 
-export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<number> {
-  const { data, from, gas, to, value } = tx;
+  let hex: string | number;
 
+  if (typeof value === 'string') {
+    if (value.substring(0, 2) === '0x') {
+      return value;
+    }
+
+    hex = new BigNumber(value).toString(16);
+  } else {
+    hex = value.toString(16);
+  }
+
+  return `0x${hex}`;
+}
+
+export function estimateGas(blockchain: BlockchainCode, tx: PartialEthereumTransaction): Dispatched<number> {
   return (dispatch, getState, extra) => {
-    return extra.backendApi.estimateTxCost(chain, {
+    const { data, from, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas, to, value } = tx;
+
+    return extra.backendApi.estimateTxCost(blockchain, {
       data,
       from,
       to,
-      gas: `0x${gas.toString(16)}`,
-      value: `0x${value?.number.toString(16) ?? 0}`,
+      gas: toEthereumHex(gas),
+      gasPrice: toEthereumHex(gasPrice),
+      maxFeePerGas: toEthereumHex(maxFeePerGas),
+      maxPriorityFeePerGas: toEthereumHex(maxPriorityFeePerGas),
+      value: toEthereumHex(value),
     });
   };
 }
@@ -334,9 +363,8 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
   return first.gt(second) ? 1 : -1;
 }
 
-export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Dispatched<FeePrices> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return async (dispatch: any) => {
+export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Dispatched<FeePrices<GasPrices>> {
+  return async (dispatch) => {
     let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
 
     results = await Promise.allSettled(
@@ -393,17 +421,14 @@ export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Disp
     if (avgTail5.max.eq(0)) {
       return {
         avgLast: {
-          expect: defaultFee.min,
           max: defaultFee.min,
           priority: defaultFee.priority_min ?? '0',
         },
         avgMiddle: {
-          expect: defaultFee.max,
           max: defaultFee.max,
           priority: defaultFee.priority_max ?? '0',
         },
         avgTail5: {
-          expect: defaultFee.std,
           max: defaultFee.std,
           priority: defaultFee.priority_std ?? '0',
         },
@@ -473,10 +498,14 @@ export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<E
   };
 }
 
-export function setXPubCurrentIndex(xpub: string, position: number): Dispatched<void> {
+export function setXPubCurrentIndex(xpub: string, position: number): Dispatched {
   return (dispatch, getState, extra) => extra.api.xPubPos.setCurrentAddressAt(xpub, position);
 }
 
-export function getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Dispatched<number> {
+export function getXPubLastIndex(
+  blockchain: BlockchainCode,
+  xpub: string,
+  start: number,
+): Dispatched<number | undefined> {
   return (dispatch, getState, extra) => extra.backendApi.getXPubLastIndex(blockchain, xpub, start);
 }

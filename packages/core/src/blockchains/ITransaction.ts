@@ -1,4 +1,4 @@
-import {EthereumAddress} from "./ethereum/Address";
+import {EthereumAddress} from "./ethereum/EthereumAddress";
 
 export interface ITransaction {
   verifySignature(): boolean;

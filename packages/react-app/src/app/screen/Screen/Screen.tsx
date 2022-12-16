@@ -31,7 +31,7 @@ import ImportVault from '../../vault/ImportVault';
 import PasswordMigration from '../../vault/PasswordMigration';
 import SetupVault from '../../vault/SetupVault';
 
-const log = Logger.forCategory('screen');
+const log = Logger.forCategory('Screen');
 
 interface OwnProps {
   termsVersion: string;
@@ -109,4 +109,6 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
   }
 };
 
-export default connect<StateProps, {}, {}, IState>((state) => screen.selectors.getCurrentScreen(state))(Screen);
+export default connect<StateProps, unknown, unknown, IState>((state) => screen.selectors.getCurrentScreen(state))(
+  Screen,
+);

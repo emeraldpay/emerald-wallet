@@ -1,102 +1,78 @@
-import {Page} from '@emeraldwallet/ui';
-import {Back} from '@emeraldwallet/ui';
-import {BlockchainCode} from '@emeraldwallet/core';
-import {addAccount, IState, settings} from '@emeraldwallet/store';
-import {CoinAvatar} from '@emeraldwallet/ui';
-import {
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText, Radio, RadioGroup, Typography
-} from '@material-ui/core';
+import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
+import { IState, addAccount, settings } from '@emeraldwallet/store';
+import { Back, CoinAvatar, Page } from '@emeraldwallet/ui';
+import { Divider, Grid, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
 interface BlockchainRef {
+  assets: string[];
   code: BlockchainCode;
   name: string;
-  assets: string[];
 }
 
-interface OwnProps {
-}
-
-interface RenderProps {
-  supportedBlockchain: BlockchainRef[];
+interface StateProps {
   blockchain?: BlockchainCode;
+  supportedBlockchain: BlockchainRef[];
 }
 
 interface DispatchProps {
-  selectBlockchain: (code?: BlockchainCode) => void;
+  selectBlockchain(code?: BlockchainCode): void;
 }
 
-const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
-  const { supportedBlockchain, blockchain } = props;
-  const { selectBlockchain } = props;
-
-  return (
-    <Page
-      leftIcon={(<Back />)}
-      title={'Select cryptocurrency'}
-    >
-      <Grid container={true}>
-        <Grid item={true} xs={12} >
-          <List>
-            {supportedBlockchain.map((b, i) =>
-              <div key={b.code}>
-                {i > 0 ? <Divider variant='inset' component='li' /> : null}
-                <ListItem
-                  alignItems='flex-start'
-                  button={true}
-                  selected={b.code === blockchain}
-                  onClick={() => selectBlockchain(b.code)}
-                >
-                  <ListItemAvatar>
-                    <ListItemIcon>
-                      <CoinAvatar blockchain={b.code}/>
-                    </ListItemIcon>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={b.name}
-                    secondary={b.assets.join(', ')}
-                  />
-                </ListItem>
-              </div>
-            )}
-          </List>
-        </Grid>
+const SelectBlockchain: React.FC<StateProps & DispatchProps> = ({
+  blockchain,
+  supportedBlockchain,
+  selectBlockchain,
+}) => (
+  <Page leftIcon={<Back />} title={'Select cryptocurrency'}>
+    <Grid container>
+      <Grid item xs={12}>
+        <List>
+          {supportedBlockchain.map((chain, i) => (
+            <div key={chain.code}>
+              {i > 0 ? <Divider variant="inset" component="li" /> : null}
+              <ListItem
+                button
+                alignItems="flex-start"
+                selected={chain.code === blockchain}
+                onClick={() => selectBlockchain(chain.code)}
+              >
+                <ListItemAvatar>
+                  <ListItemIcon>
+                    <CoinAvatar blockchain={chain.code} />
+                  </ListItemIcon>
+                </ListItemAvatar>
+                <ListItemText primary={chain.name} secondary={chain.assets.join(', ')} />
+              </ListItem>
+            </div>
+          ))}
+        </List>
       </Grid>
-    </Page>
+    </Grid>
+  </Page>
+);
 
-  );
-});
+export default connect<StateProps, DispatchProps, unknown, IState>(
+  (state) => {
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-export default connect<RenderProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const supportedBlockchain = settings.selectors.currentChains(state).map((c) => {
-      return {
-        code: c.params.code,
-        name: c.getTitle(),
-        assets: c.getAssets()
-      };
-    });
+    const supportedBlockchain = settings.selectors.currentChains(state).map<BlockchainRef>((chain) => ({
+      assets: tokenRegistry.getStablecoins(chain.params.code).map(({ symbol }) => symbol),
+      code: chain.params.code,
+      name: chain.getTitle(),
+    }));
+
     return {
       supportedBlockchain,
-      blockchain: state.addAccount!!.blockchain
+      blockchain: state.addAccount?.blockchain,
     };
   },
-  (dispatch, ownProps) => {
-    return {
-      selectBlockchain: (code?: BlockchainCode) => {
-        dispatch(addAccount.actions.setBlockchain(code));
-        dispatch(addAccount.actions.nextPage());
-      }
-    };
-  }
-)((SelectBlockchain));
+  (dispatch) => ({
+    selectBlockchain: (code?: BlockchainCode) => {
+      dispatch(addAccount.actions.setBlockchain(code));
+      dispatch(addAccount.actions.nextPage());
+    },
+  }),
+)(SelectBlockchain);

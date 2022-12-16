@@ -1,5 +1,5 @@
 import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
-import { getStandardUnits } from './Asset';
+import { getStandardUnits } from './asset';
 
 export function formatAmount(amount: BigAmount, decimals = 3): string {
   const units = getStandardUnits(amount);

@@ -38,7 +38,7 @@ export class CreateErc20WrappedTx {
     this.address = details.address;
     this.amount = details.amount ?? zeroAmount;
     this.blockchain = details.blockchain;
-    this.gas = details.gas ?? 50000;
+    this.gas = details.gas ?? 60000;
     this.target = details.target ?? TxTarget.MANUAL;
     this.totalBalance = details.totalBalance ?? zeroAmount;
     this.totalTokenBalance = details.totalTokenBalance;

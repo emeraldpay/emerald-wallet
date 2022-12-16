@@ -1,26 +1,19 @@
 import { FormatterBuilder, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
+import { DisplayTx } from './DisplayTx';
 import { CreateERC20Tx } from '..';
-import { IDisplayTx } from './IDisplayTx';
 
-const fmt = new FormatterBuilder().useTopUnit().number(6).append(' ').unitCode().build();
+const formatter = new FormatterBuilder().useTopUnit().number(6, true).build();
 
-export class DisplayErc20Tx implements IDisplayTx {
+export class DisplayErc20Tx implements DisplayTx {
   public tx: CreateERC20Tx;
 
   constructor(tx: CreateERC20Tx) {
     this.tx = tx;
   }
 
-  public getMainUnit(): Unit {
-    const { tx } = this;
-    const gasPrice = tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO;
-
-    return gasPrice.units.top;
-  }
-
   public amount(): string {
-    return fmt.format(this.tx.amount);
+    return formatter.format(this.tx.amount);
   }
 
   public amountUnit(): string {
@@ -31,17 +24,25 @@ export class DisplayErc20Tx implements IDisplayTx {
     return this.tx.gas.toString(10);
   }
 
+  public feeUnit(): string {
+    return 'Gas';
+  }
+
   public feeCost(): string {
-    return fmt.format(this.tx.getFees());
+    return formatter.format(this.tx.getFees());
   }
 
   public feeCostUnit(): string {
-    const unit = this.getMainUnit();
+    const { code } = this.topUnit();
 
-    return unit.name;
+    return code;
   }
 
-  public feeUnit(): string {
-    return 'Gas';
+  public topUnit(): Unit {
+    const { tx } = this;
+
+    const gasPrice = tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO;
+
+    return gasPrice.units.top;
   }
 }

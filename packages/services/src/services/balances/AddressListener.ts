@@ -22,15 +22,15 @@ export class AddressListener {
     this.client = client;
   }
 
+  stop(): void {
+    this.response?.cancel();
+    this.response = null;
+  }
+
   getBalance(blockchain: BlockchainCode, addresses: string | string[], token?: AssetCode): Promise<AddressBalance[]> {
     const request: BalanceRequest = this.makeRequest(blockchain, addresses, token);
 
     return this.client.getBalance(request);
-  }
-
-  stop(): void {
-    this.response?.cancel();
-    this.response = null;
   }
 
   subscribe(chainCode: BlockchainCode, addresses: string | string[], handler: HeadListener, token?: AssetCode): void {

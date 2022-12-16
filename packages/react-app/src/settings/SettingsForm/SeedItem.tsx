@@ -1,5 +1,5 @@
 import { IdSeedReference, SeedDescription, SeedDetails, SeedType, Uuid } from '@emeraldpay/emerald-vault-core';
-import { parseDate } from '@emeraldwallet/core/lib/utils';
+import { utils } from '@emeraldwallet/core';
 import { Pen3 as EditIcon, Ledger } from '@emeraldwallet/ui';
 import {
   IconButton,
@@ -165,7 +165,7 @@ const SeedItem: React.FC<OwnProps> = ({ seed, updateSeed }) => {
           <div className={styles.seedTypeIcon}>{seedTypeIcon(seed.type)}</div>
           <Typography variant="body2">{seedTypeName(seed.type)}</Typography>
         </div>
-        <div className={styles.seedSince}>Since {parseDate(seed.createdAt)?.toLocaleString()}</div>
+        <div className={styles.seedSince}>Since {utils.parseDate(seed.createdAt)?.toLocaleString()}</div>
         <div className={styles.seedId}>
           <Typography className={styles.seedIdText} variant="body2">
             {seed.id}

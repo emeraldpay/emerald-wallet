@@ -179,7 +179,7 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
     const seed = step.getResult().seed;
 
     if (typeof seed == 'undefined') {
-      console.log('Step State', step.getResult());
+      console.log('Step state', step.getResult());
       throw new Error('Invalid state: seed is undefined');
     }
 

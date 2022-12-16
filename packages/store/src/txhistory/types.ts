@@ -1,26 +1,22 @@
 import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import {
-  AnyCoinCode,
-  PersistentState,
-  amountFactory,
-  blockchainIdToCode,
-  isSupportedTokenCode,
-  tokenAmount,
-} from '@emeraldwallet/core';
+import { PersistentState, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
 
 export class StoredTransactionChange implements PersistentState.Change {
   amount: string;
   address?: string;
-  asset: AnyCoinCode;
+  asset: string;
   direction: PersistentState.Direction;
   hdPath?: string;
   type: PersistentState.ChangeType;
   wallet?: string;
-  private readonly _blockchain: number;
 
-  constructor(blockchain: number, change: PersistentState.Change) {
-    this._blockchain = blockchain;
+  private readonly blockchain: number;
+  private readonly tokenRegistry: TokenRegistry;
+
+  constructor(tokenRegistry: TokenRegistry, blockchain: number, change: PersistentState.Change) {
+    this.blockchain = blockchain;
+    this.tokenRegistry = tokenRegistry;
 
     this.amount = change.amount;
     this.address = change.address;
@@ -36,11 +32,13 @@ export class StoredTransactionChange implements PersistentState.Change {
       return new BigAmount(this.amount, new Units([new Unit(18, 'Unknown token', '???')]));
     }
 
-    if (isSupportedTokenCode(this.asset)) {
-      return tokenAmount(this.amount, this.asset);
+    const blockchain = blockchainIdToCode(this.blockchain);
+
+    if (this.tokenRegistry.hasSymbol(blockchain, this.asset)) {
+      return this.tokenRegistry.bySymbol(blockchain, this.asset).getAmount(this.amount);
     }
 
-    return amountFactory(blockchainIdToCode(this._blockchain))(this.amount);
+    return amountFactory(blockchain)(this.amount);
   }
 
   set amountValue(amount: BigAmount) {
@@ -61,7 +59,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   changes: StoredTransactionChange[];
   meta: PersistentState.TxMeta | null;
 
-  constructor(tx: PersistentState.Transaction, meta: PersistentState.TxMeta | null) {
+  constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMeta | null) {
     this.block = tx.block;
     this.blockchain = tx.blockchain;
     this.confirmTimestamp = tx.confirmTimestamp;
@@ -71,7 +69,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
     this.txId = tx.txId;
     this.version = tx.version;
 
-    this.changes = tx.changes.map((change) => new StoredTransactionChange(tx.blockchain, change));
+    this.changes = tx.changes.map((change) => new StoredTransactionChange(tokenRegistry, tx.blockchain, change));
     this.meta = meta;
   }
 }
@@ -110,6 +108,7 @@ export interface RemoveStoredTxAction {
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
   meta: PersistentState.TxMeta | null;
+  tokens: TokenData[];
   transaction: PersistentState.Transaction;
   walletId: Uuid;
 }

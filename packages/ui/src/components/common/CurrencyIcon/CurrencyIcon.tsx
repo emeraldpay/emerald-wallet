@@ -1,4 +1,4 @@
-import { AnyCoinCode, BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
 import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { CurrencyBtc, CurrencyDai, CurrencyEtc, CurrencyEth, CurrencyUsdc, CurrencyUsdt } from '../../../icons';
@@ -27,7 +27,7 @@ const useStyles = makeStyles(() =>
 interface OwnProps {
   center?: boolean;
   className?: string;
-  currency: AnyCoinCode;
+  currency: string;
   size?: 'small' | 'large' | 'default';
 }
 

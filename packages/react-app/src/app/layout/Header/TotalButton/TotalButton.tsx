@@ -1,5 +1,5 @@
 import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
-import { AnyCoinCode, CurrencyAmount, CurrencyCode, formatAmount } from '@emeraldwallet/core';
+import { CurrencyAmount, CurrencyCode, formatAmount } from '@emeraldwallet/core';
 import { Button, CurrencyIcon } from '@emeraldwallet/ui';
 import { List, ListItem, ListItemAvatar, ListItemText, Menu, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
@@ -21,7 +21,7 @@ export interface FiatCurrencies {
   fiatAmount: BigAmount;
   fiatRate: number;
   total: BigAmount;
-  token: AnyCoinCode;
+  token: string;
 }
 
 export interface StateProps {

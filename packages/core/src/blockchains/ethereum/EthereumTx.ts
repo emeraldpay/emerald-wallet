@@ -1,6 +1,6 @@
 import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
-import { EthereumAddress } from './Address';
+import { EthereumAddress } from './EthereumAddress';
 import { ITransaction } from '../ITransaction';
 
 class EthereumTx implements ITransaction {

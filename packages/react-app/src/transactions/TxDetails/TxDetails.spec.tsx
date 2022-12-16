@@ -1,4 +1,4 @@
-import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
@@ -36,7 +36,10 @@ function createStore(): Store {
   };
 }
 
+const tokenRegistry = new TokenRegistry([]);
+
 const ethereumTx = new StoredTransaction(
+  tokenRegistry,
   {
     blockchain: blockchainCodeToId(BlockchainCode.ETH),
     changes: [
@@ -57,6 +60,7 @@ const ethereumTx = new StoredTransaction(
 );
 
 const bitcoinTx = new StoredTransaction(
+  tokenRegistry,
   {
     blockchain: blockchainCodeToId(BlockchainCode.BTC),
     changes: [

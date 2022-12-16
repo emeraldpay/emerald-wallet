@@ -1,19 +1,17 @@
 import { AddEntry, IEmeraldVault, SeedDescription, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
-  BlockchainCode,
+  Blockchains,
+  IpcCommands,
+  PersistentState,
+  TokenRegistry,
   blockchainCodeToId,
   blockchainIdToCode,
-  Blockchains,
-  PersistentState,
 } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
 import { ipcRenderer } from 'electron';
+import { Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { accounts } from '../index';
-import * as screen from '../screen';
-import { requestTokensBalances } from '../tokens/actions';
 import {
   fetchErc20BalancesAction,
   hdAccountCreated,
@@ -22,27 +20,38 @@ import {
   setWalletsAction,
 } from './actions';
 import { allEntries, findWallet } from './selectors';
-import { ActionTypes, ICreateHdEntry, INextAddress, ISubWalletBalance } from './types';
+import {
+  ActionTypes,
+  ICreateHdEntry,
+  IFetchErc20BalancesAction,
+  INextAddress,
+  ISubWalletBalance,
+  IWalletImportedAction,
+} from './types';
+import { accounts } from '../index';
+import * as screen from '../screen';
+import { requestTokensBalances } from '../tokens/actions';
 
-// Subscribe to balance update from Emerald Services
-function subscribeAccountBalance(accounts: WalletEntry[]): void {
-  accounts.forEach((account: WalletEntry) => {
-    const code: BlockchainCode = blockchainIdToCode(account.blockchain);
+function subscribeAccountBalance(entries: WalletEntry[]): void {
+  entries.forEach((entry) => {
+    const blockchainCode = blockchainIdToCode(entry.blockchain);
 
-    if (isEthereumEntry(account)) {
-      ipcRenderer.send('subscribe-balance', code, account.id, account.address?.value);
-    } else if (isBitcoinEntry(account)) {
-      account.xpub.forEach((xpub) => {
-        ipcRenderer.send('subscribe-balance', code, account.id, xpub.xpub);
-      });
+    if (isEthereumEntry(entry)) {
+      ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchainCode, entry.id, entry.address?.value);
+    } else if (isBitcoinEntry(entry)) {
+      entry.xpub.forEach((xpub) =>
+        ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchainCode, entry.id, xpub.xpub),
+      );
     } else {
-      console.log('Invalid entry', account);
+      console.log('Invalid entry', entry);
     }
   });
 }
 
-function* fetchErc20Balances(): SagaIterator {
+function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allEntries);
+
+  const tokenRegistry = new TokenRegistry(action.tokens);
 
   const etherAccounts = accounts.filter((account: WalletEntry) => isEthereumEntry(account));
 
@@ -53,11 +62,8 @@ function* fetchErc20Balances(): SagaIterator {
     } = account;
 
     const chain = blockchainIdToCode(blockchain);
+    const tokens = tokenRegistry.byBlockchain(chain);
 
-    // Look up all known tokens for current blockchain
-    const tokens = registry.all()[chain] ?? [];
-
-    // Request balances for each token for current address
     yield put(requestTokensBalances(chain, tokens, address));
   }
 }
@@ -87,10 +93,12 @@ function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
     });
 
   yield put(setWalletsAction(wallets));
-  yield put(fetchErc20BalancesAction());
+  // Saga doesn't support thunk action, so we make conversion to unknown type and then to Action type
+  yield put(fetchErc20BalancesAction() as unknown as Action);
   yield put(setLoadingAction(false));
 
   const accounts = yield select(allEntries);
+
   yield call(subscribeAccountBalance, accounts);
 }
 
@@ -106,45 +114,47 @@ function* loadSeeds(vault: IEmeraldVault): SagaIterator {
 /**
  * When we import account it means we create one wallet with one account
  */
-function* afterAccountImported(vault: IEmeraldVault, action: any): SagaIterator {
+function* afterAccountImported(vault: IEmeraldVault, action: IWalletImportedAction): SagaIterator {
   const { walletId } = action.payload;
 
   const wallet: Wallet = yield call(vault.getWallet, walletId);
 
   const account: WalletEntry = wallet.entries[0];
 
-  // subscribe for balance
   const chainCode = blockchainIdToCode(account.blockchain);
-  ipcRenderer.send('subscribe-balance', chainCode, account.id, account.address?.value);
 
-  // fetch erc20 tokens
-  const _tokens = registry.all()[chainCode] || [];
+  ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, chainCode, account.id, account.address?.value);
+
+  const tokenRegistry = new TokenRegistry(action.payload.tokens);
+
+  const tokens = tokenRegistry.byBlockchain(chainCode);
+
   if (account.address && account.address.type == 'single') {
-    yield put(requestTokensBalances(chainCode, _tokens, account.address.value));
+    yield put(requestTokensBalances(chainCode, tokens, account.address.value));
   }
 }
 
 /**
  * Create new single-address type of account, with PK from the current seed associated with the wallet
- *
- * @param vault
- * @param action
  */
 function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIterator {
   const { walletId, blockchain, seedPassword } = action;
+
   const chain = Blockchains[blockchain];
-  if (!chain) {
+
+  if (chain == null) {
     return;
   }
+
   let wallet: Wallet = yield select(findWallet, walletId);
 
   const existingHDAccount = (wallet.reserved || []).find((curr) => {
     return !(action.seedId && action.seedId != curr.seedId);
   });
 
-  if (!existingHDAccount) {
-    //wallet doesn't have addresses with the seed
-    console.warn('Wallet ' + wallet.id + " doesn't have hd account");
+  if (existingHDAccount == null) {
+    console.warn(`Wallet ${wallet.id} doesn't have hd account`);
+
     return;
   }
 
@@ -153,21 +163,32 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
       type: 'hd-path',
       blockchain: blockchainCodeToId(blockchain),
       key: {
-        seed: { type: 'id', value: existingHDAccount.seedId, password: seedPassword },
         hdPath: chain.params.hdPath.forAccount(existingHDAccount.accountId).toString(),
+        seed: {
+          type: 'id',
+          password: seedPassword,
+          value: existingHDAccount.seedId,
+        },
       },
     };
+
     const accountId = yield call(vault.addEntry, walletId, entry);
 
     wallet = yield call(vault.getWallet, walletId);
-    const account = wallet.entries.find((a) => a.id === accountId)!;
 
-    // subscribe for balance
-    ipcRenderer.send('subscribe-balance', blockchain, account.id, [account.address!.value]);
+    const account = wallet.entries.find((entry) => entry.id === accountId);
 
-    // fetch erc20 tokens
-    const _tokens = registry.all()[blockchain as BlockchainCode] || [];
-    yield put(requestTokensBalances(blockchain, _tokens, account.address!.value));
+    if (account?.address?.value == null) {
+      return;
+    }
+
+    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, account.id, [account.address.value]);
+
+    const tokenRegistry = new TokenRegistry(action.tokens);
+
+    const tokens = tokenRegistry.byBlockchain(blockchain);
+
+    yield put(requestTokensBalances(blockchain, tokens, account.address.value));
     yield put(hdAccountCreated(wallet.id, account));
     yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
   } catch (error) {

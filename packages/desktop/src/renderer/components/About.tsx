@@ -1,3 +1,4 @@
+import { IpcCommands } from '@emeraldwallet/core';
 import { About } from '@emeraldwallet/react-app/lib/app/AboutDialog/About/About';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -10,7 +11,7 @@ interface AboutState {
   version: string;
 }
 
-export class AboutComponent extends React.Component<{}, AboutState> {
+export class AboutComponent extends React.Component<unknown, AboutState> {
   constructor(props) {
     super(props);
 
@@ -22,14 +23,13 @@ export class AboutComponent extends React.Component<{}, AboutState> {
   }
 
   componentDidMount(): void {
-    ipcRenderer.invoke('get-version').then((result) => {
-      console.log(JSON.stringify(result));
+    ipcRenderer.invoke(IpcCommands.GET_VERSION).then((result) =>
       this.setState({
         os: result.os,
         version: result.version,
         gitVersion: result.gitVersion,
-      });
-    });
+      }),
+    );
   }
 
   onHelpClick = async (): Promise<void> => {

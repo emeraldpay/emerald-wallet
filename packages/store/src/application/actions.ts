@@ -1,13 +1,15 @@
-import { Commands, Logger } from '@emeraldwallet/core';
+import { IpcCommands, Logger, SettingsOptions, TokenData } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { ActionTypes, ApplicationOptions, ConnectingAction, OptionsAction } from './types';
+import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
+import { setAssets } from '../settings/actions';
+import { SetAssetsAction } from '../settings/types';
 import { Dispatched } from '../types';
 
-const log = Logger.forCategory('store.application');
+const log = Logger.forCategory('Store::Application');
 
 export function agreeOnTerms(version?: string): Dispatched<void> {
   return async (dispatch) => {
-    await ipcRenderer.invoke(Commands.SET_TERMS, version);
+    await ipcRenderer.invoke(IpcCommands.SET_TERMS, version);
 
     dispatch({
       type: ActionTypes.TERMS,
@@ -25,26 +27,49 @@ export function connecting(value: boolean): ConnectingAction {
 
 export function getVersions(): Dispatched<unknown> {
   return () => {
-    return ipcRenderer.invoke(Commands.GET_VERSION);
+    return ipcRenderer.invoke(IpcCommands.GET_VERSION);
   };
 }
 
 export function readConfig(): Dispatched<void> {
   return async (dispatch) => {
-    const config = await ipcRenderer.invoke(Commands.GET_APP_SETTINGS);
+    const config = await ipcRenderer.invoke(IpcCommands.GET_APP_SETTINGS);
 
-    log.debug(`Got app settings from electron: ${JSON.stringify(config)}`);
+    log.debug(`Got app settings from electron: ${config}`);
 
     dispatch({
       type: ActionTypes.CONFIG,
-      payload: config,
+      payload: JSON.parse(config),
     });
   };
 }
 
-export function setOptions(options: ApplicationOptions): OptionsAction {
-  return {
-    type: ActionTypes.OPTIONS,
-    payload: options,
+export function setOptions(options: SettingsOptions): Dispatched<void, OptionsAction> {
+  return async (dispatch) => {
+    await ipcRenderer.invoke(IpcCommands.SET_OPTIONS, options);
+
+    dispatch({
+      type: ActionTypes.OPTIONS,
+      payload: options,
+    });
+  };
+}
+
+export function setTokens(tokens: TokenData[]): Dispatched<void, SetAssetsAction | TokensAction> {
+  return async (dispatch) => {
+    await ipcRenderer.invoke(IpcCommands.SET_TOKENS, tokens);
+    await ipcRenderer.invoke(IpcCommands.TXS_SET_TOKENS, tokens);
+
+    await ipcRenderer.invoke(
+      IpcCommands.PRICES_SET_ASSETS,
+      tokens.map((token) => token.symbol),
+    );
+
+    dispatch(setAssets(tokens.map(({ symbol }) => symbol)));
+
+    dispatch({
+      type: ActionTypes.TOKENS,
+      payload: tokens,
+    });
   };
 }

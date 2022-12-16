@@ -1,5 +1,5 @@
 import { AnyCurrency } from '@emeraldpay/api';
-import { Logger } from '@emeraldwallet/core';
+import { IpcCommands, Logger } from '@emeraldwallet/core';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess, PriceListener } from '../..';
 import { IService } from '../Services';
@@ -9,38 +9,37 @@ const log = Logger.forCategory('PriceService');
 class PricesService implements IService {
   public readonly id: string;
 
-  private readonly from: AnyCurrency[];
+  private from: AnyCurrency[] = [];
+  private to: AnyCurrency | null = null;
 
-  private ipcMain: IpcMain;
+  private handler: NodeJS.Timeout | null = null;
+  private listener: PriceListener | null = null;
+
   private apiAccess: EmeraldApiAccess;
   private webContents?: WebContents;
-  private to: AnyCurrency;
 
-  private listener: PriceListener | null = null;
-  private handler: NodeJS.Timeout | null = null;
-
-  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess, from: string[], to: string) {
+  constructor(apiAccess: EmeraldApiAccess, ipcMain: IpcMain, webContents: WebContents, defaultFrom: string[]) {
     this.id = 'PricesService';
 
     this.apiAccess = apiAccess;
-    this.from = from as AnyCurrency[];
-    this.ipcMain = ipcMain;
-    this.to = to as AnyCurrency;
     this.webContents = webContents;
 
-    this.ipcMain.on('prices/setCurrency', (event, to: string) => {
-      to = to.toUpperCase();
+    ipcMain.handle(IpcCommands.PRICES_SET_ASSETS, (event, from: string[]) => {
+      log.info('Set prices sources:', from.join(', '));
 
-      log.info('Set prices target', to);
+      this.from = [...defaultFrom, ...from] as AnyCurrency[];
 
-      if (this.to !== to) {
-        this.to = to as AnyCurrency;
+      this.stop();
+      this.start();
+    });
 
-        this.stop();
-        this.start();
-      }
+    ipcMain.handle(IpcCommands.PRICES_SET_CURRENCY, (event, to: string) => {
+      log.info('Set prices target:', to);
 
-      event.returnValue = 'ok';
+      this.to = to.toUpperCase() as AnyCurrency;
+
+      this.stop();
+      this.start();
     });
   }
 
@@ -52,41 +51,38 @@ class PricesService implements IService {
     this.fetch();
   }
 
-  fetch(): void {
-    log.info(`Request for prices from ${this.from.join(', ')} to ${this.to}`);
-
-    this.listener?.request(this.from, this.to, (result) => {
-      try {
-        this.webContents?.send('store', { type: 'ACCOUNT/EXCHANGE_RATES', payload: result });
-      } catch (exception) {
-        log.warn('Cannot send to the UI', exception);
-      }
-    });
-
-    this.handler = setTimeout(this.fetch.bind(this), 60000);
-  }
-
   stop(): void {
-    if (this.handler) {
+    if (this.handler != null) {
       clearTimeout(this.handler);
 
       this.handler = null;
     }
 
-    if (this.listener) {
+    if (this.listener != null) {
       log.info('Closing prices listener');
 
-      this.listener.stop();
       this.listener = null;
     }
+  }
+
+  reconnect(): void {
+    // Timer based, so doesn't matter
   }
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
   }
 
-  reconnect(): void {
-    // Timer based, so doesn't matter
+  private fetch(): void {
+    if (this.from.length > 0 && this.to != null) {
+      log.info(`Request for prices from ${this.from.join(', ')} to ${this.to}`);
+
+      this.listener?.request(this.from, this.to, (rates) =>
+        this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/EXCHANGE_RATES', payload: { rates } }),
+      );
+    }
+
+    this.handler = setTimeout(this.fetch.bind(this), 60000);
   }
 }
 

@@ -1,7 +1,9 @@
 import { IState } from '@emeraldwallet/store';
 import { Store } from 'redux';
 
-export function createTestStore(state?: Partial<IState>): Store {
+type PartialState = Partial<{ [K in keyof IState]: Partial<IState[keyof IState]> }>;
+
+export function createTestStore(state?: PartialState): Store {
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [Symbol.observable](): any {
@@ -19,6 +21,6 @@ export function createTestStore(state?: Partial<IState>): Store {
     },
     subscribe() {
       return () => undefined;
-    }
+    },
   };
 }

@@ -1,5 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
-import { TokenInfo } from '@emeraldwallet/erc20';
+import { BlockchainCode, TokenData } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { tokenContract, wrapTokenContract } from './erc20';
 import {
@@ -27,7 +26,7 @@ export function setTokenBalance(
 
 export function requestTokenBalance(
   blockchain: BlockchainCode,
-  token: TokenInfo,
+  token: TokenData,
   address: string,
 ): RequestTokenBalanceAction {
   return {
@@ -42,7 +41,7 @@ export function requestTokenBalance(
 
 export function requestTokensBalances(
   blockchain: BlockchainCode,
-  tokens: TokenInfo[],
+  tokens: TokenData[],
   address: string,
 ): RequestTokensBalancesAction {
   return {

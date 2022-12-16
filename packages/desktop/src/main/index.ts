@@ -1,5 +1,6 @@
 import { join as joinPath, resolve as resolvePath } from 'path';
 import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
+import { IpcCommands } from '@emeraldwallet/core';
 import {
   Application,
   LocalConnector,
@@ -13,7 +14,7 @@ import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
 import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
-import { DevelopmentMode, ProductionMode, sendMode } from './utils/api-modes';
+import { DevelopmentMode, ProductionMode } from './utils/api-modes';
 import gitVersion from '../../gitversion.json';
 
 const { startProtocolHandler } = protocol;
@@ -49,7 +50,7 @@ app.on('ready', () => {
   const settings = new Settings();
 
   logger.info('Api Mode:', apiMode.id);
-  logger.info('Settings:', settings.toJS());
+  logger.info('Settings:', settings.toJSON());
   logger.info('User data:', app.getPath('userData'));
 
   const parameters = {
@@ -111,21 +112,26 @@ app.on('ready', () => {
   application.run(webContents, apiAccess, apiMode, persistentState, vaultProvider, rpcConnections);
 
   let initialized = false;
+  let reloaded = false;
 
-  ipcMain.on('emerald-ready', () => {
+  if (isDevelopMode) {
+    webContents.on('did-start-loading', () => {
+      if (initialized) {
+        reloaded = true;
+      }
+    });
+  }
+
+  ipcMain.on(IpcCommands.EMERALD_READY, () => {
     logger.info('Emerald app launched');
 
     const { webContents } = getMainWindow(application, vaultProvider, logger, options);
 
     if (webContents != null) {
-      try {
-        sendMode(webContents, apiMode);
+      webContents.send(IpcCommands.STORE_DISPATCH, { type: 'SETTINGS/SET_MODE', payload: apiMode });
 
-        if (initialized) {
-          application.reconnect();
-        }
-      } catch (exception) {
-        logger.warn('Cannot send to the UI', exception);
+      if (initialized) {
+        application.reconnect(reloaded);
       }
     }
 

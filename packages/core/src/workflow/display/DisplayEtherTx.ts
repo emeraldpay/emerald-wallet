@@ -1,49 +1,45 @@
-import {CreateEthereumTx} from '..';
-import {IDisplayTx} from './IDisplayTx';
-import {Unit, FormatterBuilder} from '@emeraldpay/bigamount';
+import { FormatterBuilder, Unit } from '@emeraldpay/bigamount';
+import { DisplayTx } from './DisplayTx';
+import { CreateEthereumTx } from '..';
 
-const fmt = new FormatterBuilder()
-  .useTopUnit()
-  .number(5, true)
-  .build()
+const formatter = new FormatterBuilder().useTopUnit().number(5, true).build();
 
-export class DisplayEtherTx implements IDisplayTx {
-  public tx: CreateEthereumTx;
+export class DisplayEtherTx implements DisplayTx {
+  private readonly tx: CreateEthereumTx;
 
   constructor(tx: CreateEthereumTx) {
     this.tx = tx;
   }
 
-  public getMainUnit(): Unit {
-    return this.tx.amount.units.top
+  amount(): string {
+    return formatter.format(this.tx.amount);
   }
 
-  public amount (): string {
-    if (!this.tx.amount) {
-      return '-';
-    }
-    return fmt.format(this.tx.amount);
+  amountUnit(): string {
+    const { name } = this.topUnit();
+
+    return name;
   }
 
-  public amountUnit (): string {
-    const unit = this.getMainUnit();
-    return unit.name;
-  }
-
-  public fee (): string {
+  fee(): string {
     return this.tx.gas.toString(10);
   }
 
-  public feeCost (): string {
-    return fmt.format(this.tx.getFees());
-  }
-
-  public feeCostUnit (): string {
-    const unit = this.getMainUnit();
-    return unit.name;
-  }
-
-  public feeUnit (): string {
+  feeUnit(): string {
     return 'Gas';
+  }
+
+  feeCost(): string {
+    return formatter.format(this.tx.getFees());
+  }
+
+  feeCostUnit(): string {
+    const { name } = this.topUnit();
+
+    return name;
+  }
+
+  topUnit(): Unit {
+    return this.tx.amount.units.top;
   }
 }

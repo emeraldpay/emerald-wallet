@@ -1,8 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
-import { DisplayEtherTx, IDisplayTx } from '..';
-import { AnyTokenCode } from '../../Asset';
+import { DisplayEtherTx, DisplayTx } from '..';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
 import { EthereumTransactionType } from '../../transaction/ethereum';
 
@@ -55,7 +54,7 @@ function toPlainDetails(tx: TxDetails): TxDetailsPlain {
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    tokenSymbol: tx.amount.units.top.code as AnyTokenCode,
+    tokenSymbol: tx.amount.units.top.code,
     totalEtherBalance: tx.totalBalance?.encode(),
     type: `0x${tx.type.toString(16)}`,
   };
@@ -160,7 +159,7 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     this.totalBalance = balance;
   }
 
-  public display(): IDisplayTx {
+  public display(): DisplayTx {
     return new DisplayEtherTx(this);
   }
 
@@ -206,6 +205,7 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
 
       if (amount.isPositive() || amount.isZero()) {
         this.amount = amount;
+
         return true;
       }
 

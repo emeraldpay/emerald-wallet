@@ -1,3 +1,4 @@
+import { TokenRegistry } from '@emeraldwallet/core';
 import {
   ActionTypes,
   HistoryAction,
@@ -35,12 +36,12 @@ function onRemoveStoreTransaction(state: HistoryState, { txId }: RemoveStoredTxA
 
 function onUpdateStoreTransaction(
   state: HistoryState,
-  { meta, transaction, walletId }: UpdateStoredTxAction,
+  { meta, tokens, transaction, walletId }: UpdateStoredTxAction,
 ): HistoryState {
   if (state.walletId === walletId) {
-    // TODO Add TX version check
+    const tokenRegistry = new TokenRegistry(tokens);
 
-    const storedTransaction = new StoredTransaction(transaction, meta);
+    const storedTransaction = new StoredTransaction(tokenRegistry, transaction, meta);
     const storedTransactions = [...state.transactions];
 
     if (storedTransactions.length === 0) {

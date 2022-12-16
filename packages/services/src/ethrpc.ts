@@ -1,15 +1,7 @@
-import { toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
+import { PartialEthereumTransaction, toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { JsonRpc } from './jsonrpc';
 import { EthersJsonRpc } from './jsonrpc/JsonRpc';
-
-export interface PartialTx {
-  data?: string;
-  gas?: number;
-  nonce?: number;
-  to: string;
-  [key: string]: any;
-}
 
 interface PartialBlock<P, E = P> {
   difficulty: E;
@@ -67,21 +59,15 @@ export class EthApi {
   /**
    * Executes a new message call immediately without creating a transaction on the blockchain
    */
-  call(callData: PartialTx, blockNumber: number | string = 'latest'): Promise<any> {
-    return this.rpc.call('eth_call', [{ to: callData.to, data: callData.data }, blockNumber]);
+  call({ data, to }: PartialEthereumTransaction, blockNumber: number | string = 'latest'): Promise<any> {
+    return this.rpc.call('eth_call', [{ data, to }, blockNumber]);
   }
 
   /**
    * Executes a message call or transaction and returns the amount of the gas used
    */
-  estimateGas(call: PartialTx): Promise<number> {
-    const txData = {
-      ...call,
-      gas: call.gas !== undefined ? toHex(call.gas) : call.gas,
-      nonce: call.nonce !== undefined ? toHex(call.nonce) : call.nonce,
-    };
-
-    return this.rpc.call('eth_estimateGas', [txData]).then(toNumber);
+  estimateGas(tx: PartialEthereumTransaction<string>): Promise<number> {
+    return this.rpc.call('eth_estimateGas', [tx]).then(toNumber);
   }
 
   /**

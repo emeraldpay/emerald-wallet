@@ -55,9 +55,9 @@ export { HDPathIndexes } from './hdpath-preview/types';
 
 export { StoredTransaction } from './txhistory/types';
 
-export { default as rootReducer } from './root-reducer';
-export { default as BackendApi } from './BackendApi';
-export { default as reduxLogger } from './redux-logger';
+export { rootReducer } from './root-reducer';
+export { BackendApiInvoker } from './BackendApiInvoker';
+export { reduxLogger } from './redux-logger';
 export { createStore } from './create-store';
 
 export { RemoteAddressBook } from './remote-access/AddressBook';

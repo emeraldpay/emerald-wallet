@@ -1,5 +1,5 @@
 import { BlockchainCode, EthereumTransactionType, amountFactory } from '@emeraldwallet/core';
-import { BroadcastData } from '@emeraldwallet/store';
+import { application, BroadcastData } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import '@testing-library/jest-dom/extend-expect';
@@ -35,7 +35,11 @@ describe('BroadcastTx', () => {
     txId: '0xc9c924dd7f4ffe61d653718b204d6aae514736db227fdb0297b76cd8f3f1f203',
   };
 
-  const store = createTestStore();
+  const store = createTestStore({
+    [application.moduleName]: {
+      tokens: [],
+    },
+  });
 
   it('should work without crash', () => {
     const wrapper = render(

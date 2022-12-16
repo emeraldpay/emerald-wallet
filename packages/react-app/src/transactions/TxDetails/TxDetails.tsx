@@ -3,6 +3,7 @@ import {
   BlockchainCode,
   EthereumReceipt,
   EthereumTransaction,
+  EthereumTransactionType,
   PersistentState,
   blockchainById,
   blockchainIdToCode,
@@ -25,10 +26,6 @@ const styles = createStyles({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-  },
-  idField: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
   },
   nameField: {
     color: '#747474',
@@ -161,11 +158,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
           />
           <FormRow
             leftColumn={<div className={classes.nameField}>Hash</div>}
-            rightColumn={
-              <Typography className={classes.idField} title={transaction.txId}>
-                {transaction.txId}
-              </Typography>
-            }
+            rightColumn={<Address address={transaction.txId} />}
           />
           <FormRow
             leftColumn={<div className={classes.nameField}>Block</div>}
@@ -210,7 +203,13 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
           )}
           {ethTx != null && (
             <>
-              {ethTx.gasPrice == null ? (
+              {ethTx.gasPrice != null && (
+                <FormRow
+                  leftColumn={<div className={classes.nameField}>Gas Price</div>}
+                  rightColumn={<Typography>{formatAmount(new Wei(ethTx.gasPrice))}</Typography>}
+                />
+              )}
+              {ethTx.type === EthereumTransactionType.EIP1559 && (
                 <>
                   <FormRow
                     leftColumn={<div className={classes.nameField}>Max Gas Price</div>}
@@ -221,11 +220,6 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
                     rightColumn={<Typography>{formatAmount(new Wei(ethTx.priorityGasPrice ?? 0))}</Typography>}
                   />
                 </>
-              ) : (
-                <FormRow
-                  leftColumn={<div className={classes.nameField}>Gas Price</div>}
-                  rightColumn={<Typography>{formatAmount(new Wei(ethTx.gasPrice))}</Typography>}
-                />
               )}
               <FormRow
                 leftColumn={<div className={classes.nameField}>Nonce</div>}

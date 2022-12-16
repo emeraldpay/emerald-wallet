@@ -1,5 +1,4 @@
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode } from './Asset';
 import { BlockchainCode } from './blockchains';
 
 /**
@@ -85,7 +84,7 @@ export interface Change {
   wallet?: EntryId;
   address?: string;
   hdPath?: string;
-  asset: AnyCoinCode;
+  asset: string;
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
    * Note that the amount is always a positive number

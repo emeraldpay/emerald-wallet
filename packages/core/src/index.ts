@@ -5,57 +5,56 @@ import * as workflow from './workflow';
 export { blockchains, workflow, utils };
 
 export {
-  ConvertableTokenCode,
-  StableCoinCode,
-  SupportedTokenCode,
-  AnyTokenCode,
-  AnyCoinCode,
-  isConvertableToken,
-  isStableCoinCode,
-  isAnyTokenCode,
-  isSupportedTokenCode,
-  AssetDetail,
-  AssetDetails,
-  getStandardUnits,
-} from './Asset';
-export {
+  BalanceUtxo,
   BlockchainCode,
   Blockchains,
+  CoinTickerCode,
+  TokenData,
+  HDPath,
   IBlockchain,
+  InputDataDecoder,
+  Token,
+  TokenDirectory,
+  TokenInstances,
+  TokenRegistry,
+  amountDecoder,
+  amountFactory,
+  blockchainById,
   blockchainByName,
-  ethereumByChainId,
   blockchainCodeToId,
   blockchainIdToCode,
-  blockchainById,
-  CoinTickerCode,
-  amountFactory,
-  amountDecoder,
-  BalanceUtxo,
+  decodeData,
+  ethereumByChainId,
+  isBitcoin,
+  isCoinTickerCode,
+  isEthereum,
+  isToken,
   ledgerByBlockchain,
-  tokenUnits,
+  tokenAbi,
+  wrapTokenAbi,
 } from './blockchains';
-export { Contract } from './Contract';
-export { Currency, CurrencyCode, CurrencyAmount } from './Currency';
-export { IServerConnect } from './IServerConnect';
-export { WalletApi } from './WalletApi';
-export { Commands } from './backend/Commands';
-export { default as IBackendApi } from './backend/IBackendApi';
-export { toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnits } from './convert';
-export { HDPath, isCoinTickerCode, isEthereum, isBitcoin, tokenAmount } from './blockchains';
-export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
-export { EthereumAddress } from './blockchains/ethereum/Address';
-export { formatAmount } from './format';
+export { Ethereum as EthereumBlockchain, EthereumTx } from './blockchains/ethereum';
+export { EthereumAddress } from './blockchains/ethereum/EthereumAddress';
 export { default as IFrontApp } from './frontend/IFrontApp';
 export { default as DefaultLogger } from './logging/DefaultLogger';
 export { default as ILogger } from './logging/ILogger';
 export { default as Logger } from './logging/Logger';
-export * as PersistentState from './persistentState';
-export { SettingsManager, SettingsStore } from './settings';
 export {
   EthereumRawReceipt,
-  EthereumReceipt,
   EthereumRawTransaction,
+  EthereumReceipt,
   EthereumTransaction,
   EthereumTransactionType,
+  PartialEthereumTransaction,
 } from './transaction/ethereum';
+export { getStandardUnits } from './asset';
+export { BackendApi } from './BackendApi';
+export { Contract } from './Contract';
+export { fromBaseUnits, quantitiesToHex, toBaseUnits, toBigNumber, toHex, toNumber } from './convert';
+export { Currency, CurrencyAmount, CurrencyCode } from './Currency';
+export { formatAmount } from './format';
+export { IpcCommands } from './IpcCommands';
+export * as PersistentState from './persistentState';
+export { SettingsManager, SettingsOptions, SettingsStore } from './settings';
+export { WalletApi } from './WalletApi';
 export { default as WithDefaults } from './withDefaults';

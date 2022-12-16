@@ -1,5 +1,4 @@
-import {Contract} from '@emeraldwallet/core';
-import {abi as TokenAbi, wrapAbi as WrapTokenAbi} from '@emeraldwallet/erc20';
+import { Contract, tokenAbi, wrapTokenAbi } from '@emeraldwallet/core';
 
-export const tokenContract = new Contract(TokenAbi);
-export const wrapTokenContract = new Contract(WrapTokenAbi);
+export const tokenContract = new Contract(tokenAbi);
+export const wrapTokenContract = new Contract(wrapTokenAbi);

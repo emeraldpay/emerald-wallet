@@ -1,11 +1,13 @@
-import { SettingsManager, SettingsStore } from '@emeraldwallet/core';
+import { SettingsManager, SettingsOptions, SettingsStore, TokenData } from '@emeraldwallet/core';
 import ElectronStore from 'electron-store';
 import { v4 as uuid } from 'uuid';
 
 const DEFAULTS: SettingsStore = {
   id: uuid(),
+  options: {},
   version: 1,
   terms: 'none',
+  tokens: [],
 };
 
 export default class Settings implements SettingsManager {
@@ -30,8 +32,18 @@ export default class Settings implements SettingsManager {
     return this.settings.get('lastCursor');
   }
 
+  getTokens(): TokenData[] {
+    return this.settings.get('tokens');
+  }
+
   setLastCursor(timestamp: number): Settings {
     this.settings.set('lastCursor', timestamp);
+
+    return this;
+  }
+
+  setOptions(options: SettingsOptions): Settings {
+    this.settings.set('options', options);
 
     return this;
   }
@@ -42,7 +54,17 @@ export default class Settings implements SettingsManager {
     return this;
   }
 
+  setTokens(tokens: TokenData[]): Settings {
+    this.settings.set('tokens', tokens);
+
+    return this;
+  }
+
   toJS(): SettingsStore {
     return this.settings.store;
+  }
+
+  toJSON(): string {
+    return JSON.stringify(this.settings.store);
   }
 }

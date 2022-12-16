@@ -44,6 +44,17 @@ export interface EthereumTransaction {
   value: string | BigNumber;
 }
 
+export interface PartialEthereumTransaction<T = string | BigNumber> {
+  data?: string;
+  from?: string;
+  gas?: number | string;
+  gasPrice?: T;
+  maxFeePerGas?: T;
+  maxPriorityFeePerGas?: T;
+  to: string;
+  value?: T;
+}
+
 export interface EthereumRawReceipt {
   blockHash: string;
   blockNumber: string;

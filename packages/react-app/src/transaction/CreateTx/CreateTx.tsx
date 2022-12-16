@@ -1,13 +1,6 @@
 import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import {
-  AnyCoinCode,
-  AnyTokenCode,
-  BlockchainCode,
-  amountFactory,
-  isAnyTokenCode,
-  workflow,
-} from '@emeraldwallet/core';
+import { BlockchainCode, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
@@ -70,12 +63,13 @@ export interface Props {
   ownAddresses?: string[];
   stdGasPrice: GasPrices;
   token: string;
+  tokenRegistry: TokenRegistry;
   tokenSymbols: string[];
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   txFeeToken: string;
   getBalance(address: string): WeiAny;
   getBalancesByAddress?(address: string): string[];
-  getTokenBalanceForAddress(address: string, token: AnyCoinCode): BigAmount;
+  getTokenBalanceForAddress(address: string, token: string): BigAmount;
   onCancel?(): void;
   onChangeAmount?(amount: BigAmount): void;
   onChangeFrom?(from: string): void;
@@ -96,6 +90,8 @@ interface State {
 }
 
 class CreateTransaction extends React.Component<Props, State> {
+  private readonly minimalUnit = new Unit(9, '', undefined);
+
   constructor(props: Props) {
     super(props);
 
@@ -119,7 +115,7 @@ class CreateTransaction extends React.Component<Props, State> {
       const stdMaxGasPrice = factory(max);
       const stdPriorityGasPrice = factory(priority);
 
-      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit();
+      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit(this.minimalUnit);
 
       this.setState({
         currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
@@ -146,8 +142,8 @@ class CreateTransaction extends React.Component<Props, State> {
       return amountFactory(tx.blockchain)(0);
     }
 
-    if (isAnyTokenCode(token.toUpperCase())) {
-      return getTokenBalanceForAddress(tx.from, token as AnyTokenCode);
+    if (this.props.tokenRegistry.hasSymbol(tx.blockchain, token.toUpperCase())) {
+      return getTokenBalanceForAddress(tx.from, token);
     }
 
     return getBalance(tx.from);
@@ -190,7 +186,7 @@ class CreateTransaction extends React.Component<Props, State> {
     const lowPriorityGasPrice = factory(lowGasPrice.priority);
     const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
-    const unit = stdMaxGasPrice.getOptimalUnit();
+    const unit = stdMaxGasPrice.getOptimalUnit(this.minimalUnit);
 
     const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(unit).toNumber();
     const lowMaxGasPriceNumber = lowMaxGasPrice.getNumberByUnit(unit).toNumber();

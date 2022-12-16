@@ -53,17 +53,13 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   onCancel,
   onSelected,
 }) => {
-  if (wallet == null) {
-    return (
-      <Alert>
-        <Typography>Wallet is not found</Typography>
-      </Alert>
-    );
-  }
-
   const styles = useStyles();
 
-  return (
+  return wallet == null ? (
+    <Alert>
+      <Typography>Wallet is not found</Typography>
+    </Alert>
+  ) : (
     <Page title={'Select Account to Create Transaction'} leftIcon={<Back onClick={() => onCancel()} />}>
       <Grid container>
         <Grid item xs={12}>
