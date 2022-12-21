@@ -1,4 +1,4 @@
-import { PartialEthereumTransaction, toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
+import { EthereumBasicTransaction, toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { JsonRpc } from './jsonrpc';
 import { EthersJsonRpc } from './jsonrpc/JsonRpc';
@@ -59,14 +59,14 @@ export class EthApi {
   /**
    * Executes a new message call immediately without creating a transaction on the blockchain
    */
-  call({ data, to }: PartialEthereumTransaction, blockNumber: number | string = 'latest'): Promise<any> {
+  call({ data, to }: EthereumBasicTransaction, blockNumber: number | string = 'latest'): Promise<any> {
     return this.rpc.call('eth_call', [{ data, to }, blockNumber]);
   }
 
   /**
    * Executes a message call or transaction and returns the amount of the gas used
    */
-  estimateGas(tx: PartialEthereumTransaction<string>): Promise<number> {
+  estimateGas(tx: EthereumBasicTransaction): Promise<number> {
     return this.rpc.call('eth_estimateGas', [tx]).then(toNumber);
   }
 

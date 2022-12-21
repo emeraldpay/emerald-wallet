@@ -1,5 +1,4 @@
 import { EstimationMode } from '@emeraldpay/api';
-import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, IEmeraldVault, SignedTx, UnsignedBitcoinTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -10,7 +9,6 @@ import {
   EthereumTransactionType,
   EthereumTx,
   Logger,
-  PartialEthereumTransaction,
   PersistentState,
   TokenRegistry,
   blockchainCodeToId,
@@ -64,13 +62,12 @@ function verifySender(expected: string): (txid: string, raw: string, chain: Bloc
 }
 
 function signTx(
-  vault: IEmeraldVault,
-  accountId: string,
+  entryId: string,
+  password: string | undefined,
   tx: EthereumTransaction,
-  passphrase: string,
-  blockchain: BlockchainCode,
+  vault: IEmeraldVault,
 ): Promise<SignedTx> {
-  log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
+  log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${tx.blockchain} blockchain`);
 
   let gasPrices: Record<'gasPrice', string> | Record<'maxGasPrice' | 'priorityGasPrice', string>;
 
@@ -94,67 +91,43 @@ function signTx(
     data: tx.data,
     from: tx.from,
     gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
-    nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce,
+    nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce ?? 0,
     to: tx.to,
     value: typeof tx.value === 'string' ? tx.value : tx.value.toString(),
   };
 
-  return vault.signTx(accountId, unsignedTx, passphrase);
+  return vault.signTx(entryId, unsignedTx, password);
 }
 
 export function signTransaction(
-  accountId: string,
-  blockchain: BlockchainCode,
-  from: string,
-  passphrase: string,
-  to: string,
-  gas: number,
-  value: BigAmount,
-  data: string,
-  type: EthereumTransactionType,
-  gasPrice?: BigAmount,
-  maxGasPrice?: BigAmount,
-  priorityGasPrice?: BigAmount,
-  nonce: number | string = '',
+  entryId: string,
+  password: string | undefined,
+  transaction: EthereumTransaction,
 ): Dispatched<SignData | undefined> {
-  const originalTx: EthereumTransaction = {
-    blockchain,
-    data,
-    from,
-    gas,
-    nonce,
-    to,
-    type,
-    gasPrice: gasPrice?.number,
-    maxGasPrice: maxGasPrice?.number,
-    priorityGasPrice: priorityGasPrice?.number,
-    value: value.number,
-  };
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch, getState, extra) => {
     const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
-      signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
-        .then(({ raw, txid }) => verifySender(from)(txid, raw, blockchain))
-        .then(({ raw: signed, txid: txId }) => ({ blockchain, tx, txId, signed, entryId: accountId }));
+      signTx(entryId, password, tx, extra.api.vault)
+        .then(({ raw, txid }) => verifySender(tx.from)(txid, raw, tx.blockchain))
+        .then(({ raw: signed, txid: txId }) => ({ tx, txId, signed, blockchain: tx.blockchain, entryId: entryId }));
 
-    if (nonce.toString().length > 0) {
-      return callSignTx(originalTx).catch((error) => {
-        catchError(dispatch)(error);
+    if (transaction.nonce == null) {
+      return extra.backendApi
+        .getNonce(transaction.blockchain, transaction.from)
+        .then(withNonce(transaction))
+        .then(callSignTx)
+        .catch((error) => {
+          catchError(dispatch)(error);
 
-        return undefined;
-      });
+          return undefined;
+        });
     }
 
-    return extra.backendApi
-      .getNonce(blockchain, from)
-      .then(withNonce(originalTx))
-      .then(callSignTx)
-      .catch((error) => {
-        catchError(dispatch)(error);
+    return callSignTx(transaction).catch((error) => {
+      catchError(dispatch)(error);
 
-        return undefined;
-      });
+      return undefined;
+    });
   };
 }
 
@@ -331,18 +304,21 @@ function toEthereumHex(value: BigNumber | number | string | undefined): string |
   return `0x${hex}`;
 }
 
-export function estimateGas(blockchain: BlockchainCode, tx: PartialEthereumTransaction): Dispatched<number> {
+export function estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Dispatched<number> {
   return (dispatch, getState, extra) => {
-    const { data, from, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas, to, value } = tx;
+    const { data, from, gasPrice, maxGasPrice, priorityGasPrice, to, value } = tx;
+
+    if (to == null) {
+      return -1;
+    }
 
     return extra.backendApi.estimateTxCost(blockchain, {
       data,
       from,
       to,
-      gas: toEthereumHex(gas),
       gasPrice: toEthereumHex(gasPrice),
-      maxFeePerGas: toEthereumHex(maxFeePerGas),
-      maxPriorityFeePerGas: toEthereumHex(maxPriorityFeePerGas),
+      maxFeePerGas: toEthereumHex(maxGasPrice),
+      maxPriorityFeePerGas: toEthereumHex(priorityGasPrice),
       value: toEthereumHex(value),
     });
   };

@@ -3,7 +3,7 @@ import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 import { DisplayEtherTx, DisplayTx } from '..';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
-import { EthereumTransactionType } from '../../transaction/ethereum';
+import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 
 export interface TxDetails {
   amount: WeiAny;
@@ -20,7 +20,7 @@ export interface TxDetails {
 }
 
 const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
-  gas: 21000,
+  gas: DEFAULT_GAS_LIMIT,
   target: TxTarget.MANUAL,
 };
 
@@ -157,6 +157,22 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     }
 
     this.totalBalance = balance;
+  }
+
+  public build(): EthereumTransaction {
+    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+
+    return {
+      blockchain,
+      from,
+      gas,
+      to,
+      type,
+      gasPrice: gasPrice?.number,
+      maxGasPrice: maxGasPrice?.number,
+      priorityGasPrice: priorityGasPrice?.number,
+      value: amount.number,
+    };
   }
 
   public display(): DisplayTx {

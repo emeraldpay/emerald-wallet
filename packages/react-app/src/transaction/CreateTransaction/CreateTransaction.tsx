@@ -5,8 +5,10 @@ import {
   BlockchainCode,
   Blockchains,
   CurrencyAmount,
+  DEFAULT_GAS_LIMIT,
+  DEFAULT_GAS_LIMIT_ERC20,
+  EthereumTransaction,
   EthereumTransactionType,
-  Token,
   TokenData,
   TokenRegistry,
   amountDecoder,
@@ -39,9 +41,6 @@ import { EmeraldDialogs } from '../../app/screen/Dialog';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
-
-const DEFAULT_GAS_LIMIT = 21000 as const;
-const DEFAULT_ERC20_GAS_LIMIT = 60000 as const;
 
 enum PAGES {
   TX = 1,
@@ -87,7 +86,7 @@ interface CreateTxState {
 
 interface DispatchFromProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  estimateGas(tokenRegistry: TokenRegistry, tx: AnyTransaction): Promise<number>;
+  estimateGas(tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   onCancel(): void;
   signAndSend(tokenRegistry: TokenRegistry, request: Request): void;
@@ -268,7 +267,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         ...transaction,
         tokenSymbol,
         amount: tokenData.getAmount(amount).encode(),
-        gas: Math.max(transaction.gas, DEFAULT_ERC20_GAS_LIMIT),
+        gas: Math.max(transaction.gas, DEFAULT_GAS_LIMIT_ERC20),
         totalEtherBalance: undefined,
         totalTokenBalance: undefined,
       });
@@ -339,11 +338,11 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 
   public onSubmitCreateTransaction = async () => {
-    const { tokenRegistry, estimateGas } = this.props;
+    const { estimateGas } = this.props;
 
     const tx = this.transaction;
 
-    const gas = await estimateGas(tokenRegistry, tx);
+    const gas = await estimateGas(tx.build());
 
     tx.gas = gas;
     tx.rebalance();
@@ -515,97 +514,26 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 }
 
-async function signTokenTx(
+async function sign(
   dispatch: any,
   ownProps: OwnProps,
   tokenRegistry: TokenRegistry,
-  { entryId, password, token, transaction: { from, to, ...tx } }: Request,
+  { entryId, password, transaction: tx }: Request,
 ): Promise<SignData | null> {
-  if (password == null || to == null || from == null) {
-    console.warn('Invalid tx', to, from);
+  const { from, to } = tx;
+
+  if (to == null || from == null) {
+    console.warn('Invalid tx', from, to);
 
     return Promise.resolve(null);
   }
-
-  const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
-
-  let tokenData: Token | null = null;
-
-  try {
-    tokenData = tokenRegistry.bySymbol(blockchainCode, token);
-  } catch (exception) {
-    return Promise.resolve(null);
-  }
-
-  return dispatch(
-    transaction.actions.signTransaction(
-      entryId,
-      blockchainCode,
-      from,
-      password,
-      tokenData.address,
-      tx.gas,
-      amountFactory(blockchainCode)(0),
-      tokens.actions.createTokenTxData(to, tx.amount.number, true),
-      tx.type,
-      tx.gasPrice,
-      tx.maxGasPrice,
-      tx.priorityGasPrice,
-    ),
-  );
-}
-
-async function signEtherTx(
-  dispatch: any,
-  ownProps: OwnProps,
-  { entryId, password, transaction: { from, to, ...tx } }: Request,
-): Promise<SignData | null> {
-  if (to == null || from == null || !BigAmount.is(tx.amount)) {
-    console.warn('Invalid tx', to, from, tx.amount);
-
-    return Promise.resolve(null);
-  }
-
-  const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
 
   if (password == null) {
     await dispatch(hwkey.actions.setWatch(false));
     await dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
   }
 
-  return dispatch(
-    transaction.actions.signTransaction(
-      entryId,
-      blockchainCode,
-      from,
-      password ?? '',
-      to,
-      tx.gas,
-      tx.amount,
-      '',
-      tx.type,
-      tx.gasPrice,
-      tx.maxGasPrice,
-      tx.priorityGasPrice,
-    ),
-  );
-}
-
-function sign(
-  dispatch: any,
-  ownProps: OwnProps,
-  tokenRegistry: TokenRegistry,
-  request: Request,
-): Promise<SignData | null> {
-  const {
-    params: { coinTicker },
-  } = Blockchains[blockchainIdToCode(ownProps.sourceEntry.blockchain)];
-
-  if (request.token.toUpperCase() === coinTicker) {
-    return signEtherTx(dispatch, ownProps, request);
-  }
-
-  return signTokenTx(dispatch, ownProps, tokenRegistry, request);
+  return dispatch(transaction.actions.signTransaction(entryId, password, tx.build()));
 }
 
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).build();
@@ -716,34 +644,8 @@ export default connect(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    estimateGas(tokenRegistry, tx) {
-      let { to } = tx;
-
-      if (to == null) {
-        return Promise.resolve(0);
-      }
-
-      const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
-
-      let data: string | undefined;
-
-      try {
-        const token = tokenRegistry.bySymbol(blockchainCode, tx.getTokenSymbol());
-
-        data = tokens.actions.createTokenTxData(to, tx.amount.number, true);
-        to = token.address;
-      } catch (exception) {
-        // Nothing
-      }
-
-      return dispatch(
-        transaction.actions.estimateGas(blockchainCode, {
-          ...tx,
-          data,
-          to,
-          gasPrice: tx.gasPrice?.number,
-        }),
-      );
+    estimateGas(tx) {
+      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.sourceEntry.blockchain), tx));
     },
     getFees(blockchain, defaultFee) {
       return dispatch(transaction.actions.getFee(blockchain, defaultFee));

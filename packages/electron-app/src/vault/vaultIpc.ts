@@ -13,8 +13,6 @@ import {
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcMain } from 'electron';
 
-const PREFIX = 'vault/';
-
 export function mapVaultWithIpc(vault: IEmeraldVault): void {
   ipcMain.handle(IpcCommands.VAULT_SET_STATE, (event, state: WalletState) => {
     return vault.setState(state);

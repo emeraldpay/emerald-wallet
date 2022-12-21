@@ -65,6 +65,10 @@ export class Token implements TokenData {
   getAmount(amount: BigNumber | string | number): BigAmount {
     return new BigAmount(amount, this.getUnits());
   }
+
+  toPlain(): TokenData {
+    return { ...this };
+  }
 }
 
 type TokenAddresses = Set<string>;

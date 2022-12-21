@@ -262,21 +262,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       const value = factory(tx.value);
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          accountId,
-          tx.blockchain,
-          tx.from,
-          password,
-          tx.to,
-          gas,
-          value,
-          tx.data,
-          tx.type,
-          gasPrice,
-          maxGasPrice,
-          priorityGasPrice,
-          tx.nonce,
-        ),
+        transaction.actions.signTransaction(accountId, password, {
+          ...tx,
+          gasPrice: gasPrice?.number,
+          maxGasPrice: maxGasPrice?.number,
+          priorityGasPrice: priorityGasPrice?.number,
+        }),
       );
 
       if (signed != null) {

@@ -40,12 +40,14 @@ export { default as DefaultLogger } from './logging/DefaultLogger';
 export { default as ILogger } from './logging/ILogger';
 export { default as Logger } from './logging/Logger';
 export {
+  DEFAULT_GAS_LIMIT,
+  DEFAULT_GAS_LIMIT_ERC20,
   EthereumRawReceipt,
   EthereumRawTransaction,
   EthereumReceipt,
   EthereumTransaction,
   EthereumTransactionType,
-  PartialEthereumTransaction,
+  EthereumBasicTransaction,
 } from './transaction/ethereum';
 export { getStandardUnits } from './asset';
 export { BackendApi } from './BackendApi';

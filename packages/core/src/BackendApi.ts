@@ -1,11 +1,11 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BlockchainCode } from './blockchains';
-import { EthereumRawReceipt, EthereumRawTransaction, PartialEthereumTransaction } from './transaction/ethereum';
+import { EthereumBasicTransaction, EthereumRawReceipt, EthereumRawTransaction } from './transaction/ethereum';
 
 export interface BackendApi {
   broadcastSignedTx(blockchain: BlockchainCode, tx: string): Promise<string>;
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<any>;
-  estimateTxCost(blockchain: BlockchainCode, tx: PartialEthereumTransaction<string>): Promise<number>;
+  estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number>;
   getBalance(blockchain: BlockchainCode, address: string, tokens: string[]): Promise<Record<string, string>>;
   getNonce(blockchain: BlockchainCode, address: string): Promise<number>;
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null>;

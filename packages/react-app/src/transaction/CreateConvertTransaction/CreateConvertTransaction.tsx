@@ -3,6 +3,7 @@ import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   Blockchains,
+  EthereumTransaction,
   EthereumTransactionType,
   Token,
   TokenRegistry,
@@ -97,7 +98,7 @@ interface StateProps {
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  estimateGas(blockchain: BlockchainCode, tx: workflow.CreateErc20WrappedTx, token: Token): Promise<number>;
+  estimateGas(tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(entryId: string, password: string, tx: workflow.CreateErc20WrappedTx, token: Token): Promise<void>;
@@ -134,6 +135,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     const tx = new workflow.CreateErc20WrappedTx({
       blockchain,
       address: address?.value,
+      token: tokenRegistry.bySymbol(blockchain, token),
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(token, address?.value),
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
@@ -342,7 +344,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         (async (): Promise<void> => {
           const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-          tx.gas = await estimateGas(blockchain, tx, tokenRegistry.bySymbol(blockchain, token));
+          tx.gas = await estimateGas(tx.build());
           tx.rebalance();
 
           setConvertTx(tx.dump());
@@ -643,23 +645,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    async estimateGas(blockchain, tx, token) {
-      if (token == null) {
-        return Promise.resolve(0);
-      }
-
-      const data = tx.amount.units.equals(tx.totalBalance.units)
-        ? tokens.actions.createWrapTxData()
-        : tokens.actions.createUnwrapTxData(tx.amount.number);
-
-      return dispatch(
-        transaction.actions.estimateGas(blockchain, {
-          ...tx,
-          data,
-          gasPrice: tx.gasPrice?.number,
-          to: token.address,
-        }),
-      );
+    estimateGas(tx) {
+      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
     },
     getFees(blockchain, defaultFee) {
       return dispatch(transaction.actions.getFee(blockchain, defaultFee));
@@ -672,31 +659,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      const blockchainCode = blockchainIdToCode(ownProps.entry.blockchain);
-      const zeroAmount = amountFactory(blockchainCode)(0);
-
-      const data = tx.amount.units.equals(tx.totalBalance.units)
-        ? tokens.actions.createWrapTxData()
-        : tokens.actions.createUnwrapTxData(tx.amount.number);
-
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          entryId,
-          blockchainCode,
-          tx.address,
-          password,
-          token.address,
-          tx.gas,
-          tx.amount.units.equals(tx.totalBalance.units) ? tx.amount : zeroAmount,
-          data,
-          tx.type,
-          tx.gasPrice == null ? undefined : tx.gasPrice,
-          tx.maxGasPrice == null ? undefined : tx.maxGasPrice,
-          tx.priorityGasPrice == null ? undefined : tx.priorityGasPrice,
-        ),
+        transaction.actions.signTransaction(entryId, password, tx.build()),
       );
 
       if (signed != null) {
+        const blockchainCode = blockchainIdToCode(ownProps.entry.blockchain);
+        const zeroAmount = amountFactory(blockchainCode)(0);
+
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,

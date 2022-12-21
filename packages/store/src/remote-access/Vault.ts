@@ -22,8 +22,6 @@ import {
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
-const PREFIX = 'vault/';
-
 class Vault implements IEmeraldVault {
   addEntry(walletId: Uuid, entry: AddEntry): Promise<EntryId> {
     return ipcRenderer.invoke(IpcCommands.VAULT_ADD_ENTRY, walletId, entry);

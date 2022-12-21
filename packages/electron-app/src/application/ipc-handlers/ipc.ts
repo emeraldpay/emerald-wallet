@@ -9,9 +9,9 @@ import {
 } from '@emeraldpay/api';
 import {
   BlockchainCode,
+  EthereumBasicTransaction,
   IpcCommands,
   Logger,
-  PartialEthereumTransaction,
   PersistentState,
   SettingsOptions,
   TokenData,
@@ -123,7 +123,7 @@ export function setIpcHandlers(
     }
   });
 
-  ipcMain.handle(IpcCommands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: PartialEthereumTransaction<string>) =>
+  ipcMain.handle(IpcCommands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: EthereumBasicTransaction) =>
     app.rpc.chain(blockchain).eth.estimateGas(tx),
   );
 

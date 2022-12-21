@@ -1,6 +1,20 @@
 import BigNumber from 'bignumber.js';
 import { BlockchainCode } from '../blockchains';
 
+export const DEFAULT_GAS_LIMIT = 21000 as const;
+export const DEFAULT_GAS_LIMIT_ERC20 = 60000 as const;
+
+export interface EthereumBasicTransaction {
+  data?: string;
+  from?: string;
+  gas?: number | string;
+  gasPrice?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+  to: string;
+  value?: string;
+}
+
 export interface EthereumRawTransaction {
   accessList?: string;
   blockHash?: string;
@@ -37,22 +51,11 @@ export interface EthereumTransaction {
   maxGasPrice?: string | BigNumber;
   priorityGasPrice?: string | BigNumber;
   hash?: string;
-  data: string;
-  nonce: number | string;
+  data?: string;
+  nonce?: number | string;
   to?: string;
   type: EthereumTransactionType;
   value: string | BigNumber;
-}
-
-export interface PartialEthereumTransaction<T = string | BigNumber> {
-  data?: string;
-  from?: string;
-  gas?: number | string;
-  gasPrice?: T;
-  maxFeePerGas?: T;
-  maxPriorityFeePerGas?: T;
-  to: string;
-  value?: T;
 }
 
 export interface EthereumRawReceipt {

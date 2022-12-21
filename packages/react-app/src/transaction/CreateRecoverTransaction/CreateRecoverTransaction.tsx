@@ -4,6 +4,8 @@ import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   Blockchains,
+  DEFAULT_GAS_LIMIT,
+  EthereumTransaction,
   EthereumTransactionType,
   IBlockchain,
   TokenData,
@@ -104,6 +106,7 @@ interface StateProps {
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
+  estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: workflow.CreateEthereumTx, password: string): Promise<void>;
@@ -122,6 +125,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   tokensData,
   wrongBlockchain,
   checkGlobalKey,
+  estimateGas,
   getBalancesByAddress,
   getFees,
   goBack,
@@ -178,7 +182,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       amount: balance,
       blockchain: wrongBlockchain.params.code,
       from: fromAddress.value,
-      gas: 21000,
+      gas: DEFAULT_GAS_LIMIT,
       to: address,
       target: workflow.TxTarget.SEND_ALL,
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
@@ -192,6 +196,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     }
 
     tx.setTotalBalance(balance);
+
+    tx.gas = await estimateGas(wrongBlockchain.params.code, tx.build());
+
     tx.rebalance();
 
     setTransaction(tx.dump());
@@ -207,6 +214,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     priorityGasPrice,
     token.symbol,
     wrongBlockchain,
+    estimateGas,
   ]);
 
   const onSignTransaction = useCallback(async () => {
@@ -540,6 +548,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
+    estimateGas(blockchain, tx) {
+      return dispatch(transaction.actions.estimateGas(blockchain, tx));
+    },
     getFees(blockchain, defaultFee) {
       return dispatch(transaction.actions.getFee(blockchain, defaultFee));
     },
@@ -551,24 +562,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      const { blockchain, id: entryId } = ownProps.entry;
-      const blockchainCode = blockchainIdToCode(blockchain);
-
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          entryId,
-          blockchainCode,
-          tx.from,
-          password,
-          tx.to,
-          tx.gas,
-          tx.amount,
-          '',
-          tx.type,
-          tx.gasPrice,
-          tx.maxGasPrice,
-          tx.priorityGasPrice,
-        ),
+        transaction.actions.signTransaction(ownProps.entry.id, password, tx.build()),
       );
 
       if (signed != null) {

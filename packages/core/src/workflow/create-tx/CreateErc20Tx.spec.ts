@@ -217,7 +217,6 @@ describe('CreateErc20Tx', () => {
 
   it('dumps plain', () => {
     const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
-    tx.erc20 = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = daiToken.getAmount(20);
@@ -229,7 +228,6 @@ describe('CreateErc20Tx', () => {
     const dump = tx.dump();
 
     expect(dump.from).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(dump.erc20).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(dump.totalEtherBalance).toBe('1000000000000000000/WEI');
     expect(dump.totalTokenBalance).toBe('100/DAI');
     expect(dump.to).toBe('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
@@ -265,7 +263,6 @@ describe('CreateErc20Tx', () => {
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057', 'WEI'));
     expect(tx.totalTokenBalance).toEqual(daiToken.getAmount('2000000000015'));
-    expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
     expect(tx.amount).toEqual(daiToken.getAmount('999580000000500002'));
@@ -280,7 +277,6 @@ describe('CreateErc20Tx', () => {
       amount: '999580000000500002/DAI',
       amountDecimals: 8,
       blockchain: BlockchainCode.ETH,
-      erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
       maxGasPrice: '10007000000/WEI',
@@ -299,7 +295,6 @@ describe('CreateErc20Tx', () => {
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057'));
     expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(daiToken.getAmount('2000000000015'));
-    expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
     expect(tx.amount).toEqual(daiToken.getAmount('999580000000500002'));

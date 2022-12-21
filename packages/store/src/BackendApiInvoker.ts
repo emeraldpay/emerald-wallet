@@ -2,9 +2,10 @@ import { EstimationMode } from '@emeraldpay/api';
 import {
   BackendApi,
   BlockchainCode,
+  EthereumBasicTransaction,
   EthereumRawReceipt,
   EthereumRawTransaction,
-  IpcCommands, PartialEthereumTransaction,
+  IpcCommands,
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
@@ -20,7 +21,7 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_FEE, blockchain, blocks, mode);
   }
 
-  estimateTxCost(blockchain: BlockchainCode, tx: PartialEthereumTransaction<string>): Promise<number> {
+  estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number> {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_TX, blockchain, tx);
   }
 

@@ -2,8 +2,9 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 import { DisplayErc20Tx, DisplayTx } from '..';
-import { BlockchainCode, TokenRegistry, amountDecoder, amountFactory } from '../../blockchains';
-import { EthereumTransactionType } from '../../transaction/ethereum';
+import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../../blockchains';
+import { Contract } from '../../Contract';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 
 export enum TransferType {
   STANDARD,
@@ -13,7 +14,6 @@ export enum TransferType {
 export interface ERC20TxDetails {
   amount: BigAmount;
   blockchain: BlockchainCode;
-  erc20: string;
   from?: string;
   gas: number;
   gasPrice?: WeiAny;
@@ -29,9 +29,8 @@ export interface ERC20TxDetails {
 }
 
 const TxDefaults: Omit<ERC20TxDetails, 'amount' | 'blockchain' | 'tokenSymbol' | 'type'> = {
-  erc20: '',
   from: undefined,
-  gas: 60000,
+  gas: DEFAULT_GAS_LIMIT_ERC20,
   target: TxTarget.MANUAL,
   to: undefined,
   transferType: TransferType.STANDARD,
@@ -53,7 +52,6 @@ function fromPlainDetails(tokenRegistry: TokenRegistry, plain: TxDetailsPlain): 
   return {
     amount: BigAmount.decode(plain.amount, units),
     blockchain: plain.blockchain,
-    erc20: plain.erc20 ?? '',
     from: plain.from,
     gas: plain.gas,
     gasPrice: plain.gasPrice == null ? undefined : decoder(plain.gasPrice),
@@ -74,7 +72,6 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
     amount: tx.amount.encode(),
     amountDecimals: -1,
     blockchain: tx.blockchain,
-    erc20: tx.erc20,
     from: tx.from,
     gas: tx.gas,
     gasPrice: tx.gasPrice?.encode(),
@@ -90,10 +87,11 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
   };
 }
 
+const tokenContract = new Contract(tokenAbi);
+
 export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public amount: BigAmount;
   public blockchain: BlockchainCode;
-  public erc20: string;
   public from?: string;
   public gas: number;
   public gasPrice?: WeiAny;
@@ -107,6 +105,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public transferType: TransferType;
   public type: EthereumTransactionType;
 
+  private readonly token: Token;
   private readonly zeroAmount: WeiAny;
   private readonly zeroTokenAmount: BigAmount;
 
@@ -121,20 +120,23 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     if (typeof source === 'string') {
       const blockchainCode = blockchain ?? BlockchainCode.Unknown;
 
+      this.token = tokenRegistry.bySymbol(blockchainCode, source);
+
       details = {
         ...TxDefaults,
         type,
-        amount: tokenRegistry.bySymbol(blockchainCode, source).getAmount(0),
+        amount: this.token.getAmount(0),
         blockchain: blockchainCode,
         tokenSymbol: source,
       };
     } else {
+      this.token = tokenRegistry.bySymbol(source.blockchain, source.tokenSymbol);
+
       details = source;
     }
 
     this.amount = details.amount;
     this.blockchain = details.blockchain;
-    this.erc20 = details.erc20;
     this.from = details.from;
     this.gas = details.gas;
     this.target = details.target;
@@ -217,6 +219,25 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
 
   public setTotalBalance(total: BigAmount): void {
     this.totalTokenBalance = total;
+  }
+
+  public build(): EthereumTransaction {
+    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+
+    const data = tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toString() });
+
+    return {
+      blockchain,
+      data,
+      from,
+      gas,
+      type,
+      gasPrice: gasPrice?.number,
+      maxGasPrice: maxGasPrice?.number,
+      priorityGasPrice: priorityGasPrice?.number,
+      to: this.token.address,
+      value: this.zeroAmount.number,
+    };
   }
 
   public display(): DisplayTx {
