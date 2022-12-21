@@ -7,7 +7,7 @@ import * as actions from './actions';
 import { ActionTypes, ILoadAddresses, ILoadBalances } from './types';
 
 function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaIterator {
-  const { account: accountId, assets, blockchain, index = 0 } = action;
+  const { account: accountId, assets, blockchain, seed, index = 0 } = action;
 
   const blockchainDetails = Blockchains[blockchain.toLowerCase()];
   const baseHdPath = blockchainDetails.params.hdPath.forAccount(accountId).forIndex(index);
@@ -21,13 +21,13 @@ function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaItera
   let addresses: { [p: string]: string } = {};
 
   try {
-    addresses = yield call([vault, vault.listSeedAddresses], action.seed, blockchainCodeToId(blockchain), hdPaths);
+    addresses = yield call([vault, vault.listSeedAddresses], seed, blockchainCodeToId(blockchain), hdPaths);
   } catch (exception) {
     console.warn('Failed to get addresses', exception);
   }
 
   // Saga doesn't support thunk action, so we make conversion to unknown type and then to Action type
-  yield put(actions.setAddresses(action.seed, blockchain, addresses) as unknown as Action);
+  yield put(actions.setAddresses(seed, blockchain, addresses) as unknown as Action);
 
   for (const address of Object.values(addresses)) {
     yield put(actions.loadBalances(blockchain, address, assets));

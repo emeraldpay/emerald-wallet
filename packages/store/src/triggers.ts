@@ -46,6 +46,7 @@ export function onceServicesStart(store: Store<IState>): Promise<void> {
     handleTrigger(
       () => {
         const terms = application.selectors.terms(store.getState());
+
         return terms === TERMS_VERSION;
       },
       resolve,
@@ -86,38 +87,38 @@ export class Triggers {
   }
 
   add(check: TriggerState, handler: TriggerProcess): void {
-    if (this.store) {
+    if (this.store == null) {
+      console.warn('Store is not ready for triggers');
+    } else {
       let last: string | undefined = undefined;
 
       const unsubscribe = this.store.subscribe(() => {
-        const { dispatch } = this.store ?? {};
+        const { dispatch, getState } = this.store ?? {};
 
-        const state = this.store?.getState();
+        const state = getState?.();
 
         if (dispatch != null && state != null) {
           const current = check(state);
 
-          last = current;
+          if ((last == null && current != null) || (typeof last === 'string' && last !== current)) {
+            last = current;
 
-          if ((last == null && current != null) || (typeof last == 'string' && last !== current)) {
             const status = handler(state, dispatch);
 
-            if (status == TriggerStatus.STOP) {
+            if (status === TriggerStatus.STOP) {
               unsubscribe();
             }
           }
         }
       });
-    } else {
-      console.warn('Store is not ready for triggers');
     }
   }
 
   schedule(period: number, handler: TriggerProcess): void {
     const execute = (): void => {
-      const { dispatch } = this.store ?? {};
+      const { dispatch, getState } = this.store ?? {};
 
-      const state = this.store?.getState();
+      const state = getState?.();
 
       let status = TriggerStatus.CONTINUE;
 

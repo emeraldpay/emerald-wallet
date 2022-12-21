@@ -1,48 +1,53 @@
-import {TriggerState, Triggers, TriggerProcess, TriggerStatus} from "../triggers";
-import {checkLedger} from "./actions";
-import {isWatching} from "./selectors";
-import {IState} from "../types";
+import { checkLedger } from './actions';
+import { isWatching } from './selectors';
+import { TriggerProcess, TriggerState, TriggerStatus, Triggers } from '../triggers';
+import { IState } from '../types';
 
 const whenWatch: TriggerState = (state) => `${isWatching(state.hwkey)}`;
 
 const executeCheckLedgerRepeat: TriggerProcess = (state, dispatch) => {
   if (isWatching(state.hwkey)) {
     dispatch(checkLedger());
+
     return TriggerStatus.CONTINUE;
-  } else {
-    return TriggerStatus.STOP;
   }
-}
 
-let connectHandlers: ((state: IState) => void)[] = []
+  return TriggerStatus.STOP;
+};
 
-export function onConnect(handler: (state: IState) => void) {
+let connectHandlers: ((state: IState) => void)[] = [];
+
+export function onConnect(handler: (state: IState) => void): void {
   connectHandlers.push(handler);
 }
 
-const executeConnectHandlers: TriggerProcess = (state, dispatch) => {
+const executeConnectHandlers: TriggerProcess = (state) => {
   if (connectHandlers.length > 0 && state.hwkey.ledger.connected) {
     const handlers = connectHandlers;
+
     connectHandlers = [];
-    handlers.forEach((h) => {
+
+    handlers.forEach((handler) => {
       try {
-        h(state);
-      } catch (e) {
-        console.warn("Error during handler call", e)
+        handler(state);
+      } catch (exception) {
+        console.warn('Error during handler call', exception);
       }
-    })
+    });
   }
   return TriggerStatus.CONTINUE;
-}
+};
 
-export function run(triggers: Triggers) {
+export function run(triggers: Triggers): void {
   triggers.add(whenWatch, (state, dispatch) => {
     if (isWatching(state.hwkey)) {
-      console.log("Start watching HW Keys");
       dispatch(checkLedger());
+
       triggers.schedule(1500, executeCheckLedgerRepeat);
     }
+
     return TriggerStatus.CONTINUE;
   });
+
   triggers.schedule(1000, executeConnectHandlers);
 }

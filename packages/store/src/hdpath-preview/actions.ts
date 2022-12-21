@@ -1,5 +1,5 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, TokenRegistry } from '@emeraldwallet/core';
 import {
   ActionTypes,
   HDPathIndexes,
@@ -12,7 +12,6 @@ import {
   ISetBalance,
 } from './types';
 import { isBlockchainOpen } from '../hwkey/selectors';
-import { accounts } from '../index';
 import { Dispatched } from '../types';
 
 export function loadAddresses(
@@ -22,7 +21,11 @@ export function loadAddresses(
   index?: number,
 ): Dispatched<void, ILoadAddresses> {
   return (dispatch, getState) => {
+    const { coinTicker } = Blockchains[blockchain].params;
+
     const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
 
     dispatch({
       account,
@@ -30,7 +33,7 @@ export function loadAddresses(
       index,
       seed,
       type: ActionTypes.LOAD_ADDRESSES,
-      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+      assets: [coinTicker, ...tokens],
     });
   };
 }
@@ -50,14 +53,18 @@ export function setAddresses(
   addresses: { [key: string]: string },
 ): Dispatched<void, ISetAddress> {
   return (dispatch, getState) => {
+    const { coinTicker } = Blockchains[blockchain].params;
+
     const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
 
     dispatch({
       addresses,
       blockchain,
       seed,
       type: ActionTypes.SET_ADDRESS,
-      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+      assets: [coinTicker, ...tokens],
     });
   };
 }
@@ -88,10 +95,8 @@ export function displayAccount(
     const { seed } = state.hdpathPreview?.display ?? {};
 
     if (seed != null) {
-      const isHardware = accounts.selectors.isHardwareSeed(state, seed);
-
       state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
-        if (!isHardware || isBlockchainOpen(state, blockchain)) {
+        if (isBlockchainOpen(state, blockchain)) {
           dispatch(loadAddresses(seed, account, blockchain, indexes?.[blockchain] ?? 0));
         }
       });
