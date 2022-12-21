@@ -1,4 +1,4 @@
-import { EthereumAddress } from './Address';
+import { EthereumAddress } from './EthereumAddress';
 
 describe('EthereumAddress.isValidEthAddress', () => {
   describe('valid', () => {

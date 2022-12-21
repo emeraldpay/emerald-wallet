@@ -2,7 +2,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, Card, CardContent, CardMedia, createStyles, Grid, Theme, Typography} from "@material-ui/core";
 import {ClassNameMap} from "@material-ui/styles";
-import {WithDefaults, CurrencyCode, AnyCoinCode} from "@emeraldwallet/core";
+import {WithDefaults} from "@emeraldwallet/core";
 import {Balance, HashIcon} from "../../index";
 import classNames from "classnames";
 import {Wallet} from '@emeraldpay/emerald-vault-core';

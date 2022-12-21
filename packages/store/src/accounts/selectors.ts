@@ -22,9 +22,8 @@ import {
   amountDecoder,
   amountFactory,
   blockchainCodeToId,
-  blockchainIdToCode,
+  blockchainIdToCode, TokenRegistry,
 } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
 import { createSelector } from 'reselect';
 import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
 import * as accounts from './index';
@@ -227,7 +226,8 @@ export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: b
         balance,
       });
     }
-    const supportedTokens = registry.all()[code];
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
+    const supportedTokens = tokenRegistry.byBlockchain(code);
     if (typeof supportedTokens === 'undefined') {
       return;
     }

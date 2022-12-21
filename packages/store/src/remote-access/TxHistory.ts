@@ -1,4 +1,4 @@
-import { Commands, PersistentState } from '@emeraldwallet/core';
+import { IpcCommands, PersistentState } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
 class TxHistory implements PersistentState.TxHistory {
@@ -6,11 +6,11 @@ class TxHistory implements PersistentState.TxHistory {
     filter?: PersistentState.TxHistoryFilter,
     query?: PersistentState.PageQuery,
   ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
-    return ipcRenderer.invoke(Commands.LOAD_TX_HISTORY, filter, query);
+    return ipcRenderer.invoke(IpcCommands.LOAD_TX_HISTORY, filter, query);
   }
 
   submit(tx: PersistentState.Transaction): Promise<PersistentState.Transaction> {
-    return ipcRenderer.invoke(Commands.SUBMIT_TX_HISTORY, tx);
+    return ipcRenderer.invoke(IpcCommands.SUBMIT_TX_HISTORY, tx);
   }
 
   getCursor(): Promise<string | null> {

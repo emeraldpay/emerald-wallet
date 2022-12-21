@@ -8,18 +8,19 @@ import {
   isNativeCallResponse,
 } from '@emeraldpay/api';
 import {
-  AnyCoinCode,
   BlockchainCode,
-  Commands,
+  EthereumBasicTransaction,
+  IpcCommands,
   Logger,
   PersistentState,
+  SettingsOptions,
+  TokenData,
   blockchainCodeToId,
   isBitcoin,
   isEthereum,
 } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess } from '@emeraldwallet/services';
-import { PartialTx } from '@emeraldwallet/services/lib/ethrpc';
 import { ipcMain } from 'electron';
 import Application from '../Application';
 
@@ -30,7 +31,7 @@ export function setIpcHandlers(
   apiAccess: EmeraldApiAccess,
   persistentState: PersistentStateImpl,
 ): void {
-  ipcMain.handle(Commands.GET_VERSION, () => ({
+  ipcMain.handle(IpcCommands.GET_VERSION, () => ({
     gitVersion: app.versions?.gitVersion,
     os: {
       arch: os.arch(),
@@ -40,21 +41,31 @@ export function setIpcHandlers(
     version: app.versions?.version,
   }));
 
-  ipcMain.handle(Commands.GET_APP_SETTINGS, () => app.settings.toJS());
+  ipcMain.handle(IpcCommands.GET_APP_SETTINGS, () => app.settings.toJSON());
 
-  ipcMain.handle(Commands.SET_TERMS, (event, version: string) => app.settings.setTerms(version));
+  ipcMain.handle(IpcCommands.SET_OPTIONS, (event, options: SettingsOptions) => {
+    app.settings.setOptions(options);
+  });
+
+  ipcMain.handle(IpcCommands.SET_TERMS, (event, version: string) => {
+    app.settings.setTerms(version);
+  });
+
+  ipcMain.handle(IpcCommands.SET_TOKENS, (event, tokens: TokenData[]) => {
+    app.settings.setTokens(tokens);
+  });
 
   ipcMain.handle(
-    Commands.LOAD_TX_HISTORY,
+    IpcCommands.LOAD_TX_HISTORY,
     (event, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) =>
       persistentState.txhistory.query(filter, query),
   );
 
-  ipcMain.handle(Commands.SUBMIT_TX_HISTORY, (event, tx: PersistentState.Transaction) =>
+  ipcMain.handle(IpcCommands.SUBMIT_TX_HISTORY, (event, tx: PersistentState.Transaction) =>
     persistentState.txhistory.submit(tx),
   );
 
-  ipcMain.handle(Commands.GET_BALANCE, (event, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
+  ipcMain.handle(IpcCommands.GET_BALANCE, (event, blockchain: BlockchainCode, address: string, tokens: string[]) => {
     const addressListener = apiAccess.newAddressListener();
 
     const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
@@ -70,20 +81,18 @@ export function setIpcHandlers(
 
     return Promise.all(calls)
       .then((balances: AddressBalance[][]) =>
-        balances.flat().reduce((carry, balance) => {
-          let code = balance.asset.code as AnyCoinCode;
-
-          if (code == 'BTC' && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
+        balances.flat().reduce((carry, { asset: { code, blockchain }, balance }) => {
+          if (code === 'BTC' && blockchain === Blockchain.TESTNET_BITCOIN) {
             code = 'TESTBTC';
           }
 
-          return { ...carry, [code]: balance.balance };
+          return { ...carry, [code]: balance };
         }, {}),
       )
-      .catch((err) => console.warn('Failed to get balances', err));
+      .catch((error) => console.warn('Failed to get balances', error));
   });
 
-  ipcMain.handle(Commands.BROADCAST_TX, (event, blockchain: BlockchainCode, tx: string) => {
+  ipcMain.handle(IpcCommands.BROADCAST_TX, (event, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
     } else if (isBitcoin(blockchain)) {
@@ -114,24 +123,24 @@ export function setIpcHandlers(
     }
   });
 
-  ipcMain.handle(Commands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: PartialTx) =>
+  ipcMain.handle(IpcCommands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: EthereumBasicTransaction) =>
     app.rpc.chain(blockchain).eth.estimateGas(tx),
   );
 
-  ipcMain.handle(Commands.GET_NONCE, (event, blockchain: BlockchainCode, address: string) =>
+  ipcMain.handle(IpcCommands.GET_NONCE, (event, blockchain: BlockchainCode, address: string) =>
     app.rpc.chain(blockchain).eth.getTransactionCount(address),
   );
 
-  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event, blockchain: BlockchainCode, hash: string) =>
+  ipcMain.handle(IpcCommands.GET_ETH_RECEIPT, (event, blockchain: BlockchainCode, hash: string) =>
     app.rpc.chain(blockchain).eth.getTransactionReceipt(hash),
   );
 
-  ipcMain.handle(Commands.GET_ETH_TX, (event, blockchain: BlockchainCode, hash: string) =>
+  ipcMain.handle(IpcCommands.GET_ETH_TX, (event, blockchain: BlockchainCode, hash: string) =>
     app.rpc.chain(blockchain).eth.getTransaction(hash),
   );
 
   ipcMain.handle(
-    Commands.ESTIMATE_FEE,
+    IpcCommands.ESTIMATE_FEE,
     async (event, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
       try {
         const fee = await apiAccess.blockchainClient.estimateFees({
@@ -153,7 +162,7 @@ export function setIpcHandlers(
         }
       } catch (exception) {
         if (exception instanceof Error) {
-          log.error('Cannot estimate fee: ', exception.message);
+          log.error('Cannot estimate fee:', exception.message);
         }
       }
 
@@ -161,52 +170,55 @@ export function setIpcHandlers(
     },
   );
 
-  ipcMain.handle(Commands.GET_TX_META, (event, blockchain: BlockchainCode, txId: string) =>
+  ipcMain.handle(IpcCommands.GET_TX_META, (event, blockchain: BlockchainCode, txId: string) =>
     persistentState.txmeta.get(blockchain, txId),
   );
 
-  ipcMain.handle(Commands.SET_TX_META, (event, meta: PersistentState.TxMeta) => persistentState.txmeta.set(meta));
+  ipcMain.handle(IpcCommands.SET_TX_META, (event, meta: PersistentState.TxMeta) => persistentState.txmeta.set(meta));
 
-  ipcMain.handle(Commands.ADDRESS_BOOK_ADD, (event, item: PersistentState.AddressbookItem) =>
+  ipcMain.handle(IpcCommands.ADDRESS_BOOK_ADD, (event, item: PersistentState.AddressbookItem) =>
     persistentState.addressbook.add(item),
   );
 
-  ipcMain.handle(Commands.ADDRESS_BOOK_GET, (event, id: string) => persistentState.addressbook.get(id));
+  ipcMain.handle(IpcCommands.ADDRESS_BOOK_GET, (event, id: string) => persistentState.addressbook.get(id));
 
-  ipcMain.handle(Commands.ADDRESS_BOOK_REMOVE, (event, id: string) => persistentState.addressbook.remove(id));
+  ipcMain.handle(IpcCommands.ADDRESS_BOOK_REMOVE, (event, id: string) => persistentState.addressbook.remove(id));
 
-  ipcMain.handle(Commands.ADDRESS_BOOK_QUERY, (event, filter: PersistentState.AddressbookFilter) =>
+  ipcMain.handle(IpcCommands.ADDRESS_BOOK_QUERY, (event, filter: PersistentState.AddressbookFilter) =>
     persistentState.addressbook.query(filter),
   );
 
-  ipcMain.handle(Commands.ADDRESS_BOOK_UPDATE, (event, id: string, item: Partial<PersistentState.AddressbookItem>) =>
+  ipcMain.handle(IpcCommands.ADDRESS_BOOK_UPDATE, (event, id: string, item: Partial<PersistentState.AddressbookItem>) =>
     persistentState.addressbook.update(id, item),
   );
 
-  ipcMain.handle(Commands.XPUB_POSITION_GET_NEXT, (event, xpub: string) => persistentState.xpubpos.getNext(xpub));
+  ipcMain.handle(IpcCommands.XPUB_POSITION_GET_NEXT, (event, xpub: string) => persistentState.xpubpos.getNext(xpub));
 
-  ipcMain.handle(Commands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
+  ipcMain.handle(IpcCommands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
     persistentState.xpubpos.setCurrentAddressAt(xpub, pos),
   );
 
-  ipcMain.handle(Commands.XPUB_POSITION_NEXT_SET, (event, xpub: string, pos: number) =>
+  ipcMain.handle(IpcCommands.XPUB_POSITION_NEXT_SET, (event, xpub: string, pos: number) =>
     persistentState.xpubpos.setNextAddressAtLeast(xpub, pos),
   );
 
-  ipcMain.handle(Commands.XPUB_LAST_INDEX, async (event, blockchain: BlockchainCode, xpub: string, start: number) => {
-    const state = await apiAccess.transactionClient.getXpubState({
-      address: { start, xpub },
-      blockchain: blockchainCodeToId(blockchain),
-    });
+  ipcMain.handle(
+    IpcCommands.XPUB_LAST_INDEX,
+    async (event, blockchain: BlockchainCode, xpub: string, start: number) => {
+      const state = await apiAccess.transactionClient.getXpubState({
+        address: { start, xpub },
+        blockchain: blockchainCodeToId(blockchain),
+      });
 
-    return state.lastIndex;
-  });
+      return state.lastIndex;
+    },
+  );
 
-  ipcMain.handle(Commands.LOOKUP_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
+  ipcMain.handle(IpcCommands.LOOKUP_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
     app.rpc.chain(blockchain).ethers.lookupAddress(address),
   );
 
-  ipcMain.handle(Commands.RESOLVE_NAME, (event, blockchain: BlockchainCode, name: string) =>
+  ipcMain.handle(IpcCommands.RESOLVE_NAME, (event, blockchain: BlockchainCode, name: string) =>
     app.rpc.chain(blockchain).ethers.resolveName(name),
   );
 }

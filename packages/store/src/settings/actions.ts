@@ -1,30 +1,40 @@
+import {
+  ActionTypes,
+  LoadSettingsAction,
+  Rates,
+  SetAssetsAction,
+  SetExchangeRatesAction,
+  Settings,
+  UpdateSettingsAction,
+} from './types';
 import { Dispatched } from '../types';
-import { ActionTypes, ILoadSettingsAction, ISetExchRatesAction, IUpdateSettingsAction, Rates } from './types';
 
-export interface Settings {
-  language: string;
-  localeCurrency: string;
-}
-
-export function loadSettings(): ILoadSettingsAction {
+export function loadSettings(): LoadSettingsAction {
   return {
     type: ActionTypes.LOAD_SETTINGS,
   };
 }
 
-export function updateSettings(settings: Settings): IUpdateSettingsAction {
+export function setAssets(assets: string[]): SetAssetsAction {
   return {
-    type: ActionTypes.UPDATE,
-    payload: settings,
+    type: ActionTypes.SET_ASSETS,
+    payload: assets,
   };
 }
 
-export function setRatesAction(rates: Rates): ISetExchRatesAction {
+export function setRates(rates: Rates): SetExchangeRatesAction {
   return {
     type: ActionTypes.EXCHANGE_RATES,
     payload: {
       rates,
     },
+  };
+}
+
+export function updateSettings(settings: Settings): UpdateSettingsAction {
+  return {
+    type: ActionTypes.UPDATE,
+    payload: settings,
   };
 }
 

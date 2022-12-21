@@ -1,8 +1,6 @@
-import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { AnyCoinCode, Blockchains, EthereumTx, toNumber, tokenUnits } from '@emeraldwallet/core';
-import { decodeData, registry } from '@emeraldwallet/erc20';
-import { BroadcastData, screen, transaction } from '@emeraldwallet/store';
+import { Blockchains, EthereumTx, TokenRegistry, decodeData, toNumber } from '@emeraldwallet/core';
+import { BroadcastData, IState, screen, transaction } from '@emeraldwallet/store';
 import { Account, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -22,6 +20,10 @@ interface OwnProps {
   data: BroadcastData;
 }
 
+interface StateProps {
+  tokenRegistry: TokenRegistry;
+}
+
 interface DispatchProps {
   onCancel(): void;
   onSendTx(data: BroadcastData): void;
@@ -31,18 +33,19 @@ interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps> {
+class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps & StylesProps> {
   public render(): React.ReactElement {
     const {
       classes,
       data: { blockchain, signed },
+      tokenRegistry,
     } = this.props;
 
     const chain = Blockchains[blockchain];
     const decoded = EthereumTx.fromRaw(signed, chain.params.chainId);
     const data = decoded.getData();
 
-    let coinSymbol: AnyCoinCode = chain.params.coinTicker;
+    let coinSymbol: string = chain.params.coinTicker;
 
     let txTo: string | null = null;
     let txValue: string | null = null;
@@ -50,23 +53,23 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
     if (data.length > 0) {
       const decodedData = decodeData(data);
 
-      if (decodedData.inputs.length > 0) {
-        txTo = decodedData.inputs[0].toString(16);
-        txValue = toNumber('0x' + decodedData.inputs[1].toString(16)).toString();
+      if (decodedData.inputs.length > 1) {
+        const tokenData = tokenRegistry.byAddress(chain.params.code, decoded.getRecipientAddress().toString());
+        const tokenUnit = tokenData.getUnits().top;
 
-        const tokenInfo = registry.byTokenAddress(chain.params.code, decoded.getRecipientAddress().toString());
+        coinSymbol = tokenUnit.code;
 
-        if (tokenInfo) {
-          coinSymbol = tokenInfo.symbol;
-          txValue = new BigAmount(txValue, tokenUnits(tokenInfo.symbol)).toString();
-        }
+        const [to, amount] = decodedData.inputs;
+
+        txTo = to.toString(16);
+        txValue = tokenData.getAmount(amount).getNumberByUnit(tokenUnit).toString();
       }
     }
 
     const wei = new Wei(toNumber(decoded.getValue()));
 
     return (
-      <Page title={<ChainTitle chain={blockchain} text={'Publish Transaction'} />}>
+      <Page title={<ChainTitle chain={blockchain} text="Publish Transaction" />}>
         <FormRow
           leftColumn={<div className={classes.fieldName}>From</div>}
           rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()} />}
@@ -131,8 +134,10 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
   };
 }
 
-export default connect<{}, DispatchProps>(
-  null,
+export default connect<StateProps, DispatchProps, unknown, IState>(
+  (state) => ({
+    tokenRegistry: new TokenRegistry(state.application.tokens),
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     onCancel() {

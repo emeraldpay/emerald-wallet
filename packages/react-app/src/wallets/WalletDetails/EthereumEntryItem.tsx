@@ -1,14 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import {
-  BlockchainCode,
-  Blockchains,
-  ConvertableTokenCode,
-  blockchainIdToCode,
-  formatAmount,
-  isConvertableToken,
-} from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
 import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { Button, Typography, createStyles } from '@material-ui/core';
@@ -71,11 +64,12 @@ interface OwnProps {
 interface StateProps {
   balance: Wei;
   blockchainCode: BlockchainCode;
+  tokenRegistry: TokenRegistry;
   tokensBalances: BigAmount[];
 }
 
 interface DispatchProps {
-  gotoConvert(entry: WalletEntry, token: ConvertableTokenCode): void;
+  gotoConvert(entry: WalletEntry, token: string): void;
   gotoRecover(entry: WalletEntry): void;
 }
 
@@ -83,6 +77,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   entries,
   balance,
   blockchainCode,
+  tokenRegistry,
   tokensBalances,
   gotoConvert,
   gotoRecover,
@@ -146,7 +141,9 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
               key={'token-' + token.units.top.code}
               classes={classes}
               balance={token}
-              onConvert={isConvertableToken(code) ? () => gotoConvert(entry, code) : undefined}
+              onConvert={
+                tokenRegistry.bySymbol(blockchainCode, code).isWrapped() ? () => gotoConvert(entry, code) : undefined
+              }
             />
           );
         })}
@@ -194,6 +191,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       balance,
       blockchainCode,
       tokensBalances,
+      tokenRegistry: new TokenRegistry(state.application.tokens),
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

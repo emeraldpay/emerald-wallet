@@ -105,6 +105,59 @@ export const wallet5: Wallet = {
   createdAt: new Date(),
 };
 
+export const initLauncher = [
+  {
+    type: 'LAUNCHER/OPTIONS',
+    payload: { 'default_fee.1': '{"max":8192,"min":1024,"std":2048}' },
+  },
+  {
+    type: 'LAUNCHER/TOKENS',
+    payload: [
+      {
+        name: 'Dai Stablecoin',
+        blockchain: 100,
+        address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        symbol: 'DAI',
+        decimals: 18,
+        type: 'ERC20',
+        stablecoin: true,
+      },
+      {
+        name: 'Tether USD',
+        blockchain: 100,
+        address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        symbol: 'USDT',
+        decimals: 6,
+        type: 'ERC20',
+        stablecoin: true,
+      },
+    ],
+  },
+];
+
+export const createSeeds = [
+  accounts.actions.setSeedsAction([
+    {
+      id: ledgerSeedId,
+      type: 'ledger',
+      createdAt: new Date(),
+      available: true,
+    },
+  ]),
+];
+
+export const setRates = [
+  settings.actions.setRates({
+    ETH: '205.1761',
+    ETC: '5.234',
+    DAI: '1.001',
+    USDT: '0.9985',
+    BTC: '11407.35',
+  }),
+];
+
+export const createWallets = [accounts.actions.setWalletsAction([wallet1, wallet2, wallet3])];
+
 export const setBalances = [
   accounts.actions.setBalanceAction({
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
@@ -152,27 +205,4 @@ export const setBalances = [
     },
     '0x9d8e3fed246384e726b5962577503b916fb246d7',
   ),
-];
-
-export const createSeeds = [
-  accounts.actions.setSeedsAction([
-    {
-      id: ledgerSeedId,
-      type: 'ledger',
-      createdAt: new Date(),
-      available: true,
-    },
-  ]),
-];
-
-export const createWallets = [accounts.actions.setWalletsAction([wallet1, wallet2, wallet3])];
-
-export const setup = [
-  settings.actions.setRatesAction({
-    ETH: '205.1761',
-    ETC: '5.234',
-    DAI: '1.001',
-    USDT: '0.9985',
-    BTC: '11407.35',
-  }),
 ];

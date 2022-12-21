@@ -1,38 +1,48 @@
-import { BlockchainCode, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
+import { BlockchainCode, CurrencyCode } from '@emeraldwallet/core';
 
 export enum ActionTypes {
-  SET_LOCALE_CURRENCY = 'ACCOUNT/SET_LOCALE_CURRENCY',
   EXCHANGE_RATES = 'ACCOUNT/EXCHANGE_RATES',
-  MODE = 'SETTINGS/MODE',
   LOAD_SETTINGS = 'SETTINGS/LOAD',
-  UPDATE = 'SETTINGS/UPDATE'
+  SET_LOCALE_CURRENCY = 'ACCOUNT/SET_LOCALE_CURRENCY',
+  SET_ASSETS = 'SETTINGS/SET_ASSETS',
+  SET_MODE = 'SETTINGS/SET_MODE',
+  UPDATE = 'SETTINGS/UPDATE',
 }
 
-export interface Rates {[key: string]: string}
+export interface Settings {
+  language: string;
+  localeCurrency: string;
+}
 
-export interface ISettingsState {
+export interface Mode {
+  assets: string[];
+  chains: BlockchainCode[];
+  id: string;
+}
+
+export interface Rates {
+  [key: string]: string;
+}
+
+export interface SettingsState {
   localeCurrency: CurrencyCode;
   localeRate?: string;
-  mode: {
-    chains: BlockchainCode[];
-    currencies: Array<CurrencyCode | StableCoinCode>;
-    id: string;
-  };
+  mode: Mode;
   rates: Rates;
 }
 
-export interface ILoadSettingsAction {
+export interface LoadSettingsAction {
   type: ActionTypes.LOAD_SETTINGS;
 }
 
-export interface IUpdateSettingsAction {
-  type: ActionTypes.UPDATE;
-  payload: any;
+export interface SetAssetsAction {
+  type: ActionTypes.SET_ASSETS;
+  payload: string[];
 }
 
-export interface ISetModeAction {
-  type: ActionTypes.MODE;
-  payload: any;
+export interface SetModeAction {
+  type: ActionTypes.SET_MODE;
+  payload: Mode;
 }
 
 export interface SetLocaleCurrencyAction {
@@ -40,16 +50,22 @@ export interface SetLocaleCurrencyAction {
   currency: string;
 }
 
-export interface ISetExchRatesAction {
+export interface SetExchangeRatesAction {
   type: ActionTypes.EXCHANGE_RATES;
   payload: {
     rates: Rates;
   };
 }
 
+export interface UpdateSettingsAction {
+  type: ActionTypes.UPDATE;
+  payload: Settings;
+}
+
 export type SettingsAction =
-  ISetModeAction |
-  SetLocaleCurrencyAction |
-  ISetExchRatesAction |
-  ILoadSettingsAction |
-  IUpdateSettingsAction;
+  | LoadSettingsAction
+  | SetAssetsAction
+  | SetExchangeRatesAction
+  | SetLocaleCurrencyAction
+  | SetModeAction
+  | UpdateSettingsAction;

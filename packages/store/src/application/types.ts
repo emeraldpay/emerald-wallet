@@ -1,3 +1,5 @@
+import { SettingsOptions, TokenData } from '@emeraldwallet/core';
+
 export const moduleName = 'application';
 
 export enum ActionTypes {
@@ -7,6 +9,7 @@ export enum ActionTypes {
   OPTIONS = 'LAUNCHER/OPTIONS',
   SETTINGS = 'LAUNCHER/SETTINGS',
   TERMS = 'LAUNCHER/TERMS',
+  TOKENS = 'LAUNCHER/TOKENS',
 }
 
 export interface ApplicationMessage {
@@ -14,24 +17,23 @@ export interface ApplicationMessage {
   message: string;
 }
 
-export interface ApplicationOptions {
-  [key: string]: boolean | number | string | null | undefined;
-}
-
 export interface ApplicationState {
   configured: boolean;
   connecting: boolean;
   launcherType: string;
   message: ApplicationMessage;
-  options: ApplicationOptions;
+  options: SettingsOptions;
   settingsUpdated: boolean;
   terms: string;
+  tokens: TokenData[];
 }
 
 export interface ConfigAction {
   type: ActionTypes.CONFIG;
   payload: {
+    options?: SettingsOptions;
     terms?: string;
+    tokens?: TokenData[];
   };
 }
 
@@ -48,7 +50,7 @@ export interface MessageAction {
 
 export interface OptionsAction {
   type: ActionTypes.OPTIONS;
-  payload: ApplicationOptions;
+  payload: SettingsOptions;
 }
 
 export interface SettingsAction {
@@ -61,10 +63,16 @@ export interface TermsAction {
   version: string;
 }
 
+export interface TokensAction {
+  type: ActionTypes.TOKENS;
+  payload: TokenData[];
+}
+
 export type ApplicationAction =
   | ConfigAction
   | ConnectingAction
   | MessageAction
   | OptionsAction
   | SettingsAction
-  | TermsAction;
+  | TermsAction
+  | TokensAction;

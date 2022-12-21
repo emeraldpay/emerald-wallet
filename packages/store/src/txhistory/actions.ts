@@ -1,9 +1,16 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { ActionTypes, LastTxIdAction, RemoveStoredTxAction, StoredTransaction, UpdateStoredTxAction } from './types';
+import { BlockchainCode, PersistentState, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
+import {
+  ActionTypes,
+  LastTxIdAction,
+  LoadStoredTxsAction,
+  RemoveStoredTxAction,
+  StoredTransaction,
+  UpdateStoredTxAction,
+} from './types';
 import { Dispatched } from '../types';
 
-export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void> {
+export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void, LoadStoredTxsAction> {
   return async (dispatch, getState, extra) => {
     const { history } = getState();
 
@@ -26,7 +33,9 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
       page.items.map(async (tx) => {
         const meta = await extra.api.txMeta.get(blockchainIdToCode(tx.blockchain), tx.txId);
 
-        return new StoredTransaction(tx, meta);
+        const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+        return new StoredTransaction(tokenRegistry, tx, meta);
       }),
     );
 
@@ -50,12 +59,19 @@ export function updateTransaction(
   walletId: Uuid,
   transaction: PersistentState.Transaction,
   meta: PersistentState.TxMeta | null,
-): UpdateStoredTxAction {
-  return {
-    meta,
-    transaction,
-    walletId,
-    type: ActionTypes.UPDATE_STORED_TX,
+): Dispatched<void, UpdateStoredTxAction> {
+  return (dispatch, getState) => {
+    const {
+      application: { tokens },
+    } = getState();
+
+    dispatch({
+      meta,
+      tokens,
+      transaction,
+      walletId,
+      type: ActionTypes.UPDATE_STORED_TX,
+    });
   };
 }
 

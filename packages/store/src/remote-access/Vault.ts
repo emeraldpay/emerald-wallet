@@ -19,53 +19,52 @@ import {
   Uuid,
   Wallet,
 } from '@emeraldpay/emerald-vault-core';
+import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-
-const PREFIX = 'vault/';
 
 class Vault implements IEmeraldVault {
   addEntry(walletId: Uuid, entry: AddEntry): Promise<EntryId> {
-    return ipcRenderer.invoke(PREFIX + 'addEntry', walletId, entry);
+    return ipcRenderer.invoke(IpcCommands.VAULT_ADD_ENTRY, walletId, entry);
   }
 
   addWallet(label: string | undefined): Promise<Uuid> {
-    return ipcRenderer.invoke(PREFIX + 'addWallet', label);
+    return ipcRenderer.invoke(IpcCommands.VAULT_ADD_WALLET, label);
   }
 
   exportJsonPk(entryId: EntryId, password: string): Promise<ExportedWeb3Json> {
-    return ipcRenderer.invoke(PREFIX + 'exportJsonPk', entryId, password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_EXPORT_JSON_PK, entryId, password);
   }
 
   exportRawPk(entryId: EntryId, password: string): Promise<string> {
-    return ipcRenderer.invoke(PREFIX + 'exportRawPk', entryId, password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_EXPORT_RAW_PK, entryId, password);
   }
 
   generateMnemonic(size: number): Promise<string> {
-    return ipcRenderer.invoke(PREFIX + 'generateMnemonic', size);
+    return ipcRenderer.invoke(IpcCommands.VAULT_GENERATE_MNEMONIC, size);
   }
 
   getConnectedHWDetails(): Promise<HWKeyDetails[]> {
-    return ipcRenderer.invoke(PREFIX + 'getConnectedHWDetails');
+    return ipcRenderer.invoke(IpcCommands.VAULT_GET_CONNECTED_HWDETAILS);
   }
 
   listEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
-    return ipcRenderer.invoke(PREFIX + 'listEntryAddresses', id, role, start, limit);
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_ENTRY_ADDRESSES, id, role, start, limit);
   }
 
   getWallet(id: Uuid): Promise<Wallet | undefined> {
-    return ipcRenderer.invoke(PREFIX + 'getWallet', id);
+    return ipcRenderer.invoke(IpcCommands.VAULT_GET_WALLET, id);
   }
 
   importSeed(seed: SeedDefinition | LedgerSeedReference): Promise<Uuid> {
-    return ipcRenderer.invoke(PREFIX + 'importSeed', seed);
+    return ipcRenderer.invoke(IpcCommands.VAULT_IMPORT_SEED, seed);
   }
 
   isSeedAvailable(seed: Uuid | SeedReference | SeedDefinition): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'isSeedAvailable', seed);
+    return ipcRenderer.invoke(IpcCommands.VAULT_IS_SEED_AVAILABLE, seed);
   }
 
   listAddressBook(blockchain: number): Promise<AddressBookItem[]> {
-    return ipcRenderer.invoke(PREFIX + 'listAddressBook', blockchain);
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_ADDRESS_BOOK, blockchain);
   }
 
   listSeedAddresses(
@@ -73,35 +72,35 @@ class Vault implements IEmeraldVault {
     blockchain: number,
     hdpath: string[],
   ): Promise<{ [p: string]: string }> {
-    return ipcRenderer.invoke(PREFIX + 'listSeedAddresses', seed, blockchain, hdpath);
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_SEED_ADDRESSES, seed, blockchain, hdpath);
   }
 
   listSeeds(): Promise<SeedDescription[]> {
-    return ipcRenderer.invoke(PREFIX + 'listSeeds');
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_SEEDS);
   }
 
   listWallets(): Promise<Wallet[]> {
-    return ipcRenderer.invoke(PREFIX + 'listWallets');
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_WALLETS);
   }
 
   removeEntry(entryId: EntryId): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'removeEntry', entryId);
+    return ipcRenderer.invoke(IpcCommands.VAULT_REMOVE_ENTRY, entryId);
   }
 
   removeFromAddressBook(blockchain: number, address: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'removeFromAddressBook', blockchain, address);
+    return ipcRenderer.invoke(IpcCommands.VAULT_REMOVE_FROM_ADDRESS_BOOK, blockchain, address);
   }
 
   removeWallet(walletId: Uuid): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'removeWallet', walletId);
+    return ipcRenderer.invoke(IpcCommands.VAULT_REMOVE_WALLET, walletId);
   }
 
   setEntryLabel(entryFullId: EntryId, label: string | null): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'setEntryLabel', entryFullId, label);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SET_ENTRY_LABEL, entryFullId, label);
   }
 
   setEntryReceiveDisabled(entryFullId: EntryId, disabled: boolean): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'setEntryReceiveDisabled', entryFullId, disabled);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SET_ENTRY_RECEIVE_DISABLED, entryFullId, disabled);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -111,17 +110,16 @@ class Vault implements IEmeraldVault {
     console.warn('The wallet state must be set on the backend');
 
     return Promise.resolve();
-    // return ipcRenderer.invoke(PREFIX + "setState", state);
   }
 
   async setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
-    await ipcRenderer.invoke(PREFIX + 'updateMainMenu');
+    await ipcRenderer.invoke(IpcCommands.VAULT_UPDATE_MAIN_MENU);
 
-    return ipcRenderer.invoke(PREFIX + 'setWalletLabel', walletId, label);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SET_WALLET_LABEL, walletId, label);
   }
 
   signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<SignedTx> {
-    return ipcRenderer.invoke(PREFIX + 'signTx', entryId, tx, password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SIGN_TX, entryId, tx, password);
   }
 
   vaultVersion(): string {
@@ -129,39 +127,39 @@ class Vault implements IEmeraldVault {
   }
 
   createGlobalKey(password: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'createGlobalKey', password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_CREATE_GLOBAL_KEY, password);
   }
 
   getOddPasswordItems(): Promise<OddPasswordItem[]> {
-    return ipcRenderer.invoke(PREFIX + 'getOddPasswordItems');
+    return ipcRenderer.invoke(IpcCommands.VAULT_GET_ODD_PASSWORD_ITEMS);
   }
 
   isGlobalKeySet(): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'isGlobalKeySet');
+    return ipcRenderer.invoke(IpcCommands.VAULT_IS_GLOBAL_KEY_SET);
   }
 
   tryUpgradeOddItems(oddPassword: string, globalPassword: string): Promise<Uuid[]> {
-    return ipcRenderer.invoke(PREFIX + 'tryUpgradeOddItems', oddPassword, globalPassword);
+    return ipcRenderer.invoke(IpcCommands.VAULT_TRY_UPGRADE_ODD_ITEMS, oddPassword, globalPassword);
   }
 
   verifyGlobalKey(password: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'verifyGlobalKey', password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_VERIFY_GLOBAL_KEY, password);
   }
 
   changeGlobalKey(oldPassword: string, newPassword: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'changeGlobalKey', oldPassword, newPassword);
+    return ipcRenderer.invoke(IpcCommands.VAULT_CHANGE_GLOBAL_KEY, oldPassword, newPassword);
   }
 
   snapshotCreate(targetFile: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'snapshotCreate', targetFile);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SNAPSHOT_CREATE, targetFile);
   }
 
   snapshotRestore(sourceFile: string, password: string): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'snapshotRestore', sourceFile, password);
+    return ipcRenderer.invoke(IpcCommands.VAULT_SNAPSHOT_RESTORE, sourceFile, password);
   }
 
   updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'updateSeed', seed, details);
+    return ipcRenderer.invoke(IpcCommands.VAULT_UPDATE_SEED, seed, details);
   }
 }
 

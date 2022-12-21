@@ -1,4 +1,4 @@
-import { Button, createStyles, Grid, TextField, Typography } from '@material-ui/core';
+import { Button, Grid, TextField, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { ConfirmedPasswordInput } from '../../../index';
@@ -20,28 +20,28 @@ const useStyles = makeStyles(
 const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
   const styles = useStyles();
 
+  const [done, setDone] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [done, setDone] = React.useState(false);
 
   const filteredMnemonic = mnemonic.trim().replace(/\s+/g, ' ');
-  const isMnemonicValid = isValidMnemonic(filteredMnemonic);
+  const isMnemonicValid = isValidMnemonic?.(filteredMnemonic) ?? false;
 
   return (
-    <Grid container={true}>
-      <Grid item={true} xs={12}>
+    <Grid container>
+      <Grid item xs={12}>
         <Typography>Enter a mnemonic phrase</Typography>
       </Grid>
-      <Grid item={true} xs={12}>
-        <Grid container={true}>
-          <Grid item={true} xs={8}>
+      <Grid item xs={12}>
+        <Grid container>
+          <Grid item xs={8}>
             <TextField
-              fullWidth={true}
-              multiline={true}
-              rowsMax={4}
-              rows={4}
-              value={mnemonic}
+              fullWidth
+              multiline
               disabled={done}
+              maxRows={4}
+              minRows={4}
+              value={mnemonic}
               onChange={(e) => setMnemonic(e.target.value)}
             />
             <ConfirmedPasswordInput
@@ -55,7 +55,7 @@ const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
               onChange={setPassword}
             />
           </Grid>
-          <Grid item={true} xs={4}>
+          <Grid item xs={4}>
             <Button
               variant={'contained'}
               disabled={done || !isMnemonicValid}

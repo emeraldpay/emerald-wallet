@@ -110,7 +110,12 @@ export class ContactForm extends React.Component<Props, State> {
           </div>
           <div className={classes.rightColumn}>
             {contact?.id == null ? (
-              <ChainSelector chains={blockchains} value={blockchain} onChange={this.handleBlockchainChange} />
+              <ChainSelector
+                chains={blockchains}
+                value={blockchain}
+                withLabel={false}
+                onChange={this.handleBlockchainChange}
+              />
             ) : (
               <>{Blockchains[blockchainIdToCode(contact.blockchain)].getTitle()}</>
             )}

@@ -1,5 +1,5 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { BlockchainCode, tokenAmount } from '@emeraldwallet/core';
+import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
 import { TokenBalance, TokensState, moduleName } from './types';
 import { IState } from '../types';
 
@@ -15,7 +15,9 @@ export function selectBalances(state: IState, blockchain: BlockchainCode, addres
       if (addressBalance != null) {
         const values: TokenBalance[] = Object.values(addressBalance);
 
-        return values.map((token) => tokenAmount(token.unitsValue, token.symbol));
+        const tokenRegistry = new TokenRegistry(state.application.tokens);
+
+        return values.map((token) => tokenRegistry.bySymbol(blockchain, token.symbol).getAmount(token.unitsValue));
       }
     }
   }
@@ -27,7 +29,7 @@ export function selectBalance(
   state: IState,
   blockchain: BlockchainCode,
   address: string,
-  tokenId: string,
+  tokenAddress: string,
 ): BigAmount | undefined {
   const balancesByBlockchains = state[moduleName] as TokensState;
 
@@ -38,10 +40,12 @@ export function selectBalance(
       const { [address]: addressBalance } = blockchainBalances;
 
       if (addressBalance != null) {
-        const { [tokenId]: token } = addressBalance;
+        const { [tokenAddress]: token } = addressBalance;
 
         if (token != null) {
-          return tokenAmount(token.unitsValue, token.symbol);
+          const tokenRegistry = new TokenRegistry(state.application.tokens);
+
+          return tokenRegistry.bySymbol(blockchain, token.symbol).getAmount(token.unitsValue);
         }
       }
     }

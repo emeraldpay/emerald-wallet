@@ -1,10 +1,9 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
-import { DisplayEtherTx, IDisplayTx } from '..';
-import { AnyTokenCode } from '../../Asset';
+import { DisplayEtherTx, DisplayTx } from '..';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
-import { EthereumTransactionType } from '../../transaction/ethereum';
+import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 
 export interface TxDetails {
   amount: WeiAny;
@@ -21,7 +20,7 @@ export interface TxDetails {
 }
 
 const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
-  gas: 21000,
+  gas: DEFAULT_GAS_LIMIT,
   target: TxTarget.MANUAL,
 };
 
@@ -55,7 +54,7 @@ function toPlainDetails(tx: TxDetails): TxDetailsPlain {
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    tokenSymbol: tx.amount.units.top.code as AnyTokenCode,
+    tokenSymbol: tx.amount.units.top.code,
     totalEtherBalance: tx.totalBalance?.encode(),
     type: `0x${tx.type.toString(16)}`,
   };
@@ -160,7 +159,23 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     this.totalBalance = balance;
   }
 
-  public display(): IDisplayTx {
+  public build(): EthereumTransaction {
+    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+
+    return {
+      blockchain,
+      from,
+      gas,
+      to,
+      type,
+      gasPrice: gasPrice?.number,
+      maxGasPrice: maxGasPrice?.number,
+      priorityGasPrice: priorityGasPrice?.number,
+      value: amount.number,
+    };
+  }
+
+  public display(): DisplayTx {
     return new DisplayEtherTx(this);
   }
 
@@ -206,6 +221,7 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
 
       if (amount.isPositive() || amount.isZero()) {
         this.amount = amount;
+
         return true;
       }
 

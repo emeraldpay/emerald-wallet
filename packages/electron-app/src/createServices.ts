@@ -57,7 +57,7 @@ export function createServices(
 
   services.add(new BalanceListener(ipcMain, webContents, apiAccess));
   services.add(new ConnStatus(ipcMain, webContents, apiAccess));
-  services.add(new TxService(settings, apiAccess, persistentState, vault, webContents));
+  services.add(new TxService(apiAccess, persistentState, vault, ipcMain, webContents, settings));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;
@@ -65,7 +65,7 @@ export function createServices(
     services.add(new BlockchainStatusService(blockchain, webContents, apiAccess));
   }
 
-  services.add(new PricesService(ipcMain, webContents, apiAccess, apiMode.assets, apiMode.currencies[0]));
+  services.add(new PricesService(apiAccess, ipcMain, webContents, apiMode.assets));
 
   const reconnect = new Reconnect(services);
 

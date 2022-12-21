@@ -1,9 +1,17 @@
 import { transaction as ApiTransaction, Publisher } from '@emeraldpay/api';
 import { EntryIdOp, IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { Blockchains, Logger, PersistentState, SettingsManager, blockchainIdToCode } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
+import {
+  Blockchains,
+  IpcCommands,
+  Logger,
+  PersistentState,
+  SettingsManager,
+  TokenData,
+  TokenRegistry,
+  blockchainIdToCode,
+} from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
-import { WebContents } from 'electron';
+import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
 
@@ -18,29 +26,45 @@ export class TxService implements IService {
   public readonly id: string;
 
   private apiAccess: EmeraldApiAccess;
+  private ipcMain: IpcMain;
   private persistentState: PersistentStateImpl;
   private settings: SettingsManager;
+  private tokens: TokenData[];
+  private tokenRegistry: TokenRegistry;
   private vault: IEmeraldVault;
   private webContents?: WebContents;
 
-  private readonly restartTimeout = 5;
-
   private subscribers: Map<string, Publisher<ApiTransaction.AddressTxResponse>> = new Map();
 
+  private readonly restartTimeout = 5;
+
   constructor(
-    settings: SettingsManager,
     apiAccess: EmeraldApiAccess,
     persistentState: PersistentStateImpl,
     vault: IEmeraldVault,
+    ipcMain: IpcMain,
     webContents: WebContents,
+    settings: SettingsManager,
   ) {
     this.id = 'TransactionHistoryListener';
 
     this.apiAccess = apiAccess;
+    this.ipcMain = ipcMain;
     this.persistentState = persistentState;
     this.settings = settings;
     this.vault = vault;
     this.webContents = webContents;
+
+    this.tokens = settings.getTokens();
+    this.tokenRegistry = new TokenRegistry(this.tokens);
+
+    ipcMain.handle(IpcCommands.TXS_SET_TOKENS, (event, tokens) => {
+      this.tokens = tokens;
+      this.tokenRegistry = new TokenRegistry(this.tokens);
+
+      this.stop();
+      this.start();
+    });
   }
 
   start(): void {
@@ -81,7 +105,9 @@ export class TxService implements IService {
 
         entryIdentifiers.forEach(({ identifier }) => {
           if (resetCursors) {
-            this.persistentState.txhistory.setCursor(identifier, '');
+            this.persistentState.txhistory
+              .setCursor(identifier, '')
+              .catch((error) => log.error(`Error while set empty cursor for address ${identifier}:`, error));
           }
         });
 
@@ -90,9 +116,12 @@ export class TxService implements IService {
           .then(({ items: transactions }) =>
             Promise.all(
               transactions.map(({ blockchain: txBlockchain, txId }) =>
-                this.persistentState.txhistory
-                  .remove(txBlockchain, txId)
-                  .then(() => this.webContents?.send('store', { type: 'WALLET/HISTORY/REMOVE_STORED_TX', txId })),
+                this.persistentState.txhistory.remove(txBlockchain, txId).then(() =>
+                  this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+                    type: 'WALLET/HISTORY/REMOVE_STORED_TX',
+                    txId,
+                  }),
+                ),
               ),
             ),
           )
@@ -175,7 +204,7 @@ export class TxService implements IService {
                       const asset =
                         (change.contractAddress == null
                           ? Blockchains[blockchainCode].params.coinTicker
-                          : registry.byTokenAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+                          : this.tokenRegistry?.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
 
                       return {
                         asset,
@@ -186,15 +215,19 @@ export class TxService implements IService {
                         wallet: change.address === tx.address ? entryId : undefined,
                       };
                     }),
-                    confirmTimestamp: tx.mempool === false ? tx.block?.timestamp ?? now : undefined,
+                    confirmTimestamp: tx.mempool ? undefined : tx.block?.timestamp ?? now,
                     sinceTimestamp: tx.block?.timestamp ?? now,
-                    state: tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
+                    state: tx.mempool ? State.CONFIRMED : State.SUBMITTED,
                     status: tx.failed ? Status.FAILED : Status.OK,
                     txId: tx.txId,
                   })
                   .then((merged) => {
                     if (tx.cursor != null && tx.cursor.length > 0) {
-                      this.persistentState.txhistory.setCursor(identifier, tx.cursor);
+                      this.persistentState.txhistory
+                        .setCursor(identifier, tx.cursor)
+                        .catch((error) =>
+                          log.error(`Error while set cursor ${tx.cursor} for address ${identifier}:`, error),
+                        );
                     }
 
                     const walletId = EntryIdOp.of(entryId).extractWalletId();
@@ -202,10 +235,11 @@ export class TxService implements IService {
                     this.persistentState.txmeta
                       .get(blockchainIdToCode(merged.blockchain), merged.txId)
                       .then((meta) =>
-                        this.webContents?.send('store', {
-                          type: 'WALLET/HISTORY/UPDATE_STORED_TX',
+                        this.webContents?.send(IpcCommands.STORE_DISPATCH, {
                           meta,
                           walletId,
+                          type: 'WALLET/HISTORY/UPDATE_STORED_TX',
+                          tokens: this.tokens,
                           transaction: merged,
                         }),
                       )
@@ -220,7 +254,10 @@ export class TxService implements IService {
             })
             .onError((error) => log.error(`Error while subscribing for address ${identifier}:`, error))
             .finally(() => {
-              log.info(`Connection closed for address ${identifier}, restart after ${this.restartTimeout} seconds...`);
+              log.info(
+                `Subscription to transactions for address ${identifier} is closed,`,
+                `restart after ${this.restartTimeout} seconds...`,
+              );
 
               setTimeout(() => this.subscribe(identifier, blockchain, entryId), this.restartTimeout * 1000);
             }),

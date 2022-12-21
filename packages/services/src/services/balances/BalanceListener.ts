@@ -1,4 +1,4 @@
-import { BlockchainCode, Logger, amountFactory } from '@emeraldwallet/core';
+import { BlockchainCode, IpcCommands, Logger, amountFactory } from '@emeraldwallet/core';
 import { IpcMain, WebContents } from 'electron';
 import { AddressListener } from './AddressListener';
 import { EmeraldApiAccess } from '../..';
@@ -46,7 +46,7 @@ export class BalanceListener implements IService {
 
   start(): void {
     this.ipcMain.on(
-      'subscribe-balance',
+      IpcCommands.BALANCE_SUBSCRIBE,
       (event, blockchain: BlockchainCode, entryId: string, address: string | string[]) => {
         if (typeof address === 'string') {
           this.startInternal(blockchain, entryId, address);
@@ -61,8 +61,12 @@ export class BalanceListener implements IService {
 
   stop(): void {
     this.subscribers.forEach((subscription) => subscription.stop());
-
     this.subscribers.clear();
+  }
+
+  reconnect(): void {
+    this.stop();
+    this.start();
   }
 
   subscribeBalance(entry: Subscription): void {
@@ -70,25 +74,21 @@ export class BalanceListener implements IService {
 
     const amountReader = amountFactory(entry.blockchain);
 
-    subscriber.subscribe(entry.blockchain, entry.address, (event) => {
-      try {
-        this.webContents?.send('store', {
-          type: 'ACCOUNT/SET_BALANCE',
-          payload: {
-            entryId: entry.entryId,
-            value: amountReader(event.balance).encode(),
-            utxo: event.utxo?.map((tx) => ({
-              address: event.address,
-              txid: tx.txid,
-              value: amountReader(tx.value).encode(),
-              vout: tx.vout,
-            })),
-          },
-        });
-      } catch (exception) {
-        log.warn('Cannot send to the UI', exception);
-      }
-    });
+    subscriber.subscribe(entry.blockchain, entry.address, (event) =>
+      this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+        type: 'ACCOUNT/SET_BALANCE',
+        payload: {
+          entryId: entry.entryId,
+          value: amountReader(event.balance).encode(),
+          utxo: event.utxo?.map((tx) => ({
+            address: event.address,
+            txid: tx.txid,
+            value: amountReader(tx.value).encode(),
+            vout: tx.vout,
+          })),
+        },
+      }),
+    );
 
     // can get multiple subscriptions for the same address, keep only last and cancel previous
     const id = `${entry.entryId}/${entry.address}`;
@@ -103,11 +103,6 @@ export class BalanceListener implements IService {
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
-  }
-
-  reconnect(): void {
-    this.stop();
-    this.start();
   }
 
   private isValidAddress(address: string | string[]): boolean {

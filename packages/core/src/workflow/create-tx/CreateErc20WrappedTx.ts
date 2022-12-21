@@ -1,7 +1,8 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { TxTarget } from './types';
-import { BlockchainCode, amountFactory } from '../../blockchains';
-import { EthereumTransactionType } from '../../transaction/ethereum';
+import { BlockchainCode, Token, TokenData, amountFactory, wrapTokenAbi } from '../../blockchains';
+import { Contract } from '../../Contract';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 
 export interface Erc20WrappedDetails {
   address?: string;
@@ -12,10 +13,13 @@ export interface Erc20WrappedDetails {
   maxGasPrice?: BigAmount;
   priorityGasPrice?: BigAmount;
   target?: TxTarget;
+  token: TokenData;
   totalBalance?: BigAmount;
   totalTokenBalance?: BigAmount;
   type: EthereumTransactionType;
 }
+
+const tokenContract = new Contract(wrapTokenAbi);
 
 export class CreateErc20WrappedTx {
   public address?: string;
@@ -30,6 +34,7 @@ export class CreateErc20WrappedTx {
   public totalTokenBalance?: BigAmount;
   public type: EthereumTransactionType;
 
+  private readonly token: Token;
   private readonly zeroAmount: BigAmount;
 
   constructor(details: Erc20WrappedDetails) {
@@ -38,7 +43,7 @@ export class CreateErc20WrappedTx {
     this.address = details.address;
     this.amount = details.amount ?? zeroAmount;
     this.blockchain = details.blockchain;
-    this.gas = details.gas ?? 50000;
+    this.gas = details.gas ?? DEFAULT_GAS_LIMIT_ERC20;
     this.target = details.target ?? TxTarget.MANUAL;
     this.totalBalance = details.totalBalance ?? zeroAmount;
     this.totalTokenBalance = details.totalTokenBalance;
@@ -51,11 +56,35 @@ export class CreateErc20WrappedTx {
       this.gasPrice = details.gasPrice ?? zeroAmount;
     }
 
+    this.token = new Token(details.token);
     this.zeroAmount = zeroAmount;
   }
 
   public static fromPlain(details: Erc20WrappedDetails): CreateErc20WrappedTx {
     return new CreateErc20WrappedTx(details);
+  }
+
+  public build(): EthereumTransaction {
+    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, totalBalance, type, address = '' } = this;
+
+    const isDeposit = amount.units.equals(totalBalance.units);
+
+    const data = isDeposit
+      ? tokenContract.functionToData('deposit', {})
+      : tokenContract.functionToData('withdraw', { _value: amount.number.toString() });
+
+    return {
+      blockchain,
+      data,
+      gas,
+      type,
+      from: address,
+      gasPrice: gasPrice?.number,
+      maxGasPrice: maxGasPrice?.number,
+      priorityGasPrice: priorityGasPrice?.number,
+      to: this.token.address,
+      value: isDeposit ? amount.number : this.zeroAmount.number,
+    };
   }
 
   public dump(): Erc20WrappedDetails {
@@ -68,6 +97,7 @@ export class CreateErc20WrappedTx {
       maxGasPrice: this.maxGasPrice,
       priorityGasPrice: this.priorityGasPrice,
       target: this.target,
+      token: this.token.toPlain(),
       totalBalance: this.totalBalance,
       totalTokenBalance: this.totalTokenBalance,
       type: this.type,

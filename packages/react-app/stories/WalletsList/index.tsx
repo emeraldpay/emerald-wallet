@@ -6,7 +6,7 @@ import WalletList from "../../src/wallets/WalletList";
 import {BackendMock} from "../backendMock";
 import {accounts, settings, tokens} from "@emeraldwallet/store";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {createWallets, setup} from '../wallets';
+import {createWallets, setRates} from '../wallets';
 
 const backend = new BackendMock();
 
@@ -44,14 +44,14 @@ const setBalances = [
 ];
 
 storiesOf('Wallets List', module)
-  .addDecorator(providerForStore(backend, [...setup, ...createWallets]))
+  .addDecorator(providerForStore(backend, [...setRates, ...createWallets]))
   .addDecorator(withTheme)
   .add("two wallet - empty", () => (
     <WalletList/>
   ));
 
 storiesOf('Wallets List', module)
-  .addDecorator(providerForStore(backend, [...setup, ...createWallets, ...setBalances]))
+  .addDecorator(providerForStore(backend, [...setRates, ...createWallets, ...setBalances]))
   .addDecorator(withTheme)
   .add("two wallet - with balance", () => (
     <WalletList/>

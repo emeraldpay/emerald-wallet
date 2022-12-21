@@ -1,25 +1,25 @@
-import { defaultAbiCoder, Interface, JsonFragment } from '@ethersproject/abi';
+import { Interface, JsonFragment, defaultAbiCoder } from '@ethersproject/abi';
 import { BigNumber as EtherBigNumber } from '@ethersproject/bignumber';
 import { BigNumber } from 'bignumber.js';
-import abi from './abi';
+import { tokenAbi } from './abi';
 
-type DecodedType = undefined | string;
+type DecodedType = string | undefined;
 
 interface Decoded {
+  inputs: ReadonlyArray<BigNumber | number | string>;
   name?: string;
   types: DecodedType[];
-  inputs: ReadonlyArray<number | string>;
 }
 
 function isArray(type: string): boolean {
   return type.lastIndexOf(']') === type.length - 1;
 }
 
-function parseTypeArray(type: string): null | number | 'dynamic' {
-  const tmp = type.match(/(.*)\[(.*?)]$/);
+function parseTypeArray(type: string): 'dynamic' | number | null {
+  const [, match] = type.match(/(.*)\[(.*?)]$/) ?? [];
 
-  if (tmp) {
-    return tmp[2] === '' ? 'dynamic' : parseInt(tmp[2], 10);
+  if (match != null) {
+    return match === '' ? 'dynamic' : parseInt(match, 10);
   }
 
   return null;
@@ -85,8 +85,8 @@ export class InputDataDecoder {
         );
 
       return {
-        types,
         inputs,
+        types,
         name: method.name,
       };
     }
@@ -150,7 +150,7 @@ export class InputDataDecoder {
   }
 }
 
-const decoder = new InputDataDecoder(abi);
+const decoder = new InputDataDecoder(tokenAbi);
 
 export function decodeData(data: string): Decoded {
   return decoder.decodeData(data);

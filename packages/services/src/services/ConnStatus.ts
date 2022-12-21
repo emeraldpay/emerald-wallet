@@ -1,3 +1,4 @@
+import { IpcCommands } from '@emeraldwallet/core';
 import { IpcMain, WebContents } from 'electron';
 import { IService } from './Services';
 import { EmeraldApiAccess } from '..';
@@ -15,25 +16,21 @@ export class ConnStatus implements IService {
     this.webContents = webContents;
   }
 
-  public start(): void {
-    this.apiAccess.statusListener((status) => {
-      try {
-        this.webContents?.send('store', { type: 'CONN/SET_STATUS', payload: { status } });
-      } catch (exception) {
-        console.warn('Cannot send to the UI', exception);
-      }
-    });
+  start(): void {
+    this.apiAccess.statusListener((status) =>
+      this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'CONN/SET_STATUS', payload: { status } }),
+    );
   }
 
   stop(): void {
     // Nothing
   }
 
-  setWebContents(webContents: WebContents): void {
-    this.webContents = webContents;
-  }
-
   reconnect(): void {
     // Nothing
+  }
+
+  setWebContents(webContents: WebContents): void {
+    this.webContents = webContents;
   }
 }

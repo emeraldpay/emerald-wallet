@@ -1,7 +1,74 @@
 {
-  "default_fee.1": "{\"max\":8192,\"min\":1024,\"std\":2048}",
-  "default_fee.100": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"1000000000\"}",
-  "default_fee.101": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\"}",
-  "default_fee.10003": "{\"max\":8192,\"min\":1024,\"std\":2048}",
-  "default_fee.10005": "{\"max\":\"3000000000\",\"min\":\"1000000000\",\"std\":\"1000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"0\"}"
+  "options": {
+    "default_fee.1": "{\"max\":8192,\"min\":1024,\"std\":2048}",
+    "default_fee.100": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"1000000000\"}",
+    "default_fee.101": "{\"max\":\"6000000000\",\"min\":\"4000000000\",\"std\":\"5000000000\"}",
+    "default_fee.10003": "{\"max\":8192,\"min\":1024,\"std\":2048}",
+    "default_fee.10005": "{\"max\":\"3000000000\",\"min\":\"1000000000\",\"std\":\"1000000000\",\"priority_max\":\"2000000000\",\"priority_min\":\"0\",\"priority_std\":\"0\"}"
+  },
+  "tokens": [
+    {
+      "name": "Wrapped Ether",
+      "blockchain": 100,
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "symbol": "WETH",
+      "decimals": 18,
+      "type": "ERC20",
+      "wrapped": true
+    },
+    {
+      "name": "Dai Stablecoin",
+      "blockchain": 100,
+      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "symbol": "DAI",
+      "decimals": 18,
+      "type": "ERC20",
+      "stablecoin": true
+    },
+    {
+      "name": "USD Coin",
+      "blockchain": 100,
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "symbol": "USDC",
+      "decimals": 6,
+      "type": "ERC20",
+      "stablecoin": true
+    },
+    {
+      "name": "Tether USD",
+      "blockchain": 100,
+      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "symbol": "USDT",
+      "decimals": 6,
+      "type": "ERC20",
+      "stablecoin": true
+    },
+    {
+      "name": "Wrapped Ether",
+      "blockchain": 101,
+      "address": "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a",
+      "symbol": "WETC",
+      "decimals": 18,
+      "type": "ERC20",
+      "wrapped": true
+    },
+    {
+      "name": "Wrapped Ether",
+      "blockchain": 10005,
+      "address": "0x0Bb7509324cE409F7bbC4b701f932eAca9736AB7",
+      "symbol": "WETG",
+      "decimals": 18,
+      "type": "ERC20",
+      "wrapped": true
+    },
+    {
+      "name": "Weenus",
+      "blockchain": 10005,
+      "address": "0xaFF4481D10270F50f203E0763e2597776068CBc5",
+      "symbol": "WEENUS",
+      "decimals": 18,
+      "type": "ERC20",
+      "stablecoin": true
+    }
+  ]
 }

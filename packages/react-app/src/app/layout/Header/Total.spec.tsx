@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { CurrencyAmount } from '@emeraldwallet/core';
-import { accounts } from '@emeraldwallet/store';
+import { accounts, application, tokens } from '@emeraldwallet/store';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -38,7 +38,6 @@ function createStore(): Store {
             ETC: '7.89',
           },
         },
-        tokens: {},
         [accounts.moduleName]: {
           wallets: [
             {
@@ -65,6 +64,10 @@ function createStore(): Store {
             { entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', balance: new Wei(3000000000000000).encode() },
           ],
         },
+        [application.moduleName]: {
+          tokens: [],
+        },
+        [tokens.moduleName]: {},
       };
     },
     replaceReducer(): void {

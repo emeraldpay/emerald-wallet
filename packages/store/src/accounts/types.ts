@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { AddressRole } from '@emeraldpay/emerald-vault-core/lib/types';
-import { BalanceUtxo, BlockchainCode } from '@emeraldwallet/core';
+import { BalanceUtxo, BlockchainCode, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -68,6 +68,7 @@ export interface ILoadWalletsAction {
 
 export interface IFetchErc20BalancesAction {
   type: ActionTypes.FETCH_ERC20_BALANCES;
+  tokens: TokenData[];
 }
 
 export interface IFetchHdPathsAction {
@@ -79,7 +80,6 @@ export interface IUpdateWalletAction {
   payload: {
     walletId: Uuid;
     name: string;
-    description: string;
   };
 }
 
@@ -101,6 +101,14 @@ export interface ISetLoadingAction {
 export interface IWalletCreatedAction {
   type: ActionTypes.CREATE_WALLET_SUCCESS;
   wallet: Wallet;
+}
+
+export interface IWalletImportedAction {
+  type: ActionTypes.ACCOUNT_IMPORTED;
+  payload: {
+    tokens: TokenData[];
+    walletId: string;
+  };
 }
 
 export interface ICreateWalletAction {
@@ -151,9 +159,10 @@ export interface PendingBalanceAction {
 export interface ICreateHdEntry {
   type: ActionTypes.CREATE_HD_ACCOUNT;
   blockchain: BlockchainCode;
-  walletId: Uuid;
   seedId?: Uuid;
   seedPassword: string;
+  tokens: TokenData[];
+  walletId: Uuid;
 }
 
 export interface ISubWalletBalance {
@@ -173,7 +182,6 @@ export type AccountsAction =
   | ISetBalanceAction
   | IUpdateWalletAction
   | IWalletCreatedAction
-  // | SetHDPathAction
   | ISetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction

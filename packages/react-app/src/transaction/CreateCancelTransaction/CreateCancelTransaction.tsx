@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { EthereumTransaction } from '@emeraldwallet/core';
+import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType, amountFactory } from '@emeraldwallet/core';
 import { IState, SignData, accounts, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -94,7 +94,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       let maxGasPrice: Wei | undefined;
       let priorityGasPrice: Wei | undefined;
 
-      if (tx.gasPrice == null) {
+      if (tx.type === EthereumTransactionType.EIP1559) {
         maxGasPrice = cancelGasPrice;
         priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
       } else {
@@ -102,21 +102,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          accountId,
-          tx.blockchain,
-          tx.from,
-          password,
-          tx.from,
-          21000,
-          Wei.ZERO,
-          '',
-          tx.type,
-          gasPrice,
-          maxGasPrice,
-          priorityGasPrice,
-          tx.nonce,
-        ),
+        transaction.actions.signTransaction(accountId, password, {
+          ...tx,
+          data: '',
+          gas: DEFAULT_GAS_LIMIT,
+          gasPrice: gasPrice?.number,
+          maxGasPrice: maxGasPrice?.number,
+          priorityGasPrice: priorityGasPrice?.number,
+          value: amountFactory(tx.blockchain)(0).number,
+        }),
       );
 
       if (signed != null) {
@@ -125,7 +119,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(21000),
+              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(DEFAULT_GAS_LIMIT),
               originalAmount: Wei.ZERO,
             },
             null,

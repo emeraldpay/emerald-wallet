@@ -70,6 +70,6 @@ export function deleteContactAction(blockchain: BlockchainCode, id: string): Del
   };
 }
 
-export function getAddressBookItem(id: string): Dispatched<PersistentState.AddressbookItem> {
+export function getAddressBookItem(id: string): Dispatched<PersistentState.AddressbookItem | null> {
   return (dispatch, getState, extra) => extra.api.addressBook.get(id);
 }

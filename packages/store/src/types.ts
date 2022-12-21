@@ -1,20 +1,17 @@
-import { IBackendApi, WalletApi } from '@emeraldwallet/core';
+import { BackendApi, WalletApi } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-import { Action, Dispatch } from 'redux';
-import { ThunkAction } from 'redux-thunk';
-import * as accounts from './accounts';
-import { IAccountsState } from './accounts/types';
+import { Action, AnyAction, Dispatch } from 'redux';
+import { IAccountsState, moduleName as accountsModule } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
-import * as addressBook from './address-book';
-import { AddressBookState } from './address-book/types';
-import * as application from './application';
-import { BlockchainsState } from './blockchains/types';
-import * as conn from './conn/types';
+import { AddressBookState, moduleName as addressBookModule } from './address-book/types';
+import { ApplicationState, moduleName as applicationModule } from './application/types';
+import { BlockchainsState, moduleName as blockchainsModule } from './blockchains/types';
+import { IConnState, moduleName as connModule } from './conn/types';
 import { IHDPreviewState } from './hdpath-preview/types';
 import { IHWKeyState } from './hwkey/types';
 import { ScreenState } from './screen/types';
-import { ISettingsState } from './settings/types';
-import { TokensState } from './tokens/types';
+import { SettingsState } from './settings/types';
+import { TokensState, moduleName as tokensModule } from './tokens/types';
 import { BroadcastData, SignData } from './transaction/types';
 import { Triggers } from './triggers';
 import { HistoryState } from './txhistory/types';
@@ -22,31 +19,37 @@ import { HistoryState } from './txhistory/types';
 export { SignData, BroadcastData };
 
 export interface IState {
-  [accounts.moduleName]: IAccountsState;
-  [addressBook.moduleName]: AddressBookState;
-  [application.moduleName]: any;
-  [conn.moduleName]: any;
+  [accountsModule]: IAccountsState;
+  [addressBookModule]: AddressBookState;
+  [applicationModule]: ApplicationState;
+  [blockchainsModule]: BlockchainsState;
+  [connModule]: IConnState;
+  [tokensModule]: TokensState;
   addAccount?: IAddAccountState;
-  blockchains: BlockchainsState;
   hdpathPreview?: IHDPreviewState;
   history: HistoryState;
   hwkey: IHWKeyState;
   screen: ScreenState;
-  settings: ISettingsState;
-  tokens: TokensState;
+  settings: SettingsState;
 }
 
 export type GetState = () => IState;
 
 export interface IExtraArgument {
   api: WalletApi;
-  backendApi: IBackendApi;
+  backendApi: BackendApi;
   triggers: Triggers;
 }
 
-export type Dispatched<T> = (dispatch: Dispatch, getState: GetState, extra: IExtraArgument) => void;
+export interface Dispatcher<A extends Action = AnyAction> extends Dispatch<A> {
+  <R>(dispatched: Dispatched<R, A>): R | Promise<R>;
+}
 
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, IState, null, Action<string>>;
+export type Dispatched<R = void, A extends Action = AnyAction> = (
+  dispatch: Dispatcher<A>,
+  getState: GetState,
+  extra: IExtraArgument,
+) => R | Promise<R>;
 
 export const DEFAULT_FEE: GasPrices = { max: 0, priority: 0 } as const;
 export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;

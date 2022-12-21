@@ -3,6 +3,7 @@ import {
   AddressRole,
   CurrentAddress,
   EntryId,
+  ExportedWeb3Json,
   IdSeedReference,
   OddPasswordItem,
   SeedDefinition,
@@ -13,13 +14,9 @@ import {
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId, HDPath, Logger, WalletApi } from '@emeraldwallet/core';
+import { BlockchainCode, HDPath, blockchainCodeToId, IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { Dispatch } from 'redux';
-import { dispatchRpcError } from '../screen/actions';
-import { Dispatched, IExtraArgument } from '../types';
 import {
-  AccountsAction,
   ActionTypes,
   IBalanceUpdate,
   ICreateHdEntry,
@@ -35,10 +32,11 @@ import {
   ISubWalletBalance,
   IUpdateWalletAction,
   IWalletCreatedAction,
+  IWalletImportedAction,
   IWalletsLoaded,
 } from './types';
-
-const log = Logger.forCategory('store.accounts');
+import { dispatchRpcError } from '../screen/actions';
+import { Dispatched } from '../types';
 
 export function setBalanceAction(balance: IBalanceUpdate): ISetBalanceAction {
   return {
@@ -54,9 +52,16 @@ export function setLoadingAction(loading: boolean): ISetLoadingAction {
   };
 }
 
-export function fetchErc20BalancesAction(): IFetchErc20BalancesAction {
-  return {
-    type: ActionTypes.FETCH_ERC20_BALANCES,
+export function fetchErc20BalancesAction(): Dispatched<void, IFetchErc20BalancesAction> {
+  return (dispatch, getState) => {
+    const {
+      application: { tokens },
+    } = getState();
+
+    dispatch({
+      type: ActionTypes.FETCH_ERC20_BALANCES,
+      tokens,
+    });
   };
 }
 
@@ -83,25 +88,9 @@ export function setWalletsAction(wallets: Wallet[]): IWalletsLoaded {
   };
 }
 
-export function loadAccountBalance(entryId: EntryId, blockchain: BlockchainCode, address: string) {
-  ipcRenderer.send('subscribe-balance', blockchain, entryId, [address]);
+export function loadAccountBalance(entryId: EntryId, blockchain: BlockchainCode, address: string): void {
+  ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entryId, [address]);
 }
-
-// export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountAction> {
-//   return (dispatch, getState, api) => {
-//     selectors.all(getState()).getAccounts().forEach((acc) => {
-//       const blockchainCode = blockchainById(acc.blockchain)!.params.code;
-//       api.chain(blockchainCode).eth.getTransactionCount(acc.address)
-//         .then((result: number) => {
-//           dispatch({
-//             type: ActionTypes.SET_TXCOUNT,
-//             accountId: acc.id,
-//             value: result
-//           });
-//         }).catch(dispatchRpcError(dispatch));
-//     });
-//   };
-// }
 
 export function createNewWalletAction(walletName: string, password: string, mnemonic: string): ICreateWalletAction {
   return {
@@ -124,31 +113,6 @@ export function importSeedWalletAction(mnemonic: string, password: string): ICre
   };
 }
 
-function createWalletWithAccount(
-  api: WalletApi,
-  dispatch: Dispatch<any>,
-  blockchain: BlockchainCode,
-  walletName: string = '',
-  add: AddEntry,
-): Promise<{ walletId: Uuid; accountId: string }> {
-  return api.vault
-    .addWallet(walletName)
-    .then((walletId) =>
-      api.vault.addEntry(walletId, add).then((accountId) => {
-        return { walletId, accountId };
-      }),
-    )
-    .then((result) =>
-      api.vault.getWallet(result.walletId).then((wallet) => {
-        if (wallet) {
-          dispatch(walletCreatedAction(wallet));
-          dispatch(accountImportedAction(wallet.id));
-        }
-        return result;
-      }),
-    );
-}
-
 export function walletCreatedAction(wallet: Wallet): IWalletCreatedAction {
   return {
     type: ActionTypes.CREATE_WALLET_SUCCESS,
@@ -156,12 +120,19 @@ export function walletCreatedAction(wallet: Wallet): IWalletCreatedAction {
   };
 }
 
-export function accountImportedAction(walletId: string) {
-  return {
-    type: ActionTypes.ACCOUNT_IMPORTED,
-    payload: {
-      walletId,
-    },
+export function accountImportedAction(walletId: string): Dispatched<void, IWalletImportedAction> {
+  return (dispatch, getState) => {
+    const {
+      application: { tokens },
+    } = getState();
+
+    dispatch({
+      type: ActionTypes.ACCOUNT_IMPORTED,
+      payload: {
+        tokens,
+        walletId,
+      },
+    });
   };
 }
 
@@ -169,28 +140,19 @@ export function createHdAccountAction(
   walletId: string,
   blockchain: BlockchainCode,
   seedPassword: string,
-): ICreateHdEntry {
-  return {
-    type: ActionTypes.CREATE_HD_ACCOUNT,
-    walletId,
-    blockchain,
-    seedPassword,
-  };
-}
+): Dispatched<void, ICreateHdEntry> {
+  return (dispatch, getState) => {
+    const {
+      application: { tokens },
+    } = getState();
 
-export function createAccount(
-  blockchain: BlockchainCode,
-  passphrase: string,
-  name: string = '',
-): Dispatched<IWalletCreatedAction> {
-  return (dispatch: any, getState, extra) => {
-    const addRequest: AddEntry = {
-      blockchain: blockchainCodeToId(blockchain),
-      type: 'generate-random',
-      password: passphrase,
-    };
-
-    return createWalletWithAccount(extra.api, dispatch, blockchain, name, addRequest);
+    dispatch({
+      type: ActionTypes.CREATE_HD_ACCOUNT,
+      blockchain,
+      seedPassword,
+      tokens,
+      walletId,
+    });
   };
 }
 
@@ -202,44 +164,48 @@ export type CreateWalletOptions = {
 export function createWallet(
   options: CreateWalletOptions,
   entries: AddEntry[],
-  handler: (wallet?: Wallet, err?: any) => void,
-): Dispatched<IWalletCreatedAction> {
+  handler: (wallet?: Wallet, err?: Error) => void,
+): Dispatched<void, IWalletCreatedAction> {
   console.log('create wallet', entries);
-  return async (dispatch, getState, extra) => {
-    const vault = extra.api.vault;
+
+  return async (dispatch, getState, { api: { vault } }) => {
     try {
       const walletId = await vault.addWallet(options.label);
+
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
         await vault.addEntry(walletId, entry);
       }
+
       const wallet = await vault.getWallet(walletId);
+
       if (wallet) {
         dispatch(walletCreatedAction(wallet));
       }
+
       handler(wallet);
-    } catch (e) {
-      handler(undefined, e);
+    } catch (error) {
+      if (error instanceof Error) {
+        handler(undefined, error);
+      }
     }
   };
 }
 
-export function exportPrivateKey(passphrase: string, accountId: EntryId): any {
-  return (dispatch: any, getState: any, extra: IExtraArgument) => {
-    return extra.api.vault.exportRawPk(accountId, passphrase);
-  };
+export function exportPrivateKey(passphrase: string, accountId: EntryId): Dispatched<string> {
+  return (dispatch, getState, extra) => extra.api.vault.exportRawPk(accountId, passphrase);
 }
 
-export function exportKeyFile(accountId: EntryId, password: string): any {
-  return (dispatch: any, getState: any, extra: IExtraArgument) => {
-    return extra.api.vault.exportJsonPk(accountId, password);
-  };
+export function exportKeyFile(accountId: EntryId, password: string): Dispatched<ExportedWeb3Json> {
+  return (dispatch, getState, extra) => extra.api.vault.exportJsonPk(accountId, password);
 }
 
-export function updateWallet(walletId: Uuid, name: string): Dispatched<IUpdateWalletAction> {
-  return async (dispatch: any, getState, extra) => {
+export function updateWallet(walletId: Uuid, name: string): Dispatched<void, IUpdateWalletAction> {
+  return async (dispatch, getState, extra) => {
     const result = await extra.api.vault.setWalletLabel(walletId, name);
-    await ipcRenderer.invoke('vault/updateMainMenu');
+
+    ipcRenderer.send(IpcCommands.UPDATE_MAIN_MENU);
+
     if (result) {
       dispatch({
         type: ActionTypes.WALLET_UPDATED,
@@ -252,130 +218,31 @@ export function updateWallet(walletId: Uuid, name: string): Dispatched<IUpdateWa
   };
 }
 
-function readWalletFile(walletFile: Blob): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsText(walletFile);
-    reader.onload = (event: ProgressEvent) => {
-      if (!event.target) {
-        reject(new Error('Invalid Event passed'));
-        return;
-      }
-      // @ts-ignore
-      const fileContent = event.target.result;
-      try {
-        const json = JSON.parse(fileContent);
-        // json.filename = walletFile.name;
-        resolve(json);
-      } catch (e) {
-        reject(new Error('Invalid or corrupted Wallet file, cannot be imported'));
-      }
-    };
-  });
-}
-
-// function addAccount (
-//   api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
-// ) {
-//   if (!walletId) {
-//     throw Error('Wallet is not set');
-//   }
-//   const accountId = api.vault.addAccount(walletId, add);
-//
-//   dispatch(accountImportedAction(walletId, accountId));
-//
-//   return walletId;
-// }
-
-function importJson(
-  blockchain: BlockchainCode,
-  data: any,
-  jsonPassword: string,
-  password: string,
-): Dispatched<IWalletCreatedAction> {
-  return async (dispatch: any, getState, extra) => {
-    const vault = extra.api.vault;
+export function importPk(blockchain: BlockchainCode, pk: string, password: string): Dispatched<string> {
+  return async (dispatch, getState, { api: { vault } }) => {
     const walletId = await vault.addWallet();
-    const entryId = await vault.addEntry(walletId, {
-      jsonPassword,
-      password,
-      type: 'ethereum-json',
-      blockchain: blockchainCodeToId(blockchain),
-      key: JSON.stringify(data),
-    });
-    const wallet = await vault.getWallet(walletId);
-    if (wallet) {
-      // update redux store with new wallet
-      dispatch(walletCreatedAction(wallet));
-      dispatch(accountImportedAction(walletId));
-    }
-    return Promise.resolve(walletId);
-  };
-}
 
-export function importPk(blockchain: BlockchainCode, pk: string, password: string): Dispatched<IWalletCreatedAction> {
-  return async (dispatch: any, getState, extra) => {
-    const vault = extra.api.vault;
-    const walletId = await vault.addWallet();
-    const entryId = await vault.addEntry(walletId, {
+    await vault.addEntry(walletId, {
       type: 'raw-pk-hex',
       blockchain: blockchainCodeToId(blockchain),
       key: pk,
       password,
     });
+
     const wallet = await vault.getWallet(walletId);
+
     if (wallet) {
       // update redux store with new wallet
       dispatch(walletCreatedAction(wallet));
       dispatch(accountImportedAction(walletId));
     }
+
     return Promise.resolve(walletId);
   };
 }
 
-// /**
-//  *
-//  * @deprecated should have separate password
-//  */
-// export function importMnemonic (
-//   blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string
-// ): Dispatched<IWalletCreatedAction> {
-//   return (dispatch: any, getState, extra) => {
-//     if (!blockchains.isValidChain(blockchain)) {
-//       throw new Error('Invalid chain code: ' + blockchain);
-//     }
-//     const walletService = new WalletService(extra.api.vault);
-//     const seedId = walletService.importMnemonic(mnemonic, passphrase);
-//     const addRequest: AddEntry = {
-//       blockchain: blockchainCodeToId(blockchain),
-//       type: 'hd-path',
-//       key: {
-//         seed: {type: "id", value: seedId, password: passphrase},
-//         hdPath,
-//       }
-//     };
-//
-//     return Promise.resolve(
-//       createWalletWithAccount(extra.api, dispatch, blockchain, name, addRequest)
-//     );
-//
-//   };
-// }
-
-export function importWalletFile(
-  blockchain: BlockchainCode,
-  file: Blob,
-  jsonPassword: string,
-  password: string,
-): Dispatched<AccountsAction> {
-  return async (dispatch: any, getState) => {
-    const data = await readWalletFile(file);
-    return dispatch(importJson(blockchain, data, jsonPassword, password));
-  };
-}
-
-export function generateMnemonic(handler?: (value: string) => void): Dispatched<any> {
-  return (dispatch: any, getState, extra) => {
+export function generateMnemonic(handler?: (value: string) => void): Dispatched {
+  return (dispatch, getState, extra) => {
     extra.api.vault.generateMnemonic(24).then(handler).catch(dispatchRpcError(dispatch));
   };
 }
@@ -393,7 +260,7 @@ export function setSeedsAction(seeds: SeedDescription[]): ISetSeedsAction {
   };
 }
 
-export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): Dispatched<any> {
+export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): Dispatched {
   return (dispatch, getState, extra) => {
     extra.api.vault.importSeed(seed).then(handler).catch(dispatchRpcError(dispatch));
   };
@@ -406,23 +273,22 @@ export function subscribeWalletBalance(walletId: Uuid): ISubWalletBalance {
   };
 }
 
-export function unlockSeed(seedId: Uuid, password: string, handler: (valid: boolean) => void): Dispatched<any> {
+export function unlockSeed(seedId: Uuid, password: string, handler: (valid: boolean) => void): Dispatched {
   return (dispatch, getState, extra) => {
-    const vault = extra.api.vault;
     const seed: IdSeedReference = {
       type: 'id',
       value: seedId,
       password,
     };
+
     // just a random hd path
     // TODO always generate new random?
     const hdpath = "m/44'/15167'/8173'/68/164";
-    vault
+
+    extra.api.vault
       .listSeedAddresses(seed, 100, [hdpath])
-      .then((addresses) => {
-        handler(typeof addresses[hdpath] == 'string' && addresses[hdpath].length > 0);
-      })
-      .catch((_) => handler(false));
+      .then((addresses) => handler(typeof addresses[hdpath] == 'string' && addresses[hdpath].length > 0))
+      .catch(() => handler(false));
   };
 }
 
@@ -458,7 +324,7 @@ export function changeGlobalKey(oldPassword: string, newPassword: string): Dispa
   return (dispatch, getState, extra) => extra.api.vault.changeGlobalKey(oldPassword, newPassword);
 }
 
-export function addEntryToWallet(walletId: Uuid, entry: AddEntry): Dispatched<string> {
+export function addEntryToWallet(walletId: Uuid, entry: AddEntry): Dispatched<ILoadWalletsAction> {
   return (dispatch, getState, extra) =>
     extra.api.vault.addEntry(walletId, entry).then(() => dispatch(loadWalletsAction()));
 }
@@ -471,7 +337,7 @@ export function listSeedAddresses(
   return (dispatch, getState, extra) => extra.api.vault.listSeedAddresses(seed, blockchain, hdPaths);
 }
 
-export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispatched<void> {
+export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispatched<boolean> {
   return (dispatch, getState, extra) => extra.api.vault.setEntryReceiveDisabled(entryId, disabled);
 }
 
@@ -486,7 +352,7 @@ export function getAllXPubAddresses(entryId: string, xPub: string, role: Address
 
     return addresses.map((address, index) => ({
       ...address,
-      hdPath: address.hdPath == null ? undefined : HDPath.parse(address.hdPath).forIndex(index).toString(),
+      hdPath: address.hdPath == null ? '' : HDPath.parse(address.hdPath).forIndex(index).toString(),
     }));
   };
 }
@@ -498,7 +364,7 @@ export function getXPubPositionalAddress(entryId: string, xPub: string, role: Ad
 
     return {
       ...address,
-      hdPath: address.hdPath == null ? undefined : HDPath.parse(address.hdPath).forIndex(position).toString(),
+      hdPath: address.hdPath == null ? '' : HDPath.parse(address.hdPath).forIndex(position).toString(),
     };
   };
 }

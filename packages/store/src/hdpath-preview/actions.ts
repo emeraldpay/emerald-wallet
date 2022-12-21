@@ -1,8 +1,5 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode } from '@emeraldwallet/core';
-import { isBlockchainOpen } from '../hwkey/selectors';
-import { accounts } from '../index';
-import { Dispatched } from '../types';
+import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
 import {
   ActionTypes,
   HDPathIndexes,
@@ -14,23 +11,31 @@ import {
   ISetAddress,
   ISetBalance,
 } from './types';
+import { isBlockchainOpen } from '../hwkey/selectors';
+import { accounts } from '../index';
+import { Dispatched } from '../types';
 
 export function loadAddresses(
   seed: SeedReference,
   account: number,
   blockchain: BlockchainCode,
   index?: number,
-): ILoadAddresses {
-  return {
-    account,
-    blockchain,
-    index,
-    seed,
-    type: ActionTypes.LOAD_ADDRESSES,
+): Dispatched<void, ILoadAddresses> {
+  return (dispatch, getState) => {
+    const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    dispatch({
+      account,
+      blockchain,
+      index,
+      seed,
+      type: ActionTypes.LOAD_ADDRESSES,
+      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+    });
   };
 }
 
-export function loadBalances(blockchain: BlockchainCode, address: string, assets: AnyCoinCode[]): ILoadBalances {
+export function loadBalances(blockchain: BlockchainCode, address: string, assets: string[]): ILoadBalances {
   return {
     address,
     assets,
@@ -43,21 +48,21 @@ export function setAddresses(
   seed: SeedReference,
   blockchain: BlockchainCode,
   addresses: { [key: string]: string },
-): ISetAddress {
-  return {
-    addresses,
-    blockchain,
-    seed,
-    type: ActionTypes.SET_ADDRESS,
+): Dispatched<void, ISetAddress> {
+  return (dispatch, getState) => {
+    const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    dispatch({
+      addresses,
+      blockchain,
+      seed,
+      type: ActionTypes.SET_ADDRESS,
+      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+    });
   };
 }
 
-export function setBalance(
-  blockchain: BlockchainCode,
-  address: string,
-  asset: AnyCoinCode,
-  balance: string,
-): ISetBalance {
+export function setBalance(blockchain: BlockchainCode, address: string, asset: string, balance: string): ISetBalance {
   return {
     address,
     asset,
@@ -67,7 +72,10 @@ export function setBalance(
   };
 }
 
-export function displayAccount(account: number, indexes?: HDPathIndexes): Dispatched<IDisplayAccount> {
+export function displayAccount(
+  account: number,
+  indexes?: HDPathIndexes,
+): Dispatched<void, IDisplayAccount | ILoadAddresses> {
   return (dispatch, getState) => {
     dispatch({
       account,

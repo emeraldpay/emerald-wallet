@@ -1,6 +1,6 @@
 export { CoinTickerCode, isCoinTickerCode } from './CoinTicker';
 export { IBlockchain } from './IBlockchain';
-export { BalanceUtxo } from './bitcoin';
+export { BalanceUtxo } from './Bitcoin';
 export {
   BlockchainCode,
   Blockchains,
@@ -13,8 +13,18 @@ export {
   ethereumByChainId,
   isBitcoin,
   isEthereum,
-  isValidChain,
   ledgerByBlockchain,
 } from './blockchains';
-export { HDPath } from './hdpath';
-export { DAI_UNITS, TETHER_UNITS, tokenAmount, tokenUnits } from './tokens';
+export {
+  InputDataDecoder,
+  Token,
+  TokenData,
+  TokenDirectory,
+  TokenInstances,
+  TokenRegistry,
+  decodeData,
+  isToken,
+  tokenAbi,
+  wrapTokenAbi,
+} from './tokens';
+export { HDPath } from './HDPath';

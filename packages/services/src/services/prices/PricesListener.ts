@@ -1,5 +1,5 @@
-import {MarketClient} from '@emeraldpay/api-node';
-import {GetRatesRequest, AnyCurrency} from "@emeraldpay/api";
+import { AnyCurrency, GetRatesRequest } from '@emeraldpay/api';
+import { MarketClient } from '@emeraldpay/api-node';
 
 export type PriceHandler = (prices: { [key: string]: string }) => void;
 
@@ -10,30 +10,22 @@ export class PriceListener {
     this.client = client;
   }
 
-  public stop() {
-  }
+  request(from: AnyCurrency[], to: AnyCurrency, handler: PriceHandler): void {
+    const request: GetRatesRequest = from.map((from) => ({ base: from, target: to }));
 
-  public request(froms: AnyCurrency[], to: AnyCurrency, handler: PriceHandler) {
-    const request: GetRatesRequest = [];
-    froms.forEach((from) => {
-      request.push({
-        base: from,
-        target: to
-      });
-    });
-
-    this.client.getRates(request).then((resp) => {
-      if (handler) {
+    this.client
+      .getRates(request)
+      .then((response) => {
         const result: { [key: string]: string } = {};
-        resp.forEach((item) => {
-          if (item.target === to && froms.indexOf(item.base) >= 0) {
+
+        response.forEach((item) => {
+          if (item.target === to && from.indexOf(item.base) >= 0) {
             result[item.base] = item.rate;
           }
         });
+
         handler(result);
-      }
-    }).catch((err) => {
-      console.error("Error getting prices", err)
-    });
+      })
+      .catch((error) => console.error('Error getting prices', error));
   }
 }

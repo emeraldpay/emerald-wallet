@@ -3283,7 +3283,6 @@ __metadata:
     "@emeraldpay/emerald-vault-core": ^0.10.0
     "@emeraldpay/emerald-vault-native": ^0.10.0
     "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/erc20": ^2.9.0-dev
     "@emeraldwallet/services": ^2.9.0-dev
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
@@ -3296,21 +3295,6 @@ __metadata:
     ts-jest: ^27.1.5
     typescript: ^4.8.4
     uuid: ^9.0.0
-  languageName: unknown
-  linkType: soft
-
-"@emeraldwallet/erc20@^2.9.0-dev, @emeraldwallet/erc20@workspace:packages/erc20":
-  version: 0.0.0-use.local
-  resolution: "@emeraldwallet/erc20@workspace:packages/erc20"
-  dependencies:
-    "@emeraldwallet/core": ^2.9.0-dev
-    "@ethersproject/abi": ^5.7.0
-    "@types/jest": ^27.5.2
-    "@types/node": ^18.11.5
-    jest: ^27.5.1
-    rimraf: ^3.0.2
-    ts-jest: ^27.1.5
-    typescript: ^4.8.4
   languageName: unknown
   linkType: soft
 
@@ -3341,7 +3325,6 @@ __metadata:
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/emerald-vault-core": ^0.10.0
     "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/erc20": ^2.9.0-dev
     "@emeraldwallet/store": ^2.9.0-dev
     "@emeraldwallet/ui": ^2.9.0-dev
     "@material-ui/core": ^4.12.4
@@ -3435,7 +3418,6 @@ __metadata:
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/emerald-vault-core": ^0.10.0
     "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/erc20": ^2.9.0-dev
     "@types/color-hash": ^1.0.2
     "@types/jest": ^27.5.2
     "@types/lodash": ^4.14.186
@@ -3469,7 +3451,6 @@ __metadata:
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/hashicon": 0.5.1
     "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/erc20": ^2.9.0-dev
     "@material-ui/core": 4.12.4
     "@material-ui/icons": 4.11.3
     "@material-ui/lab": 4.0.0-alpha.61

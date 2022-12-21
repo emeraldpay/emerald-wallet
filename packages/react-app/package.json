@@ -22,7 +22,6 @@
     "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldpay/emerald-vault-core": "^0.10.0",
     "@emeraldwallet/core": "^2.9.0-dev",
-    "@emeraldwallet/erc20": "^2.9.0-dev",
     "@emeraldwallet/store": "^2.9.0-dev",
     "@emeraldwallet/ui": "^2.9.0-dev",
     "@material-ui/core": "^4.12.4",

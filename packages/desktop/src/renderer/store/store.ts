@@ -1,6 +1,6 @@
-import { Logger, WalletApi } from '@emeraldwallet/core';
+import { IpcCommands, Logger, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
 import {
-  BackendApi,
+  BackendApiInvoker,
   RemoteAddressBook,
   RemoteTxHistory,
   RemoteTxMeta,
@@ -16,13 +16,13 @@ import {
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
-import { AnyAction } from 'redux';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
+import updateTokens from '../../main/utils/update-tokens';
 
 Logger.setInstance(ElectronLogger);
 
-const logger = Logger.forCategory('store');
+const logger = Logger.forCategory('Store');
 
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
@@ -32,14 +32,14 @@ const api: WalletApi = {
   xPubPos: RemoteXPubPosition,
 };
 
-const backendApi = new BackendApi();
+const backendApi = new BackendApiInvoker();
 
 export const store = createStore(api, backendApi);
 
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
 
-  ipcRenderer.on('store', (event, action) => {
+  ipcRenderer.on(IpcCommands.STORE_DISPATCH, (event, action) => {
     logger.debug(`Got action from IPC: ${JSON.stringify(action)}`);
 
     store.dispatch(action);
@@ -81,10 +81,14 @@ function getInitialScreen(): void {
   );
 }
 
-function checkOptionsUpdates(): void {
-  updateOptions().then((options) => {
-    store.dispatch(application.actions.setOptions(options));
-  });
+function checkOptionsUpdates(stored: SettingsOptions): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateOptions(stored).then((options) => store.dispatch(application.actions.setOptions(options) as any));
+}
+
+function checkTokensUpdates(stored: TokenData[]): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateTokens(stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
 }
 
 function checkWalletUpdates(): void {
@@ -138,7 +142,13 @@ function startSync(): void {
 export function startStore(): void {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    store.dispatch(application.actions.readConfig() as any);
+    store.dispatch(application.actions.readConfig() as any).then(() => {
+      const { options = {}, tokens = [] } = store.getState().application;
+
+      checkOptionsUpdates(options);
+      checkTokensUpdates(tokens);
+    });
+
     store.dispatch(settings.actions.loadSettings());
 
     listenElectron();
@@ -147,10 +157,9 @@ export function startStore(): void {
   }
 
   getInitialScreen();
-  checkOptionsUpdates();
   checkWalletUpdates();
 }
 
 triggers.onceBlockchainConnected(store).then(startSync);
 
-ipcRenderer.send('emerald-ready');
+ipcRenderer.send(IpcCommands.EMERALD_READY);

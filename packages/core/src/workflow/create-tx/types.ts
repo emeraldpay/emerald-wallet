@@ -1,5 +1,4 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { AnyCoinCode, AnyTokenCode } from '../../Asset';
 import { BlockchainCode } from '../../blockchains';
 
 export enum ValidationResult {
@@ -20,7 +19,7 @@ export interface Tx<T extends BigAmount> {
   getAmount(): T;
   getTokenSymbol(): string;
   getTotalBalance(): T;
-  setAmount(amount: T, tokenSymbol?: AnyTokenCode): void;
+  setAmount(amount: T, tokenSymbol?: string): void;
   setTotalBalance(total: T): void;
 }
 
@@ -36,7 +35,7 @@ export interface TxDetailsPlain {
   priorityGasPrice?: string;
   target: number;
   to?: string;
-  tokenSymbol: AnyCoinCode;
+  tokenSymbol: string;
   totalEtherBalance?: string;
   totalTokenBalance?: string;
   transferType?: number;

@@ -32,9 +32,6 @@
   "references": [
     {
       "path": "../core"
-    },
-    {
-      "path": "../erc20"
     }
   ]
 }

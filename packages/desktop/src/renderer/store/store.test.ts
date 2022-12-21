@@ -1,8 +1,8 @@
-import { IBackendApi, WalletApi } from '@emeraldwallet/core';
+import { BackendApi, WalletApi } from '@emeraldwallet/core';
 import { createStore, screen } from '@emeraldwallet/store';
 
 const apiMock = {} as WalletApi;
-const backendApiMock = {} as IBackendApi;
+const backendApiMock = {} as BackendApi;
 
 describe('store', () => {
   it('should create store with dependency', () => {

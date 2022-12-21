@@ -148,7 +148,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, ownProps.wallet, false);
     const total: IBalanceValue | undefined = accounts.selectors.fiatTotalBalance(state, assets);
 
-    return { total, assets };
+    return { assets, total };
   },
   (dispatch, ownProps) => ({
     onReceive(event) {

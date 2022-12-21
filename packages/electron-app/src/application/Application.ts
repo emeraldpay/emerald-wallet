@@ -1,5 +1,5 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
-import { Logger } from '@emeraldwallet/core';
+import { IpcCommands, Logger } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { WebContents, ipcMain } from 'electron';
@@ -15,7 +15,8 @@ type Versions = Record<string, unknown>;
 Logger.setInstance(new ElectronLogger());
 
 export default class Application {
-  public log = Logger.forCategory('application');
+  public log = Logger.forCategory('Application');
+
   public rpc: ChainRpcConnections;
   public settings: Settings;
   public versions: Versions | undefined;
@@ -64,11 +65,7 @@ export default class Application {
 
   public showAbout(): void {
     if (this.webContents != null) {
-      try {
-        this.webContents.send('store', { type: 'SCREEN/DIALOG', value: 'about' });
-      } catch (exception) {
-        this.log.error(exception);
-      }
+      this.webContents.send(IpcCommands.STORE_DISPATCH, { type: 'SCREEN/DIALOG', value: 'about' });
     }
   }
 
@@ -77,7 +74,7 @@ export default class Application {
     this.services?.setWebContents(webContents);
   }
 
-  reconnect(): void {
-    this.services?.reconnect();
+  reconnect(reloaded = false): void {
+    this.services?.reconnect(reloaded);
   }
 }

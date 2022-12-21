@@ -21,6 +21,7 @@ export const styles = (theme: Theme): StyleRules =>
 interface OwnProps {
   chains: IBlockchain[];
   value?: BlockchainCode;
+  withLabel?: boolean;
   onChange?(value: string): void;
 }
 
@@ -48,15 +49,15 @@ export class ChainSelector extends React.Component<Props, State> {
   };
 
   public render(): React.ReactElement {
-    const { classes, chains } = this.props;
+    const { classes, chains, withLabel = true } = this.props;
     const { value } = this.state;
 
     return (
       <div className={classes.container}>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="chain-helper">Blockchain</InputLabel>
+          {withLabel && <InputLabel htmlFor="chain-helper">Blockchain</InputLabel>}
           <Select
-            className={classes.selectChain}
+            className={withLabel ? classes.selectChain : null}
             displayEmpty={true}
             input={<Input name="chain" id="chain-helper" />}
             name="chain"

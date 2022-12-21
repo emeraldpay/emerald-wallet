@@ -1,52 +1,63 @@
 import ColorHash from 'color-hash';
+import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-
-const colorHash = new ColorHash({
-  lightness: [0.2, 0.3, 0.4, 0.5]
-});
 
 const LOGGING_MAX_STATE_DEPTH = 5;
 
-const toJs = (state: any, depth = 0): any => {
+const colorHash = new ColorHash({ lightness: [0.2, 0.3, 0.4, 0.5] });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toJs(state: any, depth = 0): any {
   if (depth >= LOGGING_MAX_STATE_DEPTH) {
     return state;
   }
 
   depth += 1;
 
-  if (!state) { return state; }
+  if (state == null) {
+    return state;
+  }
+
   if (typeof state.toJS === 'function') {
     return state.toJS();
   }
+
   if (state instanceof Array) {
     return state.map((item) => toJs(item, depth));
   }
-  if (state instanceof Map) {
-    const o: any = {};
-    state.forEach((v, key) => {
-      o[key] = toJs(v, depth);
-    });
-    return o;
-  }
+
   if (state instanceof Object) {
-    return Object.keys(state).reduce((o: any, key: string) => {
-      o[key] = toJs(state[key], depth);
-      return o;
-    }, {});
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return Object.keys(state).reduce((carry: any, key: string) => ({ ...carry, [key]: toJs(state[key], depth) }), {});
+  }
+
+  if (state instanceof Map) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = {};
+
+    state.forEach((value, key) => {
+      result[key] = toJs(value, depth);
+    });
+
+    return result;
+  }
+
+  if (state instanceof Set) {
+    return toJs([...state.values()], depth);
   }
 
   return state;
-};
+}
 
-const logger: any = createLogger({
-  stateTransformer: toJs,
-  diff: true,
-  collapsed: true,
-  duration: true,
-  timestamp: false,
+export const reduxLogger: Middleware = createLogger({
   colors: {
-    title: (action: any) => colorHash.hex(action.type.split('/')[0])
-  }
+    title(action) {
+      return colorHash.hex(action.type.split('/')[0]);
+    },
+  },
+  collapsed: true,
+  diff: true,
+  duration: true,
+  stateTransformer: toJs,
+  timestamp: false,
 });
-
-export default logger;

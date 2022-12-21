@@ -22,9 +22,6 @@
       "path": "../core"
     },
     {
-      "path": "../erc20"
-    },
-    {
       "path": "../services"
     }
   ]

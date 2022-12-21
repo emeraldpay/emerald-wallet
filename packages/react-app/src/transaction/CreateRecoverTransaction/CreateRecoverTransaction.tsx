@@ -1,16 +1,19 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   Blockchains,
+  DEFAULT_GAS_LIMIT,
+  EthereumTransaction,
   EthereumTransactionType,
   IBlockchain,
+  TokenData,
+  TokenRegistry,
   blockchainIdToCode,
   formatAmount,
   workflow,
 } from '@emeraldwallet/core';
-import { TokenInfo, registry } from '@emeraldwallet/erc20';
 import {
   DefaultFee,
   FEE_KEYS,
@@ -96,17 +99,20 @@ interface StateProps {
   eip1559: boolean;
   ownAddresses: string[];
   recoverBlockchain: IBlockchain;
-  tokensInfo: TokenInfo[];
+  tokensData: TokenData[];
   wrongBlockchain: IBlockchain;
   getBalancesByAddress(address: string): string[];
 }
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
+  estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: workflow.CreateEthereumTx, password: string): Promise<void>;
 }
+
+const minimalUnit = new Unit(9, '', undefined);
 
 const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
   entry: { address: fromAddress },
@@ -116,9 +122,10 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   classes,
   ownAddresses,
   recoverBlockchain,
-  tokensInfo,
+  tokensData,
   wrongBlockchain,
   checkGlobalKey,
+  estimateGas,
   getBalancesByAddress,
   getFees,
   goBack,
@@ -128,7 +135,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [stage, setStage] = useState(Stages.SETUP);
 
   const [address, setAddress] = React.useState(ownAddresses[0]);
-  const [token, setToken] = React.useState(tokensInfo[0]);
+  const [token, setToken] = React.useState(tokensData[0]);
 
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
@@ -155,13 +162,13 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
   const onTokenChange = React.useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-      const tokenInfo = tokensInfo.find((item) => item.symbol === value);
+      const tokenData = tokensData.find((item) => item.symbol === value);
 
-      if (tokenInfo != null) {
-        setToken(tokenInfo);
+      if (tokenData != null) {
+        setToken(tokenData);
       }
     },
-    [tokensInfo],
+    [tokensData],
   );
 
   const onCreateTransaction = useCallback(async () => {
@@ -175,7 +182,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       amount: balance,
       blockchain: wrongBlockchain.params.code,
       from: fromAddress.value,
-      gas: 21000,
+      gas: DEFAULT_GAS_LIMIT,
       to: address,
       target: workflow.TxTarget.SEND_ALL,
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
@@ -189,6 +196,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     }
 
     tx.setTotalBalance(balance);
+
+    tx.gas = await estimateGas(wrongBlockchain.params.code, tx.build());
+
     tx.rebalance();
 
     setTransaction(tx.dump());
@@ -204,6 +214,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     priorityGasPrice,
     token.symbol,
     wrongBlockchain,
+    estimateGas,
   ]);
 
   const onSignTransaction = useCallback(async () => {
@@ -238,7 +249,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         setHighPriorityGasPrice(new Wei(avgMiddle.priority));
         setLowPriorityGasPrice(new Wei(avgLast.priority));
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(minimalUnit);
         const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
         const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
@@ -288,11 +299,11 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                   />
                 )}
               </FormFieldWrapper>
-              {tokensInfo.length > 1 && (
+              {tokensData.length > 1 && (
                 <FormFieldWrapper>
                   <FormLabel>Token</FormLabel>
                   <TextField select value={token.symbol} onChange={onTokenChange}>
-                    {tokensInfo.map((item) => (
+                    {tokensData.map((item) => (
                       <MenuItem key={item.symbol} value={item.symbol}>
                         {item.symbol}
                       </MenuItem>
@@ -490,9 +501,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       },
     );
 
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
+
     const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
-    const tokensInfo =
-      registry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
+    const tokensData =
+      tokenRegistry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
 
     return {
       balanceByToken,
@@ -503,19 +516,19 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       ownAddresses:
         accounts.selectors
           .findWalletByEntryId(state, entry.id)
-          ?.entries.filter((item) => !item.receiveDisabled)
-          .reduce<Array<string>>(
-            (carry, item) =>
+          ?.entries?.filter((item: WalletEntry) => !item.receiveDisabled)
+          .reduce(
+            (carry: string[], item: WalletEntry) =>
               item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
             [],
           ) ?? [],
-      tokensInfo: [
-        ...tokensInfo,
+      tokensData: [
+        ...tokensData,
         {
           address: '',
           symbol: recoverBlockchain.params.coinTicker,
           decimals: recoverBlockchain.params.decimals,
-        },
+        } as TokenData,
       ],
       getBalancesByAddress(address) {
         const entryByAddress = accounts.selectors.findAccountByAddress(state, address, recoverBlockchainCode);
@@ -535,6 +548,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
+    estimateGas(blockchain, tx) {
+      return dispatch(transaction.actions.estimateGas(blockchain, tx));
+    },
     getFees(blockchain, defaultFee) {
       return dispatch(transaction.actions.getFee(blockchain, defaultFee));
     },
@@ -546,24 +562,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      const { blockchain, id: entryId } = ownProps.entry;
-      const blockchainCode = blockchainIdToCode(blockchain);
-
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          entryId,
-          blockchainCode,
-          tx.from,
-          password,
-          tx.to,
-          tx.gas,
-          tx.amount,
-          '',
-          tx.type,
-          tx.gasPrice,
-          tx.maxGasPrice,
-          tx.priorityGasPrice,
-        ),
+        transaction.actions.signTransaction(ownProps.entry.id, password, tx.build()),
       );
 
       if (signed != null) {
