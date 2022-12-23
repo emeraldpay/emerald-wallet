@@ -106,15 +106,27 @@ jobs:
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (Windows)
         run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
       - name: Upload to GCP (non Windows)
         run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os != 'Windows'
+
+      - name: Link to published artifact
+        if: runner.os == 'Windows'
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-win-x64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.exe"
+
+      - name: Link to published artifact
+        if: runner.os == 'macOS'
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-mac-x64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.dmg"
+
+      - name: Link to published artifact
+        if: runner.os == 'Linux'
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-linux-amd64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.deb"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
