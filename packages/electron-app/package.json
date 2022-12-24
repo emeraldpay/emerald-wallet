@@ -16,6 +16,7 @@
     "@emeraldpay/emerald-vault-core": "^0.10.0",
     "@emeraldpay/emerald-vault-native": "^0.10.0",
     "@emeraldwallet/core": "^2.9.0-dev",
+    "@emeraldwallet/persistent-state": "^2.9.0-dev",
     "@emeraldwallet/services": "^2.9.0-dev",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",

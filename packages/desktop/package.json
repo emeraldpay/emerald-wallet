@@ -18,8 +18,7 @@
     "Shane Jonas <jonas.shane@gmail.com>"
   ],
   "author": {
-    "name": "Igor Artamonov",
-    "email": "splix@emerald.cash"
+    "name": "EmeraldPay, Inc"
   },
   "homepage": "https://emerald.cash",
   "license": "Apache-2.0",
@@ -107,7 +106,8 @@
           "!**/*.tsbuildinfo"
         ]
       },
-      "package.json"
+      "package.json",
+      "!**/native/target"
     ],
     "asar": true,
     "compression": "normal",

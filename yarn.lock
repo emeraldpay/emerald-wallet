@@ -3283,6 +3283,7 @@ __metadata:
     "@emeraldpay/emerald-vault-core": ^0.10.0
     "@emeraldpay/emerald-vault-native": ^0.10.0
     "@emeraldwallet/core": ^2.9.0-dev
+    "@emeraldwallet/persistent-state": ^2.9.0-dev
     "@emeraldwallet/services": ^2.9.0-dev
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
@@ -3298,7 +3299,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/persistent-state@workspace:packages/persistent-state":
+"@emeraldwallet/persistent-state@^2.9.0-dev, @emeraldwallet/persistent-state@workspace:packages/persistent-state":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/persistent-state@workspace:packages/persistent-state"
   dependencies:
