@@ -1,38 +1,34 @@
-import {LedgerApp} from "@emeraldpay/emerald-vault-core";
+import { LedgerApp } from '@emeraldpay/emerald-vault-core';
 
 export interface LedgerState {
+  app: 'bitcoin' | 'bitcoin-testnet' | 'ethereum' | 'ethereum-classic' | null;
   connected: boolean;
-  app: "bitcoin" | "bitcoin-testnet" | "ethereum" | "ethereum-classic" | null;
 }
 
-export interface IHWKeyState {
-  watch: boolean;
+export interface HWKeyState {
   ledger: LedgerState;
+  watch: boolean;
 }
 
 export enum ActionTypes {
-  WATCH = 'HWK/WATCH',
   CHECK_LEDGER = 'HWK/CHECK_LEDGER',
   SET_LEDGER = 'HWK/SET_LEDGER',
+  WATCH = 'HWK/WATCH',
 }
 
-export interface IWatchAction {
+export interface CheckLedger {
+  type: ActionTypes.CHECK_LEDGER;
+}
+
+export interface SetLedgerApp {
+  type: ActionTypes.SET_LEDGER;
+  app: LedgerApp | null;
+  connected: boolean;
+}
+
+export interface WatchAction {
   type: ActionTypes.WATCH;
   value: boolean;
 }
 
-export interface ICheckLedger {
-  type: ActionTypes.CHECK_LEDGER;
-}
-
-export interface ISetLedgerApp {
-  type: ActionTypes.SET_LEDGER;
-  connected: boolean;
-  app: LedgerApp | null;
-}
-
-export type IHWKeyAction =
-    | IWatchAction
-    | ICheckLedger
-    | ISetLedgerApp
-    ;
+export type IHWKeyAction = CheckLedger | SetLedgerApp | WatchAction;

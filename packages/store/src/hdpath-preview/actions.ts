@@ -17,8 +17,8 @@ import { Dispatched } from '../types';
 
 export function loadAddresses(
   seed: SeedReference,
-  account: number,
   blockchain: BlockchainCode,
+  account: number,
   index?: number,
 ): Dispatched<void, ILoadAddresses> {
   return (dispatch, getState) => {
@@ -96,9 +96,11 @@ export function displayAccount(
     const { seed } = state.hdpathPreview?.display ?? {};
 
     if (seed != null) {
+      const isHardware = accounts.selectors.isHardwareSeed(state, seed);
+
       state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
-        if (isBlockchainOpen(state, blockchain)) {
-          dispatch(loadAddresses(seed, account, blockchain, indexes?.[blockchain] ?? 0));
+        if (!isHardware || isBlockchainOpen(state, blockchain)) {
+          dispatch(loadAddresses(seed, blockchain, account, indexes?.[blockchain]));
         }
       });
     }

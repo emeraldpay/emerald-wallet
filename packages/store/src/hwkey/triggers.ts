@@ -3,9 +3,9 @@ import { isWatching } from './selectors';
 import { TriggerProcess, TriggerState, TriggerStatus, Triggers } from '../triggers';
 import { IState } from '../types';
 
-const whenWatch: TriggerState = (state) => `${isWatching(state.hwkey)}`;
+const shouldWatch: TriggerState = (state) => `${isWatching(state.hwkey)}`;
 
-const executeCheckLedgerRepeat: TriggerProcess = (state, dispatch) => {
+const executeCheckLedger: TriggerProcess = (state, dispatch) => {
   if (isWatching(state.hwkey)) {
     dispatch(checkLedger());
 
@@ -15,17 +15,17 @@ const executeCheckLedgerRepeat: TriggerProcess = (state, dispatch) => {
   return TriggerStatus.STOP;
 };
 
-let connectHandlers: ((state: IState) => void)[] = [];
+let connectionHandlers: ((state: IState) => void)[] = [];
 
 export function onConnect(handler: (state: IState) => void): void {
-  connectHandlers.push(handler);
+  connectionHandlers.push(handler);
 }
 
-const executeConnectHandlers: TriggerProcess = (state) => {
-  if (connectHandlers.length > 0 && state.hwkey.ledger.connected) {
-    const handlers = connectHandlers;
+const executeConnectionHandlers: TriggerProcess = (state) => {
+  if (connectionHandlers.length > 0 && state.hwkey.ledger.connected) {
+    const handlers = connectionHandlers;
 
-    connectHandlers = [];
+    connectionHandlers = [];
 
     handlers.forEach((handler) => {
       try {
@@ -35,19 +35,20 @@ const executeConnectHandlers: TriggerProcess = (state) => {
       }
     });
   }
+
   return TriggerStatus.CONTINUE;
 };
 
 export function run(triggers: Triggers): void {
-  triggers.add(whenWatch, (state, dispatch) => {
+  triggers.add(shouldWatch, (state, dispatch) => {
     if (isWatching(state.hwkey)) {
       dispatch(checkLedger());
 
-      triggers.schedule(1500, executeCheckLedgerRepeat);
+      triggers.schedule(1500, executeCheckLedger);
     }
 
     return TriggerStatus.CONTINUE;
   });
 
-  triggers.schedule(1000, executeConnectHandlers);
+  triggers.schedule(1000, executeConnectionHandlers);
 }

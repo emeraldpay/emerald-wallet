@@ -1,49 +1,35 @@
-import {ActionTypes, IHWKeyState, IWatchAction, IHWKeyAction, ISetLedgerApp} from './types';
+import { ActionTypes, IHWKeyAction, HWKeyState, SetLedgerApp, WatchAction } from './types';
 
-export const INITIAL_STATE: IHWKeyState = {
+export const INITIAL_STATE: HWKeyState = {
   watch: false,
   ledger: {
     connected: false,
-    app: null
-  }
+    app: null,
+  },
 };
 
-function onWatch(state: IHWKeyState, action: IWatchAction): IHWKeyState {
+function onSetLedger(state: HWKeyState, action: SetLedgerApp): HWKeyState {
+  const { app, connected } = action;
+
+  return {
+    ...state,
+    ledger: { app, connected },
+  };
+}
+
+function onWatch(state: HWKeyState, action: WatchAction): HWKeyState {
   return {
     ...state,
     watch: action.value,
-  }
+  };
 }
 
-function onSetLedger(state: IHWKeyState, action: ISetLedgerApp): IHWKeyState {
-  let app = action.app;
-
-  // vault lib may return it because of a bug
-  // TODO: remove the workaround after upgrading to vault 0.7.x
-  // @ts-ignore
-  if (app == 'bitcoin-test') {
-    app = "bitcoin-testnet";
-  }
-
-  return {
-    ...state,
-    ledger: {
-      ...state.ledger,
-      connected: action.connected,
-      app
-    }
-  }
-}
-
-export function reducer(
-  state: IHWKeyState = INITIAL_STATE,
-  action: IHWKeyAction
-): IHWKeyState {
+export function reducer(state: HWKeyState = INITIAL_STATE, action: IHWKeyAction): HWKeyState {
   switch (action.type) {
-    case ActionTypes.WATCH:
-      return onWatch(state, action);
     case ActionTypes.SET_LEDGER:
       return onSetLedger(state, action);
+    case ActionTypes.WATCH:
+      return onWatch(state, action);
     default:
       return state;
   }

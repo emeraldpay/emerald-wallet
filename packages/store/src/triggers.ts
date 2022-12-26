@@ -13,17 +13,12 @@ import { IState, accounts, application, blockchains, settings } from './index';
  */
 export type TriggerState = (state: IState) => string | undefined;
 
-/**
- * Process trigger event
- *
- * @return status (continue or stop)
- */
-export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
-
 export enum TriggerStatus {
   CONTINUE,
   STOP,
 }
+
+export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
 
 const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<IState>): void => {
   if (check()) {
@@ -41,27 +36,19 @@ const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<I
   });
 };
 
-export function onceServicesStart(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) =>
-    handleTrigger(
-      () => {
-        const terms = application.selectors.terms(store.getState());
+export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
+}
 
-        return terms === TERMS_VERSION;
-      },
-      resolve,
-      store,
-    ),
-  );
+export function onceBlockchainConnected(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) => handleTrigger(() => blockchains.selectors.hasAny(store.getState()), resolve, store));
 }
 
 export function onceModeSet(store: Store<IState>): Promise<void> {
   return new Promise((resolve) =>
     handleTrigger(
       () => {
-        const mode = settings.selectors.getMode(store.getState());
-
-        const { id, chains } = mode;
+        const { id, chains } = settings.selectors.getMode(store.getState());
 
         return id !== 'default' && chains.length > 0;
       },
@@ -71,12 +58,10 @@ export function onceModeSet(store: Store<IState>): Promise<void> {
   );
 }
 
-export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
-}
-
-export function onceBlockchainConnected(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => blockchains.selectors.hasAny(store.getState()), resolve, store));
+export function onceServicesStart(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) =>
+    handleTrigger(() => application.selectors.terms(store.getState()) === TERMS_VERSION, resolve, store),
+  );
 }
 
 export class Triggers {

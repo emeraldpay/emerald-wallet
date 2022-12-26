@@ -8,7 +8,7 @@ import { ApplicationState, moduleName as applicationModule } from './application
 import { BlockchainsState, moduleName as blockchainsModule } from './blockchains/types';
 import { IConnState, moduleName as connModule } from './conn/types';
 import { IHDPreviewState } from './hdpath-preview/types';
-import { IHWKeyState } from './hwkey/types';
+import { HWKeyState } from './hwkey/types';
 import { ScreenState } from './screen/types';
 import { SettingsState } from './settings/types';
 import { TokensState, moduleName as tokensModule } from './tokens/types';
@@ -28,7 +28,7 @@ export interface IState {
   addAccount?: IAddAccountState;
   hdpathPreview?: IHDPreviewState;
   history: HistoryState;
-  hwkey: IHWKeyState;
+  hwkey: HWKeyState;
   screen: ScreenState;
   settings: SettingsState;
 }
