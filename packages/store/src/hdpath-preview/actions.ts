@@ -39,11 +39,19 @@ export function loadAddresses(
   };
 }
 
-export function loadBalances(blockchain: BlockchainCode, address: string, assets: string[]): ILoadBalances {
+export function loadBalances(
+  seed: SeedReference,
+  blockchain: BlockchainCode,
+  hdpath: string,
+  address: string,
+  assets: string[],
+): ILoadBalances {
   return {
     address,
     assets,
     blockchain,
+    hdpath,
+    seed,
     type: ActionTypes.LOAD_BALANCES,
   };
 }
@@ -70,12 +78,21 @@ export function setAddresses(
   };
 }
 
-export function setBalance(blockchain: BlockchainCode, address: string, asset: string, balance: string): ISetBalance {
+export function setBalance(
+  seed: SeedReference,
+  blockchain: BlockchainCode,
+  hdpath: string,
+  address: string,
+  asset: string,
+  balance: string,
+): ISetBalance {
   return {
     address,
     asset,
     balance,
     blockchain,
+    hdpath,
+    seed,
     type: ActionTypes.SET_BALANCE,
   };
 }

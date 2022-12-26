@@ -33,12 +33,7 @@ export interface IHDPreviewState {
 }
 
 export function isNonPartial(value: Partial<IAddressState> | IAddressState): value is IAddressState {
-  return (
-    typeof value.blockchain != 'undefined' &&
-    typeof value.asset != 'undefined' &&
-    typeof value.seed != 'undefined' &&
-    typeof value.hdpath != 'undefined'
-  );
+  return value.asset != null && value.blockchain != null && value.hdpath != null && value.seed != null;
 }
 
 export function isEqualSeed(first: SeedReference, second: SeedReference): boolean {
@@ -82,9 +77,11 @@ export interface ILoadAddresses {
 
 export interface ILoadBalances {
   type: ActionTypes.LOAD_BALANCES;
-  blockchain: BlockchainCode;
   address: string;
   assets: string[];
+  blockchain: BlockchainCode;
+  hdpath: string;
+  seed: SeedReference;
 }
 
 export interface ISetAddress {
@@ -97,10 +94,12 @@ export interface ISetAddress {
 
 export interface ISetBalance {
   type: ActionTypes.SET_BALANCE;
-  blockchain: BlockchainCode;
   address: string;
   asset: string;
   balance: string;
+  blockchain: BlockchainCode;
+  hdpath: string;
+  seed: SeedReference;
 }
 
 export interface IClean {

@@ -50,10 +50,12 @@ function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreview
 
 function onSetBalance(state: IHDPreviewState, action: ISetBalance): IHDPreviewState {
   const update: Partial<IAddressState> = {
-    asset: action.asset,
-    blockchain: action.blockchain,
     address: action.address,
+    asset: action.asset,
     balance: action.balance,
+    blockchain: action.blockchain,
+    hdpath: action.hdpath,
+    seed: action.seed,
   };
 
   try {
