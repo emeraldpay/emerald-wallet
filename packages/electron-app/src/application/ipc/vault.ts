@@ -6,6 +6,7 @@ import {
   LedgerSeedReference,
   SeedDefinition,
   SeedReference,
+  UnsignedMessage,
   UnsignedTx,
   Uuid,
   WalletState,
@@ -119,6 +120,13 @@ export function setupVaultIpc(vault: IEmeraldVault): void {
   ipcMain.handle(IpcCommands.VAULT_SET_WALLET_LABEL, (event, walletId: Uuid, label: string) => {
     return vault.setWalletLabel(walletId, label);
   });
+
+  ipcMain.handle(
+    IpcCommands.VAULT_SIGN_MESSAGE,
+    (event, entryId: EntryId, message: UnsignedMessage, password?: string) => {
+      return vault.signMessage(entryId, message, password);
+    },
+  );
 
   ipcMain.handle(IpcCommands.VAULT_SIGN_TX, (event, entryId: EntryId, tx: UnsignedTx, password?: string) => {
     return vault.signTx(entryId, tx, password);
