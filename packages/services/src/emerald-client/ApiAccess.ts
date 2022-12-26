@@ -128,7 +128,7 @@ export class EmeraldApiAccess {
   public statusListener(listener: StatusListener): void {
     this.listeners.push(listener);
 
-    if (typeof this.currentState !== 'undefined') {
+    if (this.currentState != null) {
       listener(this.currentState);
     }
   }
@@ -178,13 +178,13 @@ export class EmeraldApiAccess {
   }
 
   protected ping(): void {
-    this.monitoringClient.ping().catch((err) => console.warn('Ping error: ' + err.message));
+    this.monitoringClient.ping().catch((error) => log.debug(`Ping error: ${error.message}`));
 
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
   protected setStatus(state: Status): void {
-    if (typeof this.currentState === 'undefined' || this.currentState !== state) {
+    if (this.currentState == null || this.currentState !== state) {
       if (state === Status.DISCONNECTED) {
         log.error('Disconnected', this.connectionState);
       } else if (state === Status.CONNECTION_ISSUES) {

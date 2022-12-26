@@ -79,7 +79,7 @@ function isValidMnemonic(text: string): boolean {
 /**
  * Multistep wizard to create a new Wallet. The wallet can be created from an existing/new seed or private key.
  */
-export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
+export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
   blockchains,
   hasWallets,
   seeds,
@@ -103,19 +103,29 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
     ),
   );
 
+  const onReset = React.useCallback(() => {
+    setStep(
+      new CreateWalletFlow((result) =>
+        onCreate(result)
+          .then((id) => setWalletId(id))
+          .catch(onError),
+      ),
+    );
+  }, [onCreate, onError]);
+
   const applyWithState = function <T extends unknown[]>(fn: (...args: T) => CreateWalletFlow): (...args: T) => void {
     return (...args) => setStep(fn.call(step, ...args));
   };
 
-  let activeStepPage = null;
-
   const page = step.getCurrentStep();
 
-  if (page.code == STEP_CODE.KEY_SOURCE) {
+  let activeStepPage = null;
+
+  if (page.code === STEP_CODE.KEY_SOURCE) {
     activeStepPage = <SelectKeySource seeds={seeds} onSelect={applyWithState(step.applySource)} />;
-  } else if (page.code == STEP_CODE.OPTIONS) {
+  } else if (page.code === STEP_CODE.OPTIONS) {
     activeStepPage = <WalletOptions onChange={applyWithState(step.applyOptions)} />;
-  } else if (page.code == STEP_CODE.SELECT_BLOCKCHAIN) {
+  } else if (page.code === STEP_CODE.SELECT_BLOCKCHAIN) {
     activeStepPage = (
       <SelectCoins
         blockchains={blockchains}
@@ -124,23 +134,23 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
         onChange={applyWithState(step.applyBlockchains)}
       />
     );
-  } else if (page.code == STEP_CODE.UNLOCK_SEED) {
+  } else if (page.code === STEP_CODE.UNLOCK_SEED) {
     activeStepPage = <UnlockSeed seedId={step.getSeedId()} onUnlock={applyWithState(step.applySeedPassword)} />;
-  } else if (page.code == STEP_CODE.MNEMONIC_GENERATE) {
+  } else if (page.code === STEP_CODE.MNEMONIC_GENERATE) {
     activeStepPage = (
       <NewMnemonic
         onGenerate={mnemonicGenerator}
         onContinue={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}
       />
     );
-  } else if (page.code == STEP_CODE.MNEMONIC_IMPORT) {
+  } else if (page.code === STEP_CODE.MNEMONIC_IMPORT) {
     activeStepPage = (
       <ImportMnemonic
         onSubmit={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}
         isValidMnemonic={isValidMnemonic}
       />
     );
-  } else if (page.code == STEP_CODE.PK_IMPORT) {
+  } else if (page.code === STEP_CODE.PK_IMPORT) {
     const result = step.getResult();
 
     activeStepPage = (
@@ -150,13 +160,11 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
         onChange={applyWithState(step.applyImportPk)}
       />
     );
-  } else if (page.code == STEP_CODE.LEDGER_OPEN) {
+  } else if (page.code === STEP_CODE.LEDGER_OPEN) {
     activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)} />;
-  } else if (page.code == STEP_CODE.LOCK_SEED) {
+  } else if (page.code === STEP_CODE.LOCK_SEED) {
     const onLock = (globalPassword: string): void => {
       if (onSaveSeed == null) {
-        console.warn('No method to save seed');
-
         return;
       }
 
@@ -175,11 +183,10 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
     };
 
     activeStepPage = <SaveMnemonic onPassword={onLock} />;
-  } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
+  } else if (page.code === STEP_CODE.SELECT_HD_ACCOUNT) {
     const seed = step.getResult().seed;
 
-    if (typeof seed == 'undefined') {
-      console.log('Step state', step.getResult());
+    if (seed == null) {
       throw new Error('Invalid state: seed is undefined');
     }
 
@@ -190,7 +197,7 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
         onChange={applyWithState(step.applyHDAccount)}
       />
     );
-  } else if (page.code == STEP_CODE.CREATED) {
+  } else if (page.code === STEP_CODE.CREATED) {
     activeStepPage = <Finish id={walletId} />;
   }
 
@@ -215,8 +222,8 @@ export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
   } else {
     controls = (
       <>
-        {hasWallets && (
-          <Button disabled={page.code == STEP_CODE.CREATED} onClick={onCancel}>
+        {(hasWallets || page.code !== STEP_CODE.KEY_SOURCE) && (
+          <Button disabled={page.code === STEP_CODE.CREATED} onClick={hasWallets ? onCancel : onReset}>
             Cancel
           </Button>
         )}
@@ -254,4 +261,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('wallet', walletId));
     },
   }),
-)(CreateWizard);
+)(CreateWalletWizard);
