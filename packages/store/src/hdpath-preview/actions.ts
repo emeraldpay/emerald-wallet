@@ -12,6 +12,7 @@ import {
   ISetBalance,
 } from './types';
 import { isBlockchainOpen } from '../hwkey/selectors';
+import { accounts } from '../index';
 import { Dispatched } from '../types';
 
 export function loadAddresses(
@@ -28,11 +29,11 @@ export function loadAddresses(
     const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
 
     dispatch({
-      account,
-      blockchain,
-      index,
-      seed,
-      type: ActionTypes.LOAD_ADDRESSES,
+    account,
+    blockchain,
+    index,
+    seed,
+    type: ActionTypes.LOAD_ADDRESSES,
       assets: [coinTicker, ...tokens],
     });
   };
