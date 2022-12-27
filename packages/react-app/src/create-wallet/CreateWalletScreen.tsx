@@ -49,6 +49,7 @@ function entriesForBlockchains(
 
   [BlockchainCode.ETC, BlockchainCode.ETH].forEach((blockchain) => {
     const blockchainId = blockchainCodeToId(blockchain);
+
     const entry = entries.find((item) => item.blockchain === blockchainId);
 
     if (entry != null) {
@@ -68,7 +69,7 @@ function entriesForBlockchains(
  *
  * @see CreateWalletWizard
  */
-const Component: React.FC<DispatchProps & StateProps> = (props) => {
+const CreateWalletScreen: React.FC<DispatchProps & StateProps> = (props) => {
   return <CreateWalletWizard {...props} />;
 };
 
@@ -232,4 +233,4 @@ export default connect(
       },
     };
   },
-)(Component);
+)(CreateWalletScreen);
