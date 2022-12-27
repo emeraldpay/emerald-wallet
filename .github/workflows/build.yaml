@@ -33,7 +33,7 @@ jobs:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
           export_default_credentials: true
         if: runner.os == 'Windows'
 
@@ -41,7 +41,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
           export_default_credentials: true
         if: runner.os != 'Windows'
 
