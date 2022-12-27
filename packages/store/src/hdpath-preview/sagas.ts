@@ -1,14 +1,16 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { BackendApi, Blockchains, amountFactory, blockchainCodeToId, isBitcoin } from '@emeraldwallet/core';
+import { CoinTicker } from '@emeraldwallet/core/lib/blockchains/CoinTicker';
 import { all, call, put, takeEvery } from '@redux-saga/core/effects';
 import { Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
 import * as actions from './actions';
 import { ActionTypes, ILoadAddresses, ILoadBalances } from './types';
 
-function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaIterator {
-  const { account: accountId, assets, blockchain, seed, index = 0 } = action;
-
+function* loadAddresses(
+  vault: IEmeraldVault,
+  { account: accountId, assets, blockchain, seed, index = 0 }: ILoadAddresses,
+): SagaIterator {
   const blockchainDetails = Blockchains[blockchain.toLowerCase()];
   const baseHdPath = blockchainDetails.params.hdPath.forAccount(accountId).forIndex(index);
 
@@ -21,7 +23,7 @@ function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaItera
   let addresses: { [p: string]: string } = {};
 
   try {
-    addresses = yield call([vault, vault.listSeedAddresses], seed, blockchainCodeToId(blockchain), hdPaths);
+    addresses = yield call(vault.listSeedAddresses, seed, blockchainCodeToId(blockchain), hdPaths);
   } catch (exception) {
     console.warn('Failed to get addresses', exception);
   }
@@ -29,23 +31,35 @@ function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaItera
   // Saga doesn't support thunk action, so we make conversion to unknown type and then to Action type
   yield put(actions.setAddresses(seed, blockchain, addresses) as unknown as Action);
 
-  for (const address of Object.values(addresses)) {
-    yield put(actions.loadBalances(blockchain, address, assets));
+  for (const [hdpath, address] of Object.entries(addresses)) {
+    yield put(actions.loadBalances(seed, blockchain, hdpath, address, assets));
   }
 }
 
-function* loadBalances(backendApi: BackendApi, action: ILoadBalances): SagaIterator {
-  const amountReader = amountFactory(action.blockchain);
+function* loadBalances(
+  backendApi: BackendApi,
+  { address, assets, blockchain, hdpath, seed }: ILoadBalances,
+): SagaIterator {
+  const amountReader = amountFactory(blockchain);
 
-  const balance: { [key: string]: string } = yield call(
-    [backendApi, backendApi.getBalance],
-    action.blockchain,
-    action.address,
-    action.assets,
+  const balances: { [key: string]: string } = yield call(
+    backendApi.getBalance,
+    blockchain,
+    address,
+    assets.map((asset) => (asset === CoinTicker.ETH ? 'ETHER' : asset)),
   );
 
-  for (const asset of Object.keys(balance)) {
-    yield put(actions.setBalance(action.blockchain, action.address, asset, amountReader(balance[asset]).encode()));
+  for (const asset of Object.keys(balances)) {
+    yield put(
+      actions.setBalance(
+        seed,
+        blockchain,
+        hdpath,
+        address,
+        asset === 'ETHER' ? CoinTicker.ETH : asset,
+        amountReader(balances[asset]).encode(),
+      ),
+    );
   }
 }
 

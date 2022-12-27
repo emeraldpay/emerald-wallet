@@ -1,6 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, HDPath, amountDecoder, isEthereum } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, HDPath, amountDecoder, formatAmount, isEthereum } from '@emeraldwallet/core';
 import { IState, accounts, hdpathPreview, hwkey } from '@emeraldwallet/store';
 import { HDPathIndexes, IAddressState } from '@emeraldwallet/store/lib/hdpath-preview/types';
 import { Address } from '@emeraldwallet/ui';
@@ -83,7 +83,7 @@ type StateProps = {
 
 const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
 
-const Component: React.FC<Actions & OwnProps & StateProps> = ({
+const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
   disabledAccounts,
   initAccountId,
   isHWKey,
@@ -155,7 +155,7 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
       const amountReader = amountDecoder<BigAmount>(item.blockchain);
       const amount = amountReader(item.balance);
 
-      return <Typography>{amount.toString()}</Typography>;
+      return <Typography>{formatAmount(amount)}</Typography>;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -346,4 +346,4 @@ export default connect(
       },
     };
   },
-)(Component);
+)(SelectHDPath);
