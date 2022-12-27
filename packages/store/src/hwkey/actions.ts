@@ -1,25 +1,23 @@
-import {Dispatched, IState} from '../types';
-import {ActionTypes, ICheckLedger, IHWKeyAction, ISetLedgerApp, IWatchAction} from './types';
-import {LedgerApp} from "@emeraldpay/emerald-vault-core";
-import {isWatching} from './selectors';
+import { LedgerApp } from '@emeraldpay/emerald-vault-core';
+import { ActionTypes, CheckLedger, SetLedgerApp, WatchAction } from './types';
 
-export function setWatch(value: boolean): IWatchAction {
+export function checkLedger(): CheckLedger {
   return {
-    type: ActionTypes.WATCH,
-    value
+    type: ActionTypes.CHECK_LEDGER,
   };
 }
 
-export function setLedger(connected: boolean, app: LedgerApp | null): ISetLedgerApp {
+export function setLedger(connected: boolean, app: LedgerApp | null): SetLedgerApp {
   return {
     type: ActionTypes.SET_LEDGER,
+    app,
     connected,
-    app
-  }
+  };
 }
 
-export function checkLedger(): ICheckLedger {
+export function setWatch(value: boolean): WatchAction {
   return {
-    type: ActionTypes.CHECK_LEDGER
-  }
+    type: ActionTypes.WATCH,
+    value,
+  };
 }

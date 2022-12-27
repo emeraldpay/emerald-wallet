@@ -106,6 +106,7 @@ function* loadSeeds(vault: IEmeraldVault): SagaIterator {
   yield put(setLoadingAction(true));
 
   const seeds: SeedDescription[] = yield call(vault.listSeeds);
+
   yield put(setSeedsAction(seeds));
 
   yield put(setLoadingAction(false));

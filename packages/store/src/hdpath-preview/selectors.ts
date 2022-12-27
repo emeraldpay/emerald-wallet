@@ -1,9 +1,9 @@
-import { isLedger, SeedReference } from '@emeraldpay/emerald-vault-core';
+import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
 import { IdSeedReference, isIdSeedReference } from '@emeraldpay/emerald-vault-core/lib/types';
 import { Blockchains, HDPath, isBitcoin, isEthereum } from '@emeraldwallet/core';
+import { Entry, IAddressState, isEqualSeed } from './types';
 import * as accountSelectors from '../accounts/selectors';
 import { IState } from '../types';
-import { Entry, IAddressState, isEqualSeed } from './types';
 
 export function getByAccount(state: IState, seed: SeedReference, account: number): IAddressState[] {
   if (!state.hdpathPreview || !state.hdpathPreview.accounts) {
@@ -62,11 +62,7 @@ function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressS
 }
 
 export function getCurrentDisplay(state: IState, seed: SeedReference): IAddressState[] {
-  if (state.hdpathPreview == null) {
-    return [];
-  }
-
-  return state.hdpathPreview.display.entries.map((entry) => getByEntry(state, entry, seed));
+  return state.hdpathPreview?.display.entries.map((entry) => getByEntry(state, entry, seed)) ?? [];
 }
 
 export function isPreloaded(state: IState): boolean {

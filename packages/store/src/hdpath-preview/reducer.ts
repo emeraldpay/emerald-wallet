@@ -1,5 +1,4 @@
 import { Blockchains, Logger, isBitcoin } from '@emeraldwallet/core';
-import { mergeAddress } from './reducerUtil';
 import {
   ActionTypes,
   Entry,
@@ -11,6 +10,7 @@ import {
   ISetAddress,
   ISetBalance,
 } from './types';
+import { mergeAddress } from './utils';
 
 const log = Logger.forCategory('Store::HDPathPreview');
 
@@ -25,29 +25,27 @@ export const INITIAL_STATE: IHDPreviewState = {
 };
 
 function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreviewState {
-  let newState = state;
+  let merged = { ...state };
 
   Object.entries(action.addresses).forEach(([hdpath, address]) => {
     action.assets.forEach((asset) => {
-      const update: IAddressState = {
-        address,
-        asset,
-        hdpath,
-        blockchain: action.blockchain,
-        seed: action.seed,
-      };
-
       try {
-        newState = mergeAddress(newState, update);
+        merged = mergeAddress(merged, {
+          address,
+          asset,
+          hdpath,
+          blockchain: action.blockchain,
+          seed: action.seed,
+        });
       } catch (exception) {
         if (exception instanceof Error) {
-          log.warn('Failed to set new address.', exception.message);
+          log.warn('Failed to set new address:', exception.message);
         }
       }
     });
   });
 
-  return newState;
+  return merged;
 }
 
 function onSetBalance(state: IHDPreviewState, action: ISetBalance): IHDPreviewState {
@@ -91,16 +89,15 @@ function onDisplayAccount(state: IHDPreviewState, action: IDisplayAccount): IHDP
   const entries: Entry[] = state.display.blockchains.map((blockchain) => {
     const blockchainDetails = Blockchains[blockchain.toLowerCase()];
 
-    let hdpath = blockchainDetails.params.hdPath.forAccount(account).forIndex(indexes?.[blockchain] ?? 0);
+    let hdPath = blockchainDetails.params.hdPath.forAccount(account).forIndex(indexes?.[blockchain] ?? 0);
 
     if (isBitcoin(blockchain)) {
-      hdpath = hdpath.asAccount();
+      hdPath = hdPath.asAccount();
     }
 
     return {
       blockchain,
-      address: undefined,
-      hdpath: hdpath.toString(),
+      hdpath: hdPath.toString(),
     };
   });
 

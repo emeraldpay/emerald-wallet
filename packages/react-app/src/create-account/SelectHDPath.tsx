@@ -97,7 +97,6 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
 
   const [accountId, setAccountId] = React.useState(initAccountId);
   const [initialized, setInitialized] = React.useState(false);
-
   const [indexes, setIndexes] = React.useState<HDPathIndexes>(
     table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}),
   );
@@ -116,21 +115,14 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
       }, {}),
     [table],
   );
-  const ready = React.useMemo(() => !isHWKey || isPreloaded, [isHWKey, isPreloaded]);
+
+  const isReady = React.useMemo(() => !isHWKey || isPreloaded, [isHWKey, isPreloaded]);
 
   const isActive = React.useCallback((item: IAddressState) => {
     const amountReader = amountDecoder(item.blockchain);
 
     return item.balance != null && amountReader(item.balance).isPositive();
   }, []);
-
-  let prev: IAddressState | undefined = undefined;
-
-  const isChanged = React.useCallback(
-    (item: IAddressState) =>
-      prev == null || prev.blockchain != item.blockchain || prev.hdpath != item.hdpath || prev.address != item.address,
-    [prev],
-  );
 
   const renderAddress = React.useCallback(
     (value: string | undefined | null, blockchain: BlockchainCode) => {
@@ -150,27 +142,32 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
 
       return <Skeleton variant="text" width={380} height={12} />;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isHWKey],
   );
 
-  const renderBalance = React.useCallback((item: IAddressState) => {
-    if (item.balance == null || item.balance.length == 0) {
-      return <Skeleton variant="text" width={80} height={12} className={styles.balanceSkeleton} />;
-    }
+  const renderBalance = React.useCallback(
+    (item: IAddressState) => {
+      if (item.balance == null || item.balance.length == 0) {
+        return <Skeleton variant="text" width={80} height={12} className={styles.balanceSkeleton} />;
+      }
 
-    const amountReader = amountDecoder<BigAmount>(item.blockchain);
-    const amount = amountReader(item.balance);
+      const amountReader = amountDecoder<BigAmount>(item.blockchain);
+      const amount = amountReader(item.balance);
 
-    return <Typography>{amount.toString()}</Typography>;
-  }, []);
+      return <Typography>{amount.toString()}</Typography>;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const onAccountChange = React.useCallback(
     (path: HDPath) => {
       setAccountId(path.account);
 
-      onAccountUpdate(path.account, ready, addresses, indexes);
+      onAccountUpdate(path.account, isReady, addresses, indexes);
     },
-    [addresses, indexes, ready, onAccountUpdate],
+    [addresses, indexes, isReady, onAccountUpdate],
   );
 
   const onIndexChange = React.useCallback(
@@ -180,27 +177,46 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
 
         newIndexes[item.blockchain] = parseInt(value as string, 10);
 
-        onAccountUpdate(accountId, ready, addresses, newIndexes);
+        onAccountUpdate(accountId, isReady, addresses, newIndexes);
       },
-    [accountId, addresses, indexes, ready, onAccountUpdate],
+    [accountId, addresses, indexes, isReady, onAccountUpdate],
   );
 
-  React.useEffect(() => {
-    if (!initialized) {
-      onStart();
-      onAccountUpdate(accountId, ready, addresses, indexes);
+  React.useEffect(
+    () => {
+      if (!initialized) {
+        onStart();
 
-      setInitialized(true);
-    }
-  }, []);
+        onAccountUpdate(accountId, isReady, addresses, indexes);
 
-  React.useEffect(() => {
-    onReady(accountId, ready, addresses, indexes);
-  }, [isHWKey, isPreloaded]);
+        setInitialized(true);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onStart, onAccountUpdate],
+  );
+
+  React.useEffect(
+    () => {
+      onReady(accountId, isReady, addresses, indexes);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isHWKey, isPreloaded],
+  );
 
   React.useEffect(() => {
     setIndexes(table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}));
   }, [table]);
+
+  let previousItem: IAddressState | undefined;
+
+  const isChanged = ({ address, blockchain, hdpath }: IAddressState): boolean => {
+    if (previousItem == null) {
+      return true;
+    }
+
+    return address !== previousItem.address || blockchain !== previousItem.blockchain || hdpath !== previousItem.hdpath;
+  };
 
   return (
     <Grid container={true}>
@@ -264,7 +280,7 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
                 </TableRow>
               );
 
-              prev = item;
+              previousItem = item;
 
               return element;
             })}
@@ -318,6 +334,7 @@ export default connect(
     return {
       onAccountUpdate(account, ready, addresses, indexes) {
         dispatch(hdpathPreview.actions.displayAccount(account, indexes));
+
         ownProps.onChange(ready ? account : undefined, addresses, indexes);
       },
       onReady(account, ready, addresses, indexes) {

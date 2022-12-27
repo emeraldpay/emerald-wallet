@@ -1,5 +1,5 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, TokenRegistry } from '@emeraldwallet/core';
 import {
   ActionTypes,
   HDPathIndexes,
@@ -17,20 +17,24 @@ import { Dispatched } from '../types';
 
 export function loadAddresses(
   seed: SeedReference,
-  account: number,
   blockchain: BlockchainCode,
+  account: number,
   index?: number,
 ): Dispatched<void, ILoadAddresses> {
   return (dispatch, getState) => {
+    const { coinTicker } = Blockchains[blockchain].params;
+
     const tokenRegistry = new TokenRegistry(getState().application.tokens);
 
+    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
+
     dispatch({
-      account,
-      blockchain,
-      index,
-      seed,
-      type: ActionTypes.LOAD_ADDRESSES,
-      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+    account,
+    blockchain,
+    index,
+    seed,
+    type: ActionTypes.LOAD_ADDRESSES,
+      assets: [coinTicker, ...tokens],
     });
   };
 }
@@ -50,14 +54,18 @@ export function setAddresses(
   addresses: { [key: string]: string },
 ): Dispatched<void, ISetAddress> {
   return (dispatch, getState) => {
+    const { coinTicker } = Blockchains[blockchain].params;
+
     const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
 
     dispatch({
       addresses,
       blockchain,
       seed,
       type: ActionTypes.SET_ADDRESS,
-      assets: tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol),
+      assets: [coinTicker, ...tokens],
     });
   };
 }
@@ -92,7 +100,7 @@ export function displayAccount(
 
       state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
         if (!isHardware || isBlockchainOpen(state, blockchain)) {
-          dispatch(loadAddresses(seed, account, blockchain, indexes?.[blockchain] ?? 0));
+          dispatch(loadAddresses(seed, blockchain, account, indexes?.[blockchain]));
         }
       });
     }

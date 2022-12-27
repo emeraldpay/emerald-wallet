@@ -58,11 +58,17 @@ export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => {
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-    const supportedBlockchain = settings.selectors.currentChains(state).map<BlockchainRef>((chain) => ({
-      assets: tokenRegistry.getStablecoins(chain.params.code).map(({ symbol }) => symbol),
-      code: chain.params.code,
-      name: chain.getTitle(),
-    }));
+    const supportedBlockchain = settings.selectors.currentChains(state).map<BlockchainRef>((chain) => {
+      const { coinTicker } = chain.params;
+
+      const tokens = tokenRegistry.getStablecoins(chain.params.code).map(({ symbol }) => symbol);
+
+      return {
+        assets: [coinTicker, ...tokens],
+        code: chain.params.code,
+        name: chain.getTitle(),
+      };
+    });
 
     return {
       supportedBlockchain,

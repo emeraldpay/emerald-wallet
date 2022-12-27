@@ -13,17 +13,12 @@ import { IState, accounts, application, blockchains, settings } from './index';
  */
 export type TriggerState = (state: IState) => string | undefined;
 
-/**
- * Process trigger event
- *
- * @return status (continue or stop)
- */
-export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
-
 export enum TriggerStatus {
   CONTINUE,
   STOP,
 }
+
+export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
 
 const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<IState>): void => {
   if (check()) {
@@ -41,26 +36,19 @@ const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<I
   });
 };
 
-export function onceServicesStart(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) =>
-    handleTrigger(
-      () => {
-        const terms = application.selectors.terms(store.getState());
-        return terms === TERMS_VERSION;
-      },
-      resolve,
-      store,
-    ),
-  );
+export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
+}
+
+export function onceBlockchainConnected(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) => handleTrigger(() => blockchains.selectors.hasAny(store.getState()), resolve, store));
 }
 
 export function onceModeSet(store: Store<IState>): Promise<void> {
   return new Promise((resolve) =>
     handleTrigger(
       () => {
-        const mode = settings.selectors.getMode(store.getState());
-
-        const { id, chains } = mode;
+        const { id, chains } = settings.selectors.getMode(store.getState());
 
         return id !== 'default' && chains.length > 0;
       },
@@ -70,12 +58,10 @@ export function onceModeSet(store: Store<IState>): Promise<void> {
   );
 }
 
-export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
-}
-
-export function onceBlockchainConnected(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => blockchains.selectors.hasAny(store.getState()), resolve, store));
+export function onceServicesStart(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) =>
+    handleTrigger(() => application.selectors.terms(store.getState()) === TERMS_VERSION, resolve, store),
+  );
 }
 
 export class Triggers {
@@ -86,38 +72,38 @@ export class Triggers {
   }
 
   add(check: TriggerState, handler: TriggerProcess): void {
-    if (this.store) {
+    if (this.store == null) {
+      console.warn('Store is not ready for triggers');
+    } else {
       let last: string | undefined = undefined;
 
       const unsubscribe = this.store.subscribe(() => {
-        const { dispatch } = this.store ?? {};
+        const { dispatch, getState } = this.store ?? {};
 
-        const state = this.store?.getState();
+        const state = getState?.();
 
         if (dispatch != null && state != null) {
           const current = check(state);
 
-          last = current;
+          if ((last == null && current != null) || (typeof last === 'string' && last !== current)) {
+            last = current;
 
-          if ((last == null && current != null) || (typeof last == 'string' && last !== current)) {
             const status = handler(state, dispatch);
 
-            if (status == TriggerStatus.STOP) {
+            if (status === TriggerStatus.STOP) {
               unsubscribe();
             }
           }
         }
       });
-    } else {
-      console.warn('Store is not ready for triggers');
     }
   }
 
   schedule(period: number, handler: TriggerProcess): void {
     const execute = (): void => {
-      const { dispatch } = this.store ?? {};
+      const { dispatch, getState } = this.store ?? {};
 
-      const state = this.store?.getState();
+      const state = getState?.();
 
       let status = TriggerStatus.CONTINUE;
 

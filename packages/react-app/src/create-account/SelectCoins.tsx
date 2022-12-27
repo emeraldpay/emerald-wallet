@@ -84,7 +84,7 @@ const SelectCoins: React.FC<OwnProps & StateProps> = ({ blockchains, enabled, mu
                 className={blockchainNowEnabled ? styles.descriptionEnabled : styles.descriptionDisabled}
               >
                 <Typography variant={'subtitle1'}>{blockchain.getTitle()}</Typography>
-                <Typography variant={'body2'}>Cryptocurrencies: {tokens}</Typography>
+                {tokens.length > 0 && <Typography variant={'body2'}>Cryptocurrencies: {tokens}</Typography>}
               </Grid>
               <Grid item={true} xs={2}>
                 <FormControlLabel

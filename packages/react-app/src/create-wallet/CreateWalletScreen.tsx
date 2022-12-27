@@ -1,13 +1,13 @@
 import { AddEntry, SeedDefinition, SeedDescription, SeedReference } from '@emeraldpay/emerald-vault-core';
 import { AddJsonEntry, AddRawPkEntry } from '@emeraldpay/emerald-vault-core/lib/types';
-import { BlockchainCode, blockchainCodeToId, Blockchains, IBlockchain } from '@emeraldwallet/core';
-import { accounts, hdpathPreview, hwkey, IState, screen, settings } from '@emeraldwallet/store';
+import { BlockchainCode, Blockchains, IBlockchain, blockchainCodeToId } from '@emeraldwallet/core';
+import { IState, accounts, hdpathPreview, hwkey, screen, settings } from '@emeraldwallet/store';
 import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
 import CreateWalletWizard from './CreateWalletWizard';
-import { isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result } from './flow/types';
+import { Result, isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected } from './flow/types';
 
 type NewEntry = AddEntry & { additional: boolean };
 
@@ -208,6 +208,7 @@ export default connect(
                   }
                 });
 
+                dispatch(accounts.actions.loadSeedsAction());
                 dispatch(accounts.actions.loadWalletsAction());
 
                 resolve(wallet.id);
@@ -223,7 +224,9 @@ export default connect(
       onSaveSeed: (seed: SeedDefinition) => {
         return new Promise<string>((resolve) => {
           const id = dispatch(accounts.actions.createSeed(seed, resolve));
+
           dispatch(accounts.actions.loadSeedsAction());
+
           return id;
         });
       },
