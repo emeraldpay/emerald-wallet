@@ -32,7 +32,7 @@ startProtocolHandler();
 initRemote();
 
 let apiMode = ProductionMode;
-let dataDir: string = null;
+let dataDir: string | null = null;
 
 if (isDevelopMode) {
   logger.debug('Start in development mode');
@@ -84,7 +84,7 @@ app.on('ready', () => {
   logger.info('Connect to', apiAccess.address);
   logger.info('Setup Vault');
 
-  const vault = new LocalConnector(dataDir ? resolvePath(joinPath(dataDir, 'vault')) : null);
+  const vault = new LocalConnector(dataDir == null ? null : resolvePath(joinPath(dataDir, 'vault')));
 
   const vaultProvider = vault.getProvider();
 
@@ -106,7 +106,9 @@ app.on('ready', () => {
 
   logger.info('Run application');
 
-  const persistentState = new PersistentStateImpl(resolvePath(joinPath(dataDir, 'persistentState')));
+  const persistentState = new PersistentStateImpl(
+    dataDir == null ? null : resolvePath(joinPath(dataDir, 'persistentState')),
+  );
 
   application.run(webContents, apiAccess, apiMode, persistentState, vaultProvider, rpcConnections);
 
