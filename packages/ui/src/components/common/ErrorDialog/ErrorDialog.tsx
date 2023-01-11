@@ -17,7 +17,7 @@ const ErrorDialog: React.FC<StateProps & DispatchProps> = ({ error, message, ope
   <Dialog open={open} onClose={handleClose}>
     <DialogContent>
       <p>
-        <strong>ERROR:</strong> An unexpected error has occurred. Please restart & update emerald wallet.
+        <strong>ERROR:</strong> An unexpected error has occurred. Please restart the Emerald Wallet.
       </p>
       <p>The error was: {message}</p>
     </DialogContent>
