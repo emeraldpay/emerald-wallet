@@ -104,7 +104,7 @@ export function blockchainIdToCode(id: number): BlockchainCode {
     case 10005:
       return BlockchainCode.Goerli;
     default:
-      throw Error('Unsupported blockchain id: ' + id);
+      throw new Error(`Unsupported blockchain id: ${id}`);
   }
 }
 
@@ -125,7 +125,7 @@ export function blockchainCodeToId(code: BlockchainCode): number {
     case BlockchainCode.Goerli:
       return 10005;
     default:
-      throw Error('Unsupported blockchain: ' + code);
+      throw new Error(`Unsupported blockchain: ${code}`);
   }
 }
 

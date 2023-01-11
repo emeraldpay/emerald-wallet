@@ -1,4 +1,5 @@
 use chrono::{DateTime, TimeZone, Utc};
+use neon::prelude::{FunctionContext, JsString};
 use crate::errors::StateManagerError;
 
 pub fn if_not_empty(s: String) -> Option<String> {
@@ -36,5 +37,21 @@ pub fn blockchain_to_code(id: u32) -> Result<String, StateManagerError> {
     10003 => Ok("TESTBTC".to_string()),
     10005 => Ok("GOERLI".to_string()),
     _ => Err(StateManagerError::InvalidValue("Invalid blockchain id".to_string()))
+  }
+}
+
+pub fn args_get_str(cx: &mut FunctionContext, pos: i32) -> Option<String> {
+  match cx.argument_opt(pos) {
+    None => None,
+    Some(v) => {
+      if v.is_a::<JsString, _>(cx) {
+        match v.downcast::<JsString, _>(cx) {
+          Ok(v) => Some(v.value(cx)),
+          Err(_) => None,
+        }
+      } else {
+        None
+      }
+    }
   }
 }
