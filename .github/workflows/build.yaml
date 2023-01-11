@@ -33,7 +33,7 @@ jobs:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
           export_default_credentials: true
         if: runner.os == 'Windows'
 
@@ -41,7 +41,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
           export_default_credentials: true
         if: runner.os != 'Windows'
 
@@ -118,15 +118,15 @@ jobs:
 
       - name: Link to published artifact
         if: runner.os == 'Windows'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-win-x64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.exe"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-win-x64-${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.exe"
 
       - name: Link to published artifact
         if: runner.os == 'macOS'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-mac-x64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.dmg"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-mac-x64-${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.dmg"
 
       - name: Link to published artifact
         if: runner.os == 'Linux'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-linux-amd64-${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.deb"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/EmeraldWallet-linux-amd64-${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}.deb"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2

@@ -170,7 +170,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
 
   public setAmount(amount: BigAmount, tokenSymbol?: string): void {
     if (tokenSymbol == null) {
-      throw Error('Token symbol for ERC20 must be provided');
+      throw new Error('Token symbol for ERC20 must be provided');
     }
 
     this.amount = amount;

@@ -3,6 +3,7 @@ use std::sync::{Arc, RwLock};
 use emerald_wallet_state::storage::sled_access::SledStorage;
 use crate::errors::StateManagerError;
 use neon::prelude::*;
+use crate::commons::args_get_str;
 
 enum StorageRef {
   UNINITIALIZED,
@@ -68,8 +69,7 @@ impl Instance {
 
 #[neon_frame_fn]
 pub fn open(cx: &mut FunctionContext) -> Result<bool, StateManagerError> {
-  let path = cx.argument_opt(0)
-    .map(|arg| arg.downcast::<JsString, _>(cx).unwrap().value(cx))
+  let path = args_get_str(cx, 0)
     .map(|dir| PathBuf::from(dir));
 
     Instance::init(path)
