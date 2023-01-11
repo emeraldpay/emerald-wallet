@@ -3,21 +3,19 @@ import { initialize as initRemote, enable as remoteEnable } from '@electron/remo
 import { IpcCommands } from '@emeraldwallet/core';
 import {
   Application,
-  LocalConnector,
   MainWindowOptions,
   Settings,
+  VaultManager,
   assertSingletonWindow,
   getMainWindow,
-  protocol,
+  startProtocolHandler,
 } from '@emeraldwallet/electron-app';
-import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
 import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
 import { DevelopmentMode, ProductionMode } from './utils/api-modes';
 import gitVersion from '../../gitversion.json';
-
-const { startProtocolHandler } = protocol;
 
 const isDevelopMode = process.env.NODE_ENV === 'development';
 
@@ -33,7 +31,7 @@ startProtocolHandler();
 initRemote();
 
 let apiMode = ProductionMode;
-let dataDir: string = null;
+let dataDir: string | null = null;
 
 if (isDevelopMode) {
   logger.debug('Start in development mode');
@@ -41,7 +39,7 @@ if (isDevelopMode) {
   apiMode = DevelopmentMode;
   dataDir = resolvePath('./.emerald-dev');
 
-  app.setPath('userData', resolvePath(dataDir, 'userData'));
+  app.setPath('userData', resolvePath(dataDir, 'data'));
 } else {
   logger.debug('Start in production mode');
 }
@@ -83,11 +81,18 @@ app.on('ready', () => {
   }
 
   logger.info('Connect to', apiAccess.address);
-  logger.info('Setup Vault');
 
-  const vault = new LocalConnector(dataDir ? resolvePath(joinPath(dataDir, 'vault')) : null);
+  const persistentStateDir = dataDir == null ? null : resolvePath(joinPath(dataDir, 'state'));
 
-  const vaultProvider = vault.getProvider();
+  logger.info(`Setup Persistent State in ${persistentStateDir ?? 'default directory'}`);
+
+  const persistentState = new PersistentStateManager(persistentStateDir);
+
+  const vaultDir = dataDir == null ? null : resolvePath(joinPath(dataDir, 'vault'));
+
+  logger.info(`Setup Vault in ${vaultDir ?? 'default directory'}`);
+
+  const vault = new VaultManager(vaultDir);
 
   logger.info('Setup Server connect');
 
@@ -101,15 +106,13 @@ app.on('ready', () => {
 
   logger.info('Create main window');
 
-  const { webContents } = getMainWindow(application, vaultProvider, logger, options);
+  const { webContents } = getMainWindow(application, vault, logger, options);
 
   remoteEnable(webContents);
 
   logger.info('Run application');
 
-  const persistentState = new PersistentStateImpl(resolvePath(joinPath(dataDir, 'persistentState')));
-
-  application.run(webContents, apiAccess, apiMode, persistentState, vaultProvider, rpcConnections);
+  application.run(webContents, apiAccess, apiMode, persistentState, vault, rpcConnections);
 
   let initialized = false;
   let reloaded = false;
@@ -125,7 +128,7 @@ app.on('ready', () => {
   ipcMain.on(IpcCommands.EMERALD_READY, () => {
     logger.info('Emerald app launched');
 
-    const { webContents } = getMainWindow(application, vaultProvider, logger, options);
+    const { webContents } = getMainWindow(application, vault, logger, options);
 
     if (webContents != null) {
       webContents.send(IpcCommands.STORE_DISPATCH, { type: 'SETTINGS/SET_MODE', payload: apiMode });
@@ -139,7 +142,7 @@ app.on('ready', () => {
   });
 
   app.on('activate', () => {
-    getMainWindow(application, vaultProvider, logger, options);
+    getMainWindow(application, vault, logger, options);
 
     application.reconnect();
   });

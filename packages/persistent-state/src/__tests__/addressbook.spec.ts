@@ -1,22 +1,26 @@
 import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { tempPath } from './_commons';
-import { PersistentStateImpl } from '../api';
+import { PersistentStateManager } from '../api';
 
 describe('Address Book', () => {
+  const address =
+    'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9h' +
+    'BizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F';
+
+  let manager: PersistentStateManager;
   let path: string;
-  let state: PersistentStateImpl;
 
   beforeEach(() => {
     path = tempPath('addrbook');
-    state = new PersistentStateImpl(path);
+    manager = new PersistentStateManager(path);
   });
 
   afterEach(() => {
-    state.close();
+    manager.close();
   });
 
   test('empty query', async () => {
-    const act = await state.addressbook.query();
+    const act = await manager.addressbook.query();
 
     expect(act).toEqual({ items: [], cursor: null });
   });
@@ -30,8 +34,8 @@ describe('Address Book', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
     };
 
-    const id = await state.addressbook.add(item);
-    const act = await state.addressbook.query();
+    const id = await manager.addressbook.add(item);
+    const act = await manager.addressbook.query();
 
     expect(act.items.length).toBe(1);
     expect(act.items[0].id).toBe(id);
@@ -47,8 +51,8 @@ describe('Address Book', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
     };
 
-    const id = await state.addressbook.add(item);
-    const act = await state.addressbook.get(id);
+    const id = await manager.addressbook.add(item);
+    const act = await manager.addressbook.get(id);
 
     expect(act).toBeDefined();
     expect(act?.address.address).toEqual('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B');
@@ -57,24 +61,21 @@ describe('Address Book', () => {
 
   test('adding xpub as plain sets the correct type', async () => {
     const item: PersistentState.AddressbookItem = {
-      blockchain: blockchainCodeToId(BlockchainCode.BTC),
       address: {
+        // Amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
+        address: address,
         type: 'plain',
-        //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
-        address:
-          'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
       },
+      blockchain: blockchainCodeToId(BlockchainCode.BTC),
     };
 
-    const id = await state.addressbook.add(item);
-    const act = await state.addressbook.get(id);
+    const id = await manager.addressbook.add(item);
+    const act = await manager.addressbook.get(id);
 
     expect(act).toBeDefined();
-    expect(act!!.address.address).toBe(
-      'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
-    );
-    expect(act!!.address.type).toBe('xpub');
-    expect(act!!.address.currentAddress).toBe('bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms');
+    expect(act?.address.address).toBe(address);
+    expect(act?.address.type).toBe('xpub');
+    expect(act?.address.currentAddress).toBe('bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms');
   });
 
   test('xpub item uses known pos', async () => {
@@ -83,22 +84,19 @@ describe('Address Book', () => {
       address: {
         type: 'plain',
         //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
-        address:
-          'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
+        address: address,
       },
     };
 
-    const id = await state.addressbook.add(item);
+    const id = await manager.addressbook.add(item);
 
-    await state.xpubpos.setCurrentAddressAt(item.address.address, 3);
+    await manager.xpubpos.setCurrentAddressAt(item.address.address, 3);
 
-    const act = await state.addressbook.get(id);
+    const act = await manager.addressbook.get(id);
 
     expect(act).toBeDefined();
-    expect(act!!.address.address).toBe(
-      'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
-    );
-    expect(act!!.address.currentAddress).toBe('bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60');
+    expect(act?.address.address).toBe(address);
+    expect(act?.address.currentAddress).toBe('bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60');
   });
 
   test('return nothing for non existing id', async () => {
@@ -112,9 +110,9 @@ describe('Address Book', () => {
 
     const otherId = 'a43e0aa5-7d07-43cb-81d3-fe21be748a2d';
 
-    const id = await state.addressbook.add(item);
-    const act = await state.addressbook.get(otherId);
-    const existing = await state.addressbook.get(id);
+    const id = await manager.addressbook.add(item);
+    const act = await manager.addressbook.get(otherId);
+    const existing = await manager.addressbook.get(id);
 
     expect(id === otherId).toBeFalsy();
     expect(act).toBeNull();
@@ -130,9 +128,9 @@ describe('Address Book', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
     };
 
-    const id = await state.addressbook.add(item);
-    const updated = await state.addressbook.update(id, { label: 'test' });
-    const act = await state.addressbook.query();
+    const id = await manager.addressbook.add(item);
+    const updated = await manager.addressbook.update(id, { label: 'test' });
+    const act = await manager.addressbook.query();
 
     expect(updated).toBeTruthy();
     expect(act.items.length).toBe(1);
@@ -140,8 +138,7 @@ describe('Address Book', () => {
   });
 
   test('add an item and query using cursor', async () => {
-
-    // right now there are some strange thread races, which are easier to handle with for-loop update
+    // Right now there are some strange thread races, which are easier to handle with for-loop update
     for (let i = 0; i < 10; i++) {
       const item: PersistentState.AddressbookItem = {
         address: {
@@ -151,19 +148,24 @@ describe('Address Book', () => {
         blockchain: blockchainCodeToId(BlockchainCode.ETH),
       };
 
-      await state.addressbook.add(item);
-      //TODO should not be necessary because all calls must be serialized. But right now there is some weird race. Must be fixed on the lib level
-      await new Promise(r => setTimeout(r, 100));
+      await manager.addressbook.add(item);
+
+      /**
+       * TODO
+       *   Should not be necessary because all calls must be serialized. But right now there is some weird race.
+       *   Must be fixed on the lib level.
+       */
+      await new Promise((r) => setTimeout(r, 100));
     }
 
-    const page1 = await state.addressbook.query({}, { limit: 5 });
+    const page1 = await manager.addressbook.query({}, { limit: 5 });
 
     expect(page1.items.length).toBe(5);
     expect(page1.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D509');
     expect(page1.items[4].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D505');
     expect(page1.cursor).toBeDefined();
 
-    const page2 = await state.addressbook.query({}, { cursor: page1.cursor, limit: 5 });
+    const page2 = await manager.addressbook.query({}, { cursor: page1.cursor, limit: 5 });
 
     expect(page2.items.length).toBe(5);
     expect(page2.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D504');
@@ -179,9 +181,11 @@ describe('Address Book', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
     };
 
-    const id = await state.addressbook.add(item);
-    await state.addressbook.remove(id);
-    const act = await state.addressbook.query();
+    const id = await manager.addressbook.add(item);
+
+    await manager.addressbook.remove(id);
+
+    const act = await manager.addressbook.query();
 
     expect(act.items.length).toBe(0);
   });
@@ -195,15 +199,16 @@ describe('Address Book', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
     };
 
-    await state.addressbook.add(item);
-    let act = await state.addressbook.query();
+    await manager.addressbook.add(item);
+
+    let act = await manager.addressbook.query();
 
     expect(act.items.length).toBe(1);
 
-    state.close();
-    state = new PersistentStateImpl(path);
+    manager.close();
+    manager = new PersistentStateManager(path);
 
-    act = await state.addressbook.query();
+    act = await manager.addressbook.query();
 
     expect(act.items.length).toBe(1);
   });

@@ -12,6 +12,7 @@ import {
   SeedDefinition,
   SeedDescription,
   SeedReference,
+  SignedMessage,
   SignedTx,
   UnsignedTx,
   Uuid,
@@ -110,13 +111,13 @@ export class MemoryTxHistory {
 }
 
 export class MemoryTxMeta {
-  store: Record<number, Record<string, PersistentState.TxMeta | null>> = {};
+  store: Record<number, Record<string, PersistentState.TxMetaItem | null>> = {};
 
-  async getMeta(blockchain: BlockchainCode, txId: string): Promise<PersistentState.TxMeta | null> {
+  async getMeta(blockchain: BlockchainCode, txId: string): Promise<PersistentState.TxMetaItem | null> {
     return this.store[blockchainCodeToId(blockchain)]?.[txId] ?? null;
   }
 
-  async setMeta(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+  async setMeta(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem> {
     const blockchain = blockchainCodeToId(meta.blockchain);
 
     if (this.store[blockchain] == null) {
@@ -258,18 +259,18 @@ export class TxHistoryMock implements PersistentState.TxHistory {
   }
 }
 
-export class TxMetaMock implements PersistentState.TxMetaStore {
+export class TxMetaMock implements PersistentState.TxMeta {
   readonly txMeta: MemoryTxMeta;
 
   constructor(txMeta: MemoryTxMeta) {
     this.txMeta = txMeta;
   }
 
-  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMeta> {
+  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMetaItem> {
     return this.txMeta.getMeta(blockchain, txid);
   }
 
-  set(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+  set(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem> {
     return this.txMeta.setMeta(meta);
   }
 }
@@ -474,6 +475,14 @@ export class VaultMock implements IEmeraldVault {
   updateSeed(): Promise<boolean> {
     return Promise.resolve(true);
   }
+
+  signMessage(): Promise<SignedMessage> {
+    return Promise.resolve({
+      address: '0x0',
+      signature: '0x0',
+      type: 'eip191',
+    });
+  }
 }
 
 export class XPubPosMock implements PersistentState.XPubPosition {
@@ -499,14 +508,14 @@ export class XPubPosMock implements PersistentState.XPubPosition {
 export class ApiMock implements WalletApi {
   readonly addressBook: PersistentState.Addressbook;
   readonly txHistory: PersistentState.TxHistory;
-  readonly txMeta: PersistentState.TxMetaStore;
+  readonly txMeta: PersistentState.TxMeta;
   readonly vault: IEmeraldVault;
   readonly xPubPos: PersistentState.XPubPosition;
 
   constructor(
     addressBook: PersistentState.Addressbook,
     txHistory: PersistentState.TxHistory,
-    txMeta: PersistentState.TxMetaStore,
+    txMeta: PersistentState.TxMeta,
     vault: IEmeraldVault,
     xPubPos: PersistentState.XPubPosition,
   ) {

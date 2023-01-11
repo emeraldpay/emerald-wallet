@@ -189,7 +189,7 @@ interface DispatchProps {
   goToSpeedUpTx(tx: StoredTransaction): void;
   goToTransaction(tx: StoredTransaction): void;
   goToWallet(walletId: string): void;
-  setTransactionMeta(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta>;
+  setTransactionMeta(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem>;
 }
 
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();

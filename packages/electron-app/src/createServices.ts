@@ -1,6 +1,6 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
-import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import {
   BalanceListener,
   BlockchainStatusService,
@@ -50,7 +50,7 @@ export function createServices(
   webContents: WebContents,
   apiAccess: EmeraldApiAccess,
   apiMode: ApiMode,
-  persistentState: PersistentStateImpl,
+  persistentState: PersistentStateManager,
   vault: IEmeraldVault,
 ): Services {
   const services = new Services();

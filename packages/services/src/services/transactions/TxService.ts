@@ -10,7 +10,7 @@ import {
   TokenRegistry,
   blockchainIdToCode,
 } from '@emeraldwallet/core';
-import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
@@ -27,7 +27,7 @@ export class TxService implements IService {
 
   private apiAccess: EmeraldApiAccess;
   private ipcMain: IpcMain;
-  private persistentState: PersistentStateImpl;
+  private persistentState: PersistentStateManager;
   private settings: SettingsManager;
   private tokens: TokenData[];
   private tokenRegistry: TokenRegistry;
@@ -40,7 +40,7 @@ export class TxService implements IService {
 
   constructor(
     apiAccess: EmeraldApiAccess,
-    persistentState: PersistentStateImpl,
+    persistentState: PersistentStateManager,
     vault: IEmeraldVault,
     ipcMain: IpcMain,
     webContents: WebContents,

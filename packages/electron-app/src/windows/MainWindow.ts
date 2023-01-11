@@ -1,11 +1,11 @@
-import { IpcCommands } from '@emeraldwallet/core';
 import * as url from 'url';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
+import { IpcCommands } from '@emeraldwallet/core';
 import { BrowserWindow, Menu, ipcMain, shell } from 'electron';
 import { ElectronLog } from 'electron-log';
 import createMainMenu from './MainMenu';
-import Application from '../application/Application';
+import { Application } from '../application/Application';
 
 export interface MainWindowOptions {
   aboutWndPath: string;

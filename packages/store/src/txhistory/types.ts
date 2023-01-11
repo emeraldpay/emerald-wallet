@@ -57,9 +57,9 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   version?: number;
 
   changes: StoredTransactionChange[];
-  meta: PersistentState.TxMeta | null;
+  meta: PersistentState.TxMetaItem | null;
 
-  constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMeta | null) {
+  constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMetaItem | null) {
     this.block = tx.block;
     this.blockchain = tx.blockchain;
     this.confirmTimestamp = tx.confirmTimestamp;
@@ -107,7 +107,7 @@ export interface RemoveStoredTxAction {
 
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
-  meta: PersistentState.TxMeta | null;
+  meta: PersistentState.TxMetaItem | null;
   tokens: TokenData[];
   transaction: PersistentState.Transaction;
   walletId: Uuid;

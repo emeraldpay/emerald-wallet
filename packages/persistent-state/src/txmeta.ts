@@ -1,28 +1,28 @@
 import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
 import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
-import { PersistentStateImpl, createDateReviver } from './api';
+import { PersistentStateManager, createDateReviver } from './api';
 
-export class TxMetaStoreImpl implements PersistentState.TxMetaStore {
-  private manager: PersistentStateImpl;
+export class TxMeta implements PersistentState.TxMeta {
+  private manager: PersistentStateManager;
 
-  constructor(manager: PersistentStateImpl) {
+  constructor(manager: PersistentStateManager) {
     this.manager = manager;
   }
 
-  set(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
-    return neonFrameHandlerCall(
-      this.manager.addon,
-      'txmeta_set',
-      [JSON.stringify(meta)],
-      createDateReviver(['timestamp']),
-    );
-  }
-
-  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMeta | null> {
+  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMetaItem | null> {
     return neonFrameHandlerCall(
       this.manager.addon,
       'txmeta_get',
       [blockchainCodeToId(blockchain), txid],
+      createDateReviver(['timestamp']),
+    );
+  }
+
+  set(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem> {
+    return neonFrameHandlerCall(
+      this.manager.addon,
+      'txmeta_set',
+      [JSON.stringify(meta)],
       createDateReviver(['timestamp']),
     );
   }

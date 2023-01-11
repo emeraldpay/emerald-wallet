@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { PersistentState } from '@emeraldwallet/core';
-import { AddressbookImpl } from './addressbook';
-import { TxHistoryImpl } from './txhistory';
-import { TxMetaStoreImpl } from './txmeta';
-import { XPubPositionImpl } from './xpubpos';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const addon = require('../index.node');
+import { PersistentState as PersistentStateBase } from '@emeraldwallet/core';
+import { Addressbook } from './addressbook';
+import { TxHistory } from './txhistory';
+import { TxMeta } from './txmeta';
+import { XPubPosition } from './xpubpos';
 
 export type StatusOk<T> = {
   succeeded: true;
@@ -14,17 +10,19 @@ export type StatusOk<T> = {
 };
 
 export type StatusFail = {
-  succeeded: false;
   error: {
     code: number;
     message: string;
   };
+  succeeded: false;
 };
 
 export type Status<T> = StatusOk<T> | StatusFail;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type JsonReviver = (key: string, value: any) => any;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function recursiveDateFormatter(value: Record<string, any>, selectors: string[]): Record<string, any> | Date {
   const [selector, ...restSelectors] = selectors;
 
@@ -46,7 +44,7 @@ function recursiveDateFormatter(value: Record<string, any>, selectors: string[])
 }
 
 export function createDateReviver(names: string[]): JsonReviver {
-  return (key: string, value: string | Record<string, any>) => {
+  return (key: string, value: string | Record<string, unknown>) => {
     const selectors = names.reduce<Record<string, string[]>>((carry, name) => {
       const [part, ...parts] = name.split('.');
 
@@ -63,29 +61,28 @@ export function createDateReviver(names: string[]): JsonReviver {
   };
 }
 
-export class PersistentStateImpl implements PersistentState.PersistentState {
+export class PersistentStateManager implements PersistentStateBase.PersistentState {
   /**
-   * Mapping to the Rust module through NAPI
-   * Internal. Do not use directly.
+   * Mapping to the Rust module through NAPI.
+   *
+   * **Internal. Do not use directly.**
    */
-  addon = addon;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly addon: any;
 
-  readonly txhistory: PersistentState.TxHistory = new TxHistoryImpl(this);
-  readonly txmeta: PersistentState.TxMetaStore = new TxMetaStoreImpl(this);
-  readonly addressbook: PersistentState.Addressbook = new AddressbookImpl(this);
-  readonly xpubpos: PersistentState.XPubPosition = new XPubPositionImpl(this);
+  readonly addressbook: PersistentStateBase.Addressbook = new Addressbook(this);
+  readonly txhistory: PersistentStateBase.TxHistory = new TxHistory(this);
+  readonly txmeta: PersistentStateBase.TxMeta = new TxMeta(this);
+  readonly xpubpos: PersistentStateBase.XPubPosition = new XPubPosition(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.
    *
-   * !!!!!
-   * MUST BE ONLY ONE INSTANCE, BECAUSE ALL OF THEM USE THE SAME DIR ONCE CREATED
-   * !!!!!
-   *
-   * @param dir
+   * **Must be only one instance, because all of them use the same dir once created**
    */
   constructor(dir?: string) {
-    this.addon.open(dir)
+    this.addon = require('../index.node');
+    this.addon.open(dir);
   }
 
   /**
