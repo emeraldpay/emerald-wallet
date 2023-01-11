@@ -87,11 +87,11 @@ export enum IpcCommands {
   VAULT_SET_ENTRY_RECEIVE_DISABLED = 'vault-set-entry-receive-disabled',
   VAULT_SET_STATE='vault-set-state',
   VAULT_SET_WALLET_LABEL = 'vault-set-wallet-label',
+  VAULT_SIGN_MESSAGE = 'vault-sign-message',
   VAULT_SIGN_TX = 'vault-sign-tx',
   VAULT_SNAPSHOT_CREATE = 'vault-snapshot-create',
   VAULT_SNAPSHOT_RESTORE = 'vault-snapshot-restore',
   VAULT_TRY_UPGRADE_ODD_ITEMS = 'vault-try-upgrade-odd-items',
-  VAULT_UPDATE_MAIN_MENU = 'vault-update-main-menu',
   VAULT_UPDATE_SEED = 'vault-update-seed',
   VAULT_VERIFY_GLOBAL_KEY = 'vault-verify-global-key',
 

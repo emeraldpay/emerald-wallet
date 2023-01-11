@@ -2,8 +2,8 @@ import { SeedDescription, Wallet, isBitcoinEntry } from '@emeraldpay/emerald-vau
 import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { Blockchains, blockchainIdToCode, utils } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Back, Button, Page } from '@emeraldwallet/ui';
-import { Divider, Table, TableBody, TableCell, TableRow, createStyles, withStyles } from '@material-ui/core';
+import { Back, Button, ButtonGroup, Page, Table } from '@emeraldwallet/ui';
+import { Divider, TableBody, TableCell, TableRow, createStyles, withStyles } from '@material-ui/core';
 import { Check as CheckIcon, Close as CrossIcon } from '@material-ui/icons';
 import { clipboard } from 'electron';
 import * as React from 'react';
@@ -11,11 +11,14 @@ import { connect } from 'react-redux';
 import i18n from '../../i18n';
 
 const styles = createStyles({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    marginTop: 20,
+    width: '100%',
+  },
   header: {
     marginTop: 0,
-  },
-  textAlignRight: {
-    textAlign: 'right',
   },
 });
 
@@ -249,16 +252,9 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
           ))}
         </>
       )}
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TitleTableCell />
-            <ValueTableCell className={classes.textAlignRight}>
-              <Button primary={true} label="Copy to clipboard" onClick={onCopy} />
-            </ValueTableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <ButtonGroup classes={{ container: classes.buttons }}>
+        <Button primary={true} label="Copy to clipboard" onClick={onCopy} />
+      </ButtonGroup>
     </Page>
   );
 };

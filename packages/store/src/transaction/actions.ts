@@ -39,8 +39,7 @@ function withNonce(tx: EthereumTransaction): (nonce: number) => Promise<Ethereum
 function verifySender(expected: string): (txid: string, raw: string, chain: BlockchainCode) => Promise<SignedTx> {
   return (txid, raw, chain) =>
     new Promise((resolve, reject) => {
-      // Find chain id
-      const chainId = Blockchains[chain].params.chainId;
+      const { chainId } = Blockchains[chain].params;
       const tx = EthereumTx.fromRaw(raw, chainId);
 
       if (tx.verifySignature()) {
@@ -61,12 +60,7 @@ function verifySender(expected: string): (txid: string, raw: string, chain: Bloc
     });
 }
 
-function signTx(
-  entryId: string,
-  password: string | undefined,
-  tx: EthereumTransaction,
-  vault: IEmeraldVault,
-): Promise<SignedTx> {
+function signTx(entryId: string, tx: EthereumTransaction, vault: IEmeraldVault, password?: string): Promise<SignedTx> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${tx.blockchain} blockchain`);
 
   let gasPrices: Record<'gasPrice', string> | Record<'maxGasPrice' | 'priorityGasPrice', string>;
@@ -101,13 +95,13 @@ function signTx(
 
 export function signTransaction(
   entryId: string,
-  password: string | undefined,
   transaction: EthereumTransaction,
+  password?: string,
 ): Dispatched<SignData | undefined> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch, getState, extra) => {
     const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
-      signTx(entryId, password, tx, extra.api.vault)
+      signTx(entryId, tx, extra.api.vault, password)
         .then(({ raw, txid }) => verifySender(tx.from)(txid, raw, tx.blockchain))
         .then(({ raw: signed, txid: txId }) => ({ tx, txId, signed, blockchain: tx.blockchain, entryId: entryId }));
 

@@ -5,13 +5,13 @@ import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/u
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   goBack(): void;
-  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
+  signTransaction(tx: EthereumTransaction, accountId?: string, password?: string): Promise<void>;
 }
 
 interface OwnProps {
@@ -38,7 +38,7 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
     const correctPassword = await checkGlobalKey(password);
 
     if (correctPassword) {
-      await signTransaction(transaction, password, accountId);
+      await signTransaction(transaction, accountId, password);
     } else {
       setPasswordError('Incorrect password');
     }
@@ -46,11 +46,11 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
 
   return (
     <Page title="Cancel Transaction" leftIcon={<Back onClick={goBack} />}>
-      <FormFieldWrapper>
+      <FormField>
         <FormLabel>Password</FormLabel>
         <PasswordInput error={passwordError} onChange={setPassword} />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel />
         <ButtonGroup style={{ width: '100%' }}>
           <Button label="Cancel" onClick={goBack} />
@@ -61,7 +61,7 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
             onClick={onSignTransaction}
           />
         </ButtonGroup>
-      </FormFieldWrapper>
+      </FormField>
     </Page>
   );
 };
@@ -102,15 +102,19 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(accountId, password, {
-          ...tx,
-          data: '',
-          gas: DEFAULT_GAS_LIMIT,
-          gasPrice: gasPrice?.number,
-          maxGasPrice: maxGasPrice?.number,
-          priorityGasPrice: priorityGasPrice?.number,
-          value: amountFactory(tx.blockchain)(0).number,
-        }),
+        transaction.actions.signTransaction(
+          accountId,
+          {
+            ...tx,
+            data: '',
+            gas: DEFAULT_GAS_LIMIT,
+            gasPrice: gasPrice?.number,
+            maxGasPrice: maxGasPrice?.number,
+            priorityGasPrice: priorityGasPrice?.number,
+            value: amountFactory(tx.blockchain)(0).number,
+          },
+          password,
+        ),
       );
 
       if (signed != null) {

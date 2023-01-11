@@ -10,6 +10,8 @@ import {
   SeedDescription,
   SeedDetails,
   SeedReference,
+  SignedMessage,
+  UnsignedMessage,
   Uuid,
   Wallet,
   WalletEntry,
@@ -367,4 +369,8 @@ export function getXPubPositionalAddress(entryId: string, xPub: string, role: Ad
 
 export function updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Dispatched<boolean> {
   return (dispatch, getState, extra) => extra.api.vault.updateSeed(seed, details);
+}
+
+export function signMessage(entryId: string, message: UnsignedMessage, password?: string): Dispatched<SignedMessage> {
+  return (dispatch, getState, extra) => extra.api.vault.signMessage(entryId, message, password);
 }

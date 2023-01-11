@@ -3,12 +3,11 @@ import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, HDPath, amountDecoder, formatAmount, isEthereum } from '@emeraldwallet/core';
 import { IState, accounts, hdpathPreview, hwkey } from '@emeraldwallet/store';
 import { HDPathIndexes, IAddressState } from '@emeraldwallet/store/lib/hdpath-preview/types';
-import { Address } from '@emeraldwallet/ui';
+import { Address, Table } from '@emeraldwallet/ui';
 import {
   Grid,
   MenuItem,
   Select,
-  Table,
   TableBody,
   TableCell,
   TableHead,

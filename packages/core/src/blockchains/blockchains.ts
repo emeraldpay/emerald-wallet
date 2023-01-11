@@ -3,8 +3,7 @@ import { Satoshi, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { LedgerApp } from '@emeraldpay/emerald-vault-core';
 import { Bitcoin } from './Bitcoin';
 import { CoinTicker } from './CoinTicker';
-import Ethereum from './ethereum/Ethereum';
-import EthereumParams from './ethereum/EthereumParams';
+import { Ethereum, EthereumParams } from './ethereum';
 import { HDPath } from './HDPath';
 import { IBlockchain } from './IBlockchain';
 

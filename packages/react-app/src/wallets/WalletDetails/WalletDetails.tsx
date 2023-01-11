@@ -124,9 +124,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
             <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
             <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
           </TabList>
-          <IconButton>
-            <WalletMenu walletId={walletId} />
-          </IconButton>
+          <WalletMenu walletId={walletId} />
         </div>
         <Paper classes={{ root: styles.paper }}>
           <Toolbar className={styles.toolbar}>

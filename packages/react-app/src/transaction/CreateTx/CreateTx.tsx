@@ -6,11 +6,11 @@ import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import AmountField from './AmountField';
-import FormFieldWrapper from './FormFieldWrapper';
-import FormLabel from './FormLabel';
 import FromField from './FromField';
 import ToField from './ToField';
 import TokenField from './TokenField';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
   container: {
@@ -198,7 +198,7 @@ class CreateTransaction extends React.Component<Props, State> {
 
     return (
       <div className={classes.container}>
-        <FormFieldWrapper>
+        <FormField>
           <FromField
             accounts={ownAddresses}
             disabled={this.getDisabled(false)}
@@ -206,8 +206,8 @@ class CreateTransaction extends React.Component<Props, State> {
             onChangeAccount={onChangeFrom}
             getBalancesByAddress={getBalancesByAddress}
           />
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <TokenField
             balance={tx.getTotalBalance()}
             fiatBalance={fiatBalance}
@@ -217,11 +217,11 @@ class CreateTransaction extends React.Component<Props, State> {
             getBalanceByToken={this.getBalanceByToken}
             onChangeToken={onChangeToken}
           />
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <ToField blockchain={chain} to={tx.to} onChange={onChangeTo} />
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <AmountField
             amount={tx.getAmount()}
             units={tx.getAmount().units}
@@ -233,8 +233,8 @@ class CreateTransaction extends React.Component<Props, State> {
             }
             onMaxClicked={onMaxClicked}
           />
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
           <Box className={classes.inputField}>
             <Box className={classes.gasPriceTypeBox}>
@@ -293,9 +293,9 @@ class CreateTransaction extends React.Component<Props, State> {
               </FormHelperText>
             </Box>
           </Box>
-        </FormFieldWrapper>
+        </FormField>
         {eip1559 && (
-          <FormFieldWrapper>
+          <FormField>
             <FormLabel>Priority gas price</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
@@ -354,15 +354,15 @@ class CreateTransaction extends React.Component<Props, State> {
                 </FormHelperText>
               </Box>
             </Box>
-          </FormFieldWrapper>
+          </FormField>
         )}
-        <FormFieldWrapper style={{ paddingBottom: 0 }}>
+        <FormField style={{ paddingBottom: 0 }}>
           <FormLabel />
           <ButtonGroup style={{ flexGrow: 5 }}>
             <Button label="Cancel" onClick={onCancel} />
             <Button disabled={this.getDisabled()} primary={true} label="Create Transaction" onClick={onSubmit} />
           </ButtonGroup>
-        </FormFieldWrapper>
+        </FormField>
       </div>
     );
   }

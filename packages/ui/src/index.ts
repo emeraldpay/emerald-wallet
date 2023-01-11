@@ -24,6 +24,7 @@ export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export { default as NotificationBar } from './components/common/NotificationBar';
 export { default as Pager } from './components/common/Pager';
 export { default as PasswordInput } from './components/common/PasswordInput';
+export { Table } from './components/common/Table';
 export { default as TxRef } from './components/common/TxRef';
 export { default as WalletReference } from './components/accounts/WalletReference';
 export { Input } from './components/common/Input';

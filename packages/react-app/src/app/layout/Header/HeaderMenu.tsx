@@ -1,9 +1,9 @@
-import { accounts, IState, screen } from '@emeraldwallet/store';
+import { IState, accounts, screen } from '@emeraldwallet/store';
 import {
+  EmoteHappy as AboutIcon,
   AddCircle as AddCircleIcon,
   Book as BookIcon,
   Button,
-  EmoteHappy as AboutIcon,
   Menu as MenuIcon,
   Settings as SettingsIcon,
 } from '@emeraldwallet/ui';
@@ -115,7 +115,7 @@ const Component: React.FC<StateProps & DispatchProps> = ({
   );
 };
 
-export default connect<StateProps, DispatchProps, {}, IState>(
+export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => ({
     walletsCount: state.accounts.wallets.length,
   }),
@@ -131,7 +131,7 @@ export default connect<StateProps, DispatchProps, {}, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_WALLET));
     },
     gotoSettings() {
-      dispatch(screen.actions.gotoScreen('settings'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.SETTINGS));
     },
     isGlobalKeySet() {
       return dispatch(accounts.actions.isGlobalKeySet());

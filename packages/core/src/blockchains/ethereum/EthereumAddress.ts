@@ -1,38 +1,41 @@
-
 export class EthereumAddress {
-
-  public static isValid (address: string): boolean {
-    try {
-      const x = new EthereumAddress(address);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
   private readonly address: string;
 
-  constructor (address: string) {
-    if (typeof address === 'undefined' || address === null || address === '') {
-      throw Error('Address is empty or undefined');
+  constructor(address: string) {
+    if (address == null || address === '') {
+      throw new Error('Address is empty or undefined');
     }
+
     if (!address.startsWith('0x')) {
-      throw Error('Address doesn\'t start with');
+      throw new Error("Address doesn't start with");
     }
+
     if (!address.match('0x[0-9a-fA-F]{40}')) {
-      throw Error('Address is not 20 bytes in hex');
+      throw new Error('Address is not 20 bytes in hex');
     }
+
     this.address = address.toLowerCase();
   }
 
-  public equals(another: EthereumAddress): boolean {
-    return (this.address.toLowerCase() === another.toString().toLowerCase());
-  };
+  static isValid(address: string): boolean {
+    try {
+      new EthereumAddress(address);
 
-  public toString(): string {
+      return true;
+    } catch (exception) {
+      return false;
+    }
+  }
+
+  equals(another: EthereumAddress): boolean {
+    return this.address.toLowerCase() === another.toString().toLowerCase();
+  }
+
+  getAddress(): string {
     return this.address;
   }
 
-  public getAddress(): string {
+  toString(): string {
     return this.address;
   }
 }

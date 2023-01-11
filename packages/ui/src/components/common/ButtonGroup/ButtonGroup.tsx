@@ -17,27 +17,34 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import * as React from 'react';
 import styles from './styles';
 
-interface Props {
-  children?: any[];
-  classes?: any;
-  style?: any;
+interface Classes {
+  container: string;
+  firstItem: string;
+  item: string;
 }
 
-export const ButtonGroup = ({classes, children, style}: Props) => {
-  if (!children) {
+interface OwnProps {
+  children?: React.ReactNode | React.ReactNode[];
+  classes?: Classes;
+  style?: React.CSSProperties;
+}
+
+export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style }) => {
+  if (children == null) {
     return null;
   }
-  let key = 0;
+
   return (
     <div className={classes?.container} style={style}>
-      {children.map((btn) => {
-        const item = (
-          <div key={key} className={(key === 0) ? classes?.firstItem : classes?.item}>
-            {btn}
-          </div>);
-        key += 1;
-        return item;
-      })}
+      {Array.isArray(children) ? (
+        children.map((button, index) => (
+          <div key={`group-button[${index}]`} className={index === 0 ? classes?.firstItem : classes?.item}>
+            {button}
+          </div>
+        ))
+      ) : (
+        <div className={classes?.firstItem ?? classes?.item}>{children}</div>
+      )}
     </div>
   );
 };

@@ -42,8 +42,8 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
   inputField: {
@@ -109,7 +109,7 @@ interface DispatchProps {
   estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
-  signTransaction(tx: workflow.CreateEthereumTx, password: string): Promise<void>;
+  signTransaction(tx: workflow.CreateEthereumTx, password?: string): Promise<void>;
 }
 
 const minimalUnit = new Unit(9, '', undefined);
@@ -286,7 +286,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
             </Alert>
           ) : (
             <>
-              <FormFieldWrapper>
+              <FormField>
                 <FormLabel>Address</FormLabel>
                 {ownAddresses.length === 1 ? (
                   <>{address}</>
@@ -298,9 +298,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     onChange={setAddress}
                   />
                 )}
-              </FormFieldWrapper>
+              </FormField>
               {tokensData.length > 1 && (
-                <FormFieldWrapper>
+                <FormField>
                   <FormLabel>Token</FormLabel>
                   <TextField select value={token.symbol} onChange={onTokenChange}>
                     {tokensData.map((item) => (
@@ -309,17 +309,17 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       </MenuItem>
                     ))}
                   </TextField>
-                </FormFieldWrapper>
+                </FormField>
               )}
-              <FormFieldWrapper>
+              <FormField>
                 <FormLabel>Amount</FormLabel>
                 {formatAmount(balanceByToken[token.symbol])}
-              </FormFieldWrapper>
-              <FormFieldWrapper>
+              </FormField>
+              <FormField>
                 <FormLabel>Reason</FormLabel>
                 {recoverBlockchain.getTitle()} coins/tokens on {wrongBlockchain.getTitle()} address
-              </FormFieldWrapper>
-              <FormFieldWrapper>
+              </FormField>
+              <FormField>
                 <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
                 <Box className={classes.inputField}>
                   <Box className={classes.gasPriceTypeBox}>
@@ -373,9 +373,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     </FormHelperText>
                   </Box>
                 </Box>
-              </FormFieldWrapper>
+              </FormField>
               {eip1559 && (
-                <FormFieldWrapper>
+                <FormField>
                   <FormLabel>Priority gas price</FormLabel>
                   <Box className={classes.inputField}>
                     <Box className={classes.gasPriceTypeBox}>
@@ -429,9 +429,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       </FormHelperText>
                     </Box>
                   </Box>
-                </FormFieldWrapper>
+                </FormField>
               )}
-              <FormFieldWrapper>
+              <FormField>
                 <FormLabel />
                 <ButtonGroup>
                   <Button label="Cancel" onClick={goBack} />
@@ -442,22 +442,22 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     onClick={onCreateTransaction}
                   />
                 </ButtonGroup>
-              </FormFieldWrapper>
+              </FormField>
             </>
           )}
         </>
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormFieldWrapper>
+          <FormField>
             <FormLabel />
             Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FormLabel>Password</FormLabel>
             <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FormLabel />
             <ButtonGroup style={{ width: '100%' }}>
               <Button label="Cancel" onClick={goBack} />
@@ -468,7 +468,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={onSignTransaction}
               />
             </ButtonGroup>
-          </FormFieldWrapper>
+          </FormField>
         </>
       )}
     </Page>
@@ -563,7 +563,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(ownProps.entry.id, password, tx.build()),
+        transaction.actions.signTransaction(ownProps.entry.id, tx.build(), password),
       );
 
       if (signed != null) {

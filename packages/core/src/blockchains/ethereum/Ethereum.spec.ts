@@ -1,5 +1,5 @@
-import Ethereum from './Ethereum';
-import EthereumParams from './EthereumParams';
+import { Ethereum } from './Ethereum';
+import { EthereumParams } from './EthereumParams';
 import { BlockchainCode } from '../blockchains';
 import { CoinTicker } from '../CoinTicker';
 import { HDPath } from '../HDPath';

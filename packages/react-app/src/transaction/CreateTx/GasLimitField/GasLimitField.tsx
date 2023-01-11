@@ -1,58 +1,55 @@
-import {Input} from '@emeraldwallet/ui';
-import {withStyles} from '@material-ui/styles';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { Input } from '@emeraldwallet/ui';
+import { StyleRules, Theme, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
-import FormLabel from '../FormLabel';
-import {Wei} from '@emeraldpay/bigamount-crypto';
+import FormLabel from '../../../form/FormLabel';
 
-function getStyles (theme?: any) {
-  return {
+const styles = (theme: Theme): StyleRules =>
+  createStyles({
     container: {
       color: theme.palette && theme.palette.text.secondary,
-      wordSpacing: '3px',
-      letterSpacing: '1px',
+      fontSize: 14,
       fontWeight: 200,
-      paddingLeft: '20px',
-      fontSize: '14px'
-    }
-  };
-}
+      letterSpacing: 1,
+      paddingLeft: 20,
+      wordSpacing: 3,
+    },
+  });
 
-interface IProps {
-  onChangeGasLimit?: Function;
-  txFee: Wei;
-  txFeeToken: string;
-  gasLimit: string;
-  txFeeFiat?: string;
+interface OwnProps {
   fiatCurrency?: string;
-  classes?: any;
+  gasLimit: string;
+  txFee: Wei;
+  txFeeFiat?: string;
+  txFeeToken: string;
+  onChangeGasLimit?: (value: string) => void;
 }
 
-export class GasLimitField extends React.Component<IProps> {
-  constructor (props: IProps) {
+type Props = OwnProps & WithStyles<typeof styles>;
+
+export class GasLimitField extends React.Component<Props> {
+  constructor(props: Props) {
     super(props);
+
     this.onChangeGasLimit = this.onChangeGasLimit.bind(this);
   }
 
-  public onChangeGasLimit (event: any) {
+  onChangeGasLimit(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void {
     if (this.props.onChangeGasLimit) {
       this.props.onChangeGasLimit(event.target.value);
     }
   }
 
-  public render () {
-    const { txFeeToken, txFee } = this.props;
+  render(): React.ReactNode {
+    const { classes, txFee, txFeeToken } = this.props;
+
     return (
       <React.Fragment>
         <FormLabel>Gas Limit</FormLabel>
-        <div style={{width: '200px'}}>
-          <Input
-            type='number'
-            value={this.props.gasLimit}
-            // min="21000"
-            onChange={this.onChangeGasLimit}
-          />
+        <div style={{ width: '200px' }}>
+          <Input type="number" value={this.props.gasLimit} onChange={this.onChangeGasLimit} />
         </div>
-        <div className={this.props.classes.container}>
+        <div className={classes.container}>
           {txFee.toString()} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
@@ -60,4 +57,4 @@ export class GasLimitField extends React.Component<IProps> {
   }
 }
 
-export default withStyles(getStyles)(GasLimitField);
+export default withStyles(styles)(GasLimitField);

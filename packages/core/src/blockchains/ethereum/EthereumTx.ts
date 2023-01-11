@@ -3,21 +3,21 @@ import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
 import { EthereumAddress } from './EthereumAddress';
 import { ITransaction } from '../ITransaction';
 
-class EthereumTx implements ITransaction {
+export class EthereumTx implements ITransaction {
   static eip1559mark = Buffer.from('02', 'hex');
 
-  public internalTx: TypedTransaction;
+  internalTx: TypedTransaction;
 
   constructor(tx: TypedTransaction) {
     this.internalTx = tx;
   }
 
-  public static fromRaw(hex: string, chainId: number): ITransaction {
+  static fromRaw(hex: string, chainId: number): ITransaction {
     const data = Buffer.from(hex.slice(2), 'hex');
 
     let hardfork: Hardfork | undefined = undefined;
 
-    if (data.slice(0, 1).equals(EthereumTx.eip1559mark)) {
+    if (data.subarray(0, 1).equals(EthereumTx.eip1559mark)) {
       hardfork = Hardfork.London;
     }
 
@@ -33,19 +33,19 @@ class EthereumTx implements ITransaction {
     return new EthereumTx(TransactionFactory.fromSerializedData(data, { common }));
   }
 
-  public getHash(): string {
+  getData(): string {
+    return this.internalTx.data.toString('hex');
+  }
+
+  getHash(): string {
     return '0x' + this.internalTx.hash().toString('hex');
   }
 
-  public verifySignature(): boolean {
-    return this.internalTx.verifySignature();
+  getNonce(): number {
+    return parseInt(this.internalTx.nonce.toString(10), 10);
   }
 
-  public getSenderAddress(): EthereumAddress {
-    return new EthereumAddress(this.internalTx.getSenderAddress().toString());
-  }
-
-  public getRecipientAddress(): EthereumAddress {
+  getRecipientAddress(): EthereumAddress {
     const address = this.internalTx.to?.toString();
 
     if (address == null) {
@@ -55,17 +55,15 @@ class EthereumTx implements ITransaction {
     return new EthereumAddress(address);
   }
 
-  public getValue(): string {
+  getSenderAddress(): EthereumAddress {
+    return new EthereumAddress(this.internalTx.getSenderAddress().toString());
+  }
+
+  getValue(): string {
     return '0x' + this.internalTx.value.toString(16);
   }
 
-  public getData(): string {
-    return this.internalTx.data.toString('hex');
-  }
-
-  public getNonce(): number {
-    return parseInt(this.internalTx.nonce.toString(10), 10);
+  verifySignature(): boolean {
+    return this.internalTx.verifySignature();
   }
 }
-
-export default EthereumTx;

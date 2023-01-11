@@ -17,7 +17,9 @@ export enum Pages {
   ADD_HD_ADDRESS = 'add-hd-address',
   ADDRESS_BOOK = 'address-book',
   BROADCAST_TX = 'broadcast-tx',
-  //@deprecated, rename to setup coins
+  /**
+   * @deprecated Rename to setup coins
+   */
   CREATE_HD_ACCOUNT = 'create-hd-account',
   CREATE_TX = 'create-tx',
   CREATE_TX_BITCOIN = 'create-tx-bitcoin',
@@ -33,10 +35,14 @@ export enum Pages {
   IMPORT_VAULT = 'import-vault',
   PASSWORD_MIGRATION = 'password-migration',
   RECEIVE = 'receive',
+  SETTINGS = 'settings',
   SETUP_VAULT = 'setup-vault',
+  SIGN_MESSAGE = 'sign-message',
+  SHOW_MESSAGE='show-message',
   TX_DETAILS = 'transaction',
   WALLET = 'wallet',
   WALLET_INFO = 'wallet-info',
+  WELCOME = 'welcome',
 }
 
 export type ScreenState = Partial<

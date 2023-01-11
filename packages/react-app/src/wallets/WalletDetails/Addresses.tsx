@@ -10,7 +10,8 @@ import {
 import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, tokens } from '@emeraldwallet/store';
-import { Table, TableBody } from '@material-ui/core';
+import { Table } from '@emeraldwallet/ui';
+import { TableBody } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AddressesItem from './AddressesItem';

@@ -1,15 +1,14 @@
 import { OddPasswordItem, Uuid } from '@emeraldpay/emerald-vault-core';
 import { accounts, screen } from '@emeraldwallet/store';
-import { Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
   CircularProgress,
-  createStyles,
-  Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   Typography,
+  createStyles,
   withStyles,
 } from '@material-ui/core';
 import { green as greenColor, grey as greyColor, orange as orangeColor } from '@material-ui/core/colors';
@@ -18,8 +17,8 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useState } from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../../../transaction/CreateTx/FormFieldWrapper';
-import FormLabel from '../../../transaction/CreateTx/FormLabel/FormLabel';
+import FormField from '../../../form/FormField';
+import FormLabel from '../../../form/FormLabel';
 
 const styles = createStyles({
   gutter: {
@@ -100,17 +99,21 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
         upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
       })),
     );
-  }, [legacyItems, globalPassword, password]);
+  }, [legacyItems, globalPassword, password, checkGlobalKey, upgradeLegacyItems]);
 
-  React.useEffect(() => {
-    (async () => {
-      const items = await getLegacyItems();
+  React.useEffect(
+    () => {
+      (async () => {
+        const items = await getLegacyItems();
 
-      setLegacyItems(items);
+        setLegacyItems(items);
 
-      setInitializing(false);
-    })();
-  }, []);
+        setInitializing(false);
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const allItemsUpgraded = legacyItems.reduce((carry, item) => carry && item.upgraded === true, true);
 
@@ -164,23 +167,19 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
           ))}
         </TableBody>
       </Table>
-      <FormFieldWrapper>
+      <FormField>
         <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
         <PasswordInput
           disabled={initializing}
           error={globalPasswordError}
           onChange={(value) => setGlobalPassword(value)}
         />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel classes={{ root: classes.label }}>Old password (for any of the items above):</FormLabel>
-        <PasswordInput
-          disabled={initializing}
-          error={passwordError}
-          onChange={(value) => setPassword(value)}
-        />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+        <PasswordInput disabled={initializing} error={passwordError} onChange={(value) => setPassword(value)} />
+      </FormField>
+      <FormField>
         <FormLabel classes={{ root: classes.label }} />
         <ButtonGroup>
           <Button
@@ -191,12 +190,12 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
           />
           {!allItemsUpgraded && <Button disabled={initializing} label="Apply" primary={true} onClick={applyPassword} />}
         </ButtonGroup>
-      </FormFieldWrapper>
+      </FormField>
     </Page>
   );
 };
 
-export default connect<{}, DispatchProps>(
+export default connect<unknown, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({

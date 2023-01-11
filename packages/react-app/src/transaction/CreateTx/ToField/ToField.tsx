@@ -4,7 +4,7 @@ import { Input } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AddressBookMenu from './AddressBookMenu';
-import FormLabel from '../FormLabel';
+import FormLabel from '../../../form/FormLabel';
 
 interface OwnProps {
   blockchain: BlockchainCode;

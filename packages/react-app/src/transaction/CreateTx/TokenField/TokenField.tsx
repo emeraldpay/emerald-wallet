@@ -4,7 +4,7 @@ import { ListItemText, MenuItem, StyleRules, TextField, Theme, createStyles } fr
 import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { ReactElement } from 'react';
-import FormLabel from '../FormLabel';
+import FormLabel from '../../../form/FormLabel';
 
 const styles = (theme: Theme): StyleRules =>
   createStyles({

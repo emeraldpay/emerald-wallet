@@ -1,11 +1,12 @@
 import { isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
   PlaylistAdd as AddIcon,
   Assignment as DetailsIcon,
   Settings as SettingsIcon,
   AddCircleOutline as SetupIcon,
+  BorderColor as SignIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -14,6 +15,7 @@ interface DispatchProps {
   onAddAccount(): void;
   onAddAddress(): void;
   onShowDetails(): void;
+  onSignMessage(): void;
 }
 
 interface OwnProps {
@@ -31,21 +33,30 @@ const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
   onAddAccount,
   onAddAddress,
   onShowDetails,
+  onSignMessage,
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | SVGSVGElement>(null);
+  const [menuElement, setMenuElement] = React.useState<HTMLButtonElement | null>(null);
 
-  const handleClick = React.useCallback((event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
+  const onCloseMenu = (): void => {
+    setMenuElement(null);
+  };
 
-  const handleClose = React.useCallback(() => {
-    setAnchorEl(null);
-  }, []);
+  const onOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setMenuElement(event.currentTarget);
+  };
 
   return (
     <>
-      <SettingsIcon onClick={handleClick} />
-      <Menu id="simple-menu" anchorEl={anchorEl} keepMounted={true} open={Boolean(anchorEl)} onClose={handleClose}>
+      <IconButton onClick={onOpenMenu}>
+        <SettingsIcon />
+      </IconButton>
+      <Menu anchorEl={menuElement} open={menuElement != null} onClose={onCloseMenu}>
+        <MenuItem onClick={onSignMessage}>
+          <ListItemIcon>
+            <SignIcon fontSize="small" />
+          </ListItemIcon>
+          <Typography variant="inherit">Sign Message</Typography>
+        </MenuItem>
         <MenuItem onClick={onShowDetails}>
           <ListItemIcon>
             <DetailsIcon fontSize="small" />
@@ -79,14 +90,17 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   (dispatch, ownProps) => ({
-    onAddAccount: () => {
+    onAddAccount() {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
     },
-    onAddAddress: () => {
+    onAddAddress() {
       dispatch(screen.actions.gotoScreen(screen.Pages.ADD_HD_ADDRESS, ownProps.walletId));
     },
-    onShowDetails: () => {
+    onShowDetails() {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET_INFO, ownProps.walletId));
+    },
+    onSignMessage() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.SIGN_MESSAGE, ownProps.walletId));
     },
   }),
 )(WalletMenu);

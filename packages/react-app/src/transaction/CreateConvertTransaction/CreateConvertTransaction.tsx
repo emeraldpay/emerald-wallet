@@ -30,9 +30,9 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 import AmountField from '../CreateTx/AmountField/AmountField';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
 import FromField from '../CreateTx/FromField';
 
 const styles = createStyles({
@@ -101,7 +101,7 @@ interface DispatchProps {
   estimateGas(tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
-  signTransaction(entryId: string, password: string, tx: workflow.CreateErc20WrappedTx, token: Token): Promise<void>;
+  signTransaction(entryId: string, tx: workflow.CreateErc20WrappedTx, token: Token, password?: string): Promise<void>;
 }
 
 const minimalUnit = new Unit(9, '', undefined);
@@ -275,7 +275,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     if (correctPassword) {
       const blockchainCode = blockchainIdToCode(entry.blockchain);
 
-      await signTransaction(entry.id, password, tx, tokenRegistry.bySymbol(blockchainCode, token));
+      await signTransaction(entry.id, tx, tokenRegistry.bySymbol(blockchainCode, token), password);
     } else {
       setPasswordError('Incorrect password');
     }
@@ -369,7 +369,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     <Page title="Create Convert Transaction" leftIcon={<Back onClick={goBack} />}>
       {stage === Stages.SETUP && (
         <>
-          <FormFieldWrapper>
+          <FormField>
             <FormLabel />
             <ToggleButtonGroup exclusive={true} value={convertable} onChange={onChangeConvertable}>
               <ToggleButton disabled={initializing} value={coinTicker}>
@@ -379,8 +379,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 {token} to Ether
               </ToggleButton>
             </ToggleButtonGroup>
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FromField
               accounts={addresses}
               disabled={initializing}
@@ -388,8 +388,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               onChangeAccount={onChangeAddress}
               getBalancesByAddress={(address) => getBalancesByAddress(address, token)}
             />
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <AmountField
               disabled={initializing}
               amount={currentTx.amount}
@@ -397,8 +397,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               onChangeAmount={onChangeAmount}
               onMaxClicked={onClickMaxAmount}
             />
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
@@ -456,9 +456,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 </FormHelperText>
               </Box>
             </Box>
-          </FormFieldWrapper>
+          </FormField>
           {eip1559 && (
-            <FormFieldWrapper>
+            <FormField>
               <FormLabel>Priority gas price</FormLabel>
               <Box className={classes.inputField}>
                 <Box className={classes.gasPriceTypeBox}>
@@ -516,9 +516,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                   </FormHelperText>
                 </Box>
               </Box>
-            </FormFieldWrapper>
+            </FormField>
           )}
-          <FormFieldWrapper>
+          <FormField>
             <FormLabel />
             <ButtonGroup>
               <Button label="Cancel" onClick={goBack} />
@@ -529,22 +529,22 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={(): void => setStage(Stages.SIGN)}
               />
             </ButtonGroup>
-          </FormFieldWrapper>
+          </FormField>
         </>
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormFieldWrapper>
+          <FormField>
             <FormLabel />
             <div>
               Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
             </div>
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FormLabel>Password</FormLabel>
             <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormFieldWrapper>
-          <FormFieldWrapper>
+          </FormField>
+          <FormField>
             <FormLabel />
             <ButtonGroup style={{ width: '100%' }}>
               <Button label="Cancel" onClick={goBack} />
@@ -555,7 +555,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={onSignTransaction}
               />
             </ButtonGroup>
-          </FormFieldWrapper>
+          </FormField>
         </>
       )}
     </Page>
@@ -654,13 +654,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    async signTransaction(entryId, password, tx, token) {
+    async signTransaction(entryId, tx, token, password) {
       if (tx.address == null) {
         return;
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(entryId, password, tx.build()),
+        transaction.actions.signTransaction(entryId, tx.build(), password),
       );
 
       if (signed != null) {
