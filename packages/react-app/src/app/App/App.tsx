@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import ErrorDialog from '../../common/ErrorDialog';
 import i18n from '../../i18n';
+import { ErrorBoundary } from '../ErrorBoundary';
 import ConnectionStatus from '../layout/ConnectionStatus';
 import Header from '../layout/Header';
 import NotificationBar from '../layout/NotificationBar';
@@ -46,16 +47,18 @@ const App: React.FC<OwnProps> = ({ store, terms }) => {
     <I18nextProvider i18n={i18n}>
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
-          <div className={styles.application}>
-            {state.screen.screen !== 'paper-wallet' && <Header />}
-            <div className={styles.screen}>
-              <Screen termsVersion={terms} />
+          <ErrorBoundary>
+            <div className={styles.application}>
+              {state.screen.screen !== 'paper-wallet' && <Header />}
+              <div className={styles.screen}>
+                <Screen termsVersion={terms} />
+              </div>
+              <ErrorDialog />
+              <NotificationBar />
+              <Dialog />
+              <ConnectionStatus />
             </div>
-            <ErrorDialog />
-            <NotificationBar />
-            <Dialog />
-            <ConnectionStatus />
-          </div>
+          </ErrorBoundary>
         </ThemeProvider>
       </Provider>
     </I18nextProvider>
