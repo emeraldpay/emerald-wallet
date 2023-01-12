@@ -55,9 +55,9 @@ class PricesService implements IService {
   fetch(): void {
     log.info(`Request for prices from ${this.from.join(', ')} to ${this.to}`);
 
-    this.listener?.request(this.from, this.to, (result) => {
+    this.listener?.request(this.from, this.to, (rates) => {
       try {
-        this.webContents?.send('store', { type: 'ACCOUNT/EXCHANGE_RATES', payload: result });
+        this.webContents?.send('store', { type: 'ACCOUNT/EXCHANGE_RATES', payload: { rates } });
       } catch (exception) {
         log.warn('Cannot send to the UI', exception);
       }

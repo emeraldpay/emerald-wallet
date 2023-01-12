@@ -1,12 +1,13 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import {
-  amountFactory,
   AnyCoinCode,
-  blockchainCodeToId,
   Blockchains,
   IBackendApi,
+  amountFactory,
+  blockchainCodeToId,
   isBitcoin,
 } from '@emeraldwallet/core';
+import { CoinTicker } from '@emeraldwallet/core/lib/blockchains/CoinTicker';
 import { all, call, put, takeEvery } from '@redux-saga/core/effects';
 import { SagaIterator } from 'redux-saga';
 import * as actions from './actions';
@@ -41,22 +42,22 @@ function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaItera
   }
 }
 
-function* loadBalances(backendApi: IBackendApi, action: ILoadBalances): SagaIterator {
-  const amountReader = amountFactory(action.blockchain);
+function* loadBalances(backendApi: IBackendApi, { address, assets, blockchain }: ILoadBalances): SagaIterator {
+  const amountReader = amountFactory(blockchain);
 
   const balance: { [key in AnyCoinCode]: string } = yield call(
-    [backendApi, backendApi.getBalance],
-    action.blockchain,
-    action.address,
-    action.assets,
+    backendApi.getBalance,
+    blockchain,
+    address,
+    assets.map((asset) => (asset === CoinTicker.ETH ? ('ETHER' as AnyCoinCode) : asset)),
   );
 
   for (const asset of Object.keys(balance)) {
     yield put(
       actions.setBalance(
-        action.blockchain,
-        action.address,
-        asset as AnyCoinCode,
+        blockchain,
+        address,
+        asset === 'ETHER' ? CoinTicker.ETH : (asset as AnyCoinCode),
         amountReader(balance[asset as AnyCoinCode]).encode(),
       ),
     );
