@@ -10,8 +10,8 @@ import * as bitcoin from 'bitcoinjs-lib';
 import classNames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 
 const useStyles = makeStyles(
   createStyles({
@@ -49,7 +49,7 @@ const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
   const styles = useStyles();
   return (
     <Box>
-      <FormFieldWrapper>
+      <FormField>
         <FormLabel>From</FormLabel>
         <Box className={classNames(styles.inputField)}>
           {parsed.inputs.map((input) => (
@@ -60,8 +60,8 @@ const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
             </Box>
           ))}
         </Box>
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel>To</FormLabel>
         <Box className={classNames(styles.inputField)}>
           {parsed.outputs.map((output) => (
@@ -71,8 +71,8 @@ const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
             </Box>
           ))}
         </Box>
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel>Fee</FormLabel>
         <Box className={classNames(styles.inputField)}>
           {parsed.fee ? (
@@ -83,7 +83,7 @@ const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
             </Alert>
           )}
         </Box>
-      </FormFieldWrapper>
+      </FormField>
     </Box>
   );
 };

@@ -1,14 +1,14 @@
 import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
-import { accounts, IState, screen } from '@emeraldwallet/store';
+import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Pages } from '@emeraldwallet/store/lib/screen';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
-import { createStyles, Typography, withStyles } from '@material-ui/core';
+import { Typography, createStyles, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../../../transaction/CreateTx/FormFieldWrapper';
-import FormLabel from '../../../transaction/CreateTx/FormLabel';
+import FormField from '../../../form/FormField';
+import FormLabel from '../../../form/FormLabel';
 
 const styles = createStyles({
   gutter: {
@@ -90,7 +90,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
         return (items.length > 0 ? goPasswordMigration : hasWallets ? goHome : createWallet)();
       }
     }
-  }, [password, confirmPassword]);
+  }, [confirmPassword, hasWallets, password, createWallet, getLegacyItems, goHome, goPasswordMigration, setGlobalKey]);
 
   return (
     <Page title="Setup Global Key" leftIcon={<Back onClick={goBack} />}>
@@ -105,15 +105,15 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
           ? 'To begin using the new format, please create a new key that will encrypt all of your Private Keys.'
           : 'Please create a key that will encrypt all of your Private Keys.'}
       </Typography>
-      <FormFieldWrapper>
+      <FormField>
         <FormLabel classes={{ root: classes.label }}>Global password</FormLabel>
         <PasswordInput onChange={(value) => setPassword(value)} />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel classes={{ root: classes.label }}>Confirm password</FormLabel>
         <PasswordInput onChange={(value) => setConfirmPassword(value)} />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel classes={{ root: classes.label }} />
         <Buttons
           confirmPassword={confirmPassword}
@@ -122,7 +122,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
           applyPassword={applyPassword}
           goHome={goHome}
         />
-      </FormFieldWrapper>
+      </FormField>
       <Typography>
         NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to recover
         the Wallet from Secret Phrase backup. Please make sure you have it backed up.

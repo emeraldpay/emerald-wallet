@@ -63,7 +63,7 @@ function listenElectron(): void {
 }
 
 function getInitialScreen(): void {
-  store.dispatch(screen.actions.gotoScreen('welcome'));
+  store.dispatch(screen.actions.gotoScreen(screen.Pages.WELCOME));
 
   triggers.onceServicesStart(store).then(() =>
     triggers.onceModeSet(store).then(() =>

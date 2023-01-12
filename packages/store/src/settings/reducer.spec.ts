@@ -21,16 +21,16 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate('ETC', asGlobal(state))).toEqual(5);
-    expect(fiatRate('ETH', asGlobal(state))).toEqual(10);
+    expect(fiatRate(asGlobal(state), 'ETC')).toEqual(5);
+    expect(fiatRate(asGlobal(state), 'ETH')).toEqual(10);
 
     state = settingsReducers(state, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: CurrencyCode.RUB,
     });
 
-    expect(fiatRate('ETC', asGlobal(state))).toBeUndefined();
-    expect(fiatRate('ETH', asGlobal(state))).toBeUndefined();
+    expect(fiatRate(asGlobal(state), 'ETC')).toBeUndefined();
+    expect(fiatRate(asGlobal(state), 'ETH')).toBeUndefined();
   });
 
   it('EXCHANGE_RATES should update locale currency rate', () => {
@@ -47,8 +47,8 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate('ETC', asGlobal(state))).toEqual(5);
-    expect(fiatRate('ETH', asGlobal(state))).toEqual(10);
+    expect(fiatRate(asGlobal(state), 'ETC')).toEqual(5);
+    expect(fiatRate(asGlobal(state), 'ETH')).toEqual(10);
   });
 
   it('should store locale currency in uppercase', () => {

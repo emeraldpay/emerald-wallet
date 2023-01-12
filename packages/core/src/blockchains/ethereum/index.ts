@@ -1,3 +1,4 @@
-export { default as Ethereum } from './Ethereum';
-export { default as EthereumParams } from './EthereumParams';
-export { default as EthereumTx } from './EthereumTx';
+export { Ethereum } from './Ethereum';
+export { EthereumMessage, isStructuredMessage } from './EthereumMessage';
+export { EthereumParams } from './EthereumParams';
+export { EthereumTx } from './EthereumTx';

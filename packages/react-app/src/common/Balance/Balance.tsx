@@ -1,28 +1,27 @@
-import {IState, settings} from '@emeraldwallet/store';
-import {Balance} from '@emeraldwallet/ui';
-import * as React from 'react';
-import {connect} from 'react-redux';
-import {BigAmount} from "@emeraldpay/bigamount";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { IState, settings } from '@emeraldwallet/store';
+import { Balance } from '@emeraldwallet/ui';
+import { connect } from 'react-redux';
 
-// Component properties
 interface OwnProps {
-  balance: BigAmount
+  balance: BigAmount;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps) => {
-    if (!BigAmount.is(ownProps.balance)) {
-      throw new Error("Not a balance instance: " + typeof ownProps.balance + " = " + ownProps.balance);
-    }
-    const fiatCurrency = settings.selectors.fiatCurrency(state);
-    if (typeof ownProps.balance.units == "undefined") {
-      console.warn("No units", ownProps.balance);
-    }
-    const fiatRate = settings.selectors.fiatRate(ownProps.balance.units.top.code, state);
-    return {
-      fiatCurrency,
-      fiatRate
-    };
-  },
-  null
-)(Balance);
+export default connect<unknown, unknown, OwnProps, IState>((state, { balance }) => {
+  if (!BigAmount.is(balance)) {
+    throw new Error(`Not a balance instance: ${typeof balance} = ${balance}`);
+  }
+
+  const fiatCurrency = settings.selectors.fiatCurrency(state);
+
+  if (balance.units == null) {
+    console.warn('No units', balance);
+  }
+
+  const fiatRate = settings.selectors.fiatRate(state, balance.units.top.code);
+
+  return {
+    fiatCurrency,
+    fiatRate,
+  };
+}, null)(Balance);

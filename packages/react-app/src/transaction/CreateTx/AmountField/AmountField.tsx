@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
-import FormLabel from '../FormLabel';
+import FormLabel from '../../../form/FormLabel';
 
 interface Actions {
   onClear: () => void;

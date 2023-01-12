@@ -389,7 +389,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     getFiatValue(amount) {
       const { top: topUnit } = amount.units;
 
-      const rate = settings.selectors.fiatRate(topUnit.code, state) ?? 0;
+      const rate = settings.selectors.fiatRate(state, topUnit.code) ?? 0;
       const value = amount.getNumberByUnit(topUnit).multipliedBy(rate);
 
       return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);

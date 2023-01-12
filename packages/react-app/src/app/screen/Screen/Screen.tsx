@@ -17,6 +17,8 @@ import {
   WalletDetails,
   Welcome,
 } from '../../../index';
+import ShowMessage from '../../../message/ShowMessage';
+import SignMessage from '../../../message/SignMessage';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
 import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
 import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
@@ -39,7 +41,9 @@ interface OwnProps {
 
 interface StateProps {
   screen?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   screenItem?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   restoreData?: any;
 }
 
@@ -54,10 +58,6 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
           Initializing...
         </div>
       );
-    case 'settings':
-      return <Settings />;
-    case 'welcome':
-      return <Welcome currentTermsVersion={props.termsVersion} />;
     case screen.Pages.ADD_ADDRESS:
       return <AddContact />;
     case screen.Pages.ADD_HD_ADDRESS:
@@ -96,14 +96,22 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <PasswordMigration />;
     case screen.Pages.RECEIVE:
       return <ReceiveScreen walletId={props.screenItem} />;
+    case screen.Pages.SETTINGS:
+      return <Settings />;
     case screen.Pages.SETUP_VAULT:
       return <SetupVault />;
+    case screen.Pages.SIGN_MESSAGE:
+      return <SignMessage walletId={props.screenItem} />;
+    case screen.Pages.SHOW_MESSAGE:
+      return <ShowMessage {...props.screenItem} />;
     case screen.Pages.TX_DETAILS:
       return <TxDetails tx={props.screenItem} />;
     case screen.Pages.WALLET:
       return <WalletDetails initialTab={props.restoreData?.tab} walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:
       return <WalletInfo walletId={props.screenItem} />;
+    case screen.Pages.WELCOME:
+      return <Welcome currentTermsVersion={props.termsVersion} />;
     default:
       return <div>Unknown screen: {props.screen}</div>;
   }

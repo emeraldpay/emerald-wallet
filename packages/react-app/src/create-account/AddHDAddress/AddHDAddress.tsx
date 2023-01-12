@@ -1,13 +1,12 @@
-import { SeedReference, Uuid, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { SeedDescription, SeedReference, Uuid, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { AddSeedEntry, isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { Blockchains, HDPath, IBlockchain, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Back, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, ButtonGroup, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
   Button,
   Grid,
   MenuItem,
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -19,9 +18,9 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 import LedgerWait from '../../ledger/LedgerWait';
-import FormFieldWrapper from '../../transaction/CreateTx/FormFieldWrapper';
-import FormLabel from '../../transaction/CreateTx/FormLabel/FormLabel';
 
 const styles = createStyles({
   blockchains: {
@@ -64,7 +63,7 @@ interface OwnProps {
 interface StateProps {
   blockchains: IBlockchain[];
   entries: WalletEntry[];
-  isHWSeed: boolean;
+  seed: SeedDescription | undefined;
 }
 
 interface StylesProps {
@@ -75,7 +74,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   blockchains,
   classes,
   entries,
-  isHWSeed,
+  seed,
   walletId,
   addEntryToWallet,
   checkGlobalKey,
@@ -226,7 +225,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
         stage === Stage.UNLOCK ? undefined : (
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item classes={{ root: classes.blockchains }}>
-              <FormFieldWrapper style={{ paddingBottom: 0 }}>
+              <FormField style={{ paddingBottom: 0 }}>
                 <FormLabel>Blockchain</FormLabel>
                 <TextField
                   fullWidth={true}
@@ -240,7 +239,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
                     </MenuItem>
                   ))}
                 </TextField>
-              </FormFieldWrapper>
+              </FormField>
             </Grid>
             <Grid item>
               <ButtonGroup>
@@ -264,13 +263,11 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
       leftIcon={<Back onClick={goBack} />}
     >
       {stage === Stage.UNLOCK &&
-        (isHWSeed ? (
+        (seed?.type === 'ledger' ? (
           <LedgerWait fullSize onConnected={() => setStage(Stage.LIST)} />
         ) : (
           <>
-            <Typography>
-              Enter password to unlock seed {entry == null || !isSeedPkRef(entry, entry.key) ? '' : entry.key.seedId}
-            </Typography>
+            <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>
             <Grid container alignItems="center" spacing={1}>
               <Grid item xs={10}>
                 <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
@@ -338,9 +335,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const [entry] = entries;
 
     const seed =
-      entry == null || !isSeedPkRef(entry, entry.key) ? null : accounts.selectors.getSeed(state, entry.key.seedId);
+      entry == null || !isSeedPkRef(entry, entry.key) ? undefined : accounts.selectors.getSeed(state, entry.key.seedId);
 
-    return { blockchains, entries, isHWSeed: seed?.type === 'ledger' };
+    return { blockchains, entries, seed };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({

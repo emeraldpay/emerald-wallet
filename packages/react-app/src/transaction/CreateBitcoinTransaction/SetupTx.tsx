@@ -8,9 +8,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 import AmountField from '../CreateTx/AmountField';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
 import ToField from '../CreateTx/ToField/ToField';
 
 const { ValidationResult } = workflow;
@@ -134,18 +134,18 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
 
   return (
     <div className={styles.container}>
-      <FormFieldWrapper>
+      <FormField>
         <ToField blockchain={blockchainIdToCode(entry.blockchain)} to={create.address} onChange={onSetTo} />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <AmountField
           amount={amount}
           units={create.requiredAmount.units}
           onChangeAmount={onSetAmount}
           onMaxClicked={onSetAmountMax}
         />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel>Fee</FormLabel>
         <Box className={styles.inputField}>
           <Box className={styles.feeTypeBox}>
@@ -193,8 +193,8 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             <FormHelperText className={styles.feeHelp}>{totalFee.toString()}</FormHelperText>
           </Box>
         </Box>
-      </FormFieldWrapper>
-      <FormFieldWrapper style={{ paddingBottom: 0 }}>
+      </FormField>
+      <FormField style={{ paddingBottom: 0 }}>
         <FormLabel />
         <ButtonGroup classes={{ container: styles.inputField }}>
           <Button label="Cancel" onClick={onCancel} />
@@ -205,7 +205,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             onClick={() => onCreate(create.create(), totalFee)}
           />
         </ButtonGroup>
-      </FormFieldWrapper>
+      </FormField>
     </div>
   );
 };

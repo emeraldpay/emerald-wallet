@@ -15,11 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TypographyProps, createTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 import 'typeface-inter';
 import 'typeface-roboto-mono';
 import createSpacing from '@material-ui/core/styles/createSpacing';
-import { CSSProperties } from '@material-ui/styles';
 import * as React from 'react';
 import colors from './colors';
 
@@ -41,85 +40,56 @@ declare module '@material-ui/core/styles/createTheme' {
   }
 }
 
-const theme = {
-  palette: {
-    error: {
-      main: colors.ruby,
-    },
-    primary: colors.emerald,
-    secondary: colors.ash,
-    divider: colors.conch.main,
-    background: {
-      default: colors.snow,
-    },
-    action: {
-      selected: colors.snow,
-      hover: 'none',
-    },
-    text: {
-      primary: colors.coal,
-      secondary: colors.ash.main,
-    },
-  },
-  spacing: createSpacing(spacing),
-  root: {
-    fontFamily: ['Inter', 'sans-serif'].join(','),
-  },
-  typography: {
-    fontSize: 16,
-    fontWeightLight: 300,
-    fontWeightRegular: 400,
-    fontWeightMedium: 400,
-    fontFamily: ['Inter', 'sans-serif'].join(','),
-  },
+export default createTheme({
   monotype: {
     fontFamily: ['"Roboto Mono"', 'monospace'].join(','),
     fontWeight: 500,
   },
-  mixins: {},
   overrides: {
+    MuiAppBar: {
+      colorDefault: {
+        backgroundColor: colors.white.main,
+      },
+      root: {
+        boxShadow: 'none',
+      },
+    },
+    MuiCardActions: {
+      root: {
+        float: 'right' as const,
+        paddingBottom: '16px',
+        paddingRight: '16px',
+      },
+    },
+    MuiCardHeader: {
+      action: {
+        marginRight: '0',
+        width: '100%', //TODO why???
+      },
+    },
+    MuiButton: {
+      contained: {
+        backgroundColor: colors.emerald.main,
+        boxShadow: 'none',
+        color: colors.white.main,
+      },
+      root: {
+        borderRadius: 0,
+        color: colors.emerald.main,
+        minHeight: spacing * 4,
+      },
+    },
     MuiFormControl: {
       root: {
         boxSizing: 'border-box',
         paddingLeft: spacing,
         paddingRight: spacing,
-      } as CSSProperties,
+      },
     },
     MuiFormHelperText: {
       root: {
         position: 'absolute',
         bottom: -(spacing * 3),
-      } as CSSProperties,
-    },
-    MuiTextField: {
-      root: {
-        borderRadius: '1px',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-        borderColor: colors.conch.main,
-      } as CSSProperties,
-    },
-    MuiButton: {
-      root: {
-        color: colors.emerald.main,
-        borderRadius: 0,
-        minHeight: spacing * 4,
-      },
-      contained: {
-        color: colors.white.main,
-        backgroundColor: colors.emerald.main,
-        boxShadow: 'none',
-      },
-    },
-    MuiToolbar: {
-      gutters: {
-        paddingLeft: spacing * 3,
-        paddingRight: spacing * 3,
-      },
-    },
-    MuiInputAdornment: {
-      root: {
-        maxHeight: 'none',
       },
     },
     MuiInput: {
@@ -127,12 +97,9 @@ const theme = {
         minHeight: spacing * 5,
       },
     },
-    MuiAppBar: {
+    MuiInputAdornment: {
       root: {
-        boxShadow: 'none',
-      },
-      colorDefault: {
-        backgroundColor: colors.white.main,
+        maxHeight: 'none',
       },
     },
     MuiList: {
@@ -151,14 +118,6 @@ const theme = {
         borderLeft: 'none',
       },
     },
-    MuiPaper: {
-      root: {
-        border: `1px solid ${colors.conch.main}`,
-      },
-      elevation3: {
-        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-      },
-    },
     MuiMenuItem: {
       root: {
         cursor: 'pointer',
@@ -173,6 +132,45 @@ const theme = {
         },
       },
     },
+    MuiPaper: {
+      root: {
+        border: `1px solid ${colors.conch.main}`,
+      },
+      elevation3: {
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+      },
+    },
+    MuiStepLabel: {
+      label: {
+        fontSize: '0.8em',
+      },
+    },
+    MuiTextField: {
+      root: {
+        borderRadius: '1px',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: colors.conch.main,
+      },
+    },
+    MuiTableCell: {
+      head: {
+        fontWeight: 600,
+      },
+    },
+    MuiTableRow: {
+      root: {
+        '&:last-child td': {
+          borderBottom: 0,
+        },
+      },
+    },
+    MuiToolbar: {
+      gutters: {
+        paddingLeft: spacing * 3,
+        paddingRight: spacing * 3,
+      },
+    },
     MuiTypography: {
       gutterBottom: {
         marginBottom: spacing * 4,
@@ -181,49 +179,47 @@ const theme = {
         marginBottom: spacing * 2,
       },
     },
-    MuiCardHeader: {
-      action: {
-        width: '100%', //TODO why???
-        marginRight: '0',
-      },
+  },
+  palette: {
+    action: {
+      hover: 'none',
+      selected: colors.snow,
     },
-    MuiCardActions: {
-      root: {
-        float: 'right' as 'right',
-        paddingRight: '16px',
-        paddingBottom: '16px',
-      },
+    background: {
+      default: colors.snow,
     },
-    MuiStepLabel: {
-      label: {
-        fontSize: '0.8em',
-      },
+    divider: colors.conch.main,
+    error: {
+      main: colors.ruby,
     },
-    MuiSkeleton: {
-      root: {
-        backgroundColor: colors.ash.main,
-      },
-      text: {
-        transform: 'none',
-        fontSize: '0.8em',
-      },
+    primary: colors.emerald,
+    secondary: colors.ash,
+    text: {
+      primary: colors.coal,
+      secondary: colors.ash.main,
     },
   },
   props: {
-    MuiTypography: {
-      color: 'secondary',
-    } as Partial<TypographyProps>,
     MuiInput: {
       disableUnderline: true,
-    },
-    MuiPaper: {
-      square: true,
-      elevation: 0,
     },
     MuiList: {
       disablePadding: true,
     },
+    MuiPaper: {
+      elevation: 0,
+      square: true,
+    },
+    MuiTypography: {
+      color: 'secondary',
+    },
   },
-};
-
-export default createTheme(theme);
+  spacing: createSpacing(spacing),
+  typography: {
+    fontFamily: ['Inter', 'sans-serif'].join(','),
+    fontSize: 16,
+    fontWeightLight: 300,
+    fontWeightMedium: 400,
+    fontWeightRegular: 400,
+  },
+});

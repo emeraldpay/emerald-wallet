@@ -533,7 +533,7 @@ async function sign(
     await dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
   }
 
-  return dispatch(transaction.actions.signTransaction(entryId, password, tx.build()));
+  return dispatch(transaction.actions.signTransaction(entryId, tx.build(), password));
 }
 
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).build();
@@ -622,7 +622,7 @@ export default connect(
         }
 
         const newBalance = accounts.selectors.getBalance(state, entry.id, zero)!;
-        const rate = settings.selectors.fiatRate(token, state) ?? 0;
+        const rate = settings.selectors.fiatRate(state, token) ?? 0;
         const fiat = CurrencyAmount.create(
           newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate).toNumber(),
           settings.selectors.fiatCurrency(state),

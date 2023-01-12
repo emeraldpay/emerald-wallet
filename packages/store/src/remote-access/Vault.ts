@@ -14,10 +14,10 @@ import {
   SeedDescription,
   SeedDetails,
   SeedReference,
+  SignedMessage,
   SignedTx,
-  UnsignedTx,
-  Uuid,
-  Wallet,
+  UnsignedMessage,
+  UnsignedTx, Uuid, Wallet,
 } from '@emeraldpay/emerald-vault-core';
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
@@ -113,7 +113,7 @@ class Vault implements IEmeraldVault {
   }
 
   async setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
-    await ipcRenderer.invoke(IpcCommands.VAULT_UPDATE_MAIN_MENU);
+    await ipcRenderer.send(IpcCommands.UPDATE_MAIN_MENU);
 
     return ipcRenderer.invoke(IpcCommands.VAULT_SET_WALLET_LABEL, walletId, label);
   }
@@ -160,6 +160,10 @@ class Vault implements IEmeraldVault {
 
   updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Promise<boolean> {
     return ipcRenderer.invoke(IpcCommands.VAULT_UPDATE_SEED, seed, details);
+  }
+
+  signMessage(entryId: EntryId, message: UnsignedMessage, password?: string): Promise<SignedMessage> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_SIGN_MESSAGE, entryId, message, password);
   }
 }
 

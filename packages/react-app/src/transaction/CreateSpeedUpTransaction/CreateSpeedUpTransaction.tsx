@@ -16,8 +16,8 @@ import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
-import FormLabel from '../CreateTx/FormLabel/FormLabel';
+import FormField from '../../form/FormField';
+import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
   inputField: {
@@ -63,7 +63,7 @@ interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<GasPriceType>;
   goBack(): void;
-  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
+  signTransaction(tx: EthereumTransaction, accountId?: string, password?: string): Promise<void>;
 }
 
 interface StylesProps {
@@ -118,8 +118,8 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
           ...transaction,
           ...gasPrices,
         },
-        password,
         accountId,
+        password,
       );
     } else {
       setPasswordError('Incorrect password');
@@ -151,7 +151,7 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
 
   return (
     <Page title="Speed Up Transaction" leftIcon={<Back onClick={goBack} />}>
-      <FormFieldWrapper>
+      <FormField>
         <FormLabel>Gas price</FormLabel>
         <Box className={classes.inputField}>
           <Box className={classes.gasPriceSliderBox}>
@@ -183,12 +183,12 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
             </FormHelperText>
           </Box>
         </Box>
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel>Password</FormLabel>
         <PasswordInput error={passwordError} onChange={setPassword} />
-      </FormFieldWrapper>
-      <FormFieldWrapper>
+      </FormField>
+      <FormField>
         <FormLabel />
         <ButtonGroup style={{ width: '100%' }}>
           <Button label="Cancel" onClick={goBack} />
@@ -199,7 +199,7 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
             onClick={onSignTransaction}
           />
         </ButtonGroup>
-      </FormFieldWrapper>
+      </FormField>
     </Page>
   );
 };
@@ -262,12 +262,16 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       const value = factory(tx.value);
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(accountId, password, {
-          ...tx,
-          gasPrice: gasPrice?.number,
-          maxGasPrice: maxGasPrice?.number,
-          priorityGasPrice: priorityGasPrice?.number,
-        }),
+        transaction.actions.signTransaction(
+          accountId,
+          {
+            ...tx,
+            gasPrice: gasPrice?.number,
+            maxGasPrice: maxGasPrice?.number,
+            priorityGasPrice: priorityGasPrice?.number,
+          },
+          password,
+        ),
       );
 
       if (signed != null) {

@@ -3175,20 +3175,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-core@npm:0.10.0, @emeraldpay/emerald-vault-core@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@emeraldpay/emerald-vault-core@npm:0.10.0"
-  checksum: 724130c5a3b6d94da6f00422ed81f96abe00ac198957884bbd740817ea5614e8dfb6e4f55d409177807674255281c4fb93d3950b1a00eff092ded7beb13aa43a
+"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz":
+  version: 0.11.0-dev
+  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz"
+  checksum: 1c2df229bb26c8966a2b301518cd0fe554e36094506c233485654c998386641ec6f1eb55c979e59ffcca83562b52f91169f7aaf4fe9648afdba66c1a0ea32fa7
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-native@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@emeraldpay/emerald-vault-native@npm:0.10.0"
+"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz":
+  version: 0.11.0-dev
+  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz"
   dependencies:
-    "@emeraldpay/emerald-vault-core": 0.10.0
+    "@emeraldpay/emerald-vault-core": 0.11.0-dev
     "@emeraldpay/neon-frame": 0.1.1
-  checksum: b9fd9b850d6ce105e5fe9592737264372eb2b23175b287873185ec987d4e6c0226567f6edc7f95d9c53e8c183df03ebe13b6d48efbdeeb98effeea9cfba8e5c7
+  checksum: 1d5245502edb15eaacd57535bb292787bb0bf4016b48d68c75cd975e93f668731d3eb02994f3946c10ee174c2f788b6ab2131342b31c5658dda431452f25981c
   languageName: node
   linkType: hard
 
@@ -3225,6 +3225,7 @@ __metadata:
     bignumber.js: 8.0.2
     ethereumjs-util: ^7.1.5
     jest: ^27.5.1
+    jsonschema: ^1.4.1
     rimraf: ^3.0.2
     ts-jest: ^27.1.5
     typescript: ^4.8.4
@@ -16146,6 +16147,13 @@ __metadata:
     graceful-fs:
       optional: true
   checksum: d37b3732c6a44d2839338d4580f6092d569a1dc6b1895b8f0b02ece5c39420b4b8b89cf3540caa4a7da9986c5844d2f6d39753651ddd785959e628b9d87ba216
+  languageName: node
+  linkType: hard
+
+"jsonschema@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "jsonschema@npm:1.4.1"
+  checksum: 1ef02a6cd9bc32241ec86bbf1300bdbc3b5f2d8df6eb795517cf7d1cd9909e7beba1e54fdf73990fd66be98a182bda9add9607296b0cb00b1348212988e424b2
   languageName: node
   linkType: hard
 

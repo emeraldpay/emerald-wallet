@@ -15,6 +15,7 @@ export {
   isEthereum,
   ledgerByBlockchain,
 } from './blockchains';
+export { EthereumMessage, isStructuredMessage } from './ethereum';
 export {
   InputDataDecoder,
   Token,

@@ -1,13 +1,13 @@
+import { basename } from 'path';
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { accounts, screen, settings } from '@emeraldwallet/store';
 import { Back, Button, Page, PasswordInput } from '@emeraldwallet/ui';
-import { createStyles, Grid, Typography, withStyles } from '@material-ui/core';
-import { basename } from 'path';
+import { Grid, Typography, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import FormField from '../../../form/FormField';
+import FormLabel from '../../../form/FormLabel';
 import { VAULT_FILE_FILTER } from '../../../settings/Settings/types';
-import FormFieldWrapper from '../../../transaction/CreateTx/FormFieldWrapper';
-import FormLabel from '../../../transaction/CreateTx/FormLabel/FormLabel';
 
 const styles = createStyles({
   drop: {
@@ -132,11 +132,11 @@ class ImportVault extends React.Component<Props, State> {
 
     return (
       <Page title="Import Vault" leftIcon={<Back onClick={goBack} />}>
-        <FormFieldWrapper>
+        <FormField>
           <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
           <PasswordInput onChange={(password) => this.setState({ password: password })} />
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <FormLabel classes={{ root: classes.label }} />
           <div className={classes.drop} ref={this.dragAndDrop} onClick={this.handleSelectFile}>
             <Typography variant="caption">
@@ -145,8 +145,8 @@ class ImportVault extends React.Component<Props, State> {
                 : `Selected file "${fileName}"`}
             </Typography>
           </div>
-        </FormFieldWrapper>
-        <FormFieldWrapper>
+        </FormField>
+        <FormField>
           <FormLabel classes={{ root: classes.label }} />
           <Grid container justifyContent="flex-end">
             <Grid item>
@@ -158,13 +158,13 @@ class ImportVault extends React.Component<Props, State> {
               />
             </Grid>
           </Grid>
-        </FormFieldWrapper>
+        </FormField>
       </Page>
     );
   }
 }
 
-export default connect<{}, DispatchProps>(
+export default connect<unknown, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({

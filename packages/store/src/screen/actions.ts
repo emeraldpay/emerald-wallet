@@ -10,17 +10,12 @@ import {
   IShowNotificationAction,
   Pages,
 } from './types';
-import { accounts, screen } from '../index';
+import { accounts } from '../index';
 import { IState } from '../types';
 
 const hashRegExp = new RegExp('^(0x)?[a-z0-9A-Z]+$');
 
-export function gotoScreen(
-  screen: string | Pages,
-  item: any = null,
-  restore: any = null,
-  ignore = false,
-): IOpenAction {
+export function gotoScreen(screen: string | Pages, item: any = null, restore: any = null, ignore = false): IOpenAction {
   return {
     type: ActionTypes.OPEN,
     ignore,
@@ -37,26 +32,26 @@ export function gotoWalletsScreen() {
     const isLoading = accounts.selectors.isLoading(state);
 
     if (isLoading) {
-      dispatch(gotoScreen('welcome'));
+      dispatch(gotoScreen(Pages.WELCOME));
     } else {
       const wallets = accounts.selectors.allWallets(state);
 
       const hasGlobalKey = await dispatch(accounts.actions.isGlobalKeySet());
 
-      let nextPage = screen.Pages.HOME;
+      let nextPage = Pages.HOME;
       let walletId: Uuid | undefined;
 
       if (hasGlobalKey) {
         if (wallets.length === 0) {
-          nextPage = screen.Pages.CREATE_WALLET;
+          nextPage = Pages.CREATE_WALLET;
         } else if (wallets.length === 1) {
           const [wallet] = wallets;
 
-          nextPage = screen.Pages.WALLET;
+          nextPage = Pages.WALLET;
           walletId = wallet.id;
         }
       } else {
-        nextPage = screen.Pages.SETUP_VAULT;
+        nextPage = Pages.SETUP_VAULT;
       }
 
       dispatch(gotoScreen(nextPage, walletId));
