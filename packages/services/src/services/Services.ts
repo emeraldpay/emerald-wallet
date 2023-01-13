@@ -16,7 +16,7 @@ export class Services {
 
   add(service: IService): void {
     if (this.services.has(service.id)) {
-      throw Error(`Service with ID ${service.id} already added`);
+      throw new Error(`Service with ID ${service.id} already added`);
     }
 
     this.services.set(service.id, service);

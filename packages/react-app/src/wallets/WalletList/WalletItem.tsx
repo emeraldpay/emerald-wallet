@@ -98,7 +98,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
   return (
     <Card
-      variant={'elevation'}
+      variant="elevation"
       elevation={current ? 3 : 0}
       className={styles.root}
       onClick={onDetails}
@@ -106,19 +106,19 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
       onMouseOut={() => setCurrent(false)}
     >
       <CardContent>
-        <Grid container={true}>
-          <Grid item={true} xs={2} className={styles.walletIcon}>
-            <HashIcon value={'WALLET/' + wallet.id} size={100} />
+        <Grid container>
+          <Grid item className={styles.walletIcon} xs={2}>
+            <HashIcon value={`WALLET/${wallet.id}`} size={100} />
           </Grid>
-          <Grid item={true} xs={7} onClick={onDetails}>
-            <Grid container={true}>
-              <Grid item={true} xs={8} className={styles.titleLine}>
+          <Grid item onClick={onDetails} xs={7}>
+            <Grid container>
+              <Grid item className={styles.titleLine} xs={8}>
                 <Typography className={styles.title}>{wallet.name}</Typography>
               </Grid>
-              <Grid item={true} xs={4} className={styles.titleLine}>
+              <Grid item className={styles.titleLine} xs={4}>
                 {total && <Balance classes={{ coins: styles.totalBalance }} balance={total.balance} />}
               </Grid>
-              <Grid item={true} xs={12}>
+              <Grid item xs={12}>
                 {assets.map((asset) => (
                   <Balance
                     key={asset.balance.units.top.code}
@@ -129,11 +129,11 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
               </Grid>
             </Grid>
           </Grid>
-          <Grid item={true} xs={3} className={styles.actions}>
-            <Button variant={'contained'} onClick={onSend} className={styles.actionButton} color={'secondary'}>
+          <Grid item className={styles.actions} xs={3}>
+            <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onSend}>
               Send
             </Button>
-            <Button variant={'contained'} onClick={onReceive} className={styles.actionButton} color={'secondary'}>
+            <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onReceive}>
               Receive
             </Button>
           </Grid>

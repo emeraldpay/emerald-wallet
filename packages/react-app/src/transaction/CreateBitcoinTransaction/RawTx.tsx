@@ -30,7 +30,6 @@ const RawTx: React.FC<OwnProps> = ({ rawTx }) => {
         label="Raw Tx"
         minRows={4}
         value={rawTx}
-        variant="outlined"
         InputLabelProps={{ shrink: true }}
         InputProps={{
           classes: {

@@ -1,57 +1,66 @@
-import {PersistentStateImpl} from "../api";
-import {tempPath} from "./_commons";
-import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
+import { BlockchainCode } from '@emeraldwallet/core';
+import { tempPath } from './_commons';
+import { PersistentStateManager } from '../api';
 
 describe('Tx Meta', () => {
-  let state: PersistentStateImpl;
+  let manager: PersistentStateManager;
+
   beforeEach(() => {
-    state = new PersistentStateImpl(tempPath('tx-meta'));
+    manager = new PersistentStateManager(tempPath('tx-meta'));
   });
+
   afterEach(() => {
     // close current after each test, otherwise it may reuse same instance for the next text
-    state.close();
+    manager.close();
   });
 
   test('no meta', async () => {
-    const act = await state.txmeta.get(BlockchainCode.ETH, "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478");
+    const act = await manager.txmeta.get(
+      BlockchainCode.ETH,
+      '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
+    );
     expect(act).toBeNull();
   });
 
   test('set meta', async () => {
-    const saved = await state.txmeta.set({
+    const saved = await manager.txmeta.set({
       blockchain: BlockchainCode.ETH,
-      txId: "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478",
+      label: 'test label',
       timestamp: new Date('2021-03-05T10:11:12.000+0300'),
-      label: "test label"
+      txId: '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
     });
     expect(saved).not.toBeNull();
 
-    const act = await state.txmeta.get(BlockchainCode.ETH, "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478");
+    const act = await manager.txmeta.get(
+      BlockchainCode.ETH,
+      '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
+    );
     expect(act).not.toBeNull();
 
-    expect(act.label).toBe("test label")
+    expect(act.label).toBe('test label');
   });
 
   test('update meta', async () => {
-    await state.txmeta.set({
+    await manager.txmeta.set({
       blockchain: BlockchainCode.ETH,
-      txId: "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478",
+      label: 'test label',
       timestamp: new Date('2021-03-05T10:11:12.000+0300'),
-      label: "test label"
+      txId: '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
     });
 
-    await state.txmeta.set({
+    await manager.txmeta.set({
       blockchain: BlockchainCode.ETH,
-      txId: "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478",
+      label: 'test label 2',
       timestamp: new Date('2021-03-05T10:11:15.000+0300'),
-      label: "test label 2"
+      txId: '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
     });
 
-
-    const act = await state.txmeta.get(BlockchainCode.ETH, "0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478");
+    const act = await manager.txmeta.get(
+      BlockchainCode.ETH,
+      '0x61a7f27b1a8b844aaeed7afd80558590c40bdc5898aca6dac0853d804a375478',
+    );
     expect(act).not.toBeNull();
 
-    expect(act.label).toBe("test label 2")
+    expect(act.label).toBe('test label 2');
   });
-
 });

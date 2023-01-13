@@ -1,1 +1,1 @@
-export { PersistentStateImpl } from './api';
+export { PersistentStateManager } from './api';

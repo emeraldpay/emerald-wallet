@@ -6,40 +6,42 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import InitialSetup from '../InitialSetup';
 
-const useStyles = makeStyles((theme) => createStyles({
-  brand: {
-    fontSize: 42,
-  },
-  brandPart1: {
-    color: theme.palette.primary.main,
-  },
-  brandPart2: {
-    color: theme.palette.secondary.main,
-  },
-  container: {
-    maxWidth: 1150,
-  },
-  loader: {
-    marginRight: theme.spacing(),
-  },
-  logo: {
-    paddingTop: '6%',
-  },
-  message: {
-    height: 40,
-    paddingTop: 40,
-  },
-  messageLevel: {
-    alignItems: 'center',
-    display: 'flex',
-  },
-  messageLevel1: {
-    color: '#999',
-  },
-  messageLevel3: {
-    color: '#f66',
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    brand: {
+      fontSize: 42,
+    },
+    brandPart1: {
+      color: theme.palette.primary.main,
+    },
+    brandPart2: {
+      color: theme.palette.secondary.main,
+    },
+    container: {
+      maxWidth: 1150,
+    },
+    loader: {
+      marginRight: theme.spacing(),
+    },
+    logo: {
+      paddingTop: '6%',
+    },
+    message: {
+      height: 40,
+      paddingTop: 40,
+    },
+    messageLevel: {
+      alignItems: 'center',
+      display: 'flex',
+    },
+    messageLevel1: {
+      color: '#999',
+    },
+    messageLevel3: {
+      color: '#f66',
+    },
+  }),
+);
 
 export interface OwnProps {
   currentTermsVersion: string;
@@ -55,7 +57,7 @@ const Welcome: React.FC<OwnProps & StateProps> = ({ currentTermsVersion, level, 
   const styles = useStyles();
 
   return needSetup ? (
-    <Grid container={true} alignItems="center" justifyContent="center">
+    <Grid container alignItems="center" justifyContent="center">
       <Grid item xs={10}>
         <InitialSetup currentTermsVersion={currentTermsVersion} />
       </Grid>
@@ -75,7 +77,7 @@ const Welcome: React.FC<OwnProps & StateProps> = ({ currentTermsVersion, level, 
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={true} className={styles.message}>
+      <Grid item xs className={styles.message}>
         <div className={classNames(styles.messageLevel, level === 3 ? styles.messageLevel3 : styles.messageLevel1)}>
           <CircularProgress className={styles.loader} size={24} />
           {message}
@@ -85,7 +87,7 @@ const Welcome: React.FC<OwnProps & StateProps> = ({ currentTermsVersion, level, 
   );
 };
 
-export default connect<StateProps, {}, OwnProps, IState>((state, ownProps: OwnProps): StateProps => {
+export default connect<StateProps, unknown, OwnProps, IState>((state, ownProps: OwnProps): StateProps => {
   const message = application.selectors.getMessage(state);
 
   return {

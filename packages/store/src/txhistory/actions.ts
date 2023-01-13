@@ -58,7 +58,7 @@ export function removeTransaction(txId: string): RemoveStoredTxAction {
 export function updateTransaction(
   walletId: Uuid,
   transaction: PersistentState.Transaction,
-  meta: PersistentState.TxMeta | null,
+  meta: PersistentState.TxMetaItem | null,
 ): Dispatched<void, UpdateStoredTxAction> {
   return (dispatch, getState) => {
     const {
@@ -78,11 +78,11 @@ export function updateTransaction(
 export function getTransactionMeta(
   blockchain: BlockchainCode,
   txId: string,
-): Dispatched<PersistentState.TxMeta | null> {
+): Dispatched<PersistentState.TxMetaItem | null> {
   return (dispatch, getState, extra) => extra.api.txMeta.get(blockchain, txId);
 }
 
-export function setTransactionMeta(meta: PersistentState.TxMeta): Dispatched<PersistentState.TxMeta> {
+export function setTransactionMeta(meta: PersistentState.TxMetaItem): Dispatched<PersistentState.TxMetaItem> {
   return (dispatch, getState, extra) => extra.api.txMeta.set(meta);
 }
 

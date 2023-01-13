@@ -1,11 +1,11 @@
 import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
 import { PersistentState } from '@emeraldwallet/core';
-import { PersistentStateImpl, createDateReviver } from './api';
+import { PersistentStateManager, createDateReviver } from './api';
 
-export class AddressbookImpl implements PersistentState.Addressbook {
-  private manager: PersistentStateImpl;
+export class Addressbook implements PersistentState.Addressbook {
+  private manager: PersistentStateManager;
 
-  constructor(manager: PersistentStateImpl) {
+  constructor(manager: PersistentStateManager) {
     this.manager = manager;
   }
 

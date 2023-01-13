@@ -1,18 +1,13 @@
-import {PersistentStateImpl} from "../api";
-import {tempPath} from "./_commons";
+import { tempPath } from './_commons';
+import { PersistentStateManager } from '../api';
 
-
-describe("API Access", () => {
-
-  test("open", async () => {
-    let state = new PersistentStateImpl(tempPath("open"));
+describe('API Access', () => {
+  test('open', async () => {
+    new PersistentStateManager(tempPath('open'));
   });
 
-  test("open and close", async () => {
-    let state = new PersistentStateImpl(tempPath("open"));
-    state.close();
+  test('open and close', async () => {
+    const manager = new PersistentStateManager(tempPath('open'));
+    manager.close();
   });
-
-})
-
-
+});

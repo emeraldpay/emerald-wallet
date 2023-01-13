@@ -1,44 +1,41 @@
-import { PersistentStateImpl } from '../api';
 import { tempPath } from './_commons';
+import { PersistentStateManager } from '../api';
 
 describe('XPub Position', () => {
-  let state: PersistentStateImpl;
+  const xpub =
+    'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJ' +
+    'yuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa';
+
+  let manager: PersistentStateManager;
 
   beforeEach(() => {
-    state = new PersistentStateImpl(tempPath('xpubpos'));
+    manager = new PersistentStateManager(tempPath('xpubpos'));
   });
 
   test('default is zero', async () => {
-    const act = await state.xpubpos.getNext(
-      'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa',
-    );
+    const act = await manager.xpubpos.getNext(xpub);
     expect(act).toBe(0);
   });
 
   test('update to a larger value', async () => {
-    const xpub =
-      'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa';
-
-    const act = await state.xpubpos.getNext(xpub);
+    const act = await manager.xpubpos.getNext(xpub);
     expect(act).toBe(0);
 
-    await state.xpubpos.setCurrentAddressAt(xpub, 4);
+    await manager.xpubpos.setCurrentAddressAt(xpub, 4);
 
-    const act2 = await state.xpubpos.getNext(xpub);
+    const act2 = await manager.xpubpos.getNext(xpub);
     expect(act2).toBe(5);
   });
 
   test("doesn't update to a smaller value", async () => {
-    const xpub =
-      'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa';
+    await manager.xpubpos.setCurrentAddressAt(xpub, 4);
 
-    await state.xpubpos.setCurrentAddressAt(xpub, 4);
-    const act = await state.xpubpos.getNext(xpub);
+    const act = await manager.xpubpos.getNext(xpub);
     expect(act).toBe(5);
 
-    await state.xpubpos.setCurrentAddressAt(xpub, 3);
+    await manager.xpubpos.setCurrentAddressAt(xpub, 3);
 
-    const act2 = await state.xpubpos.getNext(xpub);
+    const act2 = await manager.xpubpos.getNext(xpub);
     expect(act2).toBe(5);
   });
 });

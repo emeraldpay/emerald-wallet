@@ -1,24 +1,24 @@
-import { app, BrowserWindow } from 'electron';
-import { protocolHandler } from '../protocol';
+import { BrowserWindow, app } from 'electron';
+import { protocolHandler } from '../protocolHandler';
 
-export function assertSingletonWindow () {
-  const gotTheLock = app.requestSingleInstanceLock();
+export function assertSingletonWindow(): void {
+  const isNotLocked = app.requestSingleInstanceLock();
 
-  if (!gotTheLock) {
-    app.quit();
-    return;
-  }
+  if (isNotLocked) {
+    app.on('second-instance', (event, commandLine) => {
+      const [window] = BrowserWindow.getAllWindows();
 
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    const window = BrowserWindow.getAllWindows()[0];
+      if (window != null) {
+        if (window.isMinimized()) {
+          window.restore();
+        }
 
-    if (window) {
-      if (window.isMinimized()) {
-        window.restore();
+        window.focus();
+
+        protocolHandler(event, commandLine[1]);
       }
-      window.focus();
-
-      protocolHandler(event, commandLine[1]);
-    }
-  });
+    });
+  } else {
+    app.quit();
+  }
 }

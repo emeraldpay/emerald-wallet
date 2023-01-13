@@ -1,20 +1,21 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { IpcCommands, Logger } from '@emeraldwallet/core';
-import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { WebContents, ipcMain } from 'electron';
-import { setIpcHandlers } from './ipc-handlers/ipc';
-import Settings from './Settings';
+import { setupApiIpc } from './ipc/api';
+import { setupPersistentStateIpc } from './ipc/persistentState';
+import { setupVaultIpc } from './ipc/vault';
+import { Settings } from './Settings';
 import { createServices } from '../createServices';
-import ElectronLogger from '../logging/ElectronLogger';
+import { ElectronLogger } from '../ElectronLogger';
 import { ApiMode } from '../types';
-import { mapVaultWithIpc } from '../vault/vaultIpc';
 
 type Versions = Record<string, unknown>;
 
 Logger.setInstance(new ElectronLogger());
 
-export default class Application {
+export class Application {
   public log = Logger.forCategory('Application');
 
   public rpc: ChainRpcConnections;
@@ -35,7 +36,7 @@ export default class Application {
     webContents: WebContents,
     apiAccess: EmeraldApiAccess,
     apiMode: ApiMode,
-    persistentState: PersistentStateImpl,
+    persistentState: PersistentStateManager,
     vault: IEmeraldVault,
     rpc: ChainRpcConnections,
   ): void {
@@ -44,9 +45,9 @@ export default class Application {
 
     this.log.info('Set IPC handlers');
 
-    setIpcHandlers(this, apiAccess, persistentState);
-
-    mapVaultWithIpc(vault);
+    setupApiIpc(this, apiAccess);
+    setupPersistentStateIpc(persistentState);
+    setupVaultIpc(vault);
 
     this.log.info('Running services');
 

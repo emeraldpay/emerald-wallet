@@ -10,7 +10,7 @@ const DEFAULTS: SettingsStore = {
   tokens: [],
 };
 
-export default class Settings implements SettingsManager {
+export class Settings implements SettingsManager {
   private settings: ElectronStore<SettingsStore>;
 
   constructor() {

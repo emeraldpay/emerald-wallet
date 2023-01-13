@@ -1,15 +1,27 @@
 import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
 import { PersistentState } from '@emeraldwallet/core';
-import { PersistentStateImpl, createDateReviver } from './api';
+import { PersistentStateManager, createDateReviver } from './api';
 
 /**
  * Manage Transaction History
  */
-export class TxHistoryImpl implements PersistentState.TxHistory {
-  private manager: PersistentStateImpl;
+export class TxHistory implements PersistentState.TxHistory {
+  private manager: PersistentStateManager;
 
-  constructor(manager: PersistentStateImpl) {
+  constructor(manager: PersistentStateManager) {
     this.manager = manager;
+  }
+
+  getCursor(target: string): Promise<string | null> {
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_get_cursor', [target]);
+  }
+
+  setCursor(target: string, cursor: string): Promise<void> {
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_set_cursor', [target, cursor]);
+  }
+
+  remove(blockchain: number, txid: string): Promise<void> {
+    return neonFrameHandlerCall(this.manager.addon, 'txhistory_remove', [blockchain, txid]);
   }
 
   submit(tx: PersistentState.Transaction): Promise<PersistentState.Transaction> {
@@ -19,10 +31,6 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
       [JSON.stringify(tx)],
       createDateReviver(['sinceTimestamp', 'confirmTimestamp']),
     );
-  }
-
-  remove(blockchain: number, txid: string): Promise<void> {
-    return neonFrameHandlerCall(this.manager.addon, 'txhistory_remove', [blockchain, txid]);
   }
 
   query(
@@ -35,13 +43,5 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
       [JSON.stringify(filter), JSON.stringify(page)],
       createDateReviver(['sinceTimestamp', 'confirmTimestamp', 'block.timestamp']),
     );
-  }
-
-  getCursor(target: string): Promise<string | null> {
-    return neonFrameHandlerCall(this.manager.addon, 'txhistory_get_cursor', [target]);
-  }
-
-  setCursor(target: string, cursor: string): Promise<void> {
-    return neonFrameHandlerCall(this.manager.addon, 'txhistory_set_cursor', [target, cursor]);
   }
 }
