@@ -1,4 +1,4 @@
-import { Back, Button, Page, PasswordInput, Theme } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Theme } from '@emeraldwallet/ui';
 import { MenuItem, Tab, TextField, createStyles, withStyles } from '@material-ui/core';
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import * as React from 'react';
@@ -8,43 +8,20 @@ import { DispatchProps, MutableState, StateProps } from '../Settings/Settings';
 import { ExportResult } from '../Settings/types';
 
 const styles = createStyles({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  formBody: {
+    flex: 1,
+  },
   tabsContainer: {
     display: 'flex',
   },
   tabsSwitcher: {
     borderRight: `1px solid ${Theme.palette.secondary.main}`,
     marginRight: 20,
-  },
-  formBody: {
-    flex: 1,
-  },
-  formRow: {
-    alignItems: 'center',
-    display: 'flex',
-    paddingBottom: 20,
-    paddingTop: 20,
-  },
-  fieldName: {
-    fontSize: 16,
-    textAlign: 'right',
-  },
-  fieldInput: {
-    marginBottom: -8,
-    marginTop: -16,
-    width: '100%',
-  },
-  left: {
-    flexBasis: '20%',
-    flexShrink: 0,
-    marginLeft: 14.75,
-    marginRight: 14.75,
-  },
-  right: {
-    alignItems: 'center',
-    display: 'flex',
-    flexGrow: 2,
-    marginLeft: 14.75,
-    marginRight: 14.75,
   },
 });
 
@@ -135,7 +112,7 @@ export class SettingsForm extends React.Component<Props, State> {
       const exported = result === ExportResult.COMPLETE;
 
       showNotification(
-        t(exported ? 'settings.exportVaultSuccessful' : 'settings.exportVaultFailed'),
+        t(exported ? 'settings.exportSuccessful' : 'settings.exportFailed'),
         exported ? 'success' : 'warning',
       );
     }
@@ -165,60 +142,51 @@ export class SettingsForm extends React.Component<Props, State> {
               />
             </TabList>
             <TabPanel className={classes.formBody} value={SettingsTabs.COMMON}>
-              <div className={classes.formRow}>
-                <div className={classes.left}>
-                  <div className={classes.fieldName}>{t('settings.currency')}</div>
-                </div>
-                <div className={classes.right}>
-                  <TextField select={true} fullWidth={true} value={currency} onChange={this.handleCurrencyChange}>
-                    <MenuItem key="eur" value="eur">
-                      EUR
-                    </MenuItem>
-                    <MenuItem key="usd" value="usd">
-                      USD
-                    </MenuItem>
-                    <MenuItem key="cny" value="cny">
-                      CNY
-                    </MenuItem>
-                    <MenuItem key="rub" value="rub">
-                      RUB
-                    </MenuItem>
-                    <MenuItem key="krw" value="krw">
-                      KRW
-                    </MenuItem>
-                    <MenuItem key="aud" value="aud">
-                      AUD
-                    </MenuItem>
-                  </TextField>
-                </div>
-              </div>
-              <div className={classes.formRow}>
-                <div className={classes.left}>
-                  <div className={classes.fieldName}>{t('settings.lang')}</div>
-                </div>
-                <div className={classes.right}>
-                  <TextField select={true} value={language} fullWidth={true} onChange={this.handleLanguageChange}>
-                    <MenuItem key="en-US" value="en-US">
-                      English (US)
-                    </MenuItem>
-                    <MenuItem key="zh-CN" value="zh-CN">
-                      中文
-                    </MenuItem>
-                    <MenuItem key="pt-BR" value="pt-BR">
-                      Portugese
-                    </MenuItem>
-                    <MenuItem key="ko-KR" value="ko-KR">
-                      Korean
-                    </MenuItem>
-                  </TextField>
-                </div>
-              </div>
-              <div className={classes.formRow}>
-                <div className={classes.left} />
-                <div className={classes.right}>
+              <FormRow>
+                <FormLabel>{t('settings.currency')}</FormLabel>
+                <TextField select={true} fullWidth={true} value={currency} onChange={this.handleCurrencyChange}>
+                  <MenuItem key="eur" value="eur">
+                    EUR
+                  </MenuItem>
+                  <MenuItem key="usd" value="usd">
+                    USD
+                  </MenuItem>
+                  <MenuItem key="cny" value="cny">
+                    CNY
+                  </MenuItem>
+                  <MenuItem key="rub" value="rub">
+                    RUB
+                  </MenuItem>
+                  <MenuItem key="krw" value="krw">
+                    KRW
+                  </MenuItem>
+                  <MenuItem key="aud" value="aud">
+                    AUD
+                  </MenuItem>
+                </TextField>
+              </FormRow>
+              <FormRow>
+                <FormLabel>{t('settings.lang')}</FormLabel>
+                <TextField select={true} value={language} fullWidth={true} onChange={this.handleLanguageChange}>
+                  <MenuItem key="en-US" value="en-US">
+                    English (US)
+                  </MenuItem>
+                  <MenuItem key="zh-CN" value="zh-CN">
+                    中文
+                  </MenuItem>
+                  <MenuItem key="pt-BR" value="pt-BR">
+                    Portugese
+                  </MenuItem>
+                  <MenuItem key="ko-KR" value="ko-KR">
+                    Korean
+                  </MenuItem>
+                </TextField>
+              </FormRow>
+              <FormRow last>
+                <ButtonGroup classes={{ container: classes.buttons }}>
                   <Button primary={true} label="Save" onClick={this.handleSave} />
-                </div>
-              </div>
+                </ButtonGroup>
+              </FormRow>
             </TabPanel>
             <TabPanel className={classes.formBody} value={SettingsTabs.SEEDS}>
               {seeds.map((seed) => (
@@ -228,70 +196,40 @@ export class SettingsForm extends React.Component<Props, State> {
             {globalKeySet && (
               <>
                 <TabPanel className={classes.formBody} value={SettingsTabs.GLOBAL_KEY}>
-                  <div className={classes.formRow}>
-                    <div className={classes.left}>
-                      <div className={classes.fieldName}>{t('settings.globalKeyOld')}</div>
-                    </div>
-                    <div className={classes.right}>
-                      <div className={classes.fieldInput}>
-                        <PasswordInput onChange={(password) => this.setState({ oldPassword: password })} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={classes.formRow}>
-                    <div className={classes.left}>
-                      <div className={classes.fieldName}>{t('settings.globalKeyNew')}</div>
-                    </div>
-                    <div className={classes.right}>
-                      <div className={classes.fieldInput}>
-                        <PasswordInput
-                          error={this.state.changePasswordError}
-                          onChange={(password) => this.setState({ newPassword: password })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={classes.formRow}>
-                    <div className={classes.left}>
-                      <div className={classes.fieldName}>{t('settings.globalKeyConfirm')}</div>
-                    </div>
-                    <div className={classes.right}>
-                      <div className={classes.fieldInput}>
-                        <PasswordInput onChange={(password) => this.setState({ confirmPassword: password })} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={classes.formRow}>
-                    <div className={classes.left} />
-                    <div className={classes.right}>
+                  <FormRow>
+                    <FormLabel>{t('settings.globalKeyOld')}</FormLabel>
+                    <PasswordInput onChange={(password) => this.setState({ oldPassword: password })} />
+                  </FormRow>
+                  <FormRow>
+                    <FormLabel>{t('settings.globalKeyNew')}</FormLabel>
+                    <PasswordInput
+                      error={this.state.changePasswordError}
+                      onChange={(password) => this.setState({ newPassword: password })}
+                    />
+                  </FormRow>
+                  <FormRow>
+                    <FormLabel>{t('settings.globalKeyConfirm')}</FormLabel>
+                    <PasswordInput onChange={(password) => this.setState({ confirmPassword: password })} />
+                  </FormRow>
+                  <FormRow last>
+                    <ButtonGroup classes={{ container: classes.buttons }}>
                       <Button
                         disabled={!this.checkPasswords()}
                         primary={true}
                         label="Change"
                         onClick={this.handleChange}
                       />
-                    </div>
-                  </div>
+                    </ButtonGroup>
+                  </FormRow>
                 </TabPanel>
                 <TabPanel className={classes.formBody} value={SettingsTabs.EXPORT_VAULT}>
-                  <div className={classes.formRow}>
-                    <div className={classes.right}>
-                      <Alert severity="info">
-                        Export a backup copy of the Emerald Wallet Vault. The file contains all information required to
-                        restore the wallet on a new machine. Please keep it in a safe place. Please note that the
-                        Private Keys are encrypted by your password used in Emerald Wallet, and you&apos;ll need it to
-                        restore from backup.
-                      </Alert>
-                    </div>
-                  </div>
-                  <div className={classes.formRow}>
-                    <div className={classes.left}>
-                      <div className={classes.fieldName}>{t('settings.exportBackup')}</div>
-                    </div>
-                    <div className={classes.right}>
-                      <Button label={t('settings.export')} primary={true} onClick={this.handleExportSettings} />
-                    </div>
-                  </div>
+                  <FormRow>
+                    <Alert severity="info">{t('settings.exportNote')}</Alert>
+                  </FormRow>
+                  <FormRow last>
+                    <FormLabel>{t('settings.exportBackup')}</FormLabel>
+                    <Button label={t('settings.exportSelectFile')} primary={true} onClick={this.handleExportSettings} />
+                  </FormRow>
                 </TabPanel>
               </>
             )}

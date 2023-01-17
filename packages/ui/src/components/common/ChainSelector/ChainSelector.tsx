@@ -1,27 +1,10 @@
 import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
-import { FormControl, Input, InputLabel, MenuItem, Select, StyleRules, Theme, createStyles } from '@material-ui/core';
-import { WithStyles, withStyles } from '@material-ui/styles';
+import { MenuItem, Select } from '@material-ui/core';
 import * as React from 'react';
 
-export const styles = (theme: Theme): StyleRules =>
-  createStyles({
-    container: {
-      position: 'relative',
-    },
-    formControl: {
-      border: 0,
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectChain: {
-      marginTop: theme.spacing(2),
-    },
-  });
-
 interface OwnProps {
-  chains: IBlockchain[];
-  value?: BlockchainCode;
-  withLabel?: boolean;
+  blockchains: IBlockchain[];
+  initialValue?: BlockchainCode;
   onChange?(value: string): void;
 }
 
@@ -29,51 +12,44 @@ interface State {
   value?: string;
 }
 
-type Props = OwnProps & WithStyles<typeof styles>;
-
-export class ChainSelector extends React.Component<Props, State> {
-  public state = { value: this.props.value };
-
-  constructor(props: Readonly<Props>) {
+export class ChainSelector extends React.Component<OwnProps, State> {
+  constructor(props: OwnProps) {
     super(props);
 
-    this.state.value = props.value ?? (props.chains.length > 0 ? props.chains[0].params.code : BlockchainCode.ETH);
+    const {
+      blockchains: [blockchain],
+      initialValue,
+    } = this.props;
+
+    this.state = {
+      value: initialValue ?? (blockchain == null ? BlockchainCode.ETH : blockchain.params.code),
+    };
   }
 
   public handleChange = (event: React.ChangeEvent<{ name?: string; value: string }>): void => {
     this.setState({ value: event.target.value });
 
-    if (this.props.onChange != null) {
-      this.props.onChange(event.target.value);
-    }
+    this.props.onChange?.(event.target.value);
   };
 
   public render(): React.ReactElement {
-    const { classes, chains, withLabel = true } = this.props;
+    const { blockchains } = this.props;
     const { value } = this.state;
 
     return (
-      <div className={classes.container}>
-        <FormControl className={classes.formControl}>
-          {withLabel && <InputLabel htmlFor="chain-helper">Blockchain</InputLabel>}
-          <Select
-            className={withLabel ? classes.selectChain : null}
-            displayEmpty={true}
-            input={<Input name="chain" id="chain-helper" />}
-            name="chain"
-            value={value}
-            onChange={this.handleChange}
-          >
-            {chains.map((chain: IBlockchain) => (
-              <MenuItem key={`${chain.params.code}-${chain.params.coinTicker}`} value={chain.params.code}>
-                {chain.getTitle()}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+      <Select value={value} onChange={this.handleChange}>
+        {blockchains.map((blockchain: IBlockchain) => {
+          const { code } = blockchain.params;
+
+          return (
+            <MenuItem key={code} value={code}>
+              {blockchain.getTitle()}
+            </MenuItem>
+          );
+        })}
+      </Select>
     );
   }
 }
 
-export default withStyles(styles)(ChainSelector);
+export default ChainSelector;

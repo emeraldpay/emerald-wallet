@@ -2,9 +2,8 @@ import * as vault from '@emeraldpay/emerald-vault-core';
 import { SeedDefinition, Uuid } from '@emeraldpay/emerald-vault-core';
 import { IBlockchain } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { ImportMnemonic, ImportPk, NewMnemonic } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, ImportMnemonic, ImportPk, NewMnemonic } from '@emeraldwallet/ui';
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -29,7 +28,7 @@ import SelectHDPath from '../create-account/SelectHDPath';
 import UnlockSeed from '../create-account/UnlockSeed';
 import LedgerWait from '../ledger/LedgerWait';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     container: {
       display: 'flex',
@@ -214,28 +213,15 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   let controls;
 
   if (walletId) {
-    controls = (
-      <Button variant={'contained'} color={'primary'} onClick={() => onOpen(walletId)}>
-        Open Wallet
-      </Button>
-    );
+    controls = <Button primary label="Open Wallet" onClick={() => onOpen(walletId)} />;
   } else {
     controls = (
-      <>
+      <ButtonGroup>
         {(hasWallets || page.code !== STEP_CODE.KEY_SOURCE) && (
-          <Button disabled={page.code === STEP_CODE.CREATED} onClick={hasWallets ? onCancel : onReset}>
-            Cancel
-          </Button>
+          <Button disabled={page.code === STEP_CODE.CREATED} label="Cancel" onClick={hasWallets ? onCancel : onReset} />
         )}
-        <Button
-          disabled={!step.canGoNext()}
-          onClick={() => setStep(step.applyNext())}
-          color={'primary'}
-          variant="contained"
-        >
-          Next
-        </Button>
-      </>
+        <Button primary disabled={!step.canGoNext()} label="Next" onClick={() => setStep(step.applyNext())} />
+      </ButtonGroup>
     );
   }
 

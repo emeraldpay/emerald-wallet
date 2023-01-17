@@ -1,12 +1,10 @@
 import { basename } from 'path';
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { accounts, screen, settings } from '@emeraldwallet/store';
-import { Back, Button, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Grid, Typography, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../../form/FormField';
-import FormLabel from '../../../form/FormLabel';
 import { VAULT_FILE_FILTER } from '../../../settings/Settings/types';
 
 const styles = createStyles({
@@ -132,11 +130,11 @@ class ImportVault extends React.Component<Props, State> {
 
     return (
       <Page title="Import Vault" leftIcon={<Back onClick={goBack} />}>
-        <FormField>
+        <FormRow>
           <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
           <PasswordInput onChange={(password) => this.setState({ password: password })} />
-        </FormField>
-        <FormField>
+        </FormRow>
+        <FormRow>
           <FormLabel classes={{ root: classes.label }} />
           <div className={classes.drop} ref={this.dragAndDrop} onClick={this.handleSelectFile}>
             <Typography variant="caption">
@@ -145,8 +143,8 @@ class ImportVault extends React.Component<Props, State> {
                 : `Selected file "${fileName}"`}
             </Typography>
           </div>
-        </FormField>
-        <FormField>
+        </FormRow>
+        <FormRow>
           <FormLabel classes={{ root: classes.label }} />
           <Grid container justifyContent="flex-end">
             <Grid item>
@@ -158,7 +156,7 @@ class ImportVault extends React.Component<Props, State> {
               />
             </Grid>
           </Grid>
-        </FormField>
+        </FormRow>
       </Page>
     );
   }

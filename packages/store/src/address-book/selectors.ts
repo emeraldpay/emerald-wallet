@@ -18,13 +18,11 @@ export function all(state: IState): PersistentState.AddressbookItem[] {
 }
 
 export function byBlockchain(state: IState, blockchain: BlockchainCode | null): PersistentState.AddressbookItem[] {
-  const { contacts } = state[moduleName];
-
   if (blockchain == null) {
     return all(state);
   }
 
-  const { [blockchain]: blockchainContacts } = contacts;
+  const { [blockchain]: blockchainContacts } = state[moduleName].contacts;
 
   return blockchainContacts ?? [];
 }

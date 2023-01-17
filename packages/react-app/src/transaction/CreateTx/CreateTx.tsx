@@ -2,20 +2,15 @@ import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
-import { Button, ButtonGroup } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import AmountField from './AmountField';
 import FromField from './FromField';
 import ToField from './ToField';
 import TokenField from './TokenField';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
-  container: {
-    width: 800,
-  },
   gasPriceHelp: {
     position: 'initial',
     paddingLeft: 10,
@@ -47,6 +42,11 @@ const styles = createStyles({
   },
   inputField: {
     flexGrow: 5,
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
   },
 });
 
@@ -89,7 +89,7 @@ interface State {
   useStdPriorityGasPrice: boolean;
 }
 
-class CreateTransaction extends React.Component<Props, State> {
+class CreateTx extends React.Component<Props, State> {
   private readonly minimalUnit = new Unit(9, '', undefined);
 
   constructor(props: Props) {
@@ -197,8 +197,8 @@ class CreateTransaction extends React.Component<Props, State> {
     const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(unit).toNumber();
 
     return (
-      <div className={classes.container}>
-        <FormField>
+      <>
+        <FormRow>
           <FromField
             accounts={ownAddresses}
             disabled={this.getDisabled(false)}
@@ -206,8 +206,8 @@ class CreateTransaction extends React.Component<Props, State> {
             onChangeAccount={onChangeFrom}
             getBalancesByAddress={getBalancesByAddress}
           />
-        </FormField>
-        <FormField>
+        </FormRow>
+        <FormRow>
           <TokenField
             balance={tx.getTotalBalance()}
             fiatBalance={fiatBalance}
@@ -217,11 +217,11 @@ class CreateTransaction extends React.Component<Props, State> {
             getBalanceByToken={this.getBalanceByToken}
             onChangeToken={onChangeToken}
           />
-        </FormField>
-        <FormField>
+        </FormRow>
+        <FormRow>
           <ToField blockchain={chain} to={tx.to} onChange={onChangeTo} />
-        </FormField>
-        <FormField>
+        </FormRow>
+        <FormRow>
           <AmountField
             amount={tx.getAmount()}
             units={tx.getAmount().units}
@@ -233,9 +233,9 @@ class CreateTransaction extends React.Component<Props, State> {
             }
             onMaxClicked={onMaxClicked}
           />
-        </FormField>
-        <FormField>
-          <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
+        </FormRow>
+        <FormRow>
+          <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
           <Box className={classes.inputField}>
             <Box className={classes.gasPriceTypeBox}>
               <FormControlLabel
@@ -293,10 +293,10 @@ class CreateTransaction extends React.Component<Props, State> {
               </FormHelperText>
             </Box>
           </Box>
-        </FormField>
+        </FormRow>
         {eip1559 && (
-          <FormField>
-            <FormLabel>Priority gas price</FormLabel>
+          <FormRow>
+            <FormLabel top>Priority gas price</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
                 <FormControlLabel
@@ -354,18 +354,18 @@ class CreateTransaction extends React.Component<Props, State> {
                 </FormHelperText>
               </Box>
             </Box>
-          </FormField>
+          </FormRow>
         )}
-        <FormField style={{ paddingBottom: 0 }}>
+        <FormRow last>
           <FormLabel />
-          <ButtonGroup style={{ flexGrow: 5 }}>
+          <ButtonGroup classes={{ container: classes.buttons }}>
             <Button label="Cancel" onClick={onCancel} />
             <Button disabled={this.getDisabled()} primary={true} label="Create Transaction" onClick={onSubmit} />
           </ButtonGroup>
-        </FormField>
-      </div>
+        </FormRow>
+      </>
     );
   }
 }
 
-export default withStyles(styles)(CreateTransaction);
+export default withStyles(styles)(CreateTx);

@@ -8,7 +8,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import Contact from '../Contact';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     blockchains: {
       marginRight: 20,
@@ -83,7 +83,7 @@ const ContactList: React.FC<StateProps & DispatchProps> = ({ blockchains, getCon
   );
 };
 
-const AddressBook = connect<StateProps, DispatchProps, {}, IState>(
+const AddressBook = connect<StateProps, DispatchProps, unknown, IState>(
   (state) => ({
     blockchains: settings.selectors.currentChains(state),
     getContacts(blockchain) {

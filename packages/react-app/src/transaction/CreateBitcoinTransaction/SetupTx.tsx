@@ -2,24 +2,19 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode, workflow } from '@emeraldwallet/core';
 import { FeePrices, screen } from '@emeraldwallet/store';
-import { Button, ButtonGroup } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
 import AmountField from '../CreateTx/AmountField';
 import ToField from '../CreateTx/ToField/ToField';
 
 const { ValidationResult } = workflow;
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
-    container: {
-      width: 800,
-    },
     feeHelp: {
       paddingLeft: 10,
       position: 'initial',
@@ -48,6 +43,11 @@ const useStyles = makeStyles(() =>
     },
     inputField: {
       flexGrow: 5,
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
     },
   }),
 );
@@ -133,20 +133,20 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   const validTx = !initializing && create.validate() === ValidationResult.OK;
 
   return (
-    <div className={styles.container}>
-      <FormField>
+    <>
+      <FormRow>
         <ToField blockchain={blockchainIdToCode(entry.blockchain)} to={create.address} onChange={onSetTo} />
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow>
         <AmountField
           amount={amount}
           units={create.requiredAmount.units}
           onChangeAmount={onSetAmount}
           onMaxClicked={onSetAmountMax}
         />
-      </FormField>
-      <FormField>
-        <FormLabel>Fee</FormLabel>
+      </FormRow>
+      <FormRow>
+        <FormLabel top>Fee</FormLabel>
         <Box className={styles.inputField}>
           <Box className={styles.feeTypeBox}>
             <FormControlLabel
@@ -193,10 +193,10 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             <FormHelperText className={styles.feeHelp}>{totalFee.toString()}</FormHelperText>
           </Box>
         </Box>
-      </FormField>
-      <FormField style={{ paddingBottom: 0 }}>
+      </FormRow>
+      <FormRow last>
         <FormLabel />
-        <ButtonGroup classes={{ container: styles.inputField }}>
+        <ButtonGroup classes={{ container: styles.buttons }}>
           <Button label="Cancel" onClick={onCancel} />
           <Button
             disabled={!validTx}
@@ -205,8 +205,8 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             onClick={() => onCreate(create.create(), totalFee)}
           />
         </ButtonGroup>
-      </FormField>
-    </div>
+      </FormRow>
+    </>
   );
 };
 

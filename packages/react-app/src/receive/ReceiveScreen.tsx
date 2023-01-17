@@ -9,8 +9,8 @@ import {
 } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
 import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
-import { Address, Back, Page, WalletReference } from '@emeraldwallet/ui';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
+import { Address, Back, ButtonGroup, Page, WalletReference } from '@emeraldwallet/ui';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
 import { clipboard } from 'electron';
@@ -20,12 +20,22 @@ import { connect } from 'react-redux';
 
 const useStyles = makeStyles(
   createStyles({
-    copyCell: {
+    form: {
+      marginTop: 40,
+    },
+    copy: {
       paddingLeft: 8,
       paddingTop: 18,
     },
-    form: {
-      marginTop: 40,
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      marginTop: 20,
+      width: '100%',
+    },
+    code: {
+      display: 'flex',
+      justifyContent: 'center',
     },
   }),
 );
@@ -178,7 +188,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
       <Grid container>
         <Grid item xs={8}>
           <Grid container className={styles.form}>
-            <Grid item xs={6}>
+            <Grid item xs={10}>
               <FormControl fullWidth>
                 <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
                 <Select
@@ -195,7 +205,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <FormControl fullWidth>
                 <InputLabel id="coin-select-label">Coin</InputLabel>
                 <Select
@@ -212,7 +222,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={9}>
+            <Grid item xs={10}>
               <FormControl fullWidth={true}>
                 <InputLabel id="address-select-label">Address</InputLabel>
                 <Select
@@ -230,29 +240,33 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
               </FormControl>
             </Grid>
             {currentAddress != null && (
-              <Grid item xs={1} className={styles.copyCell}>
+              <Grid item xs={2} className={styles.copy}>
                 <Button onClick={() => clipboard.writeText(currentAddress)}>
                   <LibraryAddCheckIcon />
                   Copy
                 </Button>
               </Grid>
             )}
+            <Grid item xs>
+              <ButtonGroup classes={{ container: styles.buttons }}>
+                <Button color="secondary" variant="contained" onClick={() => onCancel()}>
+                  Cancel
+                </Button>
+                {currentEntry != null && (
+                  <Button color="primary" variant="contained" onClick={() => onSave(currentEntry)}>
+                    Save
+                  </Button>
+                )}
+              </ButtonGroup>
+            </Grid>
           </Grid>
         </Grid>
         {qrCodeValue != null && (
           <Grid item xs={4}>
-            <Box>
-              <img src={qrCode} alt="QR Code" width={250} />
-            </Box>
+            <div className={styles.code}>
+              <img src={qrCode} alt="QR Code" width={240} />
+            </div>
           </Grid>
-        )}
-      </Grid>
-      <Grid item xs={8}>
-        <Button onClick={() => onCancel()}>Cancel</Button>
-        {currentEntry != null && (
-          <Button color="primary" variant="contained" onClick={() => onSave(currentEntry)}>
-            Save
-          </Button>
         )}
       </Grid>
     </Page>

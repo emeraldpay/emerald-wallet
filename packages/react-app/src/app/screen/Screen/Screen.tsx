@@ -5,7 +5,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import EditContact from '../../../address-book/EditContact';
 import AddHDAddress from '../../../create-account/AddHDAddress';
-import CreateHdAccount from '../../../create-account/CreateHdAccount';
+import SetupBlockchains from '../../../create-account/SetupBlockchains';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
 import {
   AddContact,
@@ -66,8 +66,6 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <AddressBook />;
     case screen.Pages.BROADCAST_TX:
       return <BroadcastTx data={props.screenItem} />;
-    case screen.Pages.CREATE_HD_ACCOUNT:
-      return <CreateHdAccount walletId={props.screenItem} />;
     case screen.Pages.CREATE_TX:
       return <SelectAccount walletId={props.screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
@@ -98,6 +96,8 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <ReceiveScreen walletId={props.screenItem} />;
     case screen.Pages.SETTINGS:
       return <Settings />;
+    case screen.Pages.SETUP_BLOCKCHAINS:
+      return <SetupBlockchains walletId={props.screenItem} />;
     case screen.Pages.SETUP_VAULT:
       return <SetupVault />;
     case screen.Pages.SIGN_MESSAGE:

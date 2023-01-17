@@ -24,14 +24,12 @@ import {
   tokens,
   transaction,
 } from '@emeraldwallet/store';
-import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FromField from '../CreateTx/FromField';
 
@@ -67,6 +65,11 @@ const styles = createStyles({
   },
   gasPriceValueLabel: {
     fontSize: '0.7em',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
   },
 });
 
@@ -369,7 +372,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     <Page title="Create Convert Transaction" leftIcon={<Back onClick={goBack} />}>
       {stage === Stages.SETUP && (
         <>
-          <FormField>
+          <FormRow>
             <FormLabel />
             <ToggleButtonGroup exclusive={true} value={convertable} onChange={onChangeConvertable}>
               <ToggleButton disabled={initializing} value={coinTicker}>
@@ -379,8 +382,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 {token} to Ether
               </ToggleButton>
             </ToggleButtonGroup>
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FromField
               accounts={addresses}
               disabled={initializing}
@@ -388,8 +391,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               onChangeAccount={onChangeAddress}
               getBalancesByAddress={(address) => getBalancesByAddress(address, token)}
             />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <AmountField
               disabled={initializing}
               amount={currentTx.amount}
@@ -397,9 +400,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               onChangeAmount={onChangeAmount}
               onMaxClicked={onClickMaxAmount}
             />
-          </FormField>
-          <FormField>
-            <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
+          </FormRow>
+          <FormRow>
+            <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
                 <FormControlLabel
@@ -456,10 +459,10 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 </FormHelperText>
               </Box>
             </Box>
-          </FormField>
+          </FormRow>
           {eip1559 && (
-            <FormField>
-              <FormLabel>Priority gas price</FormLabel>
+            <FormRow>
+              <FormLabel top>Priority gas price</FormLabel>
               <Box className={classes.inputField}>
                 <Box className={classes.gasPriceTypeBox}>
                   <FormControlLabel
@@ -516,11 +519,11 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                   </FormHelperText>
                 </Box>
               </Box>
-            </FormField>
+            </FormRow>
           )}
-          <FormField>
+          <FormRow classes={{ container: classes.buttons }}>
             <FormLabel />
-            <ButtonGroup>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button
                 disabled={initializing}
@@ -529,24 +532,24 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={(): void => setStage(Stages.SIGN)}
               />
             </ButtonGroup>
-          </FormField>
+          </FormRow>
         </>
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormField>
+          <FormRow>
             <FormLabel />
             <div>
               Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
             </div>
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel>Password</FormLabel>
             <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow last>
             <FormLabel />
-            <ButtonGroup style={{ width: '100%' }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button
                 label="Sign Transaction"
@@ -555,7 +558,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={onSignTransaction}
               />
             </ButtonGroup>
-          </FormField>
+          </FormRow>
         </>
       )}
     </Page>

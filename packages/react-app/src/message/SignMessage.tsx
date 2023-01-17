@@ -3,7 +3,18 @@ import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { EthereumMessage, blockchainById, isStructuredMessage } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { findWallet } from '@emeraldwallet/store/lib/accounts/selectors';
-import { Address, Back, Button, ButtonGroup, IdentityIcon, Page, PasswordInput, Table } from '@emeraldwallet/ui';
+import {
+  Address,
+  Back,
+  Button,
+  ButtonGroup,
+  FormLabel,
+  FormRow,
+  IdentityIcon,
+  Page,
+  PasswordInput,
+  Table,
+} from '@emeraldwallet/ui';
 import {
   Chip,
   Menu,
@@ -20,11 +31,9 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../form/FormField';
-import FormLabel from '../form/FormLabel';
 import LedgerWait from '../ledger/LedgerWait';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     address: {
       alignItems: 'center',
@@ -33,6 +42,11 @@ const useStyles = makeStyles(() =>
     },
     addressIcon: {
       marginRight: 20,
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
     },
     message: {
       maxHeight: 240,
@@ -256,7 +270,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     <Page title="Sign Message" leftIcon={<Back onClick={goBack} />}>
       {stage === Stages.SETUP && (
         <>
-          <FormField>
+          <FormRow>
             <FormLabel>Sign With</FormLabel>
             {addressesByEntry == null ? (
               <Typography>No addresses available</Typography>
@@ -277,17 +291,17 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                 </Menu>
               </>
             )}
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel>Type</FormLabel>
             <TextField select value={messageType} onChange={onChangeMessageType}>
               <MenuItem value={MessageType.AUTO}>Auto</MenuItem>
               <MenuItem value={MessageType.EIP191}>Unstructured / EIP-191</MenuItem>
               <MenuItem value={MessageType.EIP712}>Structured / EIP-712</MenuItem>
             </TextField>
-          </FormField>
+          </FormRow>
           {messageType === MessageType.AUTO && (
-            <FormField>
+            <FormRow>
               <FormLabel />
               <div className={styles.validation}>
                 <Chip
@@ -295,9 +309,9 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                   label={validation === Validation.EIP712 ? 'Structured / EIP-712' : 'Unstructured / EIP-191'}
                 />
               </div>
-            </FormField>
+            </FormRow>
           )}
-          <FormField>
+          <FormRow>
             <FormLabel top>Message</FormLabel>
             <TextField
               fullWidth
@@ -309,10 +323,10 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
               value={messageText}
               onChange={onChangeMessageText}
             />
-          </FormField>
-          <FormField last>
+          </FormRow>
+          <FormRow last>
             <FormLabel />
-            <ButtonGroup>
+            <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button
                 disabled={validation === Validation.EMPTY || validation === Validation.INVALID}
@@ -321,27 +335,27 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                 onClick={onConfirmMessage}
               />
             </ButtonGroup>
-          </FormField>
+          </FormRow>
         </>
       )}
       {stage === Stages.VERIFY && (
         <>
-          <FormField>
+          <FormRow>
             <FormLabel>Sign With</FormLabel>
             <Address address={selectedAddress.address} />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel>Type</FormLabel>
             <Chip
               color="primary"
               label={messageType === 'eip712' ? 'Structured / EIP-712' : 'Unstructured / EIP-191'}
             />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel>Contract</FormLabel>
             <Address address={structuredMessage?.domain?.verifyingContract ?? ''} />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel top>Message</FormLabel>
             <TableContainer className={styles.message}>
               <Table divided size="small">
@@ -354,15 +368,15 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                 <TableBody>{renderMessage(structuredMessage?.message)}</TableBody>
               </Table>
             </TableContainer>
-          </FormField>
-          <FormField last>
+          </FormRow>
+          <FormRow last>
             <FormLabel />
-            <ButtonGroup>
+            <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button label="Edit" onClick={onVerifyBack} />
               <Button label="Sign message" primary={true} onClick={onVerifyNext} />
             </ButtonGroup>
-          </FormField>
+          </FormRow>
         </>
       )}
       {stage === Stages.SIGN && (
@@ -371,17 +385,16 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
             <LedgerWait fullSize onConnected={onLedgerConnected} />
           ) : (
             <>
-              <FormField>
+              <FormRow>
                 <FormLabel />
                 <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>
-              </FormField>
-              <FormField>
+              </FormRow>
+              <FormRow>
                 <FormLabel>Password</FormLabel>
                 <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
-              </FormField>
-              <FormField last>
-                <FormLabel />
-                <ButtonGroup>
+              </FormRow>
+              <FormRow last>
+                <ButtonGroup classes={{ container: styles.buttons }}>
                   <Button label="Cancel" onClick={goBack} />
                   <Button
                     disabled={password?.length === 0}
@@ -390,7 +403,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                     onClick={onSignMessage}
                   />
                 </ButtonGroup>
-              </FormField>
+              </FormRow>
             </>
           )}
         </>

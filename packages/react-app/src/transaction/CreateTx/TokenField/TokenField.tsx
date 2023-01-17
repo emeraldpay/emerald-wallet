@@ -1,10 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { formatAmount } from '@emeraldwallet/core';
+import { FormLabel } from '@emeraldwallet/ui';
 import { ListItemText, MenuItem, StyleRules, TextField, Theme, createStyles } from '@material-ui/core';
 import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { ReactElement } from 'react';
-import FormLabel from '../../../form/FormLabel';
 
 const styles = (theme: Theme): StyleRules =>
   createStyles({

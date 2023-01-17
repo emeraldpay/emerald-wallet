@@ -13,14 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import withStyles from '@material-ui/core/styles/withStyles';
+
+import { withStyles } from '@material-ui/core';
 import * as React from 'react';
 import styles from './styles';
 
 interface Classes {
   container: string;
   firstItem: string;
-  item: string;
+  restItems: string;
 }
 
 interface OwnProps {
@@ -38,12 +39,12 @@ export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style }) =>
     <div className={classes?.container} style={style}>
       {Array.isArray(children) ? (
         children.map((button, index) => (
-          <div key={`group-button[${index}]`} className={index === 0 ? classes?.firstItem : classes?.item}>
+          <div key={`group-button[${index}]`} className={index === 0 ? classes?.firstItem : classes?.restItems}>
             {button}
           </div>
         ))
       ) : (
-        <div className={classes?.firstItem ?? classes?.item}>{children}</div>
+        <div className={classes?.firstItem}>{children}</div>
       )}
     </div>
   );

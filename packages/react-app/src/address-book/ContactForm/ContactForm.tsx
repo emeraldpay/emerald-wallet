@@ -1,37 +1,21 @@
 import { BlockchainCode, Blockchains, IBlockchain, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { Button, ButtonGroup, ChainSelector, Input, Page } from '@emeraldwallet/ui';
-import { StyleRules, Theme, createStyles } from '@material-ui/core';
-import { WithStyles, withStyles } from '@material-ui/styles';
+import { Button, ButtonGroup, ChainSelector, FormLabel, FormRow, Input, Page } from '@emeraldwallet/ui';
+import { WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-export const styles = (theme: Theme): StyleRules =>
-  createStyles({
-    row: {
-      alignItems: 'center',
-      display: 'flex',
-      marginBottom: 20,
-    },
-    leftColumn: {
-      flex: '1 1 20%',
-      marginRight: 20,
-    },
-    rightColumn: {
-      alignItems: 'center',
-      display: 'flex',
-      flex: '1 1 80%',
-    },
-    label: {
-      color: theme.palette.text.secondary,
-      fontSize: 16,
-      textAlign: 'right',
-    },
-  });
+export const styles = createStyles({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+});
 
 interface ContactData {
-  id?: string;
   address: string;
   blockchain: BlockchainCode;
   description?: string;
+  id?: string;
   label?: string;
 }
 
@@ -58,18 +42,20 @@ export class ContactForm extends React.Component<Props, State> {
 
     const { blockchains, contact } = props;
 
-    const { address: contactAddress, blockchain, label } = contact ?? {};
+    const { address: contactAddress, blockchain: contactBlockchain, label } = contact ?? {};
     const { address } = contactAddress ?? {};
+
+    const [blockchain] = blockchains;
 
     this.state = {
       address,
       label,
       blockchain:
-        blockchain == null
-          ? blockchains.length > 0
-            ? blockchains[0].params.code
-            : BlockchainCode.ETH
-          : blockchainIdToCode(blockchain),
+        contactBlockchain == null
+          ? blockchain == null
+            ? BlockchainCode.ETH
+            : blockchain.params.code
+          : blockchainIdToCode(contactBlockchain),
     };
   }
 
@@ -104,48 +90,28 @@ export class ContactForm extends React.Component<Props, State> {
 
     return (
       <Page title={title}>
-        <div className={classes.row}>
-          <div className={classes.leftColumn}>
-            <div className={classes.label}>Blockchain</div>
-          </div>
-          <div className={classes.rightColumn}>
-            {contact?.id == null ? (
-              <ChainSelector
-                chains={blockchains}
-                value={blockchain}
-                withLabel={false}
-                onChange={this.handleBlockchainChange}
-              />
-            ) : (
-              <>{Blockchains[blockchainIdToCode(contact.blockchain)].getTitle()}</>
-            )}
-          </div>
-        </div>
-        <div className={classes.row}>
-          <div className={classes.leftColumn}>
-            <div className={classes.label}>Address</div>
-          </div>
-          <div className={classes.rightColumn}>
-            <Input disabled={contact?.id != null} type="text" value={address} onChange={this.handleAddressChange} />
-          </div>
-        </div>
-        <div className={classes.row}>
-          <div className={classes.leftColumn}>
-            <div className={classes.label}>Label</div>
-          </div>
-          <div className={classes.rightColumn}>
-            <Input type="text" value={label} onChange={this.handleLabelChange} />
-          </div>
-        </div>
-        <div className={classes.row}>
-          <div className={classes.leftColumn} />
-          <div className={classes.rightColumn}>
-            <ButtonGroup>
-              <Button label="Cancel" onClick={this.handleCancel} />
-              <Button primary={true} label="Save" onClick={this.handleSubmit} />
-            </ButtonGroup>
-          </div>
-        </div>
+        <FormRow>
+          <FormLabel>Blockchain</FormLabel>
+          {contact?.id == null ? (
+            <ChainSelector blockchains={blockchains} initialValue={blockchain} onChange={this.handleBlockchainChange} />
+          ) : (
+            <>{Blockchains[blockchainIdToCode(contact.blockchain)].getTitle()}</>
+          )}
+        </FormRow>
+        <FormRow>
+          <FormLabel>Address</FormLabel>
+          <Input disabled={contact?.id != null} type="text" value={address} onChange={this.handleAddressChange} />
+        </FormRow>
+        <FormRow>
+          <FormLabel>Label</FormLabel>
+          <Input type="text" value={label} onChange={this.handleLabelChange} />
+        </FormRow>
+        <FormRow last>
+          <ButtonGroup classes={{ container: classes.buttons }}>
+            <Button label="Cancel" onClick={this.handleCancel} />
+            <Button primary={true} label="Save" onClick={this.handleSubmit} />
+          </ButtonGroup>
+        </FormRow>
       </Page>
     );
   }

@@ -1,24 +1,29 @@
 import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Pages } from '@emeraldwallet/store/lib/screen';
-import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
-import { Typography, createStyles, withStyles } from '@material-ui/core';
+import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../../form/FormField';
-import FormLabel from '../../../form/FormLabel';
 
-const styles = createStyles({
-  gutter: {
-    marginBottom: 20,
-  },
-  label: {
-    minWidth: 180,
-    width: 180,
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+    gutter: {
+      marginBottom: 20,
+    },
+    label: {
+      minWidth: 180,
+      width: 180,
+    },
+  }),
+);
 
 interface StateProps {
   hasWallets: boolean;
@@ -33,42 +38,7 @@ interface DispatchProps {
   setGlobalKey(password: string): Promise<boolean>;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
-interface ButtonsProps {
-  confirmPassword: string;
-  hasWallets: boolean;
-  password: string;
-  applyPassword(): void;
-  goHome(): Promise<void>;
-}
-
-const Buttons: React.FC<ButtonsProps> = ({ confirmPassword, hasWallets, password, applyPassword, goHome }) => {
-  const applyButton = (
-    <Button
-      label="Create"
-      disabled={password.length === 0 || password !== confirmPassword}
-      primary={true}
-      onClick={applyPassword}
-    />
-  );
-
-  if (hasWallets) {
-    return (
-      <ButtonGroup>
-        <Button label="Skip" onClick={goHome} />
-        {applyButton}
-      </ButtonGroup>
-    );
-  }
-
-  return applyButton;
-};
-
-const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
-  classes,
+const GlobalKey: React.FC<DispatchProps & StateProps> = ({
   hasWallets,
   createWallet,
   getLegacyItems,
@@ -77,6 +47,8 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
   goPasswordMigration,
   setGlobalKey,
 }) => {
+  const styles = useStyles();
+
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
 
@@ -105,24 +77,26 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
           ? 'To begin using the new format, please create a new key that will encrypt all of your Private Keys.'
           : 'Please create a key that will encrypt all of your Private Keys.'}
       </Typography>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }}>Global password</FormLabel>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }}>Global password</FormLabel>
         <PasswordInput onChange={(value) => setPassword(value)} />
-      </FormField>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }}>Confirm password</FormLabel>
+      </FormRow>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }}>Confirm password</FormLabel>
         <PasswordInput onChange={(value) => setConfirmPassword(value)} />
-      </FormField>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }} />
-        <Buttons
-          confirmPassword={confirmPassword}
-          hasWallets={hasWallets}
-          password={password}
-          applyPassword={applyPassword}
-          goHome={goHome}
-        />
-      </FormField>
+      </FormRow>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }} />
+        <ButtonGroup classes={{ container: styles.buttons }}>
+          {hasWallets && <Button label="Skip" onClick={goHome} />}
+          <Button
+            label="Create"
+            disabled={password.length === 0 || password !== confirmPassword}
+            primary={true}
+            onClick={applyPassword}
+          />
+        </ButtonGroup>
+      </FormRow>
       <Typography>
         NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to recover
         the Wallet from Secret Phrase backup. Please make sure you have it backed up.
@@ -156,4 +130,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.createGlobalKey(password));
     },
   }),
-)(withStyles(styles)(GlobalKey));
+)(GlobalKey);

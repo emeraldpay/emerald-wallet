@@ -1,10 +1,9 @@
 import { BlockchainCode, Blockchains, PersistentState } from '@emeraldwallet/core';
 import { IState, addressBook, blockchains } from '@emeraldwallet/store';
-import { Input } from '@emeraldwallet/ui';
+import { FormLabel, Input } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AddressBookMenu from './AddressBookMenu';
-import FormLabel from '../../../form/FormLabel';
 
 interface OwnProps {
   blockchain: BlockchainCode;

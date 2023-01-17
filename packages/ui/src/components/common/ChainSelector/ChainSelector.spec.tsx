@@ -3,27 +3,26 @@ import { BlockchainCode } from '@emeraldwallet/core';
 import { ThemeProvider } from '@material-ui/core';
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import StyledChainSelector, { ChainSelector, styles } from './ChainSelector';
-
-const reduceClasses = <T,>(prev: T, curr: any): T => ({ ...prev, [curr]: curr });
-const classes = Object.keys(styles).reduce(reduceClasses, {});
+import StyledChainSelector, { ChainSelector } from './ChainSelector';
 
 describe('ChainSelector', () => {
   it('creates ChainSelector', () => {
     const component = shallow(
       <ThemeProvider theme={Theme}>
-        <ChainSelector classes={classes} value={BlockchainCode.ETH} chains={[]} />
+        <ChainSelector initialValue={BlockchainCode.ETH} blockchains={[]} />
       </ThemeProvider>,
     );
+
     expect(component).toBeDefined();
   });
 
   it('should work without theme', () => {
     const component = shallow(
       <ThemeProvider theme={Theme}>
-        <StyledChainSelector value={BlockchainCode.ETH} chains={[]} />
+        <StyledChainSelector initialValue={BlockchainCode.ETH} blockchains={[]} />
       </ThemeProvider>,
     );
+
     expect(component).toBeDefined();
   });
 });

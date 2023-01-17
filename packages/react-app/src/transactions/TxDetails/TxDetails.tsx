@@ -11,9 +11,8 @@ import {
   isEthereum,
 } from '@emeraldwallet/core';
 import { IState, StoredTransaction, blockchains, screen, transaction, txhistory } from '@emeraldwallet/store';
-import { Address, Back, Balance, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
-import { Typography, createStyles } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { Address, Back, Balance, Button, ButtonGroup, FormLabel, FormRow, Page } from '@emeraldwallet/ui';
+import { TextField, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { TxStatus } from './TxStatus';
@@ -21,21 +20,20 @@ import { TxStatus } from './TxStatus';
 const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
-const styles = createStyles({
-  addressField: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-  },
-  nameField: {
-    color: '#747474',
-    fontSize: '16px',
-    textAlign: 'right',
-  },
-  textField: {
-    width: '100%',
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    address: {
+      display: 'flex',
+      flex: 1,
+      flexDirection: 'column',
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+  }),
+);
 
 type EnsLookup = { address: string; name: string };
 
@@ -58,12 +56,7 @@ interface DispatchProps {
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
-const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> = ({
-  classes,
+const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   transaction,
   getEthTx,
   getEthReceipt,
@@ -74,6 +67,8 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
   goToSpeedUpTx,
   lookupAddress,
 }) => {
+  const styles = useStyles();
+
   const [nameByAddress, setNameByAddress] = React.useState<Record<string, string>>({});
   const [ethReceipt, setEthReceipt] = React.useState<EthereumReceipt | null>(null);
   const [ethTx, setEthTx] = React.useState<EthereumTransaction | null>(null);
@@ -148,22 +143,22 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
         <Typography variant="caption">Transaction not found! Please try again later.</Typography>
       ) : (
         <>
-          <FormRow
-            leftColumn={<div className={classes.nameField}>Date</div>}
-            rightColumn={<Typography>{transaction.confirmTimestamp?.toUTCString() ?? 'Pending'}</Typography>}
-          />
-          <FormRow
-            leftColumn={<div className={classes.nameField}>Status</div>}
-            rightColumn={<TxStatus state={transaction.state} status={txStatus} />}
-          />
-          <FormRow
-            leftColumn={<div className={classes.nameField}>Hash</div>}
-            rightColumn={<Address address={transaction.txId} />}
-          />
-          <FormRow
-            leftColumn={<div className={classes.nameField}>Block</div>}
-            rightColumn={<Typography>{transaction.block?.height ?? 'Pending'}</Typography>}
-          />
+          <FormRow>
+            <FormLabel>Date</FormLabel>
+            <Typography>{transaction.confirmTimestamp?.toUTCString() ?? 'Pending'}</Typography>
+          </FormRow>
+          <FormRow>
+            <FormLabel>Status</FormLabel>
+            <TxStatus state={transaction.state} status={txStatus} />
+          </FormRow>
+          <FormRow>
+            <FormLabel>Hash</FormLabel>
+            <Address address={transaction.txId} />
+          </FormRow>
+          <FormRow>
+            <FormLabel>Block</FormLabel>
+            <Typography>{transaction.block?.height ?? 'Pending'}</Typography>
+          </FormRow>
           {txChanges.length > 0 && (
             <>
               <br />
@@ -171,85 +166,72 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
                 const name = change.address == null ? undefined : nameByAddress[change.address];
 
                 return (
-                  <div key={`${change.address}-${index}`}>
-                    <FormRow
-                      leftColumn={
-                        <div className={classes.nameField}>{change.direction === Direction.EARN ? 'To' : 'From'}</div>
-                      }
-                      rightColumn={
-                        <>
-                          <div className={classes.addressField}>
-                            <Address
-                              address={change.address ?? 'Unknown address'}
-                              disableCopy={change.address == null}
-                            />
-                            {name != null && <Address address={name} />}
-                          </div>
-                          <Balance balance={change.amountValue} />
-                        </>
-                      }
-                    />
-                  </div>
+                  <FormRow key={`${change.address}-${index}`}>
+                    <FormLabel>{change.direction === Direction.EARN ? 'To' : 'From'}</FormLabel>{' '}
+                    <>
+                      <div className={styles.address}>
+                        <Address address={change.address ?? 'Unknown address'} disableCopy={change.address == null} />
+                        {name != null && <Address address={name} />}
+                      </div>
+                      <Balance balance={change.amountValue} />
+                    </>
+                  </FormRow>
                 );
               })}
             </>
           )}
           <br />
           {txFee != null && (
-            <FormRow
-              leftColumn={<div className={classes.nameField}>Transaction Fee</div>}
-              rightColumn={<Typography>{formatAmount(txFee)}</Typography>}
-            />
+            <FormRow>
+              <FormLabel>Transaction Fee</FormLabel>
+              <Typography>{formatAmount(txFee)}</Typography>
+            </FormRow>
           )}
           {ethTx != null && (
             <>
               {ethTx.gasPrice != null && (
-                <FormRow
-                  leftColumn={<div className={classes.nameField}>Gas Price</div>}
-                  rightColumn={<Typography>{formatAmount(new Wei(ethTx.gasPrice))}</Typography>}
-                />
+                <FormRow>
+                  <FormLabel>Gas Price</FormLabel>
+                  <Typography>{formatAmount(new Wei(ethTx.gasPrice))}</Typography>
+                </FormRow>
               )}
               {ethTx.type === EthereumTransactionType.EIP1559 && (
                 <>
-                  <FormRow
-                    leftColumn={<div className={classes.nameField}>Max Gas Price</div>}
-                    rightColumn={<Typography>{formatAmount(new Wei(ethTx.maxGasPrice ?? 0))}</Typography>}
-                  />
-                  <FormRow
-                    leftColumn={<div className={classes.nameField}>Priority Gas Price</div>}
-                    rightColumn={<Typography>{formatAmount(new Wei(ethTx.priorityGasPrice ?? 0))}</Typography>}
-                  />
+                  <FormRow>
+                    <FormLabel>Max Gas Price</FormLabel>
+                    <Typography>{formatAmount(new Wei(ethTx.maxGasPrice ?? 0))}</Typography>
+                  </FormRow>
+                  <FormRow>
+                    <FormLabel>Priority Gas Price</FormLabel>
+                    <Typography>{formatAmount(new Wei(ethTx.priorityGasPrice ?? 0))}</Typography>
+                  </FormRow>
                 </>
               )}
-              <FormRow
-                leftColumn={<div className={classes.nameField}>Nonce</div>}
-                rightColumn={<Typography>{ethTx.nonce}</Typography>}
-              />
-              <FormRow
-                leftColumn={<div className={classes.nameField}>Input Data</div>}
-                rightColumn={<textarea className={classes.textField} readOnly={true} rows={5} value={ethTx.data} />}
-              />
+              <FormRow>
+                <FormLabel>Nonce</FormLabel>
+                <Typography>{ethTx.nonce}</Typography>
+              </FormRow>
+              <FormRow>
+                <FormLabel top>Input Data</FormLabel>
+                <TextField disabled fullWidth multiline maxRows={5} minRows={5} value={ethTx.data} />
+              </FormRow>
               {transaction.state < State.CONFIRMED && (
-                <FormRow
-                  leftColumn={<div className={classes.nameField}>Modify</div>}
-                  rightColumn={
-                    <ButtonGroup>
-                      <Button onClick={() => goToSpeedUpTx(ethTx)} label="SPEED UP" />
-                      <Button onClick={() => goToCancelTx(ethTx)} label="CANCEL TRANSACTION" />
-                    </ButtonGroup>
-                  }
-                />
+                <FormRow>
+                  <FormLabel>Modify</FormLabel>
+                  <ButtonGroup>
+                    <Button onClick={() => goToSpeedUpTx(ethTx)} label="Speed Up" />
+                    <Button onClick={() => goToCancelTx(ethTx)} label="Cancel Transaction" />
+                  </ButtonGroup>
+                </FormRow>
               )}
             </>
           )}
-          <FormRow
-            rightColumn={
-              <ButtonGroup>
-                <Button onClick={goToDashboard} label="DASHBOARD" />
-                <Button onClick={() => goToReceipt(transaction)} primary={true} label="OPEN RECEIPT" />
-              </ButtonGroup>
-            }
-          />
+          <FormRow last>
+            <ButtonGroup classes={{ container: styles.buttons }}>
+              <Button onClick={goToDashboard} label="Dashboard" />
+              <Button onClick={() => goToReceipt(transaction)} primary={true} label="Open Receipt" />
+            </ButtonGroup>
+          </FormRow>
         </>
       )}
     </Page>
@@ -287,4 +269,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(blockchains.actions.lookupAddress(blockchain, address));
     },
   }),
-)(withStyles(styles)(TxDetails));
+)(TxDetails);

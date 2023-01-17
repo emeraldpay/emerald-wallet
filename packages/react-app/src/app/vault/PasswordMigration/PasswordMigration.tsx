@@ -1,6 +1,6 @@
 import { OddPasswordItem, Uuid } from '@emeraldpay/emerald-vault-core';
 import { accounts, screen } from '@emeraldwallet/store';
-import { Button, ButtonGroup, Page, PasswordInput, Table } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
   CircularProgress,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableRow,
   Typography,
   createStyles,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core';
 import { green as greenColor, grey as greyColor, orange as orangeColor } from '@material-ui/core/colors';
 import { Done as DoneIcon, RemoveCircle as SkipIcon, Warning as WarningIcon } from '@material-ui/icons';
@@ -17,27 +17,32 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useState } from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../../form/FormField';
-import FormLabel from '../../../form/FormLabel';
 
-const styles = createStyles({
-  gutter: {
-    marginBottom: 15,
-  },
-  label: {
-    minWidth: 360,
-    width: 360,
-  },
-  loader: {
-    fontSize: '1.7142857142857142rem',
-  },
-  status: {
-    alignItems: 'center',
-    display: 'inline-flex',
-    gap: '5px',
-    minWidth: 120,
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+    gutter: {
+      marginBottom: 15,
+    },
+    label: {
+      minWidth: 360,
+      width: 360,
+    },
+    loader: {
+      fontSize: '1.7142857142857142rem',
+    },
+    status: {
+      alignItems: 'center',
+      display: 'inline-flex',
+      gap: '5px',
+      minWidth: 120,
+    },
+  }),
+);
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
@@ -46,19 +51,11 @@ interface DispatchProps {
   upgradeLegacyItems(globalPassword: string, password: string): Promise<Uuid[]>;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
 type PasswordType = OddPasswordItem & { upgraded?: boolean };
 
-const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
-  classes,
-  checkGlobalKey,
-  getLegacyItems,
-  goHome,
-  upgradeLegacyItems,
-}) => {
+const PasswordMigration: React.FC<DispatchProps> = ({ checkGlobalKey, getLegacyItems, goHome, upgradeLegacyItems }) => {
+  const styles = useStyles();
+
   const [initializing, setInitializing] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
 
@@ -142,22 +139,22 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
               <TableCell>{password.id}</TableCell>
               <TableCell>
                 {upgrading && !password.upgraded ? (
-                  <div className={classes.status}>
-                    <CircularProgress color="primary" className={classes.loader} size="1em" />
+                  <div className={styles.status}>
+                    <CircularProgress color="primary" className={styles.loader} size="1em" />
                     <span>Migrating...</span>
                   </div>
                 ) : password.upgraded == null ? (
-                  <div className={classes.status}>
+                  <div className={styles.status}>
                     <WarningIcon style={{ color: orangeColor['500'] }} />
                     <span>Migration required</span>
                   </div>
                 ) : password.upgraded ? (
-                  <div className={classes.status}>
+                  <div className={styles.status}>
                     <DoneIcon style={{ color: greenColor['500'] }} />
                     <span>Migration successful</span>
                   </div>
                 ) : (
-                  <div className={classes.status}>
+                  <div className={styles.status}>
                     <SkipIcon style={{ color: greyColor['500'] }} />
                     <span>Migration skipped</span>
                   </div>
@@ -167,21 +164,21 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
           ))}
         </TableBody>
       </Table>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }}>Global password:</FormLabel>
         <PasswordInput
           disabled={initializing}
           error={globalPasswordError}
           onChange={(value) => setGlobalPassword(value)}
         />
-      </FormField>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }}>Old password (for any of the items above):</FormLabel>
+      </FormRow>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }}>Old password (for any of the items above):</FormLabel>
         <PasswordInput disabled={initializing} error={passwordError} onChange={(value) => setPassword(value)} />
-      </FormField>
-      <FormField>
-        <FormLabel classes={{ root: classes.label }} />
-        <ButtonGroup>
+      </FormRow>
+      <FormRow>
+        <FormLabel classes={{ root: styles.label }} />
+        <ButtonGroup classes={{ container: styles.buttons }}>
           <Button
             disabled={initializing}
             label={allItemsUpgraded ? 'Continue' : 'Skip'}
@@ -190,7 +187,7 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
           />
           {!allItemsUpgraded && <Button disabled={initializing} label="Apply" primary={true} onClick={applyPassword} />}
         </ButtonGroup>
-      </FormField>
+      </FormRow>
     </Page>
   );
 };
@@ -212,4 +209,4 @@ export default connect<unknown, DispatchProps>(
       return dispatch(accounts.actions.tryUpgradeOddItems(password, globalPassword));
     },
   }),
-)(withStyles(styles)(PasswordMigration));
+)(PasswordMigration);

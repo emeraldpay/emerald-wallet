@@ -505,7 +505,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const { blockchain } = this.props;
     return (
       <Page
-        title={<ChainTitle chain={blockchain} text={'Create Transaction'} />}
+        title={<ChainTitle blockchain={blockchain} title="Create Transaction" />}
         leftIcon={<Back onClick={this.props.onCancel} />}
       >
         {this.getPage()}

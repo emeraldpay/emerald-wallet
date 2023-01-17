@@ -5,8 +5,8 @@ import ChainTitle from './ChainTitle';
 
 describe('ChainTitle', () => {
   it('should renders without crash', () => {
-    const wrapper = render(<ChainTitle chain={BlockchainCode.ETH} text={'Title'} />);
+    const wrapper = render(<ChainTitle blockchain={BlockchainCode.ETH} title="Title" />);
+
     expect(wrapper).toBeDefined();
-    // expect(wrapper.findByText('Title')).toBeDefined();
   });
 });

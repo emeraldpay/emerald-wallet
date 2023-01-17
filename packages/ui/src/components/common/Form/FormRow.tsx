@@ -15,7 +15,7 @@ interface OwnProps {
   style?: CSSProperties;
 }
 
-class FormField extends React.Component<OwnProps & WithStyles<typeof styles>> {
+class FormRow extends React.Component<OwnProps & WithStyles<typeof styles>> {
   render(): React.ReactNode {
     const { children, classes, last, style } = this.props;
 
@@ -27,4 +27,4 @@ class FormField extends React.Component<OwnProps & WithStyles<typeof styles>> {
   }
 }
 
-export default withStyles(styles)(FormField);
+export default withStyles(styles)(FormRow);

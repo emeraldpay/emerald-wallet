@@ -91,7 +91,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   (dispatch, ownProps) => ({
     onAddAccount() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
+      dispatch(screen.actions.gotoScreen(screen.Pages.SETUP_BLOCKCHAINS, ownProps.walletId));
     },
     onAddAddress() {
       dispatch(screen.actions.gotoScreen(screen.Pages.ADD_HD_ADDRESS, ownProps.walletId));

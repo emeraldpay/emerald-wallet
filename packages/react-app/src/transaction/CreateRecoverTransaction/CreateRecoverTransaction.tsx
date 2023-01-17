@@ -26,7 +26,7 @@ import {
   tokens,
   transaction,
 } from '@emeraldwallet/store';
-import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
   FormControlLabel,
@@ -42,8 +42,6 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
   inputField: {
@@ -77,6 +75,11 @@ const styles = createStyles({
   },
   gasPriceValueLabel: {
     fontSize: '0.7em',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
   },
 });
 
@@ -286,7 +289,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
             </Alert>
           ) : (
             <>
-              <FormField>
+              <FormRow>
                 <FormLabel>Address</FormLabel>
                 {ownAddresses.length === 1 ? (
                   <>{address}</>
@@ -298,9 +301,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     onChange={setAddress}
                   />
                 )}
-              </FormField>
+              </FormRow>
               {tokensData.length > 1 && (
-                <FormField>
+                <FormRow>
                   <FormLabel>Token</FormLabel>
                   <TextField select value={token.symbol} onChange={onTokenChange}>
                     {tokensData.map((item) => (
@@ -309,18 +312,18 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       </MenuItem>
                     ))}
                   </TextField>
-                </FormField>
+                </FormRow>
               )}
-              <FormField>
+              <FormRow>
                 <FormLabel>Amount</FormLabel>
                 {formatAmount(balanceByToken[token.symbol])}
-              </FormField>
-              <FormField>
+              </FormRow>
+              <FormRow>
                 <FormLabel>Reason</FormLabel>
                 {recoverBlockchain.getTitle()} coins/tokens on {wrongBlockchain.getTitle()} address
-              </FormField>
-              <FormField>
-                <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
+              </FormRow>
+              <FormRow>
+                <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
                 <Box className={classes.inputField}>
                   <Box className={classes.gasPriceTypeBox}>
                     <FormControlLabel
@@ -373,10 +376,10 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     </FormHelperText>
                   </Box>
                 </Box>
-              </FormField>
+              </FormRow>
               {eip1559 && (
-                <FormField>
-                  <FormLabel>Priority gas price</FormLabel>
+                <FormRow>
+                  <FormLabel top>Priority gas price</FormLabel>
                   <Box className={classes.inputField}>
                     <Box className={classes.gasPriceTypeBox}>
                       <FormControlLabel
@@ -429,11 +432,11 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       </FormHelperText>
                     </Box>
                   </Box>
-                </FormField>
+                </FormRow>
               )}
-              <FormField>
+              <FormRow>
                 <FormLabel />
-                <ButtonGroup>
+                <ButtonGroup classes={{ container: classes.buttons }}>
                   <Button label="Cancel" onClick={goBack} />
                   <Button
                     disabled={initializing}
@@ -442,24 +445,24 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     onClick={onCreateTransaction}
                   />
                 </ButtonGroup>
-              </FormField>
+              </FormRow>
             </>
           )}
         </>
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormField>
+          <FormRow>
             <FormLabel />
             Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow>
             <FormLabel>Password</FormLabel>
             <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormField>
-          <FormField>
+          </FormRow>
+          <FormRow last>
             <FormLabel />
-            <ButtonGroup style={{ width: '100%' }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button
                 label="Sign Transaction"
@@ -468,7 +471,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 onClick={onSignTransaction}
               />
             </ButtonGroup>
-          </FormField>
+          </FormRow>
         </>
       )}
     </Page>

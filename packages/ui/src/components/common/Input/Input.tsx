@@ -76,10 +76,9 @@ export const Input: React.FC<OwnProps> = ({
   return (
     <TextField
       {...props}
+      fullWidth
       disabled={disabled ?? false}
-      fullWidth={true}
       inputProps={{ max, min }}
-      margin="normal"
       maxRows={maxRows}
       minRows={minRows}
       placeholder={placeholder ?? ''}
