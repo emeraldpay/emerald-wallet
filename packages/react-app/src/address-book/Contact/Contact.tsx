@@ -84,17 +84,24 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
 
     const blockchainCode = blockchainIdToCode(blockchain);
 
-    if (id != null && isBitcoin(blockchainCode) && type === 'xpub') {
-      getXPubLastIndex(blockchainCode, address).then((lastIndex) => {
-        if (lastIndex != null) {
-          setXPubIndex(address, lastIndex).then(() => {
-            getAddressBookItem(id).then((updated) => {
-              setCurrentContact(updated);
-              setAddressUpdating(false);
+    if (id != null) {
+      if (isBitcoin(blockchainCode) && type === 'xpub') {
+        getXPubLastIndex(blockchainCode, address).then((lastIndex) => {
+          if (lastIndex == null) {
+            setCurrentContact(contact);
+            setAddressUpdating(false);
+          } else {
+            setXPubIndex(address, lastIndex).then(() => {
+              getAddressBookItem(id).then((updated) => {
+                setCurrentContact(updated);
+                setAddressUpdating(false);
+              });
             });
-          });
-        }
-      });
+          }
+        });
+      } else {
+        setCurrentContact(contact);
+      }
     }
   }, [contact, getAddressBookItem, getXPubLastIndex, setXPubIndex]);
 
@@ -155,7 +162,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps>(
+export default connect<unknown, DispatchProps, OwnProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({

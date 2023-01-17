@@ -16,7 +16,7 @@ import {
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, HDPath, IpcCommands, blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode, HDPath, IpcCommands, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import {
   ActionTypes,
@@ -172,13 +172,19 @@ export function createWallet(
     try {
       const walletId = await vault.addWallet(options.label);
 
-      for (let i = 0; i < entries.length; i++) {
-        await vault.addEntry(walletId, entries[i]);
+      for (const entry of entries) {
+        await vault.addEntry(walletId, entry);
       }
 
       const wallet = await vault.getWallet(walletId);
 
-      if (wallet) {
+      if (wallet != null) {
+        for (const { address, blockchain, id } of wallet.entries) {
+          if (address != null) {
+            await ipcRenderer.invoke(IpcCommands.TXS_SUBSCRIBE, address.value, blockchainIdToCode(blockchain), id);
+          }
+        }
+
         dispatch(walletCreatedAction(wallet));
       }
 
