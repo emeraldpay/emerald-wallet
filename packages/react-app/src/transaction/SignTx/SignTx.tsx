@@ -1,5 +1,5 @@
 import { BlockchainCode, workflow } from '@emeraldwallet/core';
-import { blockchains } from '@emeraldwallet/store';
+import { IState, accounts, blockchains } from '@emeraldwallet/store';
 import { ArrowRight, Button, ButtonGroup, IdentityIcon, PasswordInput } from '@emeraldwallet/ui';
 import { Divider, List, ListItem, ListItemText, StyleRules, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -25,30 +25,43 @@ const styles = (theme: Theme): StyleRules => ({
     marginRight: '14.75px',
     maxWidth: '580px',
   },
+  end: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'end',
+    marginLeft: '14.75px',
+    marginRight: '14.75px',
+    width: '100%',
+  },
   fee: {
     color: theme.palette.text.secondary,
   },
 });
 
-interface DispatchProps {
-  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
-}
-
-interface IProps extends DispatchProps {
+interface OwnProps {
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   fiatCurrency?: any;
   fiatRate?: any;
   onCancel?: any;
   onChangePassword?: any;
   onSubmit?: any;
-  useLedger?: any;
   typedData?: any;
   mode?: any;
   classes?: any;
   passwordError?: string;
 }
 
-interface IState {
+interface StateProps {
+  isHardware: boolean;
+}
+
+interface DispatchProps {
+  lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
+}
+
+type Props = OwnProps & StateProps & DispatchProps;
+
+interface State {
   nameByAddress: Record<string, string>;
   password: string;
 }
@@ -107,7 +120,7 @@ const TypedData = (props: { typedData: any }) => {
   );
 };
 
-const getTypedDataOrDeploy = (props: IProps) => {
+const getTypedDataOrDeploy = (props: Props) => {
   if (props.mode === 'contract_function') {
     return (
       <React.Fragment>
@@ -128,8 +141,8 @@ const getTypedDataOrDeploy = (props: IProps) => {
   }
 };
 
-class SignTx extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
+class SignTx extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -211,7 +224,7 @@ class SignTx extends React.Component<IProps, IState> {
         </div>
         {getTypedDataOrDeploy(this.props)}
         <div style={{ marginTop: '10px' }}>
-          {!this.props.useLedger && (
+          {!this.props.isHardware && (
             <div className={classes.formRow}>
               <div className={classes.left}>
                 <div className={classes.fieldName}>Password</div>
@@ -222,12 +235,11 @@ class SignTx extends React.Component<IProps, IState> {
             </div>
           )}
           <div className={classes.formRow}>
-            <div className={classes.left} />
-            <div className={classes.right} style={{ paddingTop: '10px' }}>
+            <div className={classes.end} style={{ paddingTop: '10px' }}>
               <ButtonGroup>
                 <Button label="Cancel" onClick={onCancel} />
                 <Button
-                  disabled={this.state.password.length === 0}
+                  disabled={!this.props.isHardware && this.state.password.length === 0}
                   primary={true}
                   label="Sign Transaction"
                   onClick={onSubmit}
@@ -241,8 +253,28 @@ class SignTx extends React.Component<IProps, IState> {
   }
 }
 
-export default connect<unknown, DispatchProps>(
-  null,
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, { tx: { blockchain, from } }) => {
+    let isHardware = false;
+
+    if (from != null) {
+      const entry = accounts.selectors.findAccountByAddress(state, from, blockchain);
+
+      if (entry != null) {
+        const wallet = accounts.selectors.findWalletByEntryId(state, entry.id);
+
+        if (wallet != null) {
+          const [account] = wallet.reserved ?? [];
+
+          if (account != null) {
+            isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: account.seedId });
+          }
+        }
+      }
+    }
+
+    return { isHardware };
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     lookupAddress(blockchain, address) {

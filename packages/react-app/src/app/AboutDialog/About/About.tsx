@@ -49,8 +49,8 @@ export class About extends React.Component<IProps> {
         <h2 className={classes.appName}>Emerald Wallet</h2>
         <div style={{ marginBottom: '20px' }}>{appVersion}</div>
         <div className={classes.componentsVer}>
-          Full Version: {gitVersion.FullSemVer}<br/>
-          Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
+          Full Version: {gitVersion.SemVer}-{gitVersion.ShortSha}<br/>
+          Build: {gitVersion.CommitDate}<br/>
           OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
         </div>
         <div style={{ fontSize: '14px', marginTop: '80px' }}>

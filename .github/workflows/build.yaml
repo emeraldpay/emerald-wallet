@@ -50,14 +50,14 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.14
+        uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.x'
 
         # step id used as reference for output values
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.14
+        uses: gittools/actions/gitversion/execute@v0.9.15
 
       - name: Show Version
         run: |
@@ -66,9 +66,7 @@ jobs:
       - name: Setup App Version
         run: |
           echo '{' > packages/desktop/gitversion.json
-          echo '"BuildMetaDataPadded":"0001",' >> packages/desktop/gitversion.json
           echo '"SemVer":"${{ steps.gitversion.outputs.semVer }}",' >> packages/desktop/gitversion.json
-          echo '"FullSemVer":"${{ steps.gitversion.outputs.fullSemVer }}",' >> packages/desktop/gitversion.json
           echo '"ShortSha":"${{ steps.gitversion.outputs.shortSha }}",' >> packages/desktop/gitversion.json
           echo '"CommitDate":"${{ steps.gitversion.outputs.commitDate }}"' >> packages/desktop/gitversion.json
           echo '}' >> packages/desktop/gitversion.json

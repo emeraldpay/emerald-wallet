@@ -113,7 +113,6 @@ interface Props {
   tokenSymbols: string[];
   txFeeSymbol: string;
   typedData: any;
-  useLedger: boolean;
   value?: any;
   getBalance: (address: string) => WeiAny;
   getBalancesByAddress: (address: string) => string[];
@@ -349,24 +348,28 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       return;
     }
 
-    const correctPassword = await this.props.checkGlobalKey(this.state.password ?? '');
+    if (this.state.password != null) {
+      const correctPassword = await this.props.checkGlobalKey(this.state.password ?? '');
 
-    if (correctPassword) {
-      const entry = this.props.getEntryByAddress(this.transaction.from);
+      if (!correctPassword) {
+        this.setState({ passwordError: 'Incorrect password' });
 
-      if (entry == null || !isEthereumEntry(entry)) {
         return;
       }
-
-      this.props.signAndSend({
-        entryId: entry.id,
-        password: this.state.password,
-        transaction: this.transaction,
-        token: this.state.token,
-      });
-    } else {
-      this.setState({ passwordError: 'Incorrect password' });
     }
+
+    const entry = this.props.getEntryByAddress(this.transaction.from);
+
+    if (entry == null || !isEthereumEntry(entry)) {
+      return;
+    }
+
+    this.props.signAndSend({
+      entryId: entry.id,
+      password: this.state.password,
+      transaction: this.transaction,
+      token: this.state.token,
+    });
   };
 
   public onMaxClicked() {
@@ -450,7 +453,6 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             fiatRate={this.props.fiatRate}
             tx={tx}
             onChangePassword={this.onChangePassword}
-            useLedger={this.props.useLedger}
             typedData={this.state.typedData}
             onSubmit={this.onSubmitSignTxForm}
             mode={this.props.mode}
@@ -652,7 +654,6 @@ export default connect(
       tokenSymbols: allTokens.map((i) => i.symbol),
       txFeeSymbol,
       typedData: ownProps.typedData,
-      useLedger: false, // TODO
       getBalance: (address: string): WeiAny => {
         const entry = getEntryByAddress(address);
 

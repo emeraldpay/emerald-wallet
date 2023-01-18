@@ -63,7 +63,7 @@ export function mapVaultWithIpc(vault: IEmeraldVault): void {
   });
 
   ipcMain.handle(PREFIX + 'signTx', (event, entryId: EntryId, tx: UnsignedTx, password?: string) => {
-    return vault.signTx(entryId, tx, password);
+    return vault.signTx(entryId, tx, password ?? '');
   });
 
   ipcMain.handle(PREFIX + 'exportRawPk', (event, entryId: EntryId, password: string) => {
