@@ -65,6 +65,10 @@ export class TxService implements IService {
       this.stop();
       this.start();
     });
+
+    ipcMain.handle(IpcCommands.TXS_SUBSCRIBE, (event, identifier, blockchain, entryId) =>
+      this.subscribe(identifier, blockchain, entryId),
+    );
   }
 
   start(): void {
@@ -217,7 +221,7 @@ export class TxService implements IService {
                     }),
                     confirmTimestamp: tx.mempool ? undefined : tx.block?.timestamp ?? now,
                     sinceTimestamp: tx.block?.timestamp ?? now,
-                    state: tx.mempool ? State.CONFIRMED : State.SUBMITTED,
+                    state: tx.mempool ? State.SUBMITTED : State.CONFIRMED,
                     status: tx.failed ? Status.FAILED : Status.OK,
                     txId: tx.txId,
                   })

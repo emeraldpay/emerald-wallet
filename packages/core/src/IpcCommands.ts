@@ -34,6 +34,7 @@ export enum IpcCommands {
 
   // Transactions service
   TXS_SET_TOKENS = 'txs-set-tokens',
+  TXS_SUBSCRIBE = 'txs-subscribe',
 
   // Account
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
@@ -85,7 +86,7 @@ export enum IpcCommands {
   VAULT_REMOVE_WALLET = 'vault-remove-wallet',
   VAULT_SET_ENTRY_LABEL = 'vault-set-entry-label',
   VAULT_SET_ENTRY_RECEIVE_DISABLED = 'vault-set-entry-receive-disabled',
-  VAULT_SET_STATE='vault-set-state',
+  VAULT_SET_STATE = 'vault-set-state',
   VAULT_SET_WALLET_LABEL = 'vault-set-wallet-label',
   VAULT_SIGN_MESSAGE = 'vault-sign-message',
   VAULT_SIGN_TX = 'vault-sign-tx',
