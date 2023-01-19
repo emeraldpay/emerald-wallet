@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -44,10 +46,6 @@ jobs:
           service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
           export_default_credentials: true
         if: runner.os != 'Windows'
-
-        # needed for GitVersion
-      - name: Fetch all history
-        run: git fetch --prune --unshallow
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.15
