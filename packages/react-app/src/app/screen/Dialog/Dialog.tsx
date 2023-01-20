@@ -14,28 +14,28 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  handleClose(): void;
+  onClose(): void;
 }
 
-const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, handleClose }) => {
+const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, onClose }) => {
   if (dialog == null) {
     return <></>;
   }
 
   switch (dialog) {
     case EmeraldDialogs.ABOUT:
-      return <AboutDialog handleClose={handleClose} />;
+      return <AboutDialog onClose={onClose} />;
     case EmeraldDialogs.SIGN_TX:
-      return <WaitForSignDialog />;
+      return <WaitForSignDialog onClose={onClose} />;
     default:
       throw new Error(`Unsupported dialog: ${dialog}`);
   }
 };
 
-export default connect<StateProps, DispatchProps, {}, IState>(
+export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => screen.selectors.getCurrentDialog(state),
   (dispatch) => ({
-    handleClose() {
+    onClose() {
       dispatch(screen.actions.closeDialog());
     },
   }),

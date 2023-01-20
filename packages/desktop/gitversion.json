@@ -4,7 +4,8 @@
   "3 WARNING": "FOR TESTING INSTALL https://github.com/GitTools/GitVersion AND EXECUTE `gitversion > gitversion.json`",
   "AN EXAMPLE BELOW": ">>>>",
 
-  "SemVer":"0.0.0-dev",
-  "ShortSha":"cafe42",
-  "CommitDate":"2019-04-12"
+  "CommitDate": "2019-04-12",
+  "FullSemVer": "0.0.0-dev.1+1",
+  "SemVer": "0.0.0-dev",
+  "ShortSha": "cafe42"
 }

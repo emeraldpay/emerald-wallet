@@ -1,8 +1,12 @@
-import { IState, screen } from '@emeraldwallet/store';
+import { IState, hwkey, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { CircularProgress, Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+
+interface OwnProps {
+  onClose(): void;
+}
 
 interface StateProps {
   open: boolean;
@@ -18,8 +22,10 @@ const WaitForSignDialog: React.FC<StateProps & DispatchProps> = ({ open, handleC
       <DialogContent>
         Please sign transaction using your Hardware Key
         <br />
-        <CircularProgress size={25} />
-        Waiting for signature....
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <CircularProgress size={25} />
+          Waiting for signature....
+        </div>
       </DialogContent>
       <DialogActions>
         <Button key="cancel" label="Cancel" primary={true} onClick={handleClose} />
@@ -28,15 +34,17 @@ const WaitForSignDialog: React.FC<StateProps & DispatchProps> = ({ open, handleC
   );
 };
 
-export default connect<StateProps, DispatchProps, {}, IState>(
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state) => {
-    const dlg = screen.selectors.getCurrentDialog(state);
+    const { dialog } = screen.selectors.getCurrentDialog(state);
 
-    return { open: dlg.dialog === 'sign-transaction' };
+    return { open: dialog === 'sign-transaction' };
   },
-  (dispatch) => ({
+  (dispatch, { onClose }) => ({
     handleClose() {
-      dispatch(screen.actions.closeDialog());
+      dispatch(hwkey.actions.setWatch(false));
+
+      onClose();
     },
   }),
 )(WaitForSignDialog);

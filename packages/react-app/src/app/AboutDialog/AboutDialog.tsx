@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import About from './About';
 
 export interface IRenderProps {
-  handleClose?: any;
+  onClose?: any;
   classes?: any;
 }
 
@@ -31,7 +31,7 @@ const styles = createStyles({
 });
 
 const AboutDialog = (props: IRenderProps & IDispatchProps) => {
-  const { handleClose, classes, getVersions, openUrl } = props;
+  const { onClose, classes, getVersions, openUrl } = props;
   const [versions, setVersions] = React.useState<any>({});
 
   React.useEffect(() => {
@@ -61,7 +61,7 @@ const AboutDialog = (props: IRenderProps & IDispatchProps) => {
     <Dialog
       classes={{ paper: classes?.root }}
       open={true}
-      onClose={handleClose}
+      onClose={onClose}
     >
       <DialogContent classes={{ root: classes?.content }}>
         <About

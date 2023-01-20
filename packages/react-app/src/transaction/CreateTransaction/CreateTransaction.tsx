@@ -499,15 +499,15 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 }
 
-function signTokenTx(
+async function signTokenTx(
   dispatch: any,
   ownProps: OwnProps,
   { entryId, password, token, transaction: tx }: Request,
 ): Promise<SignData | null> {
-  if (password == null || tx.to == null || tx.from == null) {
+  if (tx.to == null || tx.from == null) {
     console.warn('Invalid tx', tx.to, tx.from);
 
-    return Promise.resolve(null);
+    return null;
   }
 
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
@@ -515,7 +515,7 @@ function signTokenTx(
   const tokenInfo = registry.byTokenSymbol(blockchainCode, token);
 
   if (tokenInfo == null) {
-    return Promise.resolve(null);
+    return null;
   }
 
   const tokenUnits = toBaseUnits(toBigNumber(tx.amount.number), tokenInfo.decimals);
@@ -523,25 +523,62 @@ function signTokenTx(
 
   const txData = tokens.actions.createTokenTxData(tx.to, tokenUnits, true);
 
-  return dispatch(
-    transaction.actions.signTransaction(
-      entryId,
-      blockchainCode,
-      tx.from,
-      password,
-      tokenInfo.address,
-      tx.gas,
-      zeroAmount,
-      txData,
-      tx.type,
-      tx.gasPrice,
-      tx.maxGasPrice,
-      tx.priorityGasPrice,
-    ),
-  );
+  const sign = (): Promise<SignData | null> => {
+    if (tx.from == null) {
+      return Promise.resolve(null);
+    }
+
+    return dispatch(
+      transaction.actions.signTransaction(
+        entryId,
+        blockchainCode,
+        tx.from,
+        password ?? '',
+        tokenInfo.address,
+        tx.gas,
+        zeroAmount,
+        txData,
+        tx.type,
+        tx.gasPrice,
+        tx.maxGasPrice,
+        tx.priorityGasPrice,
+      ),
+    );
+  };
+
+  if (password == null) {
+    dispatch(hwkey.actions.setWatch(true));
+    dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
+
+    return new Promise((resolve) => {
+      const connectHandler = async (state: IState): Promise<void> => {
+        if (hwkey.selectors.isWatching(state.hwkey)) {
+          if (hwkey.selectors.isBlockchainOpen(state, blockchainCode)) {
+            dispatch(hwkey.actions.setWatch(false));
+
+            try {
+              const signData = await sign();
+
+              dispatch(screen.actions.closeDialog());
+
+              resolve(signData);
+            } catch (exception) {
+              resolve(null);
+            }
+          } else {
+            hwkey.triggers.onConnect(connectHandler);
+          }
+        }
+      };
+
+      hwkey.triggers.onConnect(connectHandler);
+    });
+  }
+
+  return sign();
 }
 
-function signEtherTx(
+async function signEtherTx(
   dispatch: any,
   ownProps: OwnProps,
   { entryId, password, transaction: tx }: Request,
@@ -549,7 +586,7 @@ function signEtherTx(
   if (tx.to == null || tx.from == null || !BigAmount.is(tx.amount)) {
     console.warn('Invalid tx', tx.to, tx.from, tx.amount);
 
-    return Promise.resolve(null);
+    return null;
   }
 
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
@@ -561,19 +598,13 @@ function signEtherTx(
     value: tx.amount,
   };
 
-  const validated = traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas);
-
-  let prepared: Promise<any>;
-
-  if (password == null) {
-    prepared = validated
-      .then(() => dispatch(hwkey.actions.setWatch(false)))
-      .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX)));
-  } else {
-    prepared = validated;
+  try {
+    await traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas);
+  } catch (exception) {
+    return null;
   }
 
-  return prepared.then(() =>
+  const sign = (): Promise<SignData> =>
     dispatch(
       transaction.actions.signTransaction(
         entryId,
@@ -589,8 +620,38 @@ function signEtherTx(
         tx.maxGasPrice,
         tx.priorityGasPrice,
       ),
-    ),
-  );
+    );
+
+  if (password == null) {
+    dispatch(hwkey.actions.setWatch(true));
+    dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
+
+    return new Promise((resolve) => {
+      const connectHandler = async (state: IState): Promise<void> => {
+        if (hwkey.selectors.isWatching(state.hwkey)) {
+          if (hwkey.selectors.isBlockchainOpen(state, blockchainCode)) {
+            dispatch(hwkey.actions.setWatch(false));
+
+            try {
+              const signData = await sign();
+
+              dispatch(screen.actions.closeDialog());
+
+              resolve(signData);
+            } catch (exception) {
+              resolve(null);
+            }
+          } else {
+            hwkey.triggers.onConnect(connectHandler);
+          }
+        }
+      };
+
+      hwkey.triggers.onConnect(connectHandler);
+    });
+  }
+
+  return sign();
 }
 
 function sign(dispatch: any, ownProps: OwnProps, request: Request): Promise<SignData | null> {
