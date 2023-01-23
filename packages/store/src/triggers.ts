@@ -96,9 +96,9 @@ export class Triggers {
         if (dispatch != null && state != null) {
           const current = check(state);
 
-          last = current;
-
           if ((last == null && current != null) || (typeof last == 'string' && last !== current)) {
+            last = current;
+
             const status = handler(state, dispatch);
 
             if (status == TriggerStatus.STOP) {
