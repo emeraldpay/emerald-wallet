@@ -94,11 +94,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
 
         const connectHandler = (state: IState): void => {
-          if (hwkey.selectors.isBlockchainOpen(state, ownProps.blockchain)) {
-            dispatch(hwkey.actions.setWatch(false));
-            dispatch(transaction.actions.signBitcoinTransaction(ownProps.entryId, ownProps.tx, 'none', onSigned));
-          } else {
-            hwkey.triggers.onConnect(connectHandler);
+          if (hwkey.selectors.isWatching(state.hwkey)) {
+            if (hwkey.selectors.isBlockchainOpen(state, ownProps.blockchain)) {
+              dispatch(hwkey.actions.setWatch(false));
+              dispatch(transaction.actions.signBitcoinTransaction(ownProps.entryId, ownProps.tx, 'none', onSigned));
+            } else {
+              hwkey.triggers.onConnect(connectHandler);
+            }
           }
         };
 
