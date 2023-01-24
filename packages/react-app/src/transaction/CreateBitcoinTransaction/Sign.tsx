@@ -48,7 +48,7 @@ const Sign: React.FC<OwnProps & StateProps & DispatchProps> = ({
     if (isHardware) {
       signHardware();
     }
-  }, [isHardware, signHardware]);
+  }, [isHardware]);
 
   return (
     <Grid container>
