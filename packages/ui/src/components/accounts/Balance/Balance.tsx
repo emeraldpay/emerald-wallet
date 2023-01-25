@@ -1,36 +1,35 @@
-import {BigAmount, FormatterBuilder, Predicates} from '@emeraldpay/bigamount';
-import {createStyles, IconButton, Typography} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
+import { getStandardUnits } from '@emeraldwallet/core';
+import { IconButton, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Sync } from '@material-ui/icons';
 import { ClassNameMap } from '@material-ui/styles';
+import classNames from 'classnames';
 import * as React from 'react';
-import {getStandardUnits} from "@emeraldwallet/core";
-
-const styles = createStyles({
-  coins: {
-    color: '#191919',
-  },
-  coinBalance: {},
-  coinSymbol: {
-    paddingLeft: '5px',
-  },
-  root: {
-    minHeight: '28px',
-  },
-  convert: {
-    marginRight: '5px',
-  },
-});
 
 export interface OwnProps {
-  balance?: BigAmount | undefined;
-  classes?: Partial<ClassNameMap<keyof typeof styles>>;
-  onConvert?: () => void;
+  balance?: BigAmount;
+  classes?: Partial<ClassNameMap<'root' | 'coin' | 'coinBalance' | 'coinSymbol'>>;
+  onConvert?(): void;
 }
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(
+  createStyles({
+    root: {
+      minHeight: 28,
+    },
+    convert: {
+      marginRight: 5,
+    },
+    coin: {
+      color: '#191919',
+    },
+    coinSymbol: {
+      paddingLeft: 5,
+    },
+  }),
+);
 
-const Component: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => {
+const Balance: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => {
   const styles = useStyles();
 
   const formatBalance = React.useCallback((balance: BigAmount) => {
@@ -56,12 +55,12 @@ const Component: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => 
           <Sync color="primary" fontSize="small" />
         </IconButton>
       )}
-      <Typography className={`${styles.coins} ${classes?.coins}`}>
-        <span className={`${styles.coinBalance} ${classes?.coinBalance}`}>{balance == null ? '-' : coinBalance}</span>
-        <span className={`${styles.coinSymbol} ${classes?.coinSymbol}`}>{balance == null ? '' : balanceUnit}</span>
+      <Typography className={classNames(styles.coin, classes?.coin)}>
+        <span className={classes?.coinBalance}>{balance == null ? '-' : coinBalance}</span>
+        <span className={classNames(styles.coinSymbol, classes?.coinSymbol)}>{balance == null ? '' : balanceUnit}</span>
       </Typography>
     </div>
   );
 };
 
-export default Component;
+export default Balance;

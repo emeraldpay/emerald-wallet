@@ -79,7 +79,7 @@ export class BalanceListener implements IService {
         type: 'ACCOUNT/SET_BALANCE',
         payload: {
           entryId: entry.entryId,
-          value: amountReader(event.balance).encode(),
+          balance: amountReader(event.balance).encode(),
           utxo: event.utxo?.map((tx) => ({
             address: event.address,
             txid: tx.txid,

@@ -573,19 +573,21 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const factory = amountFactory(blockchain);
     const zero = factory(0);
 
+    const uniqueAddresses =
+      accounts.selectors
+        .findWalletByEntryId(state, entry.id)
+        ?.entries.reduce<Set<string>>(
+          (carry, item) =>
+            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
+          new Set(),
+        ) ?? new Set();
+
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
     return {
       blockchain,
       tokenRegistry,
-      addresses:
-        accounts.selectors
-          .findWalletByEntryId(state, entry.id)
-          ?.entries.reduce<Array<string>>(
-            (carry, item) =>
-              item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
-            [],
-          ) ?? [],
+      addresses: [...uniqueAddresses],
       defaultFee: application.selectors.getDefaultFee(state, blockchain),
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {

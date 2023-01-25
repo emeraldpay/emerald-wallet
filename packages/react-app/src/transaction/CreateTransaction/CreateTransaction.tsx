@@ -40,7 +40,7 @@ import { connect } from 'react-redux';
 import { EmeraldDialogs } from '../../app/screen/Dialog';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
-import SignTx from '../SignTx';
+import SignTx from '../SignTransaction';
 
 enum PAGES {
   TX = 1,
@@ -66,7 +66,6 @@ interface OwnProps {
   data?: any;
   gasLimit?: any;
   sourceEntry: WalletEntry;
-  typedData?: any;
 }
 
 interface CreateTxState {
@@ -78,7 +77,6 @@ interface CreateTxState {
   passwordError?: string;
   token: string;
   transaction: TxDetailsPlain;
-  typedData?: any;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
   stdGasPrice: GasPrices;
@@ -103,16 +101,13 @@ interface Props {
   fiatRate?: any;
   from?: any;
   gasLimit: any;
-  mode?: string;
   ownAddresses: string[];
-  selectedFromAddress: string;
+  selectedFromAddress?: string;
   to?: any;
   token: any;
   tokenRegistry: TokenRegistry;
   tokenSymbols: string[];
   txFeeSymbol: string;
-  typedData: any;
-  useLedger: boolean;
   value?: any;
   getBalance: (address: string) => WeiAny;
   getBalancesByAddress: (address: string) => string[];
@@ -148,10 +143,9 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       stdGasPrice: DEFAULT_FEE,
       amount: props.amount,
       data: props.data,
-      page: props.mode ? PAGES.SIGN : PAGES.TX,
+      page: PAGES.TX,
       token: props.token,
       transaction: tx.dump(),
-      typedData: props.typedData,
     };
   }
 
@@ -194,7 +188,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     tx.gas = props.gasLimit ?? DEFAULT_GAS_LIMIT;
     tx.maxGasPrice = zeroAmount;
     tx.priorityGasPrice = zeroAmount;
-    tx.setTotalBalance(props.getBalance(props.selectedFromAddress));
+    tx.setTotalBalance(props.selectedFromAddress == null ? zeroAmount : props.getBalance(props.selectedFromAddress));
 
     return tx;
   }
@@ -352,7 +346,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.setState({ page: PAGES.SIGN });
   };
 
-  public onSubmitSignTxForm = async () => {
+  public onSubmitSignTxForm = async (): Promise<void> => {
     this.setState({ passwordError: undefined });
 
     const tx = this.transaction;
@@ -364,24 +358,28 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const { tokenRegistry, checkGlobalKey, getEntryByAddress, signAndSend } = this.props;
     const { password, token } = this.state;
 
-    const correctPassword = await checkGlobalKey(password ?? '');
+    if (password != null) {
+      const correctPassword = await checkGlobalKey(password ?? '');
 
-    if (correctPassword) {
-      const entry = getEntryByAddress(tx.from);
+      if (!correctPassword) {
+        this.setState({ passwordError: 'Incorrect password' });
 
-      if (entry == null || !isEthereumEntry(entry)) {
         return;
       }
-
-      signAndSend(tokenRegistry, {
-        entryId: entry.id,
-        password: password,
-        transaction: tx,
-        token: token,
-      });
-    } else {
-      this.setState({ passwordError: 'Incorrect password' });
     }
+
+    const entry = getEntryByAddress(tx.from);
+
+    if (entry == null || !isEthereumEntry(entry)) {
+      return;
+    }
+
+    signAndSend(tokenRegistry, {
+      entryId: entry.id,
+      password: password,
+      transaction: tx,
+      token: token,
+    });
   };
 
   public onMaxClicked() {
@@ -433,20 +431,17 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       blockchain,
       currency,
       eip1559,
-      fiatRate,
-      mode,
       ownAddresses,
       tokenRegistry,
       tokenSymbols,
       txFeeSymbol,
-      useLedger,
       getBalance,
       getBalancesByAddress,
       getFiatForAddress,
       getTokenBalanceForAddress,
       onCancel,
     } = this.props;
-    const { highGasPrice, lowGasPrice, passwordError, stdGasPrice, token, typedData } = this.state;
+    const { highGasPrice, lowGasPrice, passwordError, stdGasPrice, token } = this.state;
 
     const tx = this.transaction;
 
@@ -486,14 +481,10 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         return (
           <SignTx
             passwordError={passwordError}
-            fiatRate={fiatRate}
-            tx={tx}
-            onChangePassword={this.onChangePassword}
-            useLedger={useLedger}
-            typedData={typedData}
-            onSubmit={this.onSubmitSignTxForm}
-            mode={mode}
+            transaction={tx}
             onCancel={onCancel}
+            onChangePassword={this.onChangePassword}
+            onSubmit={this.onSubmitSignTxForm}
           />
         );
       default:
@@ -561,9 +552,27 @@ export default connect(
     const getEntryByAddress = (address: string): WalletEntry | undefined =>
       accounts.selectors.findAccountByAddress(state, address, blockchainCode);
 
+    const uniqueAddresses =
+      accounts.selectors
+        .findWalletByEntryId(state, sourceEntry.id)
+        ?.entries.filter((entry) => !entry.receiveDisabled)
+        .reduce<Set<string>>(
+          (carry, entry) =>
+            entry.blockchain === sourceEntry.blockchain && entry.address != null
+              ? carry.add(entry.address.value)
+              : carry,
+          new Set(),
+        ) ?? new Set();
+
+    const ownAddresses = [...uniqueAddresses];
+
+    const selectedFromAddress = sourceEntry.address?.value ?? ownAddresses[0];
+
     return {
       allTokens,
+      ownAddresses,
       getEntryByAddress,
+      selectedFromAddress,
       txFeeSymbol,
       tokenRegistry,
       amount: ownProps.amount ?? zero,
@@ -573,22 +582,8 @@ export default connect(
       defaultFee: application.selectors.getDefaultFee(state, blockchainCode),
       eip1559: blockchain.params.eip1559 ?? false,
       gasLimit: ownProps.gasLimit ?? DEFAULT_GAS_LIMIT,
-      ownAddresses:
-        accounts.selectors
-          .findWalletByEntryId(state, sourceEntry.id)
-          ?.entries.filter((entry) => !entry.receiveDisabled)
-          .reduce<Array<string>>(
-            (carry, entry) =>
-              entry.blockchain === sourceEntry.blockchain && entry.address != null
-                ? [...carry, entry.address.value]
-                : carry,
-            [],
-          ) ?? [],
-      selectedFromAddress: sourceEntry.address!.value,
       token: blockchain.params.coinTicker,
       tokenSymbols: allTokens.map((i) => i.symbol),
-      typedData: ownProps.typedData,
-      useLedger: false, // TODO
       getBalance: (address: string): WeiAny => {
         const entry = getEntryByAddress(address);
 

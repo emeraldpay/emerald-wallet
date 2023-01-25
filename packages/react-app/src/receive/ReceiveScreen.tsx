@@ -276,7 +276,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
-    const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet, false);
+    const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 

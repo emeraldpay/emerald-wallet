@@ -28,7 +28,7 @@ export { default as TxHistory } from './transactions/TxHistory';
 export { default as CreateTransaction } from './transaction/CreateTransaction';
 export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
 export { default as BroadcastTx } from './transaction/BroadcastTx';
-export { default as SignTx } from './transaction/SignTx';
+export { default as SignTransaction } from './transaction/SignTransaction';
 
 // settings
 export { default as Settings } from './settings/Settings';

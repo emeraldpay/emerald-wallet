@@ -13,53 +13,52 @@ export interface IBalanceValue {
  * Balance in original "face" value, and converted to a common currency
  */
 export interface BalanceValueConverted {
-  source: IBalanceValue;
   converted: IBalanceValue;
   rate: number;
+  source: IBalanceValue;
 }
 
 export interface AccountDetails {
   entryId: EntryId;
   balance?: string;
-  balancePending?: any;
   txcount?: number;
   utxo?: BalanceUtxo[];
 }
 
 export interface IAccountsState {
-  wallets: Wallet[];
-  loading: boolean;
   details: AccountDetails[];
+  loading: boolean;
   seeds: SeedDescription[];
+  wallets: Wallet[];
 }
 
 export interface IBalanceUpdate {
   entryId: EntryId;
-  value: string;
+  balance: string;
   utxo?: BalanceUtxo[];
 }
 
 export enum ActionTypes {
-  LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
-  SET_BALANCE = 'ACCOUNT/SET_BALANCE',
-  LOADING = 'ACCOUNT/LOADING',
-  SET_LIST = 'ACCOUNT/SET_LIST',
-  SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
-  FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
-  WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
-  PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
-  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
-  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
-  CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
-  CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
   ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED',
   CREATE_HD_ACCOUNT = 'ACCOUNT/CREATE_HD_ACCOUNT',
+  CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
+  CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
+  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
+  FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED',
+  LOADING = 'ACCOUNT/LOADING',
   LOAD_SEEDS = 'ACCOUNT/LOAD_SEEDS',
+  LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
+  NEXT_ADDRESS = 'ACCOUNT/NEXT_ADDRESS',
+  PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
+  SET_BALANCE = 'ACCOUNT/SET_BALANCE',
+  SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
+  SET_LIST = 'ACCOUNT/SET_LIST',
   SET_SEEDS = 'ACCOUNT/SET_SEEDS',
+  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
   SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE',
   TRY_UNLOCK_SEED = 'ACCOUNT/TRY_UNLOCK_SEED',
-  NEXT_ADDRESS = 'ACCOUNT/NEXT_ADDRESS',
+  WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
 }
 
 export interface ILoadWalletsAction {
@@ -78,8 +77,8 @@ export interface IFetchHdPathsAction {
 export interface IUpdateWalletAction {
   type: ActionTypes.WALLET_UPDATED;
   payload: {
-    walletId: Uuid;
     name: string;
+    walletId: Uuid;
   };
 }
 
@@ -114,9 +113,9 @@ export interface IWalletImportedAction {
 export interface ICreateWalletAction {
   type: ActionTypes.CREATE_WALLET;
   payload: {
-    walletName?: string;
-    password: string;
     mnemonic: string;
+    password: string;
+    walletName?: string;
   };
 }
 
@@ -129,8 +128,8 @@ export interface ISetTxCountAction {
 export interface IHdAccountCreated {
   type: ActionTypes.HD_ACCOUNT_CREATED;
   payload: {
-    walletId: string;
     account: WalletEntry;
+    walletId: string;
   };
 }
 
@@ -148,12 +147,12 @@ export interface ISetSeedsAction {
  */
 export interface PendingBalanceAction {
   type: ActionTypes.PENDING_BALANCE;
-  value: string;
+  blockchain: BlockchainCode;
+  from: string;
   gas: string;
   gasPrice: string;
-  from: string;
   to: string;
-  blockchain: BlockchainCode;
+  value: string;
 }
 
 export interface ICreateHdEntry {
@@ -177,18 +176,18 @@ export interface INextAddress {
 }
 
 export type AccountsAction =
-  | IWalletsLoaded
-  | ISetLoadingAction
-  | ISetBalanceAction
-  | IUpdateWalletAction
-  | IWalletCreatedAction
-  | ISetTxCountAction
-  | PendingBalanceAction
-  | IFetchHdPathsAction
   | ILoadWalletsAction
+  | IFetchHdPathsAction
+  | IUpdateWalletAction
+  | IWalletsLoaded
+  | ISetBalanceAction
+  | ISetLoadingAction
+  | IWalletCreatedAction
   | ICreateWalletAction
+  | ISetTxCountAction
   | IHdAccountCreated
   | ILoadSeedsAction
   | ISetSeedsAction
+  | PendingBalanceAction
   | ISubWalletBalance
   | INextAddress;

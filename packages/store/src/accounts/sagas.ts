@@ -49,22 +49,19 @@ function subscribeAccountBalance(entries: WalletEntry[]): void {
 }
 
 function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
-  const accounts = yield select(allEntries);
+  const entries: WalletEntry[] = yield select(allEntries);
+
+  const etherAccounts = entries.filter((entry: WalletEntry) => isEthereumEntry(entry));
 
   const tokenRegistry = new TokenRegistry(action.tokens);
 
-  const etherAccounts = accounts.filter((account: WalletEntry) => isEthereumEntry(account));
+  for (const { address, blockchain } of etherAccounts) {
+    if (address != null) {
+      const blockchainCode = blockchainIdToCode(blockchain);
+      const tokens = tokenRegistry.byBlockchain(blockchainCode);
 
-  for (const account of etherAccounts) {
-    const {
-      address: { value: address },
-      blockchain,
-    } = account;
-
-    const chain = blockchainIdToCode(blockchain);
-    const tokens = tokenRegistry.byBlockchain(chain);
-
-    yield put(requestTokensBalances(chain, tokens, address));
+      yield put(requestTokensBalances(blockchainCode, tokens, address.value));
+    }
   }
 }
 
@@ -108,7 +105,6 @@ function* loadSeeds(vault: IEmeraldVault): SagaIterator {
   const seeds: SeedDescription[] = yield call(vault.listSeeds);
 
   yield put(setSeedsAction(seeds));
-
   yield put(setLoadingAction(false));
 }
 
@@ -201,9 +197,11 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
 function* loadWalletBalance(vault: IEmeraldVault, action: ISubWalletBalance): SagaIterator {
   const wallet = yield call(vault.getWallet, action.walletId);
+
   if (typeof wallet != 'object') {
     return;
   }
+
   yield call(subscribeAccountBalance, wallet.entries);
 }
 

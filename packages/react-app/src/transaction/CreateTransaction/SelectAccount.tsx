@@ -32,7 +32,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-  allAssets: IBalanceValue[];
+  assets: IBalanceValue[];
   balances: AccountBalance[];
   wallet?: Wallet;
 }
@@ -47,7 +47,7 @@ function acceptAccount({ balance }: AccountBalance): boolean {
 }
 
 const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
-  allAssets,
+  assets,
   balances,
   wallet,
   onCancel,
@@ -60,22 +60,22 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
       <Typography>Wallet is not found</Typography>
     </Alert>
   ) : (
-    <Page title={'Select Account to Create Transaction'} leftIcon={<Back onClick={() => onCancel()} />}>
+    <Page title="Select Account to Create Transaction" leftIcon={<Back onClick={() => onCancel()} />}>
       <Grid container>
         <Grid item xs={12}>
-          <WalletReference assets={allAssets} wallet={wallet} />
+          <WalletReference assets={assets} wallet={wallet} />
         </Grid>
         <Grid item className={styles.accountsList} xs={12}>
           {balances.map((item) => (
-            <Grid container key={'acc-balance-' + item.entry.id} className={styles.accountLine}>
+            <Grid container key={`acc-balance-${item.entry.id}`} className={styles.accountLine}>
               <Grid item xs={2} />
               <Grid item xs={1}>
                 <CoinAvatar blockchain={blockchainIdToCode(item.entry.blockchain)} />
               </Grid>
               <Grid item xs={6}>
-                <AccountBalance key={'main'} balance={item.balance} />
+                <AccountBalance balance={item.balance} />
                 {item.tokens.map((token) => (
-                  <AccountBalance key={'token-' + token.units.top.code} balance={token} />
+                  <AccountBalance key={`token-${token.units.top.code}`} balance={token} />
                 ))}
               </Grid>
               <Grid item xs={1}>
@@ -95,10 +95,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
 
-    let allAssets: IBalanceValue[] = [];
+    let assets: IBalanceValue[] = [];
 
     if (wallet != null) {
-      allAssets = accounts.selectors.getWalletBalances(state, wallet, false);
+      assets = accounts.selectors.getWalletBalances(state, wallet);
     }
 
     const balances: AccountBalance[] = Object.values(
@@ -129,15 +129,17 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             };
           }
 
-          tokenBalances = accountBalance.tokens.reduce<Array<BigAmount>>((carry, item) => {
-            const tokenBalance = tokenBalances.find((balanceItem) => balanceItem.units.equals(item.units));
+          tokenBalances = tokenBalances.reduce((carry, token) => {
+            const index = carry.findIndex((item) => item.units.equals(token.units));
 
-            if (tokenBalance == null) {
-              return carry;
+            if (index === -1) {
+              return [...carry, token];
             }
 
-            return [...carry, item.plus(tokenBalance)];
-          }, []);
+            carry.splice(index, 1, carry[index].plus(token));
+
+            return carry;
+          }, accountBalance.tokens);
 
           return {
             ...carry,
@@ -150,11 +152,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         }, {}) ?? {},
     );
 
-    return {
-      allAssets,
-      balances,
-      wallet,
-    };
+    return { assets, balances, wallet };
   },
   (dispatch, ownProps) => ({
     onSelected: (account: WalletEntry) => {
