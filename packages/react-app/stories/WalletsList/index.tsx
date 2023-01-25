@@ -13,15 +13,15 @@ const backend = new BackendMock();
 const setBalances = [
   accounts.actions.setBalanceAction({
     entryId: "1022fd13-3431-4f3b-bce8-109fdab15873-1",
-    value: "918522410056000000000000/WEI"
+    balance: "918522410056000000000000/WEI"
   }),
   accounts.actions.setBalanceAction({
     entryId: "1022fd13-3431-4f3b-bce8-109fdab15873-2",
-    value: "722410056000000000000/WEI"
+    balance: "722410056000000000000/WEI"
   }),
   accounts.actions.setBalanceAction({
     entryId: "1022fd13-3431-4f3b-bce8-109fdab15873-2",
-    value: "498123400000000000000000/WEI"
+    balance: "498123400000000000000000/WEI"
   }),
   tokens.actions.setTokenBalance(BlockchainCode.ETH, {
     decimals: 18,

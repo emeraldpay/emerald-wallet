@@ -1,4 +1,4 @@
-import { IpcCommands, Logger, SettingsOptions, TokenData } from '@emeraldwallet/core';
+import { IpcCommands, Logger, SettingsOptions, TokenData, Versions } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
 import { setAssets } from '../settings/actions';
@@ -25,7 +25,7 @@ export function connecting(value: boolean): ConnectingAction {
   };
 }
 
-export function getVersions(): Dispatched<unknown> {
+export function getVersions(): Dispatched<Versions> {
   return () => {
     return ipcRenderer.invoke(IpcCommands.GET_VERSION);
   };

@@ -1,66 +1,105 @@
+import { Versions } from '@emeraldwallet/core';
 import { Logo } from '@emeraldwallet/ui';
+import { StyleRulesCallback, Theme, WithStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-const year = new Date().getFullYear();
+interface OwnProps extends Versions {
+  onHelpClick(): void;
+  onLicenseClick(): void;
+  onWebsiteClick(): void;
+}
 
-export const styles = (theme?: any) => ({
+export const styles: StyleRulesCallback<Theme, OwnProps> = (theme) => ({
+  container: {
+    padding: 30,
+    position: 'relative',
+  },
+  logo: {
+    opacity: 0.75,
+    position: 'absolute',
+    right: -35,
+    top: -22,
+  },
   appName: {
     color: theme.palette.primary.main,
     fontWeight: 200,
-    paddingBottom: '0px',
-    marginBottom: '5px'
+    paddingBottom: 0,
+    marginBottom: 5,
   },
-  componentsVer: {
+  appVersion: {
+    marginBottom: 20,
+  },
+  gitVersion: {
     color: theme.palette.secondary.main,
     fontWeight: 100,
     lineHeight: '26px',
-    maxWidth: '580px'
+    maxWidth: 580,
   },
-  links: {
-    color: theme.palette.secondary.main
-  }
+  info: {
+    fontSize: 14,
+    marginTop: 80,
+  },
+  infoBlock: {
+    paddingBottom: 5,
+  },
+  infoLink: {
+    color: theme.palette.secondary.main,
+  },
+  infoHelp: {
+    float: 'right',
+    textAlign: 'right',
+  },
 });
 
-interface IProps {
-  appVersion?: string;
-  gitVersion?: any;
-  osVersion?: any;
-  onButtonClick?: any;
-  onHelpClick?: any;
-  onLicenseClick?: any;
-  classes?: any;
-}
+type Props = OwnProps & WithStyles<typeof styles>;
 
-export class About extends React.Component<IProps> {
-  public render () {
+class About extends React.Component<Props> {
+  static year = new Date().getFullYear();
+
+  render(): React.ReactNode {
     const {
-      classes, onButtonClick, onHelpClick, onLicenseClick
+      classes,
+      appVersion,
+      gitVersion = {},
+      osVersion = {},
+      onWebsiteClick,
+      onHelpClick,
+      onLicenseClick,
     } = this.props;
-    const { appVersion } = this.props;
-    const gitVersion = this.props.gitVersion || {};
-    const osVersion = this.props.osVersion || {};
 
     return (
-      <div style={{ padding: '30px', position: 'relative' }}>
-        <div style={{position: 'absolute', top: '-22px', right: '-35px', opacity: '0.75'}}>
-          <Logo height='350px' width='350px'/>
+      <div className={classes.container}>
+        <div className={classes.logo}>
+          <Logo height="350px" width="350px" />
         </div>
         <h2 className={classes.appName}>Emerald Wallet</h2>
-        <div style={{ marginBottom: '20px' }}>{appVersion}</div>
-        <div className={classes.componentsVer}>
-          Full Version: {gitVersion.FullSemVer}<br/>
-          Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
-          OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
+        <div className={classes.appVersion}>{appVersion}</div>
+        <div className={classes.gitVersion}>
+          Full Version: {gitVersion.FullSemVer}
+          <br />
+          Build: {gitVersion.ShortSha} {gitVersion.CommitDate}
+          <br />
+          OS: {osVersion.platform} {osVersion.arch} {osVersion.release}
+          <br />
         </div>
-        <div style={{ fontSize: '14px', marginTop: '80px' }}>
-          <div style={{paddingBottom: '5px'}}>
-            Website <a onClick={onButtonClick} href='#' className={classes.links}>https://emerald.cash</a>
+        <div className={classes.info}>
+          <div className={classes.infoBlock}>
+            Website{' '}
+            <a onClick={onWebsiteClick} href="#" className={classes.infoLink}>
+              https://emerald.cash
+            </a>
           </div>
-          <div style={{paddingBottom: '5px'}}>Copyright &copy; {year} EmeraldPay, Inc</div>
-          <div> Licensed under <a onClick={onLicenseClick} className={classes.links} href='#'>Apache License 2.0</a>
-            <span style={{float: 'right', textAlign: 'right'}}>
-              <a onClick={onHelpClick} href='#' className={classes.links}>Help & Support</a>
+          <div className={classes.infoBlock}>Copyright &copy; {About.year} EmeraldPay, Inc</div>
+          <div>
+            Licensed under{' '}
+            <a onClick={onLicenseClick} className={classes.infoLink} href="#">
+              Apache License 2.0
+            </a>
+            <span className={classes.infoHelp}>
+              <a onClick={onHelpClick} href="#" className={classes.infoLink}>
+                Help & Support
+              </a>
             </span>
           </div>
         </div>

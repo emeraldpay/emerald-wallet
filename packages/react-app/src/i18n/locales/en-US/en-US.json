@@ -90,6 +90,7 @@
     "globalKeyPasswordMismatch": "Password not match or equal to old",
     "lang": "Language",
     "seeds": "Seeds",
+    "seedsNote": "You don't have a wallet that uses a Seed (a Secret Phrase or Hardware Key). If you start using such a wallet you can see the information about the used Seed on this tab.",
     "showHiddenAccounts": "Hidden Accounts"
   }
 }

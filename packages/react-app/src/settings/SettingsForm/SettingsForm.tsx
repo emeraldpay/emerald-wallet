@@ -189,9 +189,11 @@ export class SettingsForm extends React.Component<Props, State> {
               </FormRow>
             </TabPanel>
             <TabPanel className={classes.formBody} value={SettingsTabs.SEEDS}>
-              {seeds.map((seed) => (
-                <SeedItem key={seed.id} seed={seed} updateSeed={updateSeed} />
-              ))}
+              {seeds.length > 0 ? (
+                seeds.map((seed) => <SeedItem key={seed.id} seed={seed} updateSeed={updateSeed} />)
+              ) : (
+                <Alert severity="info">{t('settings.seedsNote')}</Alert>
+              )}
             </TabPanel>
             {globalKeySet && (
               <>

@@ -36,7 +36,7 @@ export interface DispatchProps {
 type Props = OwnProps & StateProps & DispatchProps & WithStyles<typeof styles>;
 type State = Partial<ContactData>;
 
-export class ContactForm extends React.Component<Props, State> {
+class ContactForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

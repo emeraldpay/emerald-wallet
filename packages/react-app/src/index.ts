@@ -13,6 +13,9 @@ export { default as ErrorDialog } from './common/ErrorDialog';
 // i18n
 export { default as i18n } from './i18n';
 
+// about
+export { default as About } from './app/AboutDialog/About';
+
 // layout
 export { default as ConnectionStatus } from './app/layout/ConnectionStatus';
 export { default as NotificationBar } from './app/layout/NotificationBar';

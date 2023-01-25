@@ -24,7 +24,7 @@ const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, handleClose }) =
 
   switch (dialog) {
     case EmeraldDialogs.ABOUT:
-      return <AboutDialog handleClose={handleClose} />;
+      return <AboutDialog onClose={handleClose} />;
     case EmeraldDialogs.SIGN_TX:
       return <WaitForSignDialog />;
     default:

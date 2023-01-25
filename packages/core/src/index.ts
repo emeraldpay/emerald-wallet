@@ -60,5 +60,6 @@ export { formatAmount } from './format';
 export { IpcCommands } from './IpcCommands';
 export * as PersistentState from './persistentState';
 export { SettingsManager, SettingsOptions, SettingsStore } from './settings';
+export { Versions } from './versions';
 export { WalletApi } from './WalletApi';
 export { default as WithDefaults } from './withDefaults';

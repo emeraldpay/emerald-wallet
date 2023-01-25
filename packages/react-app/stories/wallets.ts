@@ -161,15 +161,15 @@ export const createWallets = [accounts.actions.setWalletsAction([wallet1, wallet
 export const setBalances = [
   accounts.actions.setBalanceAction({
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
-    value: '918522410056000000000000/WEI',
+    balance: '918522410056000000000000/WEI',
   }),
   accounts.actions.setBalanceAction({
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-2',
-    value: '498123400000000000000000/WEI',
+    balance: '498123400000000000000000/WEI',
   }),
   accounts.actions.setBalanceAction({
     entryId: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3',
-    value: '',
+    balance: '',
     utxo: [
       {
         txid: 'fc883954a9b3a234106f40af04264d56704b9006a9c205ea8ac4c0dc7bab379a',
