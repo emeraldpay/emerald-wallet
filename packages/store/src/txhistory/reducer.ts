@@ -68,7 +68,21 @@ function onUpdateStoreTransaction(
 
     return {
       ...state,
-      transactions: [storedTransaction, ...state.transactions],
+      transactions: [storedTransaction, ...state.transactions].sort((first, second) => {
+        if (first.confirmTimestamp == null || second.confirmTimestamp == null) {
+          if (second.confirmTimestamp == null || first.sinceTimestamp === second.sinceTimestamp) {
+            return first.txId > second.txId ? -1 : 1;
+          }
+
+          return first.sinceTimestamp > second.sinceTimestamp ? -1 : 1;
+        }
+
+        if (first.confirmTimestamp === second.confirmTimestamp) {
+          return first.txId > second.txId ? -1 : 1;
+        }
+
+        return first.confirmTimestamp > second.confirmTimestamp ? -1 : 1;
+      }),
     };
   }
 

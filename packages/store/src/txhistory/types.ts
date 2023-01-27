@@ -1,4 +1,4 @@
-import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { PersistentState, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
 
@@ -15,9 +15,6 @@ export class StoredTransactionChange implements PersistentState.Change {
   private readonly tokenRegistry: TokenRegistry;
 
   constructor(tokenRegistry: TokenRegistry, blockchain: number, change: PersistentState.Change) {
-    this.blockchain = blockchain;
-    this.tokenRegistry = tokenRegistry;
-
     this.amount = change.amount;
     this.address = change.address;
     this.asset = change.asset;
@@ -25,13 +22,12 @@ export class StoredTransactionChange implements PersistentState.Change {
     this.hdPath = change.hdPath;
     this.type = change.type;
     this.wallet = change.wallet;
+
+    this.blockchain = blockchain;
+    this.tokenRegistry = tokenRegistry;
   }
 
   get amountValue(): BigAmount {
-    if (this.asset === 'UNKNOWN') {
-      return new BigAmount(this.amount, new Units([new Unit(18, 'Unknown token', '???')]));
-    }
-
     const blockchain = blockchainIdToCode(this.blockchain);
 
     if (this.tokenRegistry.hasSymbol(blockchain, this.asset)) {
@@ -56,8 +52,9 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   txId: string;
   version?: number;
 
-  changes: StoredTransactionChange[];
   meta: PersistentState.TxMetaItem | null;
+
+  changes: StoredTransactionChange[];
 
   constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMetaItem | null) {
     this.block = tx.block;
@@ -69,8 +66,19 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
     this.txId = tx.txId;
     this.version = tx.version;
 
-    this.changes = tx.changes.map((change) => new StoredTransactionChange(tokenRegistry, tx.blockchain, change));
     this.meta = meta;
+
+    this.changes = tx.changes
+      .filter((change) => change.asset !== 'UNKNOWN')
+      .map((change) => new StoredTransactionChange(tokenRegistry, tx.blockchain, change))
+      .filter((change) => change.amountValue.isPositive())
+      .sort((first, second) => {
+        if (first.direction === second.direction) {
+          return 0;
+        }
+
+        return first.direction > second.direction ? -1 : 1;
+      });
   }
 }
 
