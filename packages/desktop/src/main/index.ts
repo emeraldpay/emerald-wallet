@@ -17,7 +17,8 @@ import * as logger from 'electron-log';
 import { DevelopmentMode, ProductionMode } from './utils/api-modes';
 import gitVersion from '../../gitversion.json';
 
-const isDevelopMode = process.env.NODE_ENV === 'development';
+const { NODE_ENV } = process.env;
+const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
 
 logger.transports.file.level = isDevelopMode ? 'silly' : 'debug';
 logger.transports.console.level = isDevelopMode ? 'debug' : 'info';
@@ -34,12 +35,14 @@ let apiMode = ProductionMode;
 let dataDir: string | null = null;
 
 if (isDevelopMode) {
-  logger.debug('Start in development mode');
+  logger.debug(`Start in ${NODE_ENV} mode`);
 
-  apiMode = DevelopmentMode;
-  dataDir = resolvePath('./.emerald-dev');
+  if (NODE_ENV === 'development') {
+    apiMode = DevelopmentMode;
+    dataDir = resolvePath('./.emerald-dev');
 
-  app.setPath('userData', resolvePath(dataDir, 'data'));
+    app.setPath('userData', resolvePath(dataDir, 'data'));
+  }
 } else {
   logger.debug('Start in production mode');
 }

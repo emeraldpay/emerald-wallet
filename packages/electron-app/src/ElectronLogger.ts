@@ -1,11 +1,11 @@
-import process from 'process';
 import { ILogger } from '@emeraldwallet/core';
 import log from 'electron-log';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const { NODE_ENV } = process.env;
+const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
 
-log.transports.file.level = isDevelopment ? 'silly' : 'debug';
-log.transports.console.level = isDevelopment ? 'debug' : 'info';
+log.transports.file.level = isDevelopMode ? 'silly' : 'debug';
+log.transports.console.level = isDevelopMode ? 'debug' : 'info';
 
 export class ElectronLogger implements ILogger {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

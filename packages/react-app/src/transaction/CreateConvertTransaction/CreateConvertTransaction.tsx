@@ -25,7 +25,16 @@ import {
   transaction,
 } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  FormControlLabel,
+  FormHelperText,
+  Slider,
+  Switch,
+  createStyles,
+  withStyles,
+} from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -524,11 +533,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
           <FormRow classes={{ container: classes.buttons }}>
             <FormLabel />
             <ButtonGroup classes={{ container: classes.buttons }}>
+              {initializing && (
+                <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
+              )}
               <Button label="Cancel" onClick={goBack} />
               <Button
+                primary
                 disabled={initializing}
                 label="Create Transaction"
-                primary={true}
                 onClick={(): void => setStage(Stages.SIGN)}
               />
             </ButtonGroup>
@@ -576,7 +588,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const uniqueAddresses =
       accounts.selectors
         .findWalletByEntryId(state, entry.id)
-        ?.entries.reduce<Set<string>>(
+        ?.entries.filter((entry) => !entry.receiveDisabled)
+        .reduce<Set<string>>(
           (carry, item) =>
             item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
           new Set(),
