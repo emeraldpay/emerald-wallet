@@ -50,11 +50,15 @@ class ToField extends React.Component<Props, State> {
 
     const { blockchain, onChange, lookupAddress, resolveName } = this.props;
 
+    const { isValidAddress } = Blockchains[blockchain];
+
+    const to = value.trim();
+
     if (blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) {
-      if (/\.eth$/.test(value)) {
+      if (/\.eth$/.test(to)) {
         onChange(undefined);
 
-        const address = await resolveName(blockchain, value);
+        const address = await resolveName(blockchain, to);
 
         if (address == null) {
           this.setState({ error: 'Name not found' });
@@ -64,21 +68,27 @@ class ToField extends React.Component<Props, State> {
           this.setState({ hint: address });
         }
       } else {
-        onChange(value);
+        onChange(to);
 
-        if (Blockchains[blockchain].isValidAddress(value)) {
-          const name = await lookupAddress(blockchain, value);
+        if (to.length === 0) {
+          this.setState({ error: 'Required' });
+        } else if (isValidAddress(to)) {
+          const name = await lookupAddress(blockchain, to);
 
           if (name != null) {
             this.setState({ hint: name });
           }
+        } else {
+          this.setState({ error: 'Incorrect address format' });
         }
       }
     } else {
-      onChange(value);
+      onChange(to);
 
-      if (value.length === 0) {
+      if (to.length === 0) {
         this.setState({ error: 'Required' });
+      } else if (!isValidAddress(to)) {
+        this.setState({ error: 'Incorrect address format' });
       }
     }
   };

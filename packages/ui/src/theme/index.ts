@@ -89,8 +89,10 @@ export default createTheme({
     },
     MuiFormHelperText: {
       root: {
+        bottom: -(spacing * 1.8),
+        lineHeight: 1,
+        marginTop: 0,
         position: 'absolute',
-        bottom: -(spacing * 3),
       },
     },
     MuiInput: {
@@ -108,8 +110,8 @@ export default createTheme({
         borderTop: `1px solid ${colors.conch.main}`,
       },
       padding: {
-        paddingTop: 0,
         paddingBottom: 0,
+        paddingTop: 0,
       },
     },
     MuiListItem: {
@@ -121,12 +123,12 @@ export default createTheme({
     },
     MuiMenuItem: {
       root: {
-        cursor: 'pointer',
-        padding: `${spacing / 2}px ${spacing * 8}px ${spacing / 2}px ${spacing * 4}px`,
         border: 'none',
+        cursor: 'pointer',
+        height: 'auto',
         lineHeight: `${spacing * 2}px`,
         marginLeft: spacing / 2,
-        height: 'auto',
+        padding: `${spacing / 2}px ${spacing * 8}px ${spacing / 2}px ${spacing * 4}px`,
         '&$selected': {
           marginLeft: '0',
           borderLeft: `${spacing / 2}px solid ${colors.emerald.main}`,
@@ -148,10 +150,10 @@ export default createTheme({
     },
     MuiTextField: {
       root: {
+        borderColor: colors.conch.main,
         borderRadius: '1px',
         borderStyle: 'solid',
         borderWidth: '1px',
-        borderColor: colors.conch.main,
       },
     },
     MuiTableCell: {
