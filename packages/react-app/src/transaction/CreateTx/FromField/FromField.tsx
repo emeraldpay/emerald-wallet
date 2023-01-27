@@ -1,6 +1,5 @@
-import { AccountSelect } from '@emeraldwallet/ui';
+import { AccountSelect, FormLabel } from '@emeraldwallet/ui';
 import * as React from 'react';
-import FormLabel from '../../../form/FormLabel';
 
 interface OwnProps {
   accounts?: string[];

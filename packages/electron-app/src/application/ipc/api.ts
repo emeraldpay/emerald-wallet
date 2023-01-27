@@ -28,13 +28,13 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
   ipcMain.handle(IpcCommands.GET_APP_SETTINGS, () => app.settings.toJSON());
 
   ipcMain.handle(IpcCommands.GET_VERSION, () => ({
+    appVersion: app.versions?.version,
     gitVersion: app.versions?.gitVersion,
-    os: {
+    osVersion: {
       arch: os.arch(),
       platform: os.platform(),
       release: os.release(),
     },
-    version: app.versions?.version,
   }));
 
   ipcMain.handle(IpcCommands.SET_OPTIONS, (event, options: SettingsOptions) => {

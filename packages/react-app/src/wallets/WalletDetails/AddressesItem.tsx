@@ -8,7 +8,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { AddressInfo } from './Addresses';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     address: {
       width: 'auto',

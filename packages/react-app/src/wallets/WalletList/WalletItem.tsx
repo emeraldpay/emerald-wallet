@@ -116,14 +116,14 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 <Typography className={styles.title}>{wallet.name}</Typography>
               </Grid>
               <Grid item className={styles.titleLine} xs={4}>
-                {total && <Balance classes={{ coins: styles.totalBalance }} balance={total.balance} />}
+                {total && <Balance classes={{ coin: styles.totalBalance }} balance={total.balance} />}
               </Grid>
               <Grid item xs={12}>
                 {assets.map((asset) => (
                   <Balance
                     key={asset.balance.units.top.code}
                     balance={asset.balance}
-                    classes={{ coins: styles.balance, root: styles.balanceRoot }}
+                    classes={{ coin: styles.balance, root: styles.balanceRoot }}
                   />
                 ))}
               </Grid>
@@ -145,7 +145,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
-    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, ownProps.wallet, false);
+    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, ownProps.wallet);
     const total: IBalanceValue | undefined = accounts.selectors.fiatTotalBalance(state, assets);
 
     return { assets, total };

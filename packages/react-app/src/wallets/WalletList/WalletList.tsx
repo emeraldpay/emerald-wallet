@@ -5,7 +5,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     container: {
       maxHeight: '100%',
@@ -34,7 +34,7 @@ const WalletList: React.FC<StateProps & DispatchProps> = ({ wallets, openWallet 
   );
 };
 
-export default connect<StateProps, DispatchProps, {}, IState>(
+export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => ({
     wallets: accounts.selectors.allWallets(state),
   }),

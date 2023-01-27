@@ -10,14 +10,12 @@ import {
   screen,
   transaction,
 } from '@emeraldwallet/store';
-import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
 
 const styles = createStyles({
   inputField: {
@@ -47,6 +45,11 @@ const styles = createStyles({
   },
   gasPriceValueLabel: {
     fontSize: '0.55em',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
   },
 });
 
@@ -151,7 +154,7 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
 
   return (
     <Page title="Speed Up Transaction" leftIcon={<Back onClick={goBack} />}>
-      <FormField>
+      <FormRow>
         <FormLabel>Gas price</FormLabel>
         <Box className={classes.inputField}>
           <Box className={classes.gasPriceSliderBox}>
@@ -183,14 +186,14 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
             </FormHelperText>
           </Box>
         </Box>
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow>
         <FormLabel>Password</FormLabel>
         <PasswordInput error={passwordError} onChange={setPassword} />
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow last>
         <FormLabel />
-        <ButtonGroup style={{ width: '100%' }}>
+        <ButtonGroup classes={{ container: classes.buttons }}>
           <Button label="Cancel" onClick={goBack} />
           <Button
             label="Sign Transaction"
@@ -199,7 +202,7 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
             onClick={onSignTransaction}
           />
         </ButtonGroup>
-      </FormField>
+      </FormRow>
     </Page>
   );
 };

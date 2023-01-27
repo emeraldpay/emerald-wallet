@@ -1,8 +1,9 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumTransactionType, workflow } from '@emeraldwallet/core';
+import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import SignTx from '../../src/transaction/SignTx';
+import SignTransaction from '../../src/transaction/SignTransaction';
 import { BackendMock } from '../backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
@@ -23,4 +24,11 @@ const backend = new BackendMock();
 storiesOf('SignTx', module)
   .addDecorator(providerForStore(backend))
   .addDecorator(withTheme)
-  .add('default', () => <SignTx tx={ethereumTx} />);
+  .add('default', () => (
+    <SignTransaction
+      transaction={ethereumTx}
+      onCancel={action('onCancel')}
+      onChangePassword={action('onChangePassword')}
+      onSubmit={action('onSubmit')}
+    />
+  ));

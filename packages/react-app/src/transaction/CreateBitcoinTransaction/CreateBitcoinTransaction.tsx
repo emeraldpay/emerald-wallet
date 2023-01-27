@@ -49,7 +49,7 @@ interface DispatchProps {
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
-const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
+const CreateBitcoinTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   blockchain,
   defaultFee,
   entry,
@@ -231,4 +231,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoWalletsScreen());
     },
   }),
-)(Component);
+)(CreateBitcoinTransaction);

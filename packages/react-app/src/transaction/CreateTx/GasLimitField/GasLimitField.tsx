@@ -1,8 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { Input } from '@emeraldwallet/ui';
+import { FormLabel, Input } from '@emeraldwallet/ui';
 import { StyleRules, Theme, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
-import FormLabel from '../../../form/FormLabel';
 
 const styles = (theme: Theme): StyleRules =>
   createStyles({

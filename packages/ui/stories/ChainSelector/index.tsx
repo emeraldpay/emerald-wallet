@@ -4,10 +4,8 @@ import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import ChainSelector from '../../src/components/common/ChainSelector';
 
-const blockchains = [
-  Blockchains[BlockchainCode.ETC],
-  Blockchains[BlockchainCode.ETH]
-];
+const blockchains = [Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC]];
 
-storiesOf('ChainSelector', module)
-  .add('default', () => (<ChainSelector chains={blockchains} onChange={action('onChange')} />));
+storiesOf('ChainSelector', module).add('default', () => (
+  <ChainSelector blockchains={blockchains} onChange={action('onChange')} />
+));

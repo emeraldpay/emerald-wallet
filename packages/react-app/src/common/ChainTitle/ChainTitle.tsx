@@ -1,27 +1,34 @@
-import {PageTitle} from '@emeraldwallet/ui';
-import {BlockchainCode} from '@emeraldwallet/core';
-import { CoinAvatar } from '@emeraldwallet/ui';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { CoinAvatar, PageTitle } from '@emeraldwallet/ui';
+import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
-export interface IChainTitle {
-  text?: string;
-  chain: BlockchainCode;
+const useStyles = makeStyles(
+  createStyles({
+    container: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    icon: {
+      paddingRight: 10,
+    },
+  }),
+);
+
+export interface OwnProps {
+  blockchain: BlockchainCode;
+  title?: string;
 }
 
-/**
- * @deprecated
- * @param props
- * @constructor
- */
-function ChainTitle (props: IChainTitle) {
-  const { chain, text } = props;
-  const title = text || '';
+const ChainTitle: React.FC<OwnProps> = ({ blockchain, title = '' }) => {
+  const styles = useStyles();
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div style={{ paddingRight: '10px' }} ><CoinAvatar blockchain={chain}/></div>
+    <div className={styles.container}>
+      <CoinAvatar blockchain={blockchain} className={styles.icon} />
       <PageTitle>{title}</PageTitle>
     </div>
   );
-}
+};
 
 export default ChainTitle;

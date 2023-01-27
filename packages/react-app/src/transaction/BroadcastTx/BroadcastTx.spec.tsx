@@ -1,5 +1,5 @@
 import { BlockchainCode, EthereumTransactionType, amountFactory } from '@emeraldwallet/core';
-import { application, BroadcastData } from '@emeraldwallet/store';
+import { BroadcastData, application } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import '@testing-library/jest-dom/extend-expect';
@@ -62,13 +62,13 @@ describe('BroadcastTx', () => {
       </Provider>,
     );
 
-    const valueDiv = await wrapper.findByTestId('token-amount');
+    const amount = await wrapper.findByTestId('amount');
 
-    expect(valueDiv).toBeDefined();
-    expect(valueDiv).toHaveTextContent('0.05 ETG');
+    expect(amount).toBeDefined();
+    expect(amount).toHaveTextContent('0.05 ETG');
 
-    const nonceDiv = await wrapper.findByTestId('nonce');
+    const nonce = await wrapper.findByTestId('nonce');
 
-    expect(nonceDiv).toHaveTextContent('0');
+    expect(nonce).toHaveTextContent('0');
   });
 });

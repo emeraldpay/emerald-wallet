@@ -4,7 +4,7 @@ import { Button, CurrencyIcon } from '@emeraldwallet/ui';
 import { List, ListItem, ListItemAvatar, ListItemText, Menu, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     label: {
       textTransform: 'none',

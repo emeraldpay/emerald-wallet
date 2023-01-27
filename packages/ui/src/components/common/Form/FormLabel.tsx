@@ -16,7 +16,7 @@ const styles = (theme: Theme): StyleRules =>
     },
     top: {
       alignSelf: 'flex-start',
-      paddingTop: 6,
+      paddingTop: 10,
     },
   });
 

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { CurrencyBtc, CurrencyEtc, CurrencyEth } from '../../../icons';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     defaultSize: {
       fill: 'none',

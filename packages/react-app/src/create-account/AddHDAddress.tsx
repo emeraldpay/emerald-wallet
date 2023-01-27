@@ -2,7 +2,7 @@ import { SeedDescription, SeedReference, Uuid, WalletEntry, isEthereumEntry } fr
 import { AddSeedEntry, isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { Blockchains, HDPath, IBlockchain, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Back, ButtonGroup, Page, PasswordInput, Table } from '@emeraldwallet/ui';
+import { Back, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
   Button,
   Grid,
@@ -18,9 +18,7 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../../form/FormField';
-import FormLabel from '../../form/FormLabel';
-import LedgerWait from '../../ledger/LedgerWait';
+import LedgerWait from '../ledger/LedgerWait';
 
 const styles = createStyles({
   blockchains: {
@@ -225,7 +223,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
         stage === Stage.UNLOCK ? undefined : (
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item classes={{ root: classes.blockchains }}>
-              <FormField style={{ paddingBottom: 0 }}>
+              <FormRow style={{ paddingBottom: 0 }}>
                 <FormLabel>Blockchain</FormLabel>
                 <TextField
                   fullWidth={true}
@@ -239,7 +237,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
                     </MenuItem>
                   ))}
                 </TextField>
-              </FormField>
+              </FormRow>
             </Grid>
             <Grid item>
               <ButtonGroup>

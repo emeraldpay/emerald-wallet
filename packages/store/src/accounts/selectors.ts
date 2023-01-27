@@ -32,6 +32,7 @@ import { settings, tokens } from '../index';
 import { IState } from '../types';
 
 type AddressesBalance<T extends BigAmount> = { [address: string]: T };
+type AddressesByBlockchain = Partial<Record<BlockchainCode, Set<string>>>;
 
 /**
  * Aggregate multiple similar assets into one, by summing all values
@@ -40,7 +41,10 @@ export function aggregateByAsset(assets: IBalanceValue[]): IBalanceValue[] {
   const grouped = assets.reduce<{ [key: string]: IBalanceValue[] }>((carry, asset) => {
     const { code } = asset.balance.units.top;
 
-    return { ...carry, [code]: [...(carry[code] ?? []), asset] };
+    return {
+      ...carry,
+      [code]: [...(carry[code] ?? []), asset],
+    };
   }, {});
 
   return Object.values(grouped).map((group) =>
@@ -244,16 +248,29 @@ export function balanceByChain<T extends BigAmount>(state: IState, blockchain: B
 /**
  * Returns summary of all current assets for the specified wallet
  */
-export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
+export function getWalletBalances(
+  state: IState,
+  wallet: Wallet,
+  includeEmpty = false,
+  excludeAddresses?: AddressesByBlockchain,
+): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
   if (wallet == null) {
     return assets;
   }
 
-  const ethereumAccounts = wallet.entries.filter(
-    (entry) => !entry.receiveDisabled && isEthereumEntry(entry),
-  ) as EthereumEntry[];
+  const ethereumAccounts = wallet.entries.filter((entry) => {
+    const { address, blockchain, receiveDisabled } = entry;
+
+    const isAvailable = !receiveDisabled && isEthereumEntry(entry);
+
+    if (excludeAddresses == null || address == null) {
+      return isAvailable;
+    }
+
+    return isAvailable && !excludeAddresses[blockchainIdToCode(blockchain)]?.has(address.value);
+  }) as EthereumEntry[];
 
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Goerli].forEach((code) => {
     const zero = zeroAmountFor<BigAmount>(code);
@@ -291,9 +308,17 @@ export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: b
     });
   });
 
-  const bitcoinAccounts = wallet.entries.filter(
-    (entry) => !entry.receiveDisabled && isBitcoinEntry(entry),
-  ) as BitcoinEntry[];
+  const bitcoinAccounts = wallet.entries.filter((entry) => {
+    const { address, blockchain, receiveDisabled } = entry;
+
+    const isAvailable = !receiveDisabled && isBitcoinEntry(entry);
+
+    if (excludeAddresses == null || address == null) {
+      return isAvailable;
+    }
+
+    return isAvailable && !excludeAddresses[blockchainIdToCode(blockchain)]?.has(address.value);
+  }) as BitcoinEntry[];
 
   bitcoinAccounts.forEach((entry) => {
     const zero = zeroAmountFor<BigAmount>(blockchainIdToCode(entry.blockchain));
@@ -306,14 +331,26 @@ export function getWalletBalances(state: IState, wallet: Wallet, includeEmpty: b
 }
 
 /**
- * Balances of all assets summarized by wallet
+ * Balances of all assets summarized by all wallets
  */
 export function allBalances(state: IState): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
-  state[moduleName].wallets.forEach((wallet) =>
-    getWalletBalances(state, wallet, false).forEach((asset) => assets.push(asset)),
-  );
+  let knownAddresses: AddressesByBlockchain = {};
+
+  state[moduleName].wallets.forEach((wallet) => {
+    getWalletBalances(state, wallet, false, knownAddresses).forEach((asset) => assets.push(asset));
+
+    knownAddresses = wallet.entries.reduce<AddressesByBlockchain>((carry, { address, blockchain, receiveDisabled }) => {
+      if (receiveDisabled || address == null) {
+        return carry;
+      }
+
+      const blockchainCode = blockchainIdToCode(blockchain);
+
+      return { ...carry, [blockchainCode]: carry[blockchainCode]?.add(address.value) ?? new Set([address.value]) };
+    }, knownAddresses);
+  });
 
   return assets;
 }

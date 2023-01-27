@@ -75,11 +75,12 @@
     "common": "Common",
     "confirmations": "Confirmations",
     "currency": "Equivalent currency",
-    "export": "Export",
     "exportBackup": "Export to backup file",
+    "exportNote": "Export a backup copy of the Emerald Wallet Vault. The file contains all information required to restore the wallet on a new machine. Please keep it in a safe place. Please note that the Private Keys are encrypted by your password used in Emerald Wallet, and you'll need it to restore from backup.",
+    "exportSelectFile": "Select File",
     "exportVault": "Export Vault",
-    "exportVaultFailed": "Cannot export vault",
-    "exportVaultSuccessful": "Vault exported successfully",
+    "exportFailed": "Cannot export vault",
+    "exportSuccessful": "Vault exported successfully",
     "globalKey": "Global Key",
     "globalKeyChanged": "Global Key changed successfully",
     "globalKeyConfirm": "Confirm new password",
@@ -89,6 +90,7 @@
     "globalKeyPasswordMismatch": "Password not match or equal to old",
     "lang": "Language",
     "seeds": "Seeds",
+    "seedsNote": "You don't have a wallet that uses a Seed (a Secret Phrase or Hardware Key). If you start using such a wallet you can see the information about the used Seed on this tab.",
     "showHiddenAccounts": "Hidden Accounts"
   }
 }

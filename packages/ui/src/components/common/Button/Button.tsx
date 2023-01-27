@@ -1,51 +1,32 @@
-import Button from '@material-ui/core/Button';
+import { Button as BaseButton, ButtonProps } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-interface IBtnProps {
-  style?: any;
-  primary?: any;
-  onClick?: any;
-  label?: string;
-  icon?: any;
-  href?: string;
-  variant?: any;
-  target?: any;
-  rel?: any;
-  disabled?: boolean;
-  classes?: any;
-}
-
 const styles = createStyles({
   root: {
-    height: 38
+    height: 38,
   },
   label: {
-    fontSize: '15px',
+    fontSize: 15,
+    fontFamily: 'inherit',
     fontWeight: 500,
-    fontFamily: 'inherit'
-  }
+  },
 });
 
-const StyledButton = withStyles(styles)(Button);
+const StyledButton = withStyles(styles)(BaseButton);
 
-const Btn = (props: IBtnProps) => {
-  const {
-    primary, onClick, label, icon, href, variant, disabled, ...restProps
-  } = props;
-  return (
-    <StyledButton
-      disabled={disabled}
-      color={primary ? 'primary' : 'secondary'}
-      // href={href}
-      variant={variant || 'contained'}
-      onClick={onClick}
-      {...restProps}
-    >
-      {icon}
-      {label}
-    </StyledButton>
-  );
-};
+interface OwnProps extends Omit<ButtonProps, 'children'> {
+  children?: never;
+  icon?: React.ReactNode;
+  label?: string;
+  primary?: boolean;
+}
 
-export default Btn;
+const Button: React.FC<OwnProps> = ({ icon, label, primary = false, variant = 'contained', ...props }) => (
+  <StyledButton color={primary ? 'primary' : 'secondary'} variant={variant} {...props}>
+    {icon}
+    {label}
+  </StyledButton>
+);
+
+export default Button;

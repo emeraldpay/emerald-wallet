@@ -1,69 +1,68 @@
-import {makeStyles} from '@material-ui/core/styles';
+import { Button, Grid, TextField, Typography, createStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Button, createStyles, Grid, TextField, Typography} from "@material-ui/core";
-import PasswordInput from "./PasswordInput";
-import {WithDefaults} from "@emeraldwallet/core";
-
+import PasswordInput from './PasswordInput';
 
 const useStyles = makeStyles(
   createStyles({
     button: {
-      margin: "20px 0 0 10px"
+      margin: '20px 0 0 10px',
     },
-  })
+  }),
 );
 
-// Component properties
 interface OwnProps {
-  onChange: (value: string) => void;
   buttonLabel?: string;
-  minLength?: number;
+  disabled?: boolean;
   helperText?: string;
-  disabled?: boolean
+  minLength?: number;
+  onChange(value: string): void;
 }
 
-const defaults: Partial<OwnProps> = {
-  buttonLabel: "Enter",
-}
-
-/**
- *
- */
-const Component = ((props: OwnProps) => {
-  props = WithDefaults(props, defaults);
+const ConfirmedPasswordInput: React.FC<OwnProps> = ({
+  helperText,
+  minLength,
+  onChange,
+  buttonLabel = 'Enter',
+  disabled = false,
+}) => {
   const styles = useStyles();
-  const disabled = props.disabled || false;
 
-  const [password, setPassword] = React.useState("");
-  const [confirmation, setConfirmation] = React.useState("");
+  const [password, setPassword] = React.useState('');
+  const [confirmation, setConfirmation] = React.useState('');
 
   return (
-    <Grid container={true} spacing={1}>
-      <Grid item={true} xs={4}>
-        <PasswordInput onChange={setPassword}
-                       disabled={disabled}
-                       minLength={props.minLength}/>
+    <Grid container spacing={1}>
+      <Grid item xs={4}>
+        <PasswordInput onChange={setPassword} disabled={disabled} minLength={minLength} />
       </Grid>
-      <Grid item={true} xs={4}>
-        <TextField disabled={password == "" || disabled}
-                   margin={"normal"}
-                   fullWidth={true}
-                   type={"password"}
-                   placeholder={"Confirm password"}
-                   onChange={(e) => setConfirmation(e.target.value)}/>
+      <Grid item xs={4}>
+        <TextField
+          fullWidth
+          disabled={password === '' || disabled}
+          margin="normal"
+          placeholder="Confirm password"
+          type="password"
+          onChange={(event) => setConfirmation(event.target.value)}
+        />
       </Grid>
-      <Grid item={true} xs={4}>
-        <Button className={styles.button}
-                disabled={disabled || password == "" || confirmation != password}
-                variant={"contained"}
-                onClick={() => props.onChange(password)}>{props.buttonLabel}</Button>
+      <Grid item xs={4}>
+        <Button
+          className={styles.button}
+          disabled={disabled || password === '' || confirmation !== password}
+          variant="contained"
+          onClick={() => onChange(password)}
+        >
+          {buttonLabel}
+        </Button>
       </Grid>
-      {props.helperText && (
-        <Grid xs={8}>
-          <Typography variant={"body2"}>{props.helperText}</Typography>
-        </Grid>)
-      }
-    </Grid>)
-})
+      {helperText != null && (
+        <Grid item xs={8}>
+          <Typography variant="body2">{helperText}</Typography>
+        </Grid>
+      )}
+    </Grid>
+  );
+};
 
-export default Component;
+export default ConfirmedPasswordInput;

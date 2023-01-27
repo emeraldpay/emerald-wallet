@@ -4,7 +4,7 @@ import * as React from 'react';
 import { CurrencyBtc, CurrencyDai, CurrencyEtc, CurrencyEth, CurrencyUsdc, CurrencyUsdt } from '../../../icons';
 import CoinAvatar from '../CoinIcon/CoinAvatar';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     defaultSize: {
       fill: 'none',

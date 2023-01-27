@@ -1,7 +1,7 @@
 import { SeedDescription } from '@emeraldpay/emerald-vault-core';
 import { hwkey } from '@emeraldwallet/store';
 import { Ledger } from '@emeraldwallet/ui';
-import { CircularProgress, createStyles, Grid, Typography } from '@material-ui/core';
+import { CircularProgress, Grid, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -23,20 +23,24 @@ const useStyles = makeStyles(
 );
 
 interface DispatchProps {
-  awaitConnection: () => void;
+  awaitConnection(): void;
 }
 
 interface OwnProps {
   fullSize?: boolean;
-  onConnected: (seed: SeedDescription) => void;
+  onConnected(seed: SeedDescription): void;
 }
 
 const Component: React.FC<DispatchProps & OwnProps> = ({ fullSize = false, awaitConnection }) => {
   const styles = useStyles();
 
-  React.useEffect(() => {
-    awaitConnection();
-  }, []);
+  React.useEffect(
+    () => {
+      awaitConnection();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <Grid container className={fullSize ? styles.fullSize : ''}>
@@ -54,12 +58,14 @@ const Component: React.FC<DispatchProps & OwnProps> = ({ fullSize = false, await
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps>(null, (dispatch, ownProps) => ({
+export default connect<unknown, DispatchProps, OwnProps>(null, (dispatch, { onConnected }) => ({
   awaitConnection() {
     dispatch(hwkey.actions.setWatch(true));
 
     hwkey.triggers.onConnect(() => {
-      ownProps.onConnected({
+      dispatch(hwkey.actions.setWatch(false));
+
+      onConnected({
         available: true,
         createdAt: new Date(),
         type: 'ledger',

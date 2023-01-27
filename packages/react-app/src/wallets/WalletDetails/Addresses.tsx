@@ -81,8 +81,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         wallet?.entries
           .filter((entry) => !entry.receiveDisabled)
           .reduce<AddressInfo[]>((carry, entry) => {
-            const blockchainCode = blockchainIdToCode(entry.blockchain);
-
             let identifiers: Identifiers[] = [];
 
             if (isBitcoinEntry(entry)) {
@@ -91,7 +89,22 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               identifiers = [{ address: entry.address.value }];
             }
 
-            const addressInfo: AddressInfo[] = identifiers.map(({ address, xPub }) => ({
+            const addressInfo = carry.find(
+              (info) =>
+                identifiers.find(
+                  (identifier) =>
+                    identifier.address === info.address ||
+                    (identifier.xPub != null && identifier.xPub.xpub === info.xPub?.xpub),
+                ) != null,
+            );
+
+            if (addressInfo != null) {
+              return carry;
+            }
+
+            const blockchainCode = blockchainIdToCode(entry.blockchain);
+
+            const addressesInfo: AddressInfo[] = identifiers.map(({ address, xPub }) => ({
               address,
               xPub,
               balances: {},
@@ -101,20 +114,20 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             }));
 
             return carry.concat(
-              addressInfo.map((addressInfo) => {
+              addressesInfo.map((info) => {
                 if (isBitcoinEntry(entry)) {
                   const addressesBalance = accounts.selectors.getAddressesBalance(state, entry.id);
 
-                  addressInfo.balances = Object.keys(addressesBalance).reduce(
+                  info.balances = Object.keys(addressesBalance).reduce(
                     (carry, address) => ({ ...carry, [address]: [addressesBalance[address]] }),
                     {},
                   );
 
-                  return addressInfo;
+                  return info;
                 }
 
-                if (addressInfo.address == null) {
-                  return addressInfo;
+                if (info.address == null) {
+                  return info;
                 }
 
                 const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainCode);
@@ -122,12 +135,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
                 const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount);
                 const tokensBalance =
                   tokens.selectors
-                    .selectBalances(state, blockchainCode, addressInfo.address)
+                    .selectBalances(state, blockchainCode, info.address)
                     ?.filter((balance) => balance.isPositive()) ?? [];
 
-                addressInfo.balances[addressInfo.address] = [balance, ...tokensBalance];
+                info.balances[info.address] = [balance, ...tokensBalance];
 
-                return addressInfo;
+                return info;
               }),
             );
           }, []) ?? [],

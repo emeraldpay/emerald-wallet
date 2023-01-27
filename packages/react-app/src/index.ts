@@ -13,6 +13,9 @@ export { default as ErrorDialog } from './common/ErrorDialog';
 // i18n
 export { default as i18n } from './i18n';
 
+// about
+export { default as About } from './app/AboutDialog/About';
+
 // layout
 export { default as ConnectionStatus } from './app/layout/ConnectionStatus';
 export { default as NotificationBar } from './app/layout/NotificationBar';
@@ -28,7 +31,7 @@ export { default as TxHistory } from './transactions/TxHistory';
 export { default as CreateTransaction } from './transaction/CreateTransaction';
 export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
 export { default as BroadcastTx } from './transaction/BroadcastTx';
-export { default as SignTx } from './transaction/SignTx';
+export { default as SignTransaction } from './transaction/SignTransaction';
 
 // settings
 export { default as Settings } from './settings/Settings';

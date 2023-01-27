@@ -77,6 +77,7 @@ export default createTheme({
         borderRadius: 0,
         color: colors.emerald.main,
         minHeight: spacing * 4,
+        textTransform: 'none',
       },
     },
     MuiFormControl: {

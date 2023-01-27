@@ -1,14 +1,12 @@
 import { SignedMessage } from '@emeraldpay/emerald-vault-core';
 import { IState, screen } from '@emeraldwallet/store';
-import { Address, Back, Button, ButtonGroup, Page } from '@emeraldwallet/ui';
+import { Address, Back, Button, ButtonGroup, FormLabel, FormRow, Page } from '@emeraldwallet/ui';
 import { Chip, TextField, createStyles, makeStyles } from '@material-ui/core';
 import { clipboard } from 'electron';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import FormField from '../form/FormField';
-import FormLabel from '../form/FormLabel';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(
   createStyles({
     buttons: {
       display: 'flex',
@@ -37,28 +35,27 @@ const ShowMessage: React.FC<OwnProps & DispatchPros> = ({ message, text, goBack 
 
   return (
     <Page title="Sign Message" leftIcon={<Back onClick={goBack} />}>
-      <FormField>
+      <FormRow>
         <FormLabel>Sign With</FormLabel>
         <Address address={message.address} />
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow>
         <FormLabel>Type</FormLabel>
         <Chip color="primary" label={message.type === 'eip712' ? 'Structured / EIP-712' : 'Unstructured / EIP-191'} />
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow>
         <FormLabel top>Message</FormLabel>
         <TextField disabled fullWidth multiline maxRows={5} minRows={5} value={text} />
-      </FormField>
-      <FormField>
+      </FormRow>
+      <FormRow>
         <FormLabel top>Signature</FormLabel>
         <TextField disabled fullWidth multiline maxRows={5} minRows={5} value={message.signature} />
-      </FormField>
-      <FormField last>
-        <FormLabel />
+      </FormRow>
+      <FormRow last>
         <ButtonGroup classes={{ container: styles.buttons }}>
           <Button label="Copy Signature" primary={true} onClick={onCopySignature} />
         </ButtonGroup>
-      </FormField>
+      </FormRow>
     </Page>
   );
 };
