@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme) =>
     changeItemAmountWallet: {
       alignItems: 'center',
       color: theme.palette.text.secondary,
+      cursor: 'pointer',
       display: 'flex',
       marginRight: 20,
     },
@@ -359,6 +360,8 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
               </div>
               <div className={styles.changeItemAmount}>
                 {change.wallet.id === walletId ? (
+                  <div />
+                ) : (
                   <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
                     <HashIcon
                       className={styles.changeItemAmountWalletIcon}
@@ -367,8 +370,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     />
                     {change.wallet.name}
                   </div>
-                ) : (
-                  <div />
                 )}
                 <div className={styles.changeItemAmountFiat}>
                   {fiatFormatter.format(getFiatValue(change.amountValue))}
