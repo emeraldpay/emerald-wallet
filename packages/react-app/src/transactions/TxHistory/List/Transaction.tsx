@@ -1,5 +1,5 @@
 import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
-import { EntryId, Wallet } from '@emeraldpay/emerald-vault-core';
+import { EntryId, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   CurrencyAmount,
@@ -78,7 +78,6 @@ const useStyles = makeStyles((theme) =>
     changeItemAmountWallet: {
       alignItems: 'center',
       color: theme.palette.text.secondary,
-      cursor: 'pointer',
       display: 'flex',
       marginRight: 20,
     },
@@ -176,6 +175,7 @@ type Change = Omit<txhistory.types.StoredTransactionChange, 'wallet'> & { wallet
 interface OwnProps {
   tx: StoredTransaction;
   style?: React.CSSProperties;
+  walletId: Uuid;
 }
 
 interface StateProps {
@@ -197,6 +197,7 @@ const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
   style,
+  walletId,
   getFiatValue,
   getHeight,
   getWallet,
@@ -338,14 +339,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       </div>
       <div className={styles.changes}>
         {tx.changes
-          .filter((change) => change.amountValue.isPositive())
-          .sort((first, second) => {
-            if (first.direction === second.direction) {
-              return 0;
-            }
-
-            return first.direction > second.direction ? -1 : 1;
-          })
           .reduce<Change[]>((carry, change) => {
             if (change.wallet == null) {
               return carry;
@@ -365,14 +358,18 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue)}
               </div>
               <div className={styles.changeItemAmount}>
-                <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
-                  <HashIcon
-                    className={styles.changeItemAmountWalletIcon}
-                    size={24}
-                    value={`WALLET/${change.wallet.id}`}
-                  />
-                  {change.wallet.name}
-                </div>
+                {change.wallet.id === walletId ? (
+                  <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
+                    <HashIcon
+                      className={styles.changeItemAmountWalletIcon}
+                      size={24}
+                      value={`WALLET/${change.wallet.id}`}
+                    />
+                    {change.wallet.name}
+                  </div>
+                ) : (
+                  <div />
+                )}
                 <div className={styles.changeItemAmountFiat}>
                   {fiatFormatter.format(getFiatValue(change.amountValue))}
                 </div>

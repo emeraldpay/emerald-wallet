@@ -31,6 +31,7 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
     cursor={cursor}
     lastTxId={lastTxId}
     transactions={transactions}
+    walletId={walletId}
     onLoadMore={() => loadTransactions(walletId, false)}
     setLastTxId={setLastTxId}
   />

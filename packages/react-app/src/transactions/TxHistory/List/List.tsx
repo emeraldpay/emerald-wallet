@@ -1,3 +1,4 @@
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { Theme, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,11 +27,19 @@ interface OwnProps {
   cursor?: string | null;
   lastTxId: string | null;
   transactions: StoredTransaction[];
+  walletId: Uuid;
   onLoadMore(): Promise<void>;
   setLastTxId(txId: string | null): void;
 }
 
-const TransactionsList: React.FC<OwnProps> = ({ cursor, lastTxId, transactions, onLoadMore, setLastTxId }) => {
+const TransactionsList: React.FC<OwnProps> = ({
+  cursor,
+  lastTxId,
+  transactions,
+  walletId,
+  onLoadMore,
+  setLastTxId,
+}) => {
   const styles = useStyles();
 
   const initialTxCount = React.useRef(transactions.length);
@@ -82,7 +91,9 @@ const TransactionsList: React.FC<OwnProps> = ({ cursor, lastTxId, transactions, 
             width={width}
             rowCount={transactions.length}
             rowHeight={calculateRowHeight}
-            rowRenderer={({ index, key, style }) => <Transaction key={key} style={style} tx={transactions[index]} />}
+            rowRenderer={({ index, key, style }) => (
+              <Transaction key={key} style={style} tx={transactions[index]} walletId={walletId} />
+            )}
             scrollToAlignment="start"
             scrollToIndex={txIndex}
             onRowsRendered={({ startIndex }) => setLastTxId(transactions[startIndex]?.txId)}
