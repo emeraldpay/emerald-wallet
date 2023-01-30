@@ -17,7 +17,9 @@ export const createStore = (api: WalletApi, backendApi: BackendApi): Store => {
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [sagaMiddleware, thunkMiddleware.withExtraArgument({ api, backendApi, triggers })];
 
-  if (process.env.NODE_ENV === 'development') {
+  const { NODE_ENV } = process.env;
+
+  if (NODE_ENV === 'debugging' || NODE_ENV === 'development') {
     storeMiddleware.push(reduxLogger);
   }
 

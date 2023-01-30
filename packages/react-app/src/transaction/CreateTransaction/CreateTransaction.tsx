@@ -77,6 +77,7 @@ interface CreateTxState {
   passwordError?: string;
   token: string;
   transaction: TxDetailsPlain;
+  initializing: boolean;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
   stdGasPrice: GasPrices;
@@ -138,6 +139,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const tx = CreateTransaction.txFromProps(props);
 
     this.state = {
+      initializing: true,
       highGasPrice: DEFAULT_FEE,
       lowGasPrice: DEFAULT_FEE,
       stdGasPrice: DEFAULT_FEE,
@@ -324,6 +326,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
 
     this.setState({
+      initializing: false,
       highGasPrice: avgMiddle,
       lowGasPrice: avgLast,
       stdGasPrice: avgTail5,
@@ -441,7 +444,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       getTokenBalanceForAddress,
       onCancel,
     } = this.props;
-    const { highGasPrice, lowGasPrice, passwordError, stdGasPrice, token } = this.state;
+    const { initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, token } = this.state;
 
     const tx = this.transaction;
 
@@ -451,6 +454,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
           <CreateTx
             chain={blockchain}
             eip1559={eip1559}
+            initializing={initializing}
             highGasPrice={highGasPrice}
             lowGasPrice={lowGasPrice}
             stdGasPrice={stdGasPrice}

@@ -11,7 +11,7 @@ import {
   transaction,
 } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Box, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
+import { Box, CircularProgress, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -194,6 +194,9 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
       <FormRow last>
         <FormLabel />
         <ButtonGroup classes={{ container: classes.buttons }}>
+          {initializing && (
+            <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
+          )}
           <Button label="Cancel" onClick={goBack} />
           <Button
             label="Sign Transaction"

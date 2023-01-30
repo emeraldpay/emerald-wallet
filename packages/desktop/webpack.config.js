@@ -1,7 +1,8 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
-const isDevelopMode = process.env.NODE_ENV === 'development';
+const { NODE_ENV } = process.env;
+const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
 
 module.exports = {
   mode: isDevelopMode ? 'development' : 'production',

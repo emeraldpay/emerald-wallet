@@ -38,11 +38,16 @@ export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style }) =>
   return (
     <div className={classes?.container} style={style}>
       {Array.isArray(children) ? (
-        children.map((button, index) => (
-          <div key={`group-button[${index}]`} className={index === 0 ? classes?.firstItem : classes?.restItems}>
-            {button}
-          </div>
-        ))
+        children
+          .filter((button) => button != null && button !== false)
+          .map((button, index) => (
+            <div
+              key={button.key ?? `group-button[${button.props.label ?? index}]`}
+              className={index === 0 ? classes?.firstItem : classes?.restItems}
+            >
+              {button}
+            </div>
+          ))
       ) : (
         <div className={classes?.firstItem}>{children}</div>
       )}

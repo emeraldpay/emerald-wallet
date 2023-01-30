@@ -3,7 +3,16 @@ import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  FormControlLabel,
+  FormHelperText,
+  Slider,
+  Switch,
+  createStyles,
+  withStyles,
+} from '@material-ui/core';
 import * as React from 'react';
 import AmountField from './AmountField';
 import FromField from './FromField';
@@ -58,6 +67,7 @@ export interface Props {
   currency?: string;
   eip1559: boolean;
   fiatBalance?: string;
+  initializing: boolean;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
   ownAddresses?: string[];
@@ -124,17 +134,6 @@ class CreateTx extends React.Component<Props, State> {
     }
   }
 
-  public getDisabled = (validate?: boolean): boolean => {
-    const {
-      chain,
-      stdGasPrice: { max },
-    } = this.props;
-
-    const gasPrice = amountFactory(chain)(max);
-
-    return gasPrice.isZero() || ((validate ?? true) && this.props.tx.validate() !== ValidationResult.OK);
-  };
-
   public getBalanceByToken = (token: string): BigAmount => {
     const { tx, getBalance, getTokenBalanceForAddress } = this.props;
 
@@ -156,6 +155,7 @@ class CreateTx extends React.Component<Props, State> {
       currency,
       eip1559,
       fiatBalance,
+      initializing,
       highGasPrice,
       lowGasPrice,
       ownAddresses,
@@ -201,7 +201,7 @@ class CreateTx extends React.Component<Props, State> {
         <FormRow>
           <FromField
             accounts={ownAddresses}
-            disabled={this.getDisabled(false)}
+            disabled={initializing}
             selectedAccount={tx.from}
             onChangeAccount={onChangeFrom}
             getBalancesByAddress={getBalancesByAddress}
@@ -242,7 +242,7 @@ class CreateTx extends React.Component<Props, State> {
                 control={
                   <Switch
                     checked={useStdMaxGasPrice}
-                    disabled={this.getDisabled(false)}
+                    disabled={initializing}
                     onChange={(event) => {
                       const checked = event.target.checked;
 
@@ -303,7 +303,7 @@ class CreateTx extends React.Component<Props, State> {
                   control={
                     <Switch
                       checked={useStdPriorityGasPrice}
-                      disabled={this.getDisabled(false)}
+                      disabled={initializing}
                       onChange={(event) => {
                         const checked = event.target.checked;
 
@@ -359,8 +359,16 @@ class CreateTx extends React.Component<Props, State> {
         <FormRow last>
           <FormLabel />
           <ButtonGroup classes={{ container: classes.buttons }}>
+            {initializing && (
+              <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
+            )}
             <Button label="Cancel" onClick={onCancel} />
-            <Button disabled={this.getDisabled()} primary={true} label="Create Transaction" onClick={onSubmit} />
+            <Button
+              primary
+              disabled={initializing || tx.validate() !== ValidationResult.OK}
+              label="Create Transaction"
+              onClick={onSubmit}
+            />
           </ButtonGroup>
         </FormRow>
       </>

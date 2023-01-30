@@ -29,6 +29,7 @@ import {
 import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
+  CircularProgress,
   FormControlLabel,
   FormHelperText,
   MenuItem,
@@ -143,7 +144,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
 
-  const [transaction, setTransaction] = React.useState(new workflow.CreateEthereumTx(null).dump());
+  const [transaction, setTransaction] = React.useState(
+    new workflow.CreateEthereumTx(null, wrongBlockchain.params.code).dump(),
+  );
 
   const zeroWei = new Wei(0);
 
@@ -437,13 +440,16 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               <FormRow>
                 <FormLabel />
                 <ButtonGroup classes={{ container: classes.buttons }}>
+                  {initializing && (
+                    <Button
+                      disabled
+                      icon={<CircularProgress size={16} />}
+                      label="Checking the network"
+                      variant="text"
+                    />
+                  )}
                   <Button label="Cancel" onClick={goBack} />
-                  <Button
-                    disabled={initializing}
-                    label="Create Transaction"
-                    primary={true}
-                    onClick={onCreateTransaction}
-                  />
+                  <Button primary disabled={initializing} label="Create Transaction" onClick={onCreateTransaction} />
                 </ButtonGroup>
               </FormRow>
             </>
@@ -504,6 +510,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       },
     );
 
+    const uniqueAddresses =
+      accounts.selectors
+        .findWalletByEntryId(state, entry.id)
+        ?.entries.reduce<Set<string>>(
+          (carry, item) =>
+            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
+          new Set(),
+        ) ?? new Set();
+
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
     const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
@@ -516,15 +531,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       wrongBlockchain,
       defaultFee: application.selectors.getDefaultFee(state, recoverBlockchainCode),
       eip1559: recoverBlockchain.params.eip1559 ?? false,
-      ownAddresses:
-        accounts.selectors
-          .findWalletByEntryId(state, entry.id)
-          ?.entries?.filter((item: WalletEntry) => !item.receiveDisabled)
-          .reduce(
-            (carry: string[], item: WalletEntry) =>
-              item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
-            [],
-          ) ?? [],
+      ownAddresses: [...uniqueAddresses],
       tokensData: [
         ...tokensData,
         {

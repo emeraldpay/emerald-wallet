@@ -3,7 +3,15 @@ import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-va
 import { blockchainIdToCode, workflow } from '@emeraldwallet/core';
 import { FeePrices, screen } from '@emeraldwallet/store';
 import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  FormControlLabel,
+  FormHelperText,
+  Slider,
+  Switch,
+  createStyles,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
 import * as React from 'react';
@@ -197,11 +205,14 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
       <FormRow last>
         <FormLabel />
         <ButtonGroup classes={{ container: styles.buttons }}>
+          {initializing && (
+            <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
+          )}
           <Button label="Cancel" onClick={onCancel} />
           <Button
+            primary
             disabled={!validTx}
             label="Create Transaction"
-            primary={true}
             onClick={() => onCreate(create.create(), totalFee)}
           />
         </ButtonGroup>

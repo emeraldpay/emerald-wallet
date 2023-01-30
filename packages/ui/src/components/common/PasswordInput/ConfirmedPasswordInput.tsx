@@ -5,8 +5,8 @@ import PasswordInput from './PasswordInput';
 
 const useStyles = makeStyles(
   createStyles({
-    button: {
-      margin: '20px 0 0 10px',
+    container: {
+      marginTop: 20,
     },
   }),
 );
@@ -32,7 +32,7 @@ const ConfirmedPasswordInput: React.FC<OwnProps> = ({
   const [confirmation, setConfirmation] = React.useState('');
 
   return (
-    <Grid container spacing={1}>
+    <Grid container alignItems="center" className={styles.container} spacing={1}>
       <Grid item xs={4}>
         <PasswordInput onChange={setPassword} disabled={disabled} minLength={minLength} />
       </Grid>
@@ -40,7 +40,6 @@ const ConfirmedPasswordInput: React.FC<OwnProps> = ({
         <TextField
           fullWidth
           disabled={password === '' || disabled}
-          margin="normal"
           placeholder="Confirm password"
           type="password"
           onChange={(event) => setConfirmation(event.target.value)}
@@ -48,7 +47,6 @@ const ConfirmedPasswordInput: React.FC<OwnProps> = ({
       </Grid>
       <Grid item xs={4}>
         <Button
-          className={styles.button}
           disabled={disabled || password === '' || confirmation !== password}
           variant="contained"
           onClick={() => onChange(password)}
