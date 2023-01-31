@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use neon::object::Object;
 use neon::types::{JsString, JsValue};
 use neon::prelude::{FunctionContext, Handle};
 use emerald_wallet_state::access::addressbook::{AddressBook, BookItemEnriched, Filter};

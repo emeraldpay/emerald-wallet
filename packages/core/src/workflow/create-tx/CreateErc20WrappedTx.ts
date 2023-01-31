@@ -19,8 +19,6 @@ export interface Erc20WrappedDetails {
   type: EthereumTransactionType;
 }
 
-const tokenContract = new Contract(wrapTokenAbi);
-
 export class CreateErc20WrappedTx {
   public address?: string;
   public amount: BigAmount;
@@ -36,6 +34,8 @@ export class CreateErc20WrappedTx {
 
   private readonly token: Token;
   private readonly zeroAmount: BigAmount;
+
+  private tokenContract = new Contract(wrapTokenAbi);
 
   constructor(details: Erc20WrappedDetails) {
     const zeroAmount = amountFactory(details.blockchain)(0);
@@ -70,8 +70,8 @@ export class CreateErc20WrappedTx {
     const isDeposit = amount.units.equals(totalBalance.units);
 
     const data = isDeposit
-      ? tokenContract.functionToData('deposit', {})
-      : tokenContract.functionToData('withdraw', { _value: amount.number.toString() });
+      ? this.tokenContract.functionToData('deposit', {})
+      : this.tokenContract.functionToData('withdraw', { _value: amount.number.toString() });
 
     return {
       blockchain,
