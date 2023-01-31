@@ -11,7 +11,7 @@
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "compile": "tsc -b",
     "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.10.0",

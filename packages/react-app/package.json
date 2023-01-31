@@ -14,7 +14,7 @@
     "storybook": "start-storybook -p 9001 -c .storybook --ci",
     "storybook:electron": "electron stories/electron_index.js",
     "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",

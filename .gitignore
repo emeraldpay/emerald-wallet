@@ -11,6 +11,7 @@ yarn-error.log
 .idea/
 *.iml
 
+coverage/
 dist/
 lib/
 tsconfig.tsbuildinfo

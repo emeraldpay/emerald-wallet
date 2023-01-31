@@ -42,8 +42,8 @@ jobs:
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
 
-      - name: Install Global JS components
-        run: npm install -g codecov yarn
+      - name: Install Yarn
+        run: npm install -g yarn
 
       - name: Install JS dependencies
         run: yarn install
@@ -58,3 +58,8 @@ jobs:
         run: yarn test:coverage
         env:
           DISPLAY: ':99.0'
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: 'packages/**/coverage/clover.xml'
