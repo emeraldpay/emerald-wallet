@@ -42,9 +42,7 @@ const TransactionsList: React.FC<OwnProps> = ({ cursor, lastTxId, transactions, 
 
   const calculateRowHeight = React.useCallback(
     ({ index }: Index) => {
-      const changeCount = transactions[index].changes.filter(
-        (change) => change.wallet != null && change.amountValue.isPositive(),
-      ).length;
+      const changeCount = transactions[index].changes.filter((change) => change.wallet != null).length;
 
       return changeCount > 1 ? 53 + (changeCount - 1) * 63 + 20 : 73;
     },

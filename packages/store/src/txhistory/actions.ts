@@ -41,9 +41,9 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
 
     dispatch({
       type: ActionTypes.LOAD_STORED_TXS,
-      transactions,
       walletId,
       cursor: page.cursor,
+      transactions: transactions.filter((tx) => tx.changes.length > 0),
     });
   };
 }
