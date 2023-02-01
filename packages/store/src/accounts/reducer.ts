@@ -49,11 +49,7 @@ function updateWallet(state: IAccountsState, walletId: Uuid, update: Updater<Wal
 function onHdAccountCreated(state: IAccountsState, action: IHdAccountCreated): IAccountsState {
   const { walletId, account } = action.payload;
 
-  return updateWallet(state, walletId, (wallet) => {
-    wallet.entries.push(account);
-
-    return wallet;
-  });
+  return updateWallet(state, walletId, (wallet) => ({ ...wallet, entries: [...wallet.entries, account] }));
 }
 
 function onLoading(state: IAccountsState, action: ISetLoadingAction): IAccountsState {

@@ -539,7 +539,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing}
+                disabled={initializing || currentTx.amount.isZero()}
                 label="Create Transaction"
                 onClick={(): void => setStage(Stages.SIGN)}
               />
