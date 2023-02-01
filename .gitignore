@@ -1,9 +1,9 @@
 .yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+!.yarn/patches/
+!.yarn/plugins/
+!.yarn/releases/
+!.yarn/sdks/
+!.yarn/versions/
 node_modules/
 package-lock.json
 yarn-error.log
@@ -17,3 +17,5 @@ lib/
 tsconfig.tsbuildinfo
 
 .emerald*
+
+.DS_Store
