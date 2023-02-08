@@ -1,10 +1,14 @@
-import { BackendApi, toBigNumber } from '@emeraldwallet/core';
+import { BackendApi, PersistentState, blockchainCodeToId, toBigNumber } from '@emeraldwallet/core';
 import { SagaIterator } from 'redux-saga';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { setTokenBalance } from './actions';
 import { ActionTypes, RequestTokenBalanceAction, RequestTokensBalancesAction, TokenBalance } from './types';
 
-function* fetchBalanceInfo(backendApi: BackendApi, action: RequestTokenBalanceAction): SagaIterator {
+function* fetchBalanceInfo(
+  backendApi: BackendApi,
+  balances: PersistentState.Balances,
+  action: RequestTokenBalanceAction,
+): SagaIterator {
   const { token, address, blockchain } = action.payload;
 
   const result = yield call(backendApi.getBalance, blockchain, address, [token.symbol]);
@@ -16,13 +20,24 @@ function* fetchBalanceInfo(backendApi: BackendApi, action: RequestTokenBalanceAc
     unitsValue: toBigNumber(result).toString(),
   };
 
+  yield call(balances.set, {
+    address,
+    amount: balance.unitsValue,
+    asset: balance.symbol,
+    blockchain: blockchainCodeToId(blockchain),
+  });
+
   yield put(setTokenBalance(blockchain, balance, address));
 }
 
-function* fetchTokensBalances(backendApi: BackendApi, action: RequestTokensBalancesAction): SagaIterator {
-  const { tokens, address, blockchain } = action.payload;
+function* fetchTokensBalances(
+  backendApi: BackendApi,
+  balances: PersistentState.Balances,
+  action: RequestTokensBalancesAction,
+): SagaIterator {
+  const { address, blockchain, tokens } = action.payload;
 
-  const balances = yield call(
+  const balanceByToken = yield call(
     backendApi.getBalance,
     blockchain,
     address,
@@ -34,16 +49,23 @@ function* fetchTokensBalances(backendApi: BackendApi, action: RequestTokensBalan
       decimals: token.decimals,
       symbol: token.symbol,
       tokenId: token.address,
-      unitsValue: toBigNumber(balances[token.symbol]).toString(),
+      unitsValue: toBigNumber(balanceByToken[token.symbol]).toString(),
     };
+
+    yield call(balances.set, {
+      address,
+      amount: balance.unitsValue,
+      asset: balance.symbol,
+      blockchain: blockchainCodeToId(blockchain),
+    });
 
     yield put(setTokenBalance(blockchain, balance, address));
   }
 }
 
-export function* root(backendApi: BackendApi): SagaIterator {
+export function* root(backendApi: BackendApi, balances: PersistentState.Balances): SagaIterator {
   yield all([
-    takeEvery(ActionTypes.REQUEST_TOKEN_BALANCE, fetchBalanceInfo, backendApi),
-    takeEvery(ActionTypes.REQUEST_TOKENS_BALANCES, fetchTokensBalances, backendApi),
+    takeEvery(ActionTypes.REQUEST_TOKEN_BALANCE, fetchBalanceInfo, backendApi, balances),
+    takeEvery(ActionTypes.REQUEST_TOKENS_BALANCES, fetchTokensBalances, backendApi, balances),
   ]);
 }

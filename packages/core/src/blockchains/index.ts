@@ -1,5 +1,16 @@
-export { CoinTickerCode, isCoinTickerCode } from './CoinTicker';
-export { IBlockchain } from './IBlockchain';
+export { EthereumMessage, isStructuredMessage } from './ethereum';
+export {
+  InputDataDecoder,
+  Token,
+  TokenData,
+  TokenDirectory,
+  TokenInstances,
+  TokenRegistry,
+  decodeData,
+  isToken,
+  tokenAbi,
+  wrapTokenAbi,
+} from './tokens';
 export { BalanceUtxo } from './Bitcoin';
 export {
   BlockchainCode,
@@ -15,17 +26,7 @@ export {
   isEthereum,
   ledgerByBlockchain,
 } from './blockchains';
-export { EthereumMessage, isStructuredMessage } from './ethereum';
-export {
-  InputDataDecoder,
-  Token,
-  TokenData,
-  TokenDirectory,
-  TokenInstances,
-  TokenRegistry,
-  decodeData,
-  isToken,
-  tokenAbi,
-  wrapTokenAbi,
-} from './tokens';
+export { Coin, CoinCode } from './coin';
+export { CoinTicker, CoinTickerCode } from './coinTicker';
 export { HDPath } from './HDPath';
+export { IBlockchain } from './IBlockchain';

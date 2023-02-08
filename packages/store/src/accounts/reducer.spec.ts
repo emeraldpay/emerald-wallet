@@ -92,8 +92,9 @@ describe('accounts reducer', () => {
     const state: IAccountsState = reducer(undefined, {
       type: ActionTypes.SET_BALANCE,
       payload: {
-        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
+        address: '0x0',
         balance: '',
+        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
         utxo: [
           {
             txid: '0d41a0d6b50f6ffb5e04ace6622086ef31eced444201545e845410b04af0737c',
@@ -119,8 +120,9 @@ describe('accounts reducer', () => {
     let state: IAccountsState = reducer(undefined, {
       type: ActionTypes.SET_BALANCE,
       payload: {
-        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
+        address: '0x0',
         balance: '',
+        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
         utxo: [
           {
             txid: '0d41a0d6b50f6ffb5e04ace6622086ef31eced444201545e845410b04af0737c',
@@ -135,8 +137,9 @@ describe('accounts reducer', () => {
     state = reducer(state, {
       type: ActionTypes.SET_BALANCE,
       payload: {
-        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
+        address: '0x0',
         balance: '',
+        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
         utxo: [
           {
             txid: '0d41a0d6b50f6ffb5e04ace6622086ef31eced444201545e845410b04af0737c',
@@ -162,8 +165,9 @@ describe('accounts reducer', () => {
     let state: IAccountsState = reducer(undefined, {
       type: ActionTypes.SET_BALANCE,
       payload: {
-        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
+        address: '0x0',
         balance: '',
+        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
         utxo: [
           {
             txid: '0d41a0d6b50f6ffb5e04ace6622086ef31eced444201545e845410b04af0737c',
@@ -178,8 +182,9 @@ describe('accounts reducer', () => {
     state = reducer(state, {
       type: ActionTypes.SET_BALANCE,
       payload: {
-        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
+        address: '0x0',
         balance: '',
+        entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
         utxo: [
           {
             txid: '6ef31eced444201545e845410b04af0737c0d41a0d6b50f6ffb5e04ace662208',

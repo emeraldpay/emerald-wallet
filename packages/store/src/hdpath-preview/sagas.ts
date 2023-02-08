@@ -1,6 +1,13 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
-import { BackendApi, Blockchains, amountFactory, blockchainCodeToId, isBitcoin } from '@emeraldwallet/core';
-import { CoinTicker } from '@emeraldwallet/core/lib/blockchains/CoinTicker';
+import {
+  BackendApi,
+  Blockchains,
+  Coin,
+  CoinTicker,
+  amountFactory,
+  blockchainCodeToId,
+  isBitcoin,
+} from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from '@redux-saga/core/effects';
 import { Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
@@ -46,7 +53,7 @@ function* loadBalances(
     backendApi.getBalance,
     blockchain,
     address,
-    assets.map((asset) => (asset === CoinTicker.ETH ? 'ETHER' : asset)),
+    assets.map((asset) => (asset === CoinTicker.ETH ? Coin.ETHER : asset)),
   );
 
   for (const asset of Object.keys(balances)) {
@@ -56,7 +63,7 @@ function* loadBalances(
         blockchain,
         hdpath,
         address,
-        asset === 'ETHER' ? CoinTicker.ETH : asset,
+        asset === Coin.ETHER ? CoinTicker.ETH : asset,
         amountReader(balances[asset]).encode(),
       ),
     );

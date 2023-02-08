@@ -1,4 +1,4 @@
-import { BlockchainCode, TokenData } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'tokens';
 
@@ -18,9 +18,16 @@ export type TokensState = {
 };
 
 export enum ActionTypes {
+  INIT_STATE = 'TOKEN/INIT_STATE',
   SET_TOKEN_BALANCE = 'TOKENS/SET_TOKEN_BALANCE',
   REQUEST_TOKEN_BALANCE = 'TOKENS/REQUEST_TOKEN_BALANCE',
   REQUEST_TOKENS_BALANCES = 'TOKENS/REQUEST_TOKENS_BALANCES',
+}
+
+export interface InitTokenStateAction {
+  type: ActionTypes.INIT_STATE;
+  balances: PersistentState.Balance[];
+  tokens: TokenData[];
 }
 
 export interface SetTokenBalanceAction {
@@ -50,4 +57,8 @@ export interface RequestTokensBalancesAction {
   };
 }
 
-export type TokensAction = SetTokenBalanceAction | RequestTokenBalanceAction | RequestTokensBalancesAction;
+export type TokensAction =
+  | InitTokenStateAction
+  | SetTokenBalanceAction
+  | RequestTokenBalanceAction
+  | RequestTokensBalancesAction;

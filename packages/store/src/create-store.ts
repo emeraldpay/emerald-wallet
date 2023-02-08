@@ -25,13 +25,13 @@ export const createStore = (api: WalletApi, backendApi: BackendApi): Store => {
 
   const store = createReduxStore(rootReducer, applyMiddleware(...storeMiddleware));
 
-  sagaMiddleware.run(addressBook.sagas.root, api.addressBook, api.vault);
-  sagaMiddleware.run(tokens.sagas.root, backendApi);
-  sagaMiddleware.run(hwkey.sagas.root, api.vault);
-  sagaMiddleware.run(wallet.sagas.root);
-  sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, api.vault, api.xPubPos);
+  sagaMiddleware.run(addressBook.sagas.root, api.addressBook, api.vault);
   sagaMiddleware.run(hdpathPreview.sagas.root, api.vault, backendApi);
+  sagaMiddleware.run(hwkey.sagas.root, api.vault);
+  sagaMiddleware.run(settings.sagas.root);
+  sagaMiddleware.run(tokens.sagas.root, backendApi, api.balances);
+  sagaMiddleware.run(wallet.sagas.root);
 
   triggers.setStore(store);
 

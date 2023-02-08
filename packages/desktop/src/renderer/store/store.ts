@@ -1,7 +1,9 @@
-import { IpcCommands, Logger, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
+import { WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { Coin, IpcCommands, Logger, PersistentState, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
 import {
   BackendApiInvoker,
   RemoteAddressBook,
+  RemoteBalances,
   RemoteTxHistory,
   RemoteTxMeta,
   RemoteVault,
@@ -12,6 +14,7 @@ import {
   createStore,
   screen,
   settings,
+  tokens,
   triggers,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
@@ -20,12 +23,18 @@ import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
 
+type Balances = {
+  coinBalances: PersistentState.Balance[];
+  tokenBalances: PersistentState.Balance[];
+};
+
 Logger.setInstance(ElectronLogger);
 
 const logger = Logger.forCategory('Store');
 
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
+  balances: RemoteBalances,
   txHistory: RemoteTxHistory,
   txMeta: RemoteTxMeta,
   vault: RemoteVault,
@@ -110,34 +119,94 @@ function checkWalletUpdates(): void {
 function startSync(): void {
   logger.info('Start synchronization');
 
-  triggers
-    .onceModeSet(store)
-    .then(() => {
-      const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.code);
+  triggers.onceModeSet(store).then(() => {
+    const blockchains = settings.selectors.currentChains(store.getState());
 
-      logger.info('Configured to use chains', codes);
+    logger.info(`Configured to use blockchains: ${blockchains.map((chain) => chain.params.code).join(', ')}`);
 
-      return store.dispatch(accounts.actions.loadSeedsAction());
-    })
-    .then(() => store.dispatch(accounts.actions.loadWalletsAction()))
-    .then(() => {
-      const supported = settings.selectors.currentChains(store.getState());
+    store.dispatch(accounts.actions.loadSeedsAction());
+    store.dispatch(accounts.actions.loadWalletsAction());
 
-      const loadChains = supported.map(async (blockchain) => {
-        await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
-        await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
-      });
+    const loadChains = blockchains.map(async (blockchain) => {
+      await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
+      await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
+    });
 
-      return Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
-    })
-    .then(() => {
-      logger.info('Initial synchronization finished');
+    Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
 
-      store.dispatch(application.actions.connecting(false));
-    })
-    .catch((exception) => logger.error('Failed to start synchronization', exception));
+    logger.info('Initial synchronization finished');
+
+    store.dispatch(application.actions.connecting(false));
+  });
 }
+
+function initState(): void {
+  const entries = accounts.selectors.allEntries(store.getState());
+
+  const entryByIdentifier = entries.reduce((carry, entry) => {
+    if (isEthereumEntry(entry)) {
+      const { address } = entry;
+
+      if (address != null) {
+        const list = carry.get(address.value) ?? [];
+
+        return carry.set(address.value, [...list, entry]);
+      }
+    }
+
+    if (isBitcoinEntry(entry)) {
+      return entry.xpub.reduce<typeof carry>((xPubCarry, { xpub }) => {
+        const list = xPubCarry.get(xpub) ?? [];
+
+        return xPubCarry.set(xpub, [...list, entry]);
+      }, carry);
+    }
+
+    return carry;
+  }, new Map<string, WalletEntry[]>());
+
+  Promise.all(
+    [...entryByIdentifier.keys()].map(
+      async (identifier) => ({ identifier, balances: await RemoteBalances.list(identifier) }),
+      {},
+    ),
+  ).then((balances) => {
+    const balanceByIdentifier = balances.reduce<Record<string, PersistentState.Balance[]>>(
+      (carry, { identifier, balances }) => ({ ...carry, [identifier]: balances }),
+      {},
+    );
+
+    const { coinBalances, tokenBalances } = Object.values(balanceByIdentifier)
+      .flat()
+      .reduce<Balances>(
+        (carry, balance) => {
+          if (balance.asset in Coin) {
+            return { ...carry, coinBalances: [...carry.coinBalances, balance] };
+          }
+
+          return { ...carry, tokenBalances: [...carry.tokenBalances, balance] };
+        },
+        { coinBalances: [], tokenBalances: [] },
+      );
+
+    const entryByAddress = Object.entries(balanceByIdentifier).reduce<Record<string, WalletEntry[]>>(
+      (carry, [identifier, balances]) => {
+        return balances.reduce(
+          (balancesCarry, balance) => ({ ...balancesCarry, [balance.address]: entryByIdentifier.get(identifier) }),
+          carry,
+        );
+      },
+      {},
+    );
+
+    store.dispatch(accounts.actions.initState(coinBalances, entryByAddress));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    store.dispatch(tokens.actions.initState(tokenBalances) as any);
+  });
+}
+
+triggers.onceAccountsLoaded(store).then(initState);
+triggers.onceBlockchainConnected(store).then(startSync);
 
 export function startStore(): void {
   try {
@@ -159,7 +228,5 @@ export function startStore(): void {
   getInitialScreen();
   checkWalletUpdates();
 }
-
-triggers.onceBlockchainConnected(store).then(startSync);
 
 ipcRenderer.send(IpcCommands.EMERALD_READY);

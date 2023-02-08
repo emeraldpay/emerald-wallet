@@ -12,9 +12,9 @@ import { BlockchainCode } from './blockchains';
  * =====================================================================================================================
  */
 
-export type EthereumAddress = string;
 export type BitcoinAddress = string;
-export type Address = EthereumAddress | BitcoinAddress;
+export type EthereumAddress = string;
+export type Address = BitcoinAddress | EthereumAddress;
 export type XPub = string;
 
 export interface PageQuery {
@@ -237,15 +237,15 @@ export interface AddressbookFilter {
  * Addressbook Item details
  */
 export interface AddressbookItem {
-  id?: string | undefined;
   address: {
     type: 'plain' | 'xpub';
     address: Address | XPub;
     currentAddress?: string | undefined;
   };
   blockchain: number;
-  label?: string | undefined;
   createTimestamp?: Date | undefined;
+  id?: string | undefined;
+  label?: string | undefined;
   updateTimestamp?: Date | undefined;
 }
 
@@ -301,44 +301,41 @@ export interface XPubPosition {
  */
 export interface Balance {
   /**
-   * Amount encoded as a string
-   */
-  amount: string,
-  /**
-   * Timestamp when it was cached. Set automatically when added to the persistent state.
-   */
-  timestamp?: Date | undefined,
-  /**
    * Address
    */
-  address: Address,
+  address: Address;
   /**
-   * BLockchain with balance
+   * Amount encoded as a string
    */
-  blockchain: number,
+  amount: string;
   /**
    * Asset (ETHER, BTC, or a ERC20 code)
    */
-  asset: String,
+  asset: string;
+  /**
+   * BLockchain with balance
+   */
+  blockchain: number;
+  /**
+   * Timestamp when it was cached. Set automatically when added to the persistent state.
+   */
+  timestamp?: Date | undefined;
 }
 
 /**
  * Manage current cached balances
  */
 export interface Balances {
-
-  /**
-   * Remember a balance
-   * @param balance current value
-   */
-  set(balance: Balance): Promise<boolean>;
-
   /**
    * List all balances per address or xpub
    * @param address address or xpub
    */
   list(address: Address | XPub): Promise<Balance[]>;
-
+  /**
+   * Remember a balance
+   * @param balance current value
+   */
+  set(balance: Balance): Promise<boolean>;
 }
 
 export interface PersistentState {
@@ -346,24 +343,20 @@ export interface PersistentState {
    * Manager Address Book
    */
   addressbook: Addressbook;
-
-  /**
-   * Manage Transaction History
-   */
-  txhistory: TxHistory;
-
-  /**
-   * Manage Transaction Meta
-   */
-  txmeta: TxMeta;
-
-  /**
-   * Manage XPub position
-   */
-  xpubpos: XPubPosition;
-
   /**
    * Manage current balance cache
    */
   balances: Balances;
+  /**
+   * Manage Transaction History
+   */
+  txhistory: TxHistory;
+  /**
+   * Manage Transaction Meta
+   */
+  txmeta: TxMeta;
+  /**
+   * Manage XPub position
+   */
+  xpubpos: XPubPosition;
 }

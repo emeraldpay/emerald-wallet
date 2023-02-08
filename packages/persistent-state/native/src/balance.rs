@@ -26,7 +26,7 @@ impl From<&Balance> for BalanceJson {
       ts: Some(value.ts),
       address: value.address.clone(),
       blockchain: value.blockchain,
-      asset: value.asset.clone()
+      asset: value.asset.clone(),
     }
   }
 }
@@ -41,7 +41,7 @@ impl TryFrom<BalanceJson> for Balance {
       ts: value.ts.or(Some(Utc::now())).unwrap(),
       address: value.address,
       blockchain: value.blockchain,
-      asset: value.asset
+      asset: value.asset,
     })
   }
 }
@@ -58,7 +58,7 @@ fn set_internal(balance: BalanceJson) -> Result<bool, StateManagerError> {
     .map(|_| true)
 }
 
-#[neon_frame_fn(channel=1)]
+#[neon_frame_fn(channel = 1)]
 pub fn set<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
@@ -92,7 +92,7 @@ fn list_internal(address: String) -> Result<Vec<BalanceJson>, StateManagerError>
       .or(Some(20))
       .unwrap();
     // go address by address and try to find a balance for it
-    for i in 0..pos {
+    for i in 0..=pos {
       if let Ok(address) = xpub.get_address::<bitcoin::Address>(i) {
         let balances = balances_access
           .list(address.to_string())
@@ -112,7 +112,7 @@ fn list_internal(address: String) -> Result<Vec<BalanceJson>, StateManagerError>
   }
 }
 
-#[neon_frame_fn(channel=1)]
+#[neon_frame_fn(channel = 1)]
 pub fn list<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<Vec<BalanceJson>, StateManagerError>) + Send + 'static {

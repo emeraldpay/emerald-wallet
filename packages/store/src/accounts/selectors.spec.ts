@@ -166,15 +166,32 @@ describe('selectTotalBalance', () => {
           },
         ],
         details: [
-          { entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1.2, 'ETHER').encode() },
-          { entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', balance: new Wei(1.1, 'ETHER').encode() },
-          { entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', balance: new WeiEtc(52, 'ETHER').encode() },
           {
+            address: '0x0',
+            balance: new Wei(1.2, 'ETHER').encode(),
+            entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0',
+          },
+          {
+            address: '0x1',
+            balance: new Wei(1.1, 'ETHER').encode(),
+            entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1',
+          },
+          {
+            address: '0x2',
+            balance: new WeiEtc(52, 'ETHER').encode(),
+            entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2',
+          },
+          {
+            address: '0x3',
+            balance: new Satoshi(0.5, 'BTC').encode(),
             entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0',
-            balance: undefined,
             utxo: [{ value: new Satoshi(0.5, 'BTC').encode() }],
           },
-          { entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', balance: new Wei(3, 'ETHER').encode() },
+          {
+            address: 'bc1',
+            balance: new Wei(3, 'ETHER').encode(),
+            entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1',
+          },
         ],
       },
       settings: {
@@ -198,6 +215,8 @@ describe('selectTotalBalance', () => {
     expect(aggregatedAssets.length).toBe(3);
 
     const prices = withFiatConversion(state, aggregatedAssets);
+
+    console.log(prices);
 
     expect(prices.length).toBe(3);
 

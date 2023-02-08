@@ -1,9 +1,9 @@
 import { PersistentState as PersistentStateBase } from '@emeraldwallet/core';
 import { Addressbook } from './addressbook';
+import { Balances } from './balance';
 import { TxHistory } from './txhistory';
 import { TxMeta } from './txmeta';
 import { XPubPosition } from './xpubpos';
-import {Balances} from "./balance";
 
 export type StatusOk<T> = {
   succeeded: true;

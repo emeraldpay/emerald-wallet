@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import semver from 'semver';
+import * as semver from 'semver';
 import { SemVer as currentVersion } from '../../../gitversion.json';
 
 type Release = {
