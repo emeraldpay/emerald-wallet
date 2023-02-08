@@ -12,7 +12,7 @@
     "compile": "tsc -b",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "test": "jest --env=jsdom",
-    "test:coverage": "jest --env=jsdom --coverage && codecov"
+    "test:coverage": "jest --env=jsdom --coverage"
   },
   "dependencies": {
     "@emeraldpay/bigamount": "^0.4.1",
