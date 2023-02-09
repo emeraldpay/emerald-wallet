@@ -3,7 +3,18 @@ import { Store, applyMiddleware, createStore as createReduxStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 import { Triggers } from './triggers';
-import { accounts, addressBook, hdpathPreview, hwkey, reduxLogger, rootReducer, settings, tokens, wallet } from './';
+import {
+  IState,
+  accounts,
+  addressBook,
+  hdpathPreview,
+  hwkey,
+  reduxLogger,
+  rootReducer,
+  settings,
+  tokens,
+  wallet,
+} from './';
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -11,7 +22,7 @@ import { accounts, addressBook, hdpathPreview, hwkey, reduxLogger, rootReducer, 
  * Injecting api allows to write unit tests.
  *
  */
-export const createStore = (api: WalletApi, backendApi: BackendApi): Store => {
+export const createStore = (api: WalletApi, backendApi: BackendApi): Store<IState> => {
   const triggers = new Triggers();
 
   const sagaMiddleware = createSagaMiddleware();

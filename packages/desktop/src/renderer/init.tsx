@@ -1,14 +1,14 @@
-import {Theme} from '@emeraldwallet/ui';
-import {Logger} from '@emeraldwallet/core';
+import { Logger } from '@emeraldwallet/core';
 import { App, i18n } from '@emeraldwallet/react-app';
 import { config } from '@emeraldwallet/store';
+import { Theme } from '@emeraldwallet/ui';
 import BigNumber from 'bignumber.js';
 import * as ElectronLogger from 'electron-log';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { I18nextProvider } from 'react-i18next';
 import { AboutComponent } from './components/About';
-import { startStore, store } from './store/store';
+import { startStore, store } from './store';
 
 Logger.setInstance(ElectronLogger);
 

@@ -1,5 +1,4 @@
-import { WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { Coin, IpcCommands, Logger, PersistentState, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
+import { IpcCommands, Logger, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
 import {
   BackendApiInvoker,
   RemoteAddressBook,
@@ -14,19 +13,14 @@ import {
   createStore,
   screen,
   settings,
-  tokens,
   triggers,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
+import { initBalancesState } from './cache/balances';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
-
-type Balances = {
-  coinBalances: PersistentState.Balance[];
-  tokenBalances: PersistentState.Balance[];
-};
 
 Logger.setInstance(ElectronLogger);
 
@@ -41,9 +35,7 @@ const api: WalletApi = {
   xPubPos: RemoteXPubPosition,
 };
 
-const backendApi = new BackendApiInvoker();
-
-export const store = createStore(api, backendApi);
+export const store = createStore(api, new BackendApiInvoker());
 
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
@@ -140,73 +132,11 @@ function startSync(): void {
   });
 }
 
-function initState(): void {
-  const entries = accounts.selectors.allEntries(store.getState());
-
-  const entryByIdentifier = entries.reduce((carry, entry) => {
-    if (isEthereumEntry(entry)) {
-      const { address } = entry;
-
-      if (address != null) {
-        const list = carry.get(address.value) ?? [];
-
-        return carry.set(address.value, [...list, entry]);
-      }
-    }
-
-    if (isBitcoinEntry(entry)) {
-      return entry.xpub.reduce<typeof carry>((xPubCarry, { xpub }) => {
-        const list = xPubCarry.get(xpub) ?? [];
-
-        return xPubCarry.set(xpub, [...list, entry]);
-      }, carry);
-    }
-
-    return carry;
-  }, new Map<string, WalletEntry[]>());
-
-  Promise.all(
-    [...entryByIdentifier.keys()].map(
-      async (identifier) => ({ identifier, balances: await RemoteBalances.list(identifier) }),
-      {},
-    ),
-  ).then((balances) => {
-    const balanceByIdentifier = balances.reduce<Record<string, PersistentState.Balance[]>>(
-      (carry, { identifier, balances }) => ({ ...carry, [identifier]: balances }),
-      {},
-    );
-
-    const { coinBalances, tokenBalances } = Object.values(balanceByIdentifier)
-      .flat()
-      .reduce<Balances>(
-        (carry, balance) => {
-          if (balance.asset in Coin) {
-            return { ...carry, coinBalances: [...carry.coinBalances, balance] };
-          }
-
-          return { ...carry, tokenBalances: [...carry.tokenBalances, balance] };
-        },
-        { coinBalances: [], tokenBalances: [] },
-      );
-
-    const entryByAddress = Object.entries(balanceByIdentifier).reduce<Record<string, WalletEntry[]>>(
-      (carry, [identifier, balances]) => {
-        return balances.reduce(
-          (balancesCarry, balance) => ({ ...balancesCarry, [balance.address]: entryByIdentifier.get(identifier) }),
-          carry,
-        );
-      },
-      {},
-    );
-
-    store.dispatch(accounts.actions.initState(coinBalances, entryByAddress));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    store.dispatch(tokens.actions.initState(tokenBalances) as any);
-  });
-}
-
-triggers.onceAccountsLoaded(store).then(initState);
 triggers.onceBlockchainConnected(store).then(startSync);
+
+triggers.onceAccountsLoaded(store).then(() => initBalancesState(api, store));
+
+ipcRenderer.send(IpcCommands.EMERALD_READY);
 
 export function startStore(): void {
   try {
@@ -228,5 +158,3 @@ export function startStore(): void {
   getInitialScreen();
   checkWalletUpdates();
 }
-
-ipcRenderer.send(IpcCommands.EMERALD_READY);
