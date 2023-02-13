@@ -16,11 +16,11 @@ export class XPubPosition implements PersistentState.XPubPosition {
     return neonFrameHandlerCall(this.manager.addon, 'xpubpos_get_next', [xpub]);
   }
 
-  setCurrentAddressAt(xpub: string, pos: number): Promise<void> {
+  setCurrentAddressAt(xpub: PersistentState.XPub, pos: number): Promise<void> {
     return neonFrameHandlerCall(this.manager.addon, 'xpubpos_set_current', [xpub, pos]);
   }
 
-  setNextAddressAtLeast(xpub: string, pos: number): Promise<void> {
+  setNextAddressAtLeast(xpub: PersistentState.XPub, pos: number): Promise<void> {
     return this.setCurrentAddressAt(xpub, pos - 1);
   }
 }

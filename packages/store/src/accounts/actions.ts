@@ -16,7 +16,14 @@ import {
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, HDPath, IpcCommands, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  HDPath,
+  IpcCommands,
+  PersistentState,
+  blockchainCodeToId,
+  blockchainIdToCode,
+} from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import {
   ActionTypes,
@@ -36,9 +43,21 @@ import {
   IWalletCreatedAction,
   IWalletImportedAction,
   IWalletsLoaded,
+  InitAccountStateAction,
 } from './types';
 import { dispatchRpcError } from '../screen/actions';
 import { Dispatched } from '../types';
+
+export function initState(
+  balances: PersistentState.Balance[],
+  entriesByAddress: Record<string, WalletEntry[]>,
+): InitAccountStateAction {
+  return {
+    type: ActionTypes.INIT_STATE,
+    balances,
+    entriesByAddress,
+  };
+}
 
 export function setBalanceAction(balance: IBalanceUpdate): ISetBalanceAction {
   return {

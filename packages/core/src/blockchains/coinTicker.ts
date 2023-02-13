@@ -9,7 +9,3 @@ export enum CoinTicker {
 }
 
 export type CoinTickerCode = 'BTC' | 'ETC' | 'ETH' | 'ETG' | 'TESTBTC';
-
-export function isCoinTickerCode(value: string): value is CoinTickerCode {
-  return value === 'BTC' || value === 'ETC' || value === 'ETH' || value === 'ETG' || value === 'TESTBTC';
-}

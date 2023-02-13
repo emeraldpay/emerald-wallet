@@ -1,11 +1,27 @@
-import { BlockchainCode, TokenData } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
 import {
   ActionTypes,
+  InitTokenStateAction,
   RequestTokenBalanceAction,
   RequestTokensBalancesAction,
   SetTokenBalanceAction,
   TokenBalance,
 } from './types';
+import { Dispatched } from '../types';
+
+export function initState(balances: PersistentState.Balance[]): Dispatched<void, InitTokenStateAction> {
+  return (dispatch, getState) => {
+    const {
+      application: { tokens },
+    } = getState();
+
+    dispatch({
+      type: ActionTypes.INIT_STATE,
+      balances,
+      tokens,
+    });
+  };
+}
 
 export function setTokenBalance(
   blockchain: BlockchainCode,

@@ -87,8 +87,6 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
   };
 }
 
-const tokenContract = new Contract(tokenAbi);
-
 export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public amount: BigAmount;
   public blockchain: BlockchainCode;
@@ -108,6 +106,8 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   private readonly token: Token;
   private readonly zeroAmount: WeiAny;
   private readonly zeroTokenAmount: BigAmount;
+
+  private tokenContract = new Contract(tokenAbi);
 
   constructor(
     tokenRegistry: TokenRegistry,
@@ -224,7 +224,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public build(): EthereumTransaction {
     const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
 
-    const data = tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toString() });
+    const data = this.tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toString() });
 
     return {
       blockchain,

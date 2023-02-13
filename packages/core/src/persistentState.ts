@@ -12,6 +12,11 @@ import { BlockchainCode } from './blockchains';
  * =====================================================================================================================
  */
 
+export type BitcoinAddress = string;
+export type EthereumAddress = string;
+export type Address = BitcoinAddress | EthereumAddress;
+export type XPub = string;
+
 export interface PageQuery {
   /**
    * Optional cursor to continue fetching the results. As returned by `PageResult#cursor`.
@@ -81,7 +86,7 @@ export interface BlockRef {
 }
 
 export interface Change {
-  address?: string;
+  address?: Address;
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
    * Note that the amount is always a positive number
@@ -161,14 +166,14 @@ export interface TxHistory {
    *
    * @param target individual address or xpub
    */
-  getCursor(target: string): Promise<string | null>;
+  getCursor(target: Address | XPub): Promise<string | null>;
   /**
    * Set current cursor received from remote API
    *
    * @param target individual address or xpub
    * @param cursor cursor value
    */
-  setCursor(target: string, cursor: string): Promise<void>;
+  setCursor(target: Address | XPub, cursor: string): Promise<void>;
   /**
    * Remove transaction from the storage
    */
@@ -232,15 +237,15 @@ export interface AddressbookFilter {
  * Addressbook Item details
  */
 export interface AddressbookItem {
-  id?: string | undefined;
   address: {
     type: 'plain' | 'xpub';
-    address: string;
+    address: Address | XPub;
     currentAddress?: string | undefined;
   };
   blockchain: number;
-  label?: string | undefined;
   createTimestamp?: Date | undefined;
+  id?: string | undefined;
+  label?: string | undefined;
   updateTimestamp?: Date | undefined;
 }
 
@@ -275,7 +280,7 @@ export interface XPubPosition {
   /**
    * Get next position at the xpub
    */
-  getNext(xpub: string): Promise<number>;
+  getNext(xpub: XPub): Promise<number>;
   /**
    * Set the current minimum position for the specified xpub. If the storage knows a larger position it stays on
    * that position, otherwise moves up to the specified.
@@ -283,12 +288,54 @@ export interface XPubPosition {
    * NOTE: It's the next position. I.e., if we have xpub with used address at position N and want to use then next
    * address then set it as N+1 here.
    */
-  setNextAddressAtLeast(xpub: string, pos: number): Promise<void>;
+  setNextAddressAtLeast(xpub: XPub, pos: number): Promise<void>;
   /**
    * Set the current known position for the specified xpub. If the storage knows a larger position it stays on
    * that position, otherwise moves up to the specified.
    */
-  setCurrentAddressAt(xpub: string, pos: number): Promise<void>;
+  setCurrentAddressAt(xpub: XPub, pos: number): Promise<void>;
+}
+
+/**
+ * Cached balance value
+ */
+export interface Balance {
+  /**
+   * Address
+   */
+  address: Address;
+  /**
+   * Amount encoded as a string
+   */
+  amount: string;
+  /**
+   * Asset (ETHER, BTC, or a ERC20 code)
+   */
+  asset: string;
+  /**
+   * BLockchain with balance
+   */
+  blockchain: number;
+  /**
+   * Timestamp when it was cached. Set automatically when added to the persistent state.
+   */
+  timestamp?: Date | undefined;
+}
+
+/**
+ * Manage current cached balances
+ */
+export interface Balances {
+  /**
+   * List all balances per address or xpub
+   * @param address address or xpub
+   */
+  list(address: Address | XPub): Promise<Balance[]>;
+  /**
+   * Remember a balance
+   * @param balance current value
+   */
+  set(balance: Balance): Promise<boolean>;
 }
 
 export interface PersistentState {
@@ -296,6 +343,10 @@ export interface PersistentState {
    * Manager Address Book
    */
   addressbook: Addressbook;
+  /**
+   * Manage current balance cache
+   */
+  balances: Balances;
   /**
    * Manage Transaction History
    */

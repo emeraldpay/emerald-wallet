@@ -1,4 +1,5 @@
 import { EntryId, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
+import { amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,
@@ -13,6 +14,7 @@ import {
   IUpdateWalletAction,
   IWalletCreatedAction,
   IWalletsLoaded,
+  InitAccountStateAction,
 } from './types';
 
 type Updater<T> = (source: T) => T;
@@ -23,6 +25,34 @@ export const INITIAL_STATE: IAccountsState = {
   seeds: [],
   wallets: [],
 };
+
+function onInitState(state: IAccountsState, { balances, entriesByAddress }: InitAccountStateAction): IAccountsState {
+  return {
+    ...state,
+    details: [
+      ...state.details,
+      ...balances.reduce<AccountDetails[]>((carry, { address, amount, blockchain }) => {
+        const index = state.details.findIndex((item) => item.address === address);
+
+        if (index > -1) {
+          return carry;
+        }
+
+        const { [address]: entries = [] } = entriesByAddress;
+
+        const details = entries
+          .filter((entry) => entry.blockchain === blockchain)
+          .map<AccountDetails>(({ blockchain, id }) => ({
+            address,
+            balance: amountFactory(blockchainIdToCode(blockchain))(amount).encode(),
+            entryId: id,
+          }));
+
+        return [...carry, ...details];
+      }, []),
+    ],
+  };
+}
 
 function onWalletCreated(state: IAccountsState, action: IWalletCreatedAction): IAccountsState {
   const { wallet } = action;
@@ -61,24 +91,25 @@ function onLoading(state: IAccountsState, action: ISetLoadingAction): IAccountsS
 
 function updateAccountDetails(
   state: IAccountsState,
-  accountId: EntryId,
+  address: string,
+  entryId: EntryId,
   update: Updater<AccountDetails>,
 ): IAccountsState {
   return produce(state, (draft) => {
-    const index = state.details.findIndex(({ entryId }) => entryId === accountId);
+    const index = state.details.findIndex((detail) => detail.entryId === entryId);
 
     if (index === -1) {
-      draft.details.push(update({ entryId: accountId }));
+      draft.details.push(update({ address, entryId }));
     } else {
-      draft.details[index] = update(draft.details[index]);
+      draft.details[index] = update({ ...draft.details[index], address });
     }
   });
 }
 
 function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
-  const { balance, entryId, utxo } = action.payload;
+  const { address, balance, entryId, utxo } = action.payload;
 
-  return updateAccountDetails(state, entryId, (account) => {
+  return updateAccountDetails(state, address, entryId, (account) => {
     const newUtxo = (utxo ?? []).filter(
       (utxo) => !(account.utxo ?? []).some((oldUtxo) => oldUtxo.txid === utxo.txid && oldUtxo.vout === utxo.vout),
     );
@@ -107,7 +138,7 @@ function onSetSeeds(state: IAccountsState, action: ISetSeedsAction): IAccountsSt
 }
 
 function onSetTxCount(state: IAccountsState, action: ISetTxCountAction): IAccountsState {
-  return updateAccountDetails(state, action.accountId, (account) => {
+  return updateAccountDetails(state, action.address, action.entryId, (account) => {
     return { ...account, txcount: action.value };
   });
 }
@@ -120,6 +151,8 @@ function onWalletUpdated(state: IAccountsState, action: IUpdateWalletAction): IA
 
 export function reducer(state: IAccountsState = INITIAL_STATE, action: AccountsAction): IAccountsState {
   switch (action.type) {
+    case ActionTypes.INIT_STATE:
+      return onInitState(state, action);
     case ActionTypes.CREATE_WALLET_SUCCESS:
       return onWalletCreated(state, action);
     case ActionTypes.HD_ACCOUNT_CREATED:

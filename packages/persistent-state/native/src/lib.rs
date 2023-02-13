@@ -13,6 +13,7 @@ mod pagination;
 mod commons;
 mod xpubpos;
 mod transaction_meta;
+mod balance;
 
 use neon::prelude::*;
 
@@ -38,6 +39,9 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
 
   cx.export_function("xpubpos_set_current", xpubpos::set_current)?;
   cx.export_function("xpubpos_get_next", xpubpos::get_next)?;
+
+  cx.export_function("balance_set", balance::set)?;
+  cx.export_function("balance_list", balance::list)?;
 
   Ok(())
 }
