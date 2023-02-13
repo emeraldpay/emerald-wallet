@@ -55,7 +55,7 @@ export function createServices(
 ): Services {
   const services = new Services();
 
-  services.add(new BalanceListener(ipcMain, webContents, apiAccess));
+  services.add(new BalanceListener(ipcMain, persistentState, webContents, apiAccess));
   services.add(new ConnStatus(ipcMain, webContents, apiAccess));
   services.add(new TxService(apiAccess, persistentState, vault, ipcMain, webContents, settings));
 

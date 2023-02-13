@@ -193,17 +193,16 @@ export function getAddressesBalance<T extends BigAmount>(state: IState, entryId:
   }
 
   if (isBitcoinEntry(entry)) {
-    return entryDetails
-      .map((details) => details.utxo)
-      .filter((utxo): utxo is BalanceUtxo[] => utxo != null)
-      .flat()
-      .reduce<AddressesBalance<T>>(
-        (carry, { address, value }) => ({
-          ...carry,
-          [address]: amountDecode(value).plus(carry[address] ?? zeroAmount),
-        }),
-        {},
-      );
+    return entryDetails.reduce<AddressesBalance<T>>((carry, { address, balance }) => {
+      if (balance == null) {
+        return carry;
+      }
+
+      return {
+        ...carry,
+        [address]: amountDecode(balance).plus(carry[address] ?? zeroAmount),
+      };
+    }, {});
   }
 
   if (isEthereumEntry(entry) && entry.address != null) {

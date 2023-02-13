@@ -1,5 +1,6 @@
 import { BlockchainCode } from './blockchains';
-import { CoinTicker } from './CoinTicker';
+import { CoinCode } from './coin';
+import { CoinTicker } from './coinTicker';
 import { HDPath } from './HDPath';
 
 /**
@@ -8,6 +9,7 @@ import { HDPath } from './HDPath';
 export default interface IBlockchainParams {
   chainId: number;
   code: BlockchainCode;
+  coin: CoinCode;
   coinTicker: CoinTicker;
   confirmations: number;
   decimals: number;

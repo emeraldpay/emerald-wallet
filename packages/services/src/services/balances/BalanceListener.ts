@@ -1,4 +1,12 @@
-import { BlockchainCode, IpcCommands, Logger, amountFactory } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  Blockchains,
+  IpcCommands,
+  Logger,
+  amountFactory,
+  blockchainCodeToId,
+} from '@emeraldwallet/core';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { AddressListener } from './AddressListener';
 import { EmeraldApiAccess } from '../..';
@@ -31,16 +39,23 @@ export class BalanceListener implements IService {
 
   private apiAccess: EmeraldApiAccess;
   private ipcMain: IpcMain;
+  private persistentState: PersistentStateManager;
   private webContents?: WebContents;
 
   private subscribers: Map<string, AddressListener> = new Map();
   private subscriptions: Subscription[] = [];
 
-  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess) {
+  constructor(
+    ipcMain: IpcMain,
+    persistentState: PersistentStateManager,
+    webContents: WebContents,
+    apiAccess: EmeraldApiAccess,
+  ) {
     this.id = 'BalanceIpcListener';
 
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
+    this.persistentState = persistentState;
     this.webContents = webContents;
   }
 
@@ -69,36 +84,46 @@ export class BalanceListener implements IService {
     this.start();
   }
 
-  subscribeBalance(entry: Subscription): void {
+  subscribeBalance(subscription: Subscription): void {
     const subscriber = this.apiAccess.newAddressListener();
 
-    const amountReader = amountFactory(entry.blockchain);
+    const amountReader = amountFactory(subscription.blockchain);
 
-    subscriber.subscribe(entry.blockchain, entry.address, (event) =>
-      this.webContents?.send(IpcCommands.STORE_DISPATCH, {
-        type: 'ACCOUNT/SET_BALANCE',
-        payload: {
-          entryId: entry.entryId,
-          balance: amountReader(event.balance).encode(),
-          utxo: event.utxo?.map((utxo) => ({
-            address: event.address,
-            txid: utxo.txid,
-            value: amountReader(utxo.value).encode(),
-            vout: utxo.vout,
-          })),
-        },
-      }),
+    subscriber.subscribe(subscription.blockchain, subscription.address, (event) =>
+      this.persistentState.balances
+        .set({
+          address: event.address,
+          amount: event.balance,
+          asset: Blockchains[subscription.blockchain].params.coin,
+          blockchain: blockchainCodeToId(subscription.blockchain),
+        })
+        .then(() =>
+          this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+            type: 'ACCOUNT/SET_BALANCE',
+            payload: {
+              address: event.address,
+              balance: amountReader(event.balance).encode(),
+              entryId: subscription.entryId,
+              utxo: event.utxo?.map((utxo) => ({
+                address: event.address,
+                txid: utxo.txid,
+                value: amountReader(utxo.value).encode(),
+                vout: utxo.vout,
+              })),
+            },
+        }),
+        ),
     );
 
     // can get multiple subscriptions for the same address, keep only last and cancel previous
-    const id = `${entry.entryId}/${entry.address}`;
+    const id = `${subscription.entryId}/${subscription.address}`;
 
     this.subscribers.get(id)?.stop();
     this.subscribers.set(id, subscriber);
   }
 
   startSubscription(): void {
-    this.subscriptions.forEach((entry) => this.subscribeBalance(entry));
+    this.subscriptions.forEach((subscription) => this.subscribeBalance(subscription));
   }
 
   setWebContents(webContents: WebContents): void {
@@ -123,9 +148,9 @@ export class BalanceListener implements IService {
       (subscription) => !isEqual(subscription, address, blockchain, entryId),
     );
 
-    const entry = { address, blockchain, entryId };
+    const subscription = { address, blockchain, entryId };
 
-    this.subscriptions.push(entry);
-    this.subscribeBalance(entry);
+    this.subscriptions.push(subscription);
+    this.subscribeBalance(subscription);
   }
 }

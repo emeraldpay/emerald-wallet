@@ -2,6 +2,7 @@ import { IpcCommands, Logger, SettingsOptions, TokenData, WalletApi } from '@eme
 import {
   BackendApiInvoker,
   RemoteAddressBook,
+  RemoteBalances,
   RemoteTxHistory,
   RemoteTxMeta,
   RemoteVault,
@@ -16,6 +17,7 @@ import {
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
+import { initBalancesState } from './cache/balances';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
@@ -26,15 +28,14 @@ const logger = Logger.forCategory('Store');
 
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
+  balances: RemoteBalances,
   txHistory: RemoteTxHistory,
   txMeta: RemoteTxMeta,
   vault: RemoteVault,
   xPubPos: RemoteXPubPosition,
 };
 
-const backendApi = new BackendApiInvoker();
-
-export const store = createStore(api, backendApi);
+export const store = createStore(api, new BackendApiInvoker());
 
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
@@ -110,34 +111,32 @@ function checkWalletUpdates(): void {
 function startSync(): void {
   logger.info('Start synchronization');
 
-  triggers
-    .onceModeSet(store)
-    .then(() => {
-      const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.code);
+  triggers.onceModeSet(store).then(() => {
+    const blockchains = settings.selectors.currentChains(store.getState());
 
-      logger.info('Configured to use chains', codes);
+    logger.info(`Configured to use blockchains: ${blockchains.map((chain) => chain.params.code).join(', ')}`);
 
-      return store.dispatch(accounts.actions.loadSeedsAction());
-    })
-    .then(() => store.dispatch(accounts.actions.loadWalletsAction()))
-    .then(() => {
-      const supported = settings.selectors.currentChains(store.getState());
+    store.dispatch(accounts.actions.loadSeedsAction());
+    store.dispatch(accounts.actions.loadWalletsAction());
 
-      const loadChains = supported.map(async (blockchain) => {
-        await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
-        await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
-      });
+    const loadChains = blockchains.map(async (blockchain) => {
+      await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
+      await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
+    });
 
-      return Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
-    })
-    .then(() => {
-      logger.info('Initial synchronization finished');
+    Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
 
-      store.dispatch(application.actions.connecting(false));
-    })
-    .catch((exception) => logger.error('Failed to start synchronization', exception));
+    logger.info('Initial synchronization finished');
+
+    store.dispatch(application.actions.connecting(false));
+  });
 }
+
+triggers.onceBlockchainConnected(store).then(startSync);
+
+triggers.onceAccountsLoaded(store).then(() => initBalancesState(api, store));
+
+ipcRenderer.send(IpcCommands.EMERALD_READY);
 
 export function startStore(): void {
   try {
@@ -159,7 +158,3 @@ export function startStore(): void {
   getInitialScreen();
   checkWalletUpdates();
 }
-
-triggers.onceBlockchainConnected(store).then(startSync);
-
-ipcRenderer.send(IpcCommands.EMERALD_READY);

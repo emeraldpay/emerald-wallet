@@ -49,6 +49,10 @@ export enum IpcCommands {
   ADDRESS_BOOK_QUERY = 'address-book-query',
   ADDRESS_BOOK_UPDATE = 'address-book-update',
 
+  // Balances
+  BALANCES_LIST = 'balances-list',
+  BALANCES_SET = 'balances-set',
+
   // Transaction history
   LOAD_TX_HISTORY = 'load-tx-history',
   SUBMIT_TX_HISTORY = 'submit-tx-history',

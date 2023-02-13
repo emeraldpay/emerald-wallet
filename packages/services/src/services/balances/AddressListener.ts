@@ -1,6 +1,6 @@
 import { AddressBalance, AssetCode, BalanceRequest, Publisher, Utxo } from '@emeraldpay/api';
 import { BlockchainClient } from '@emeraldpay/api-node';
-import { BlockchainCode, Logger, blockchainCodeToId, isBitcoin, isEthereum } from '@emeraldwallet/core';
+import { BlockchainCode, Logger, blockchainCodeToId, isBitcoin, isEthereum, Blockchains } from '@emeraldwallet/core';
 
 interface IAccountStatusEvent {
   address: string;
@@ -46,17 +46,16 @@ export class AddressListener {
       });
   }
 
-  private makeRequest(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): BalanceRequest {
-    const isEthereumChain = isEthereum(chainCode);
-    const isBitcoinChain = isBitcoin(chainCode);
+  private makeRequest(blockchainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): BalanceRequest {
+    const { coin } = Blockchains[blockchainCode].params;
 
     return {
       address: addresses,
       asset: {
-        blockchain: blockchainCodeToId(chainCode),
-        code: isEthereumChain ? token ?? 'ETHER' : 'BTC',
+        blockchain: blockchainCodeToId(blockchainCode),
+        code: isEthereum(blockchainCode) ? token ?? coin : coin,
       },
-      includeUtxo: isBitcoinChain,
+      includeUtxo: isBitcoin(blockchainCode),
     };
   }
 }

@@ -2,7 +2,8 @@ import { BigAmount, CreateAmount, Unit, Units } from '@emeraldpay/bigamount';
 import { Satoshi, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { LedgerApp } from '@emeraldpay/emerald-vault-core';
 import { Bitcoin } from './Bitcoin';
-import { CoinTicker } from './CoinTicker';
+import { Coin } from './coin';
+import { CoinTicker } from './coinTicker';
 import { Ethereum, EthereumParams } from './ethereum';
 import { HDPath } from './HDPath';
 import { IBlockchain } from './IBlockchain';
@@ -19,18 +20,34 @@ export enum BlockchainCode {
   Unknown = 'unknown',
 }
 
-export const Blockchains: { [key: string]: IBlockchain } = {
+export const Blockchains: Record<BlockchainCode | string, IBlockchain> = {
   [BlockchainCode.ETH]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1, HDPath.default().forCoin(BlockchainCode.ETH), 12, true),
+    new EthereumParams(
+      BlockchainCode.ETH,
+      Coin.ETHER,
+      CoinTicker.ETH,
+      1,
+      HDPath.default().forCoin(BlockchainCode.ETH),
+      12,
+      true,
+    ),
     'Ethereum',
   ),
   [BlockchainCode.ETC]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, HDPath.default().forCoin(BlockchainCode.ETC), 250),
+    new EthereumParams(
+      BlockchainCode.ETC,
+      Coin.ETHER,
+      CoinTicker.ETC,
+      61,
+      HDPath.default().forCoin(BlockchainCode.ETC),
+      250,
+    ),
     'Ethereum Classic',
   ),
   [BlockchainCode.Goerli]: new Ethereum(
     new EthereumParams(
       BlockchainCode.Goerli,
+      Coin.ETHER,
       CoinTicker.ETG,
       5,
       HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
@@ -42,6 +59,7 @@ export const Blockchains: { [key: string]: IBlockchain } = {
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
     code: BlockchainCode.BTC,
+    coin: Coin.BTC,
     coinTicker: CoinTicker.BTC,
     decimals: 8,
     hdPath: HDPath.default().forPurpose(84),
@@ -50,6 +68,7 @@ export const Blockchains: { [key: string]: IBlockchain } = {
   [BlockchainCode.TestBTC]: new Bitcoin({
     chainId: 0,
     code: BlockchainCode.TestBTC,
+    coin: Coin.BTC,
     coinTicker: CoinTicker.TESTBTC,
     decimals: 8,
     hdPath: HDPath.default().forPurpose(84).forCoin(1),

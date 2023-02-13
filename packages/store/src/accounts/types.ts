@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { AddressRole } from '@emeraldpay/emerald-vault-core/lib/types';
-import { BalanceUtxo, BlockchainCode, TokenData } from '@emeraldwallet/core';
+import { AddressRole, EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { BalanceUtxo, BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -19,8 +18,9 @@ export interface BalanceValueConverted {
 }
 
 export interface AccountDetails {
-  entryId: EntryId;
+  address: string;
   balance?: string;
+  entryId: EntryId;
   txcount?: number;
   utxo?: BalanceUtxo[];
 }
@@ -33,6 +33,7 @@ export interface IAccountsState {
 }
 
 export interface IBalanceUpdate {
+  address: string;
   entryId: EntryId;
   balance: string;
   utxo?: BalanceUtxo[];
@@ -46,6 +47,7 @@ export enum ActionTypes {
   FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED',
+  INIT_STATE = 'ACCOUNT/INIT_STATE',
   LOADING = 'ACCOUNT/LOADING',
   LOAD_SEEDS = 'ACCOUNT/LOAD_SEEDS',
   LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
@@ -59,6 +61,12 @@ export enum ActionTypes {
   SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE',
   TRY_UNLOCK_SEED = 'ACCOUNT/TRY_UNLOCK_SEED',
   WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
+}
+
+export interface InitAccountStateAction {
+  type: ActionTypes.INIT_STATE;
+  balances: PersistentState.Balance[];
+  entriesByAddress: Record<string, WalletEntry[]>;
 }
 
 export interface ILoadWalletsAction {
@@ -121,7 +129,8 @@ export interface ICreateWalletAction {
 
 export interface ISetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
-  accountId: EntryId;
+  address: string;
+  entryId: EntryId;
   value: number;
 }
 
@@ -176,6 +185,7 @@ export interface INextAddress {
 }
 
 export type AccountsAction =
+  | InitAccountStateAction
   | ILoadWalletsAction
   | IFetchHdPathsAction
   | IUpdateWalletAction

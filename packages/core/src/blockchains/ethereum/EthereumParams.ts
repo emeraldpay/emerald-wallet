@@ -1,5 +1,6 @@
 import { BlockchainCode } from '../blockchains';
-import { CoinTicker } from '../CoinTicker';
+import { CoinCode } from '../coin';
+import { CoinTicker } from '../coinTicker';
 import { HDPath } from '../HDPath';
 import IBlockchainParams from '../IBlockchainParams';
 
@@ -8,6 +9,7 @@ export class EthereumParams implements IBlockchainParams {
 
   chainId: number;
   code: BlockchainCode;
+  coin: CoinCode;
   coinTicker: CoinTicker;
   confirmations: number;
   eip1559: boolean;
@@ -15,6 +17,7 @@ export class EthereumParams implements IBlockchainParams {
 
   constructor(
     code: BlockchainCode,
+    coin: CoinCode,
     coinTicker: CoinTicker,
     chainId: number,
     hdPath: HDPath,
@@ -22,6 +25,7 @@ export class EthereumParams implements IBlockchainParams {
     eip1559 = false,
   ) {
     this.code = code;
+    this.coin = coin;
     this.coinTicker = coinTicker;
     this.chainId = chainId;
     this.hdPath = hdPath;

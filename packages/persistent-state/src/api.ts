@@ -1,5 +1,6 @@
 import { PersistentState as PersistentStateBase } from '@emeraldwallet/core';
 import { Addressbook } from './addressbook';
+import { Balances } from './balance';
 import { TxHistory } from './txhistory';
 import { TxMeta } from './txmeta';
 import { XPubPosition } from './xpubpos';
@@ -74,6 +75,7 @@ export class PersistentStateManager implements PersistentStateBase.PersistentSta
   readonly txhistory: PersistentStateBase.TxHistory = new TxHistory(this);
   readonly txmeta: PersistentStateBase.TxMeta = new TxMeta(this);
   readonly xpubpos: PersistentStateBase.XPubPosition = new XPubPosition(this);
+  readonly balances: PersistentStateBase.Balances = new Balances(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.
