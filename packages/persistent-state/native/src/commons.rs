@@ -1,5 +1,5 @@
 use chrono::{DateTime, TimeZone, Utc};
-use neon::prelude::{FunctionContext, JsString};
+use neon::prelude::{FunctionContext, JsNumber, JsString};
 use crate::errors::StateManagerError;
 
 pub fn if_not_empty(s: String) -> Option<String> {
@@ -46,6 +46,22 @@ pub fn args_get_str(cx: &mut FunctionContext, pos: i32) -> Option<String> {
     Some(v) => {
       if v.is_a::<JsString, _>(cx) {
         match v.downcast::<JsString, _>(cx) {
+          Ok(v) => Some(v.value(cx)),
+          Err(_) => None,
+        }
+      } else {
+        None
+      }
+    }
+  }
+}
+
+pub fn args_get_number(cx: &mut FunctionContext, pos: i32) -> Option<f64> {
+  match cx.argument_opt(pos) {
+    None => None,
+    Some(v) => {
+      if v.is_a::<JsNumber, _>(cx) {
+        match v.downcast::<JsNumber, _>(cx) {
           Ok(v) => Some(v.value(cx)),
           Err(_) => None,
         }

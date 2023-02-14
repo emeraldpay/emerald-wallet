@@ -338,6 +338,36 @@ export interface Balances {
   set(balance: Balance): Promise<boolean>;
 }
 
+/**
+ * A generic cache for data stored between walelt runs
+ */
+export interface Cache {
+
+  /**
+   * Put a value into cache
+   *
+   * @param id id for data
+   * @param value value (ex. a JSON)
+   * @param ttl_seconds (optionally) a Time To Live for that value. Note that the cache purges the data only occasionally and data may live longer in the cache
+   */
+  put(id: string, value: string, ttl_seconds?: number | undefined): Promise<void>;
+
+  /**
+   * Get known value. Return null if cache has no `value` for the specified `id`
+   *
+   * @param id id for the data
+   */
+  get(id: string): Promise<string | null>;
+
+  /**
+   * Remove a value for the specified `id` from the cache
+   *
+   * @param id
+   */
+  evict(id: string): Promise<void>;
+
+}
+
 export interface PersistentState {
   /**
    * Manager Address Book
@@ -359,4 +389,9 @@ export interface PersistentState {
    * Manage XPub position
    */
   xpubpos: XPubPosition;
+
+  /**
+   * Generic cache
+   */
+  cache: Cache;
 }

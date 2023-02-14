@@ -14,6 +14,7 @@ mod commons;
 mod xpubpos;
 mod transaction_meta;
 mod balance;
+mod cache;
 
 use neon::prelude::*;
 
@@ -42,6 +43,10 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
 
   cx.export_function("balance_set", balance::set)?;
   cx.export_function("balance_list", balance::list)?;
+
+  cx.export_function("cache_get", cache::get)?;
+  cx.export_function("cache_put", cache::put)?;
+  cx.export_function("cache_evict", cache::evict)?;
 
   Ok(())
 }
