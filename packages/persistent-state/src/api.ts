@@ -4,6 +4,7 @@ import { Balances } from './balance';
 import { TxHistory } from './txhistory';
 import { TxMeta } from './txmeta';
 import { XPubPosition } from './xpubpos';
+import { Cache } from './cache';
 
 export type StatusOk<T> = {
   succeeded: true;
@@ -76,6 +77,7 @@ export class PersistentStateManager implements PersistentStateBase.PersistentSta
   readonly txmeta: PersistentStateBase.TxMeta = new TxMeta(this);
   readonly xpubpos: PersistentStateBase.XPubPosition = new XPubPosition(this);
   readonly balances: PersistentStateBase.Balances = new Balances(this);
+  readonly cache: PersistentStateBase.Cache = new Cache(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.
