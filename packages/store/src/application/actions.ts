@@ -26,9 +26,7 @@ export function connecting(value: boolean): ConnectingAction {
 }
 
 export function getVersions(): Dispatched<Versions> {
-  return () => {
-    return ipcRenderer.invoke(IpcCommands.GET_VERSION);
-  };
+  return () => ipcRenderer.invoke(IpcCommands.GET_VERSION);
 }
 
 export function readConfig(): Dispatched<void> {
@@ -72,4 +70,8 @@ export function setTokens(tokens: TokenData[]): Dispatched<void, SetAssetsAction
       payload: tokens,
     });
   };
+}
+
+export function fsReadFile(filePath: string): Dispatched<Uint8Array | null> {
+  return () => ipcRenderer.invoke(IpcCommands.FS_READ_FILE, filePath);
 }

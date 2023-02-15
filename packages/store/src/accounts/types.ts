@@ -1,5 +1,13 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { AddressRole, EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import {
+  AddressRole,
+  EntryId,
+  IconDetails,
+  SeedDescription,
+  Uuid,
+  Wallet,
+  WalletEntry,
+} from '@emeraldpay/emerald-vault-core';
 import { BalanceUtxo, BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
@@ -27,6 +35,7 @@ export interface AccountDetails {
 
 export interface IAccountsState {
   details: AccountDetails[];
+  icons: Record<string, string | null>;
   loading: boolean;
   seeds: SeedDescription[];
   wallets: Wallet[];
@@ -58,6 +67,8 @@ export enum ActionTypes {
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_SEEDS = 'ACCOUNT/SET_SEEDS',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
+  SET_WALLET_ICONS = 'ACCOUNT/SET_WALLET_ICONS',
+  SET_WALLET_ICONS_CACHE = 'ACCOUNT/SET_WALLET_ICONS_CACHE',
   SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE',
   TRY_UNLOCK_SEED = 'ACCOUNT/TRY_UNLOCK_SEED',
   WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
@@ -184,6 +195,11 @@ export interface INextAddress {
   addressRole: AddressRole;
 }
 
+export interface SetWalletIconsAction {
+  type: ActionTypes.SET_WALLET_ICONS;
+  icons: Record<string, string | null>;
+}
+
 export type AccountsAction =
   | InitAccountStateAction
   | ILoadWalletsAction
@@ -200,4 +216,5 @@ export type AccountsAction =
   | ISetSeedsAction
   | PendingBalanceAction
   | ISubWalletBalance
-  | INextAddress;
+  | INextAddress
+  | SetWalletIconsAction;

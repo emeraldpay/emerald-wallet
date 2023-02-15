@@ -39,12 +39,20 @@ export function setupVaultIpc(vault: IEmeraldVault): void {
     return vault.exportRawPk(entryId, password);
   });
 
+  ipcMain.handle(IpcCommands.VAULT_EXTRACT_SIGNER, (event, message: UnsignedMessage, signature: string) => {
+    return vault.extractMessageSigner(message, signature);
+  });
+
   ipcMain.handle(IpcCommands.VAULT_GENERATE_MNEMONIC, (event, size: number) => {
     return vault.generateMnemonic(size);
   });
 
   ipcMain.handle(IpcCommands.VAULT_GET_CONNECTED_HWDETAILS, () => {
     return vault.getConnectedHWDetails();
+  });
+
+  ipcMain.handle(IpcCommands.VAULT_GET_ICON, (event, walletId: Uuid) => {
+    return vault.getIcon(walletId);
   });
 
   ipcMain.handle(IpcCommands.VAULT_GET_ODD_PASSWORD_ITEMS, () => {
@@ -77,6 +85,10 @@ export function setupVaultIpc(vault: IEmeraldVault): void {
       return vault.listEntryAddresses(id, role, start, limit);
     },
   );
+
+  ipcMain.handle(IpcCommands.VAULT_LIST_ICONS, () => {
+    return vault.iconsList();
+  });
 
   ipcMain.handle(IpcCommands.VAULT_LIST_SEEDS, () => {
     return vault.listSeeds();
@@ -111,6 +123,10 @@ export function setupVaultIpc(vault: IEmeraldVault): void {
 
   ipcMain.handle(IpcCommands.VAULT_SET_ENTRY_RECEIVE_DISABLED, (event, entryFullId: EntryId, disabled: boolean) => {
     return vault.setEntryReceiveDisabled(entryFullId, disabled);
+  });
+
+  ipcMain.handle(IpcCommands.VAULT_SET_ICON, (event, walletId: Uuid, icon: ArrayBuffer | Uint8Array | null) => {
+    return vault.setIcon(walletId, icon);
   });
 
   ipcMain.handle(IpcCommands.VAULT_SET_STATE, (event, state: WalletState) => {

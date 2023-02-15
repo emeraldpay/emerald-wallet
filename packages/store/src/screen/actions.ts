@@ -1,6 +1,7 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
   ActionTypes,
+  Dialogs,
   ICloseNotificationAction,
   IDialogAction,
   IErrorAction,
@@ -105,17 +106,18 @@ export function openTxReceipt(hash: string): IOpenLinkAction {
   return openLink(`https://receipt.emerald.cash/tx/${hash}`);
 }
 
-export function showDialog(name: string): IDialogAction {
+export function showDialog(name: Dialogs, options?: unknown): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
-    value: name,
+    name,
+    options,
   };
 }
 
 export function closeDialog(): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
-    value: null,
+    name: null,
   };
 }
 

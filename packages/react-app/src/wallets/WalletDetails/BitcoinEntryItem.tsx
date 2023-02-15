@@ -5,6 +5,7 @@ import { IState, accounts } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
@@ -14,7 +15,10 @@ const useStyles = makeStyles((theme) =>
     container: {
       alignItems: 'start',
       display: 'flex',
-      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+    firstItem: {
+      marginTop: 0,
     },
     icon: {
       marginRight: theme.spacing(),
@@ -43,6 +47,7 @@ const useStyles = makeStyles((theme) =>
 
 interface OwnProps {
   entry: BitcoinEntry;
+  firstItem?: boolean;
   walletId: string;
 }
 
@@ -51,7 +56,7 @@ interface StateProps {
   blockchainCode: BlockchainCode;
 }
 
-const Component: React.FC<StateProps & OwnProps> = ({ balance, blockchainCode }) => {
+const BitcoinEntryItem: React.FC<StateProps & OwnProps> = ({ balance, blockchainCode, firstItem = false }) => {
   const styles = useStyles();
 
   const classes = {
@@ -62,7 +67,7 @@ const Component: React.FC<StateProps & OwnProps> = ({ balance, blockchainCode })
   const blockchain = Blockchains[blockchainCode];
 
   return (
-    <div className={styles.container}>
+    <div className={classNames(styles.container, firstItem ? styles.firstItem : null)}>
       <div className={styles.icon}>
         <CoinAvatar blockchain={blockchainCode} />
       </div>
@@ -86,4 +91,4 @@ export default connect((state: IState, ownProps: OwnProps): StateProps => {
     balance,
     blockchainCode,
   };
-})(Component);
+})(BitcoinEntryItem);

@@ -1,12 +1,12 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
-import { Balance, HashIcon, Theme } from '@emeraldwallet/ui';
+import { Balance, HashIcon } from '@emeraldwallet/ui';
 import { Button, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles<typeof Theme>((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       padding: theme.spacing(),
@@ -16,6 +16,11 @@ const useStyles = makeStyles<typeof Theme>((theme) =>
       cursor: 'pointer',
       paddingLeft: 16,
       paddingTop: 24,
+    },
+    walletIconImage: {
+      display: 'inline-block',
+      height: 100,
+      width: 100,
     },
     headerAction: {
       width: 'auto',
@@ -69,8 +74,9 @@ interface OwnProps {
 }
 
 interface StateProps {
-  total: IBalanceValue | undefined;
   assets: IBalanceValue[];
+  total: IBalanceValue | undefined;
+  walletIcon?: string | null;
 }
 
 interface DispatchProps {
@@ -82,6 +88,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
   assets,
   total,
   wallet,
+  walletIcon,
   onReceive,
   onSend,
   openWallet,
@@ -108,7 +115,11 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
       <CardContent>
         <Grid container>
           <Grid item className={styles.walletIcon} xs={2}>
-            <HashIcon value={`WALLET/${wallet.id}`} size={100} />
+            {walletIcon == null ? (
+              <HashIcon value={`WALLET/${wallet.id}`} size={100} />
+            ) : (
+              <img alt="Wallet Icon" className={styles.walletIconImage} src={`data:image/png;base64,${walletIcon}`} />
+            )}
           </Grid>
           <Grid item onClick={onDetails} xs={7}>
             <Grid container>
@@ -144,22 +155,26 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, ownProps.wallet);
+  (state, { wallet }) => {
+    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet);
     const total: IBalanceValue | undefined = accounts.selectors.fiatTotalBalance(state, assets);
 
-    return { assets, total };
+    return { assets, total, walletIcon: state.accounts.icons[wallet.id] };
   },
-  (dispatch, ownProps) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, { wallet }) => ({
+    getWalletIcon() {
+      return dispatch(accounts.actions.getWalletIcon(wallet.id));
+    },
     onReceive(event) {
       event.stopPropagation();
 
-      dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.wallet.id));
+      dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, wallet.id));
     },
     onSend(event) {
       event.stopPropagation();
 
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.wallet.id, null, true));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, wallet.id, null, true));
     },
   }),
 )(WalletItem);

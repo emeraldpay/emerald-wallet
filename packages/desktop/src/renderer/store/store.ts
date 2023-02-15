@@ -119,6 +119,23 @@ function startSync(): void {
     store.dispatch(accounts.actions.loadSeedsAction());
     store.dispatch(accounts.actions.loadWalletsAction());
 
+    RemoteVault.iconsList().then((iconDetails) => {
+      Promise.all(iconDetails.map(async ({ entry: { id } }) => ({ id, icon: await RemoteVault.getIcon(id) }))).then(
+        (walletIcons) =>
+          store.dispatch(
+            accounts.actions.setWalletIcons(
+              walletIcons.reduce(
+                (carry, { id, icon }) => ({
+                  ...carry,
+                  [id]: icon == null ? null : Buffer.from(icon).toString('base64'),
+                }),
+                {},
+              ),
+            ),
+          ),
+      );
+    });
+
     const loadChains = blockchains.map(async (blockchain) => {
       await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
       await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));

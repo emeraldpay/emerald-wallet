@@ -1,7 +1,7 @@
 import { EthereumEntry, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts } from '@emeraldwallet/store';
 import { HashIcon } from '@emeraldwallet/ui';
-import { Box, createStyles, makeStyles } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import BitcoinEntryItem from './BitcoinEntryItem';
@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) =>
       cursor: 'pointer',
       userSelect: 'none',
     },
+    walletIconImage: {
+      display: 'inline-block',
+      height: 100,
+      width: 100,
+    },
   }),
 );
 
@@ -32,9 +37,10 @@ interface OwnProps {
 
 interface StateProps {
   wallet?: Wallet;
+  walletIcon?: string | null;
 }
 
-const WalletBalance: React.FC<OwnProps & StateProps> = ({ wallet }) => {
+const WalletBalance: React.FC<OwnProps & StateProps> = ({ wallet, walletIcon }) => {
   const styles = useStyles();
 
   const entriesByBlockchain = React.useMemo(
@@ -59,22 +65,24 @@ const WalletBalance: React.FC<OwnProps & StateProps> = ({ wallet }) => {
   );
 
   const renderEntry = React.useCallback(
-    (entries: WalletEntry[]): React.ReactElement => {
+    (entries: WalletEntry[], index: number): React.ReactElement => {
       if (wallet != null) {
         const [entry] = entries;
 
         if (isBitcoinEntry(entry)) {
-          return <BitcoinEntryItem walletId={wallet.id} entry={entry} key={entry.id} />;
+          return <BitcoinEntryItem key={entry.id} entry={entry} firstItem={index === 0} walletId={wallet.id} />;
         }
 
         const ethereumEntries = entries.filter((item): item is EthereumEntry => isEthereumEntry(item));
 
         if (ethereumEntries.length > 0) {
-          return <EthereumEntryItem walletId={wallet.id} entries={ethereumEntries} key={entry.id} />;
+          return (
+            <EthereumEntryItem key={entry.id} entries={ethereumEntries} firstItem={index === 0} walletId={wallet.id} />
+          );
         }
       }
 
-      return <Box />;
+      return <></>;
     },
     [wallet],
   );
@@ -82,16 +90,21 @@ const WalletBalance: React.FC<OwnProps & StateProps> = ({ wallet }) => {
   return (
     <div className={styles.container}>
       <div className={styles.wallet}>
-        <HashIcon className={styles.walletIcon} value={'WALLET/' + wallet?.id} size={100} />
+        {walletIcon == null ? (
+          <HashIcon className={styles.walletIcon} value={`WALLET/${wallet?.id}`} size={100} />
+        ) : (
+          <img alt="Wallet Icon" className={styles.walletIconImage} src={`data:image/png;base64,${walletIcon}`} />
+        )}
       </div>
       <div className={styles.entries}>
         {entriesByBlockchain.map(renderEntry)}
-        {receiveDisabledEntries.map((entry) => renderEntry([entry]))}
+        {receiveDisabledEntries.map((entry, index) => renderEntry([entry], index))}
       </div>
     </div>
   );
 };
 
-export default connect<StateProps, {}, OwnProps, IState>((state, ownProps) => ({
-  wallet: accounts.selectors.findWallet(state, ownProps.walletId),
+export default connect<StateProps, unknown, OwnProps, IState>((state, { walletId }) => ({
+  wallet: accounts.selectors.findWallet(state, walletId),
+  walletIcon: state.accounts.icons[walletId],
 }))(WalletBalance);

@@ -65,6 +65,7 @@ interface StateProps {
   assets: IBalanceValue[];
   tokenRegistry: TokenRegistry;
   wallet?: Wallet;
+  walletIcon?: string | null;
 }
 
 interface DispatchProps {
@@ -92,6 +93,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   assets,
   tokenRegistry,
   wallet,
+  walletIcon,
   getXPubPositionalAddress,
   onCancel,
   onSave,
@@ -145,6 +147,8 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   React.useEffect(() => {
+    let mounted = true;
+
     const accepts = accepted.filter((item) => item.blockchain === currentBlockchain && item.token === currentToken);
 
     Promise.all(
@@ -158,13 +162,19 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
         return accept.addresses;
       }),
     ).then((addresses) => {
-      const uniqueAddresses = addresses
-        .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
-        .filter(distinct);
+      if (mounted) {
+        const uniqueAddresses = addresses
+          .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
+          .filter(distinct);
 
-      setAvailableAddresses(uniqueAddresses);
-      setCurrentAddress(uniqueAddresses[0]);
+        setAvailableAddresses(uniqueAddresses);
+        setCurrentAddress(uniqueAddresses[0]);
+      }
     });
+
+    return () => {
+      mounted = false;
+    };
   }, [accepted, currentBlockchain, currentToken, getXPubPositionalAddress]);
 
   let qrCodeValue = currentAddress;
@@ -184,7 +194,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   return (
     <Page title="Request Cryptocurrency" leftIcon={<Back onClick={onCancel} />}>
-      {wallet != null && <WalletReference wallet={wallet} assets={assets} />}
+      {wallet != null && <WalletReference assets={assets} wallet={wallet} walletIcon={walletIcon} />}
       <Grid container>
         <Grid item xs={8}>
           <Grid container className={styles.form}>
@@ -274,8 +284,8 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+  (state, { walletId }) => {
+    const wallet = accounts.selectors.findWallet(state, walletId);
     const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
@@ -343,19 +353,20 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       assets,
       tokenRegistry,
       wallet,
+      walletIcon: state.accounts.icons[walletId],
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => ({
+  (dispatch: any, { walletId }) => ({
     getXPubPositionalAddress(entryId, xPub, role) {
       return dispatch(accounts.actions.getXPubPositionalAddress(entryId, xPub, role));
     },
     onCancel() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
     },
     onSave(entryId: EntryId) {
       dispatch(accounts.actions.nextAddress(entryId, 'receive'));
-      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
     },
   }),
 )(ReceiveScreen);

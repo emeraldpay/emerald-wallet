@@ -1,1 +1,1 @@
-export { default, EmeraldDialogs } from './Dialog';
+export { default } from './Dialog';

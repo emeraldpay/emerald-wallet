@@ -14,7 +14,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { EmeraldDialogs } from '../../screen/Dialog';
 
 interface StateProps {
   walletsCount: number;
@@ -122,7 +121,7 @@ export default connect<StateProps, DispatchProps, unknown, IState>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     gotoAbout() {
-      dispatch(screen.actions.showDialog(EmeraldDialogs.ABOUT));
+      dispatch(screen.actions.showDialog(screen.Dialogs.ABOUT));
     },
     gotoAddressBook() {
       dispatch(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));

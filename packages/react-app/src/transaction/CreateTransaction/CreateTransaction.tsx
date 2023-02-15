@@ -37,7 +37,6 @@ import { Back, Page } from '@emeraldwallet/ui';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { EmeraldDialogs } from '../../app/screen/Dialog';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTransaction';
@@ -525,7 +524,7 @@ async function sign(
 
   if (password == null) {
     await dispatch(hwkey.actions.setWatch(false));
-    await dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
+    await dispatch(screen.actions.showDialog(screen.Dialogs.SIGN_TX));
   }
 
   return dispatch(transaction.actions.signTransaction(entryId, tx.build(), password));

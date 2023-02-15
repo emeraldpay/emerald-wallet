@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises';
 import * as os from 'os';
 import {
   AddressBalance,
@@ -175,4 +176,14 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
   ipcMain.handle(IpcCommands.RESOLVE_NAME, (event, blockchain: BlockchainCode, name: string) =>
     app.rpc.chain(blockchain).ethers.resolveName(name),
   );
+
+  ipcMain.handle(IpcCommands.FS_READ_FILE, async (event, filePath: string) => {
+    try {
+      const content = await readFile(filePath);
+
+      return new Uint8Array(content);
+    } catch (exception) {
+      return null;
+    }
+  });
 }

@@ -7,6 +7,7 @@ import {
   Settings as SettingsIcon,
   AddCircleOutline as SetupIcon,
   BorderColor as SignIcon,
+  AccountBalanceWallet as WalletIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -16,6 +17,7 @@ interface DispatchProps {
   onAddAddress(): void;
   onShowDetails(): void;
   onSignMessage(): void;
+  onWalletSettings(): void;
 }
 
 interface OwnProps {
@@ -34,6 +36,7 @@ const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
   onAddAddress,
   onShowDetails,
   onSignMessage,
+  onWalletSettings,
 }) => {
   const [menuElement, setMenuElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -62,6 +65,17 @@ const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
             <DetailsIcon fontSize="small" />
           </ListItemIcon>
           <Typography variant="inherit">Wallet Details</Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onCloseMenu();
+            onWalletSettings();
+          }}
+        >
+          <ListItemIcon>
+            <WalletIcon fontSize="small" />
+          </ListItemIcon>
+          <Typography variant="inherit">Wallet Settings</Typography>
         </MenuItem>
         <MenuItem disabled={!hasHDAccount} onClick={onAddAccount}>
           <ListItemIcon>
@@ -101,6 +115,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     onSignMessage() {
       dispatch(screen.actions.gotoScreen(screen.Pages.SIGN_MESSAGE, ownProps.walletId));
+    },
+    onWalletSettings() {
+      dispatch(screen.actions.showDialog(screen.Dialogs.WALLET_SETTINGS, ownProps.walletId));
     },
   }),
 )(WalletMenu);

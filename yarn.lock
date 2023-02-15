@@ -3175,20 +3175,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz":
+"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/3ad0fd15/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz":
   version: 0.11.0-dev
-  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz"
-  checksum: 1c2df229bb26c8966a2b301518cd0fe554e36094506c233485654c998386641ec6f1eb55c979e59ffcca83562b52f91169f7aaf4fe9648afdba66c1a0ea32fa7
+  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/3ad0fd15/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz"
+  checksum: 6aac3398858b8577541acb81bd987433312c3efc0a066f14622ef692a20e8b5001e5a640660b4dc74c927076f04abdb0741f4d8e9e43d6b390c0b766773e5926
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz":
+"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/3ad0fd15/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz":
   version: 0.11.0-dev
-  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/a3406fa7/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz"
+  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/3ad0fd15/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz"
   dependencies:
     "@emeraldpay/emerald-vault-core": 0.11.0-dev
     "@emeraldpay/neon-frame": 0.1.1
-  checksum: 1d5245502edb15eaacd57535bb292787bb0bf4016b48d68c75cd975e93f668731d3eb02994f3946c10ee174c2f788b6ab2131342b31c5658dda431452f25981c
+  checksum: 04bae6fc203253da592cb7e2d23cb110708bb9699cc5a9073fbd6e4e973f3122afba55c7872229faabe909dea065895d539f670fcc47a8622d2488e17c675aba
   languageName: node
   linkType: hard
 

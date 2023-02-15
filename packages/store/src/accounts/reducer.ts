@@ -15,12 +15,14 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded,
   InitAccountStateAction,
+  SetWalletIconsAction,
 } from './types';
 
 type Updater<T> = (source: T) => T;
 
 export const INITIAL_STATE: IAccountsState = {
   details: [],
+  icons: {},
   loading: true,
   seeds: [],
   wallets: [],
@@ -143,6 +145,10 @@ function onSetTxCount(state: IAccountsState, action: ISetTxCountAction): IAccoun
   });
 }
 
+function onSetWalletIcons(state: IAccountsState, { icons }: SetWalletIconsAction): IAccountsState {
+  return { ...state, icons };
+}
+
 function onWalletUpdated(state: IAccountsState, action: IUpdateWalletAction): IAccountsState {
   const { walletId, name } = action.payload;
 
@@ -167,6 +173,8 @@ export function reducer(state: IAccountsState = INITIAL_STATE, action: AccountsA
       return onSetSeeds(state, action);
     case ActionTypes.SET_TXCOUNT:
       return onSetTxCount(state, action);
+    case ActionTypes.SET_WALLET_ICONS:
+      return onSetWalletIcons(state, action);
     case ActionTypes.WALLET_UPDATED:
       return onWalletUpdated(state, action);
     default:

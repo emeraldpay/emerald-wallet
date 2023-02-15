@@ -1,8 +1,8 @@
-import { IState } from '../types';
 import { ScreenState } from './types';
+import { IState } from '../types';
 
 export function getCurrentDialog(state: IState): ScreenState {
-  return { dialog: state.screen.dialog };
+  return { dialog: state.screen.dialog, dialogOptions: state.screen.dialogOptions };
 }
 
 export function getCurrentScreen(state: IState): ScreenState {

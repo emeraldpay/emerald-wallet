@@ -35,6 +35,7 @@ interface StateProps {
   assets: IBalanceValue[];
   balances: AccountBalance[];
   wallet?: Wallet;
+  walletIcon?: string | null;
 }
 
 interface DispatchProps {
@@ -46,10 +47,11 @@ function acceptAccount({ balance }: AccountBalance): boolean {
   return balance.isPositive();
 }
 
-const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
+const SelectAccount: React.FC<DispatchProps & OwnProps & StateProps> = ({
   assets,
   balances,
   wallet,
+  walletIcon,
   onCancel,
   onSelected,
 }) => {
@@ -63,7 +65,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
     <Page title="Select Account to Create Transaction" leftIcon={<Back onClick={() => onCancel()} />}>
       <Grid container>
         <Grid item xs={12}>
-          <WalletReference assets={assets} wallet={wallet} />
+          <WalletReference assets={assets} walletIcon={walletIcon} wallet={wallet} />
         </Grid>
         <Grid item className={styles.accountsList} xs={12}>
           {balances.map((item) => (
@@ -92,8 +94,8 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+  (state, { walletId }) => {
+    const wallet = accounts.selectors.findWallet(state, walletId);
 
     let assets: IBalanceValue[] = [];
 
@@ -152,18 +154,24 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         }, {}) ?? {},
     );
 
-    return { assets, balances, wallet };
+    return {
+      assets,
+      balances,
+      wallet,
+      walletIcon: state.accounts.icons[walletId],
+    };
   },
-  (dispatch, ownProps) => ({
-    onSelected: (account: WalletEntry) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, { walletId }) => ({
+    onSelected(account: WalletEntry) {
       if (isBitcoinEntry(account)) {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id, null, true));
       } else if (isEthereumEntry(account)) {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account, null, true));
       }
     },
-    onCancel: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+    onCancel() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
     },
   }),
-)(Component);
+)(SelectAccount);

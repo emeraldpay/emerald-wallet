@@ -1,7 +1,6 @@
 import * as actions from './actions';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
-import { Pages } from './types';
-import { moduleName } from './types';
+import { Dialogs, Pages, moduleName } from './types';
 
-export { actions, reducer, selectors, Pages, moduleName };
+export { Dialogs, Pages, moduleName, actions, reducer, selectors };
