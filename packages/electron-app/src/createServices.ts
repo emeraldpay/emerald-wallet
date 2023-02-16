@@ -65,7 +65,7 @@ export function createServices(
     services.add(new BlockchainStatusService(blockchain, webContents, apiAccess));
   }
 
-  services.add(new PricesService(apiAccess, ipcMain, webContents, apiMode.assets));
+  services.add(new PricesService(apiAccess, ipcMain, persistentState, webContents, apiMode.assets));
 
   const reconnect = new Reconnect(services);
 
