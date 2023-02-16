@@ -11,6 +11,12 @@ export enum ActionTypes {
   NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE',
 }
 
+export enum Dialogs {
+  ABOUT = 'about',
+  SIGN_TX = 'sign-tx',
+  WALLET_SETTINGS = 'wallet-settings',
+}
+
 export enum Pages {
   ACCOUNT = 'account',
   ADD_ADDRESS = 'add-address',
@@ -35,7 +41,7 @@ export enum Pages {
   SETUP_BLOCKCHAINS = 'setup-blockchains',
   SETUP_VAULT = 'setup-vault',
   SIGN_MESSAGE = 'sign-message',
-  SHOW_MESSAGE='show-message',
+  SHOW_MESSAGE = 'show-message',
   TX_DETAILS = 'transaction',
   WALLET = 'wallet',
   WALLET_INFO = 'wallet-info',
@@ -45,6 +51,7 @@ export enum Pages {
 export type ScreenState = Partial<
   Record<
     | 'dialog'
+    | 'dialogOptions'
     | 'error'
     | 'ignoreOnBack'
     | 'notificationActionText'
@@ -74,7 +81,8 @@ export interface IErrorAction {
 
 export interface IDialogAction {
   type: ActionTypes.DIALOG;
-  value: any;
+  name: Dialogs | null;
+  options?: unknown;
 }
 
 export interface IShowNotificationAction {

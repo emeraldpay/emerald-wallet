@@ -19,6 +19,7 @@ import gitVersion from '../../gitversion.json';
 
 const { NODE_ENV } = process.env;
 const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
+const isVerifyMode = NODE_ENV === 'verifying';
 
 logger.transports.file.level = isDevelopMode ? 'silly' : 'debug';
 logger.transports.console.level = isDevelopMode ? 'debug' : 'info';
@@ -34,10 +35,10 @@ initRemote();
 let apiMode = ProductionMode;
 let dataDir: string | null = null;
 
-if (isDevelopMode) {
+if (isDevelopMode || isVerifyMode) {
   logger.debug(`Start in ${NODE_ENV} mode`);
 
-  if (NODE_ENV === 'development') {
+  if (isVerifyMode || NODE_ENV === 'development') {
     apiMode = DevelopmentMode;
     dataDir = resolvePath('./.emerald-dev');
 

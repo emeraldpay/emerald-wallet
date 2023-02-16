@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) =>
       fontSize: '0.8em',
       opacity: '0.75',
     },
+    walletIcon: {
+      width: 80,
+    },
     balances: {
       paddingTop: theme.spacing(1),
     },
@@ -41,15 +44,20 @@ interface OwnProps {
   assets: Asset[];
   classes?: Partial<ClassNameMap<'root' | 'content'>>;
   wallet: Wallet;
+  walletIcon?: string | null;
 }
 
-const WalletReference: React.FC<OwnProps> = ({ assets, wallet, classes = {} }) => {
+const WalletReference: React.FC<OwnProps> = ({ assets, walletIcon, wallet, classes = {} }) => {
   const styles = useStyles();
 
   return (
     <Card className={classNames(styles.root, classes.root)} elevation={0}>
       <CardMedia className={styles.avatar}>
-        <HashIcon value={`WALLET/${wallet.id}`} size={80} />
+        {walletIcon == null ? (
+          <HashIcon value={`WALLET/${wallet.id}`} size={80} />
+        ) : (
+          <img alt="Wallet Icon" className={styles.walletIcon} src={`data:image/png;base64,${walletIcon}`} />
+        )}
       </CardMedia>
       <CardContent className={classes.content}>
         <Typography>{wallet.name ?? '--'}</Typography>

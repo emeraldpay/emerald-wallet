@@ -19,7 +19,7 @@ function onError(state: ScreenState, action: IErrorAction): ScreenState {
 }
 
 function onDialog(state: ScreenState, action: IDialogAction): ScreenState {
-  return { ...state, dialog: action.value };
+  return { ...state, dialog: action.name, dialogOptions: action.options };
 }
 
 function goBack(state: ScreenState): ScreenState {

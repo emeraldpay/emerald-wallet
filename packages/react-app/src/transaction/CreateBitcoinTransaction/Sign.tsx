@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxSummary from './TxSummary';
-import { EmeraldDialogs } from '../../app/screen/Dialog';
 import UnlockSeed from '../../create-account/UnlockSeed';
 
 const useStyles = makeStyles<Theme>((theme) =>
@@ -91,7 +90,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       },
       signHardware() {
         dispatch(hwkey.actions.setWatch(true));
-        dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
+        dispatch(screen.actions.showDialog(screen.Dialogs.SIGN_TX));
 
         const connectHandler = (state: IState): void => {
           if (hwkey.selectors.isBlockchainOpen(state, ownProps.blockchain)) {

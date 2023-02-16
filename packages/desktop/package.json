@@ -36,8 +36,10 @@
   "main": "app/src/main/index.js",
   "scripts": {
     "build": "yarn clean && yarn compile && yarn resources && webpack",
+    "build:debug": "NODE_ENV=debugging yarn build",
     "build:dev": "NODE_ENV=development yarn build",
     "build:dist": "yarn build && electron-builder --publish never",
+    "build:verify": "NODE_ENV=verifying yarn build",
     "build:watch": "NODE_ENV=development yarn clean && yarn resources && tsc-watch -b --onSuccess \"yarn build:watch:success\" --onFailure \"yarn build:watch:fail\"",
     "build:watch:fail": "notify -t \"Emerald Wallet\" -m \"Build failed\" -i \"resources/icon.png\"",
     "build:watch:success": "(NODE_ENV=development webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
@@ -45,7 +47,9 @@
     "compile": "tsc -b",
     "resources": "copyfiles resources/**/* app/",
     "start": "electron --trace-warnings .",
+    "start:debug": "NODE_ENV=debugging yarn start",
     "start:dev": "NODE_ENV=development yarn start",
+    "start:verify": "NODE_ENV=verifying yarn start",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },

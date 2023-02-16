@@ -17,7 +17,10 @@ import {
   SignedMessage,
   SignedTx,
   UnsignedMessage,
-  UnsignedTx, Uuid, Wallet,
+  UnsignedTx,
+  Uuid,
+  Wallet,
+  IconDetails,
 } from '@emeraldpay/emerald-vault-core';
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
@@ -164,6 +167,22 @@ class Vault implements IEmeraldVault {
 
   signMessage(entryId: EntryId, message: UnsignedMessage, password?: string): Promise<SignedMessage> {
     return ipcRenderer.invoke(IpcCommands.VAULT_SIGN_MESSAGE, entryId, message, password);
+  }
+
+  extractMessageSigner(message: UnsignedMessage, signature: string): Promise<string> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_EXTRACT_SIGNER, message, signature);
+  }
+
+  iconsList(): Promise<IconDetails[]> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_LIST_ICONS);
+  }
+
+  getIcon(walletId: Uuid): Promise<ArrayBuffer | null> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_GET_ICON, walletId);
+  }
+
+  setIcon(walletId: Uuid, icon: ArrayBuffer | Uint8Array | null): Promise<boolean> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_SET_ICON, walletId, icon);
   }
 }
 

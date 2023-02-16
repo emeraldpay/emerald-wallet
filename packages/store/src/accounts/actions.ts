@@ -44,6 +44,7 @@ import {
   IWalletImportedAction,
   IWalletsLoaded,
   InitAccountStateAction,
+  SetWalletIconsAction,
 } from './types';
 import { dispatchRpcError } from '../screen/actions';
 import { Dispatched } from '../types';
@@ -368,7 +369,7 @@ export function getXPubPosition(xPub: string): Dispatched<number> {
   return (dispatch, getState, extra) => extra.api.xPubPos.getNext(xPub);
 }
 
-export function getAllXPubAddresses(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress[]> {
+export function getAllXPubAddresses(entryId: EntryId, xPub: string, role: AddressRole): Dispatched<CurrentAddress[]> {
   return async (dispatch, getState, extra) => {
     const position = await extra.api.xPubPos.getNext(xPub);
     const addresses = await extra.api.vault.listEntryAddresses(entryId, role, 0, position + 1);
@@ -380,7 +381,11 @@ export function getAllXPubAddresses(entryId: string, xPub: string, role: Address
   };
 }
 
-export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
+export function getXPubPositionalAddress(
+  entryId: EntryId,
+  xPub: string,
+  role: AddressRole,
+): Dispatched<CurrentAddress> {
   return async (dispatch, getState, extra) => {
     const position = await extra.api.xPubPos.getNext(xPub);
     const [address] = await extra.api.vault.listEntryAddresses(entryId, role, position, 1);
@@ -396,6 +401,35 @@ export function updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDe
   return (dispatch, getState, extra) => extra.api.vault.updateSeed(seed, details);
 }
 
-export function signMessage(entryId: string, message: UnsignedMessage, password?: string): Dispatched<SignedMessage> {
+export function signMessage(entryId: EntryId, message: UnsignedMessage, password?: string): Dispatched<SignedMessage> {
   return (dispatch, getState, extra) => extra.api.vault.signMessage(entryId, message, password);
+}
+
+export function setWalletIcons(icons: Record<string, string | null>): SetWalletIconsAction {
+  return {
+    type: ActionTypes.SET_WALLET_ICONS,
+    icons,
+  };
+}
+
+export function getWalletIcon(id: Uuid): Dispatched<ArrayBuffer | null> {
+  return (dispatch, getState, extra) => extra.api.vault.getIcon(id);
+}
+
+export function setWalletIcon(id: Uuid, icon: Uint8Array | null): Dispatched<boolean> {
+  return async (dispatch, getState, extra) => {
+    const result = await extra.api.vault.setIcon(id, icon);
+
+    if (result) {
+      const content = await extra.api.vault.getIcon(id);
+
+      const {
+        accounts: { icons },
+      } = getState();
+
+      dispatch(setWalletIcons({ ...icons, [id]: content == null ? null : Buffer.from(content).toString('base64') }));
+    }
+
+    return result;
+  };
 }

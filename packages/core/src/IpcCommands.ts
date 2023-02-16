@@ -73,8 +73,10 @@ export enum IpcCommands {
   VAULT_CREATE_GLOBAL_KEY = 'vault-create-global-key',
   VAULT_EXPORT_JSON_PK = 'vault-export-json-pk',
   VAULT_EXPORT_RAW_PK = 'vault-export-raw-pk',
+  VAULT_EXTRACT_SIGNER = 'vault-extract-signer',
   VAULT_GENERATE_MNEMONIC = 'vault-generate-mnemonic',
   VAULT_GET_CONNECTED_HWDETAILS = 'vault-get-connected-hwdetails',
+  VAULT_GET_ICON = 'vault-get-icon',
   VAULT_GET_ODD_PASSWORD_ITEMS = 'vault-get-odd-password-items',
   VAULT_GET_WALLET = 'vault-get-wallet',
   VAULT_IMPORT_SEED = 'vault-import-seed',
@@ -82,6 +84,7 @@ export enum IpcCommands {
   VAULT_IS_SEED_AVAILABLE = 'vault-is-seed-available',
   VAULT_LIST_ADDRESS_BOOK = 'vault-list-address-book',
   VAULT_LIST_ENTRY_ADDRESSES = 'vault-list-entry-addresses',
+  VAULT_LIST_ICONS = 'vault-list-icons',
   VAULT_LIST_SEEDS = 'vault-list-seeds',
   VAULT_LIST_SEED_ADDRESSES = 'vault-list-seed-addresses',
   VAULT_LIST_WALLETS = 'vault-list-wallets',
@@ -90,6 +93,7 @@ export enum IpcCommands {
   VAULT_REMOVE_WALLET = 'vault-remove-wallet',
   VAULT_SET_ENTRY_LABEL = 'vault-set-entry-label',
   VAULT_SET_ENTRY_RECEIVE_DISABLED = 'vault-set-entry-receive-disabled',
+  VAULT_SET_ICON = 'vault-set-icon',
   VAULT_SET_STATE = 'vault-set-state',
   VAULT_SET_WALLET_LABEL = 'vault-set-wallet-label',
   VAULT_SIGN_MESSAGE = 'vault-sign-message',
@@ -103,4 +107,7 @@ export enum IpcCommands {
   // ENS
   LOOKUP_ADDRESS = 'lookup-address',
   RESOLVE_NAME = 'resolve-name',
+
+  // FS
+  FS_READ_FILE = 'fs-read-file',
 }

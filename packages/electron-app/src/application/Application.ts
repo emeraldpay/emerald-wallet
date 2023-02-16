@@ -3,7 +3,7 @@ import { IpcCommands, Logger } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { WebContents, ipcMain } from 'electron';
-import { setupApiIpc } from './ipc/api';
+import { setupApiIpc } from './ipc/application';
 import { setupPersistentStateIpc } from './ipc/persistentState';
 import { setupVaultIpc } from './ipc/vault';
 import { Settings } from './Settings';
@@ -65,9 +65,7 @@ export class Application {
   }
 
   public showAbout(): void {
-    if (this.webContents != null) {
-      this.webContents.send(IpcCommands.STORE_DISPATCH, { type: 'SCREEN/DIALOG', value: 'about' });
-    }
+    this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'SCREEN/DIALOG', name: 'about' });
   }
 
   setWebContents(webContents: WebContents): void {

@@ -85,6 +85,11 @@ const useStyles = makeStyles((theme) =>
     changeItemAmountWalletIcon: {
       marginRight: 10,
     },
+    changeItemAmountWalletIconImage: {
+      height: 24,
+      marginRight: 10,
+      width: 24,
+    },
     changeItemCoin: {
       lineHeight: '24px',
       textAlign: 'right',
@@ -171,7 +176,7 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-type Change = Omit<txhistory.types.StoredTransactionChange, 'wallet'> & { wallet: Wallet };
+type Change = Omit<txhistory.types.StoredTransactionChange, 'wallet'> & { icon: string | null; wallet: Wallet };
 
 interface OwnProps {
   tx: StoredTransaction;
@@ -180,6 +185,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  walletIcons: Record<string, string | null>;
   getFiatValue(amount: BigAmount): CurrencyAmount;
   getHeight(blockchain: BlockchainCode): number;
   getWallet(entryId: EntryId): Wallet | undefined;
@@ -198,6 +204,7 @@ const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
   style,
+  walletIcons,
   walletId,
   getFiatValue,
   getHeight,
@@ -230,7 +237,9 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
     return 0;
   }, [blockchainCode, tx.block, getHeight]);
+
   const confirmed = React.useMemo(() => confirmations >= Confirmed[blockchainCode], [blockchainCode, confirmations]);
+
   const sinceTime = React.useMemo(
     () =>
       DateTime.fromJSDate(tx.sinceTimestamp).toRelative({
@@ -239,6 +248,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       }),
     [tx.sinceTimestamp],
   );
+
   const statusClass = React.useMemo(() => {
     if (tx.state === State.CONFIRMED) {
       if (tx.status === Status.OK) {
@@ -351,7 +361,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
               return carry;
             }
 
-            return [...carry, { ...change, amountValue: change.amountValue, wallet }];
+            return [...carry, { ...change, amountValue: change.amountValue, icon: walletIcons[wallet.id], wallet }];
           }, [])
           .map((change, index) => (
             <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
@@ -363,11 +373,19 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                   <div />
                 ) : (
                   <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
-                    <HashIcon
-                      className={styles.changeItemAmountWalletIcon}
-                      size={24}
-                      value={`WALLET/${change.wallet.id}`}
-                    />
+                    {change.icon == null ? (
+                      <HashIcon
+                        className={styles.changeItemAmountWalletIcon}
+                        size={24}
+                        value={`WALLET/${change.wallet.id}`}
+                      />
+                    ) : (
+                      <img
+                        alt="Wallet Icon"
+                        className={styles.changeItemAmountWalletIconImage}
+                        src={`data:image/png;base64,${change.icon}`}
+                      />
+                    )}
                     {change.wallet.name}
                   </div>
                 )}
@@ -384,6 +402,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state) => ({
+    walletIcons: state.accounts.icons,
     getFiatValue(amount) {
       const { top: topUnit } = amount.units;
 

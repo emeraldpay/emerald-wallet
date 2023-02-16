@@ -7,6 +7,7 @@ import { CoinAvatar } from '@emeraldwallet/ui';
 import { Button, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
+import classNames from 'classnames';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -24,7 +25,10 @@ const useStyles = makeStyles((theme) =>
     container: {
       alignItems: 'start',
       display: 'flex',
-      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+    firstItem: {
+      marginTop: 0,
     },
     icon: {
       marginRight: theme.spacing(),
@@ -58,6 +62,7 @@ const useStyles = makeStyles((theme) =>
 
 interface OwnProps {
   entries: EthereumEntry[];
+  firstItem?: boolean;
   walletId: string;
 }
 
@@ -73,12 +78,13 @@ interface DispatchProps {
   gotoRecover(entry: WalletEntry): void;
 }
 
-const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
+const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
   entries,
   balance,
   blockchainCode,
   tokenRegistry,
   tokensBalances,
+  firstItem = false,
   gotoConvert,
   gotoRecover,
 }) => {
@@ -101,7 +107,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   return entry.receiveDisabled ? (
     <>
       {(balance.isPositive() || receiveDisabledTokens.length > 0) && (
-        <div className={styles.container}>
+        <div className={classNames(styles.container, firstItem ? styles.firstItem : null)}>
           <Alert
             action={
               <Button color="inherit" onClick={() => gotoRecover(entry)}>
@@ -124,7 +130,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
       )}
     </>
   ) : (
-    <div className={styles.container}>
+    <div className={classNames(styles.container, firstItem ? styles.firstItem : null)}>
       <div className={styles.icon}>
         <CoinAvatar blockchain={blockchainCode} />
       </div>
@@ -203,4 +209,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
     },
   }),
-)(Component);
+)(EthereumEntryItem);

@@ -2,40 +2,39 @@ import { IState, screen } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitForSignDialog from '../../../transaction/WaitForSignDialog';
+import WalletSettingsDialog from '../../../wallets/WalletSettingsDialog';
 import AboutDialog from '../../AboutDialog';
 
-export enum EmeraldDialogs {
-  ABOUT = 'about',
-  SIGN_TX = 'sign-transaction',
-}
-
 interface StateProps {
-  dialog?: EmeraldDialogs;
+  dialog?: screen.Dialogs;
+  dialogOptions?: unknown;
 }
 
 interface DispatchProps {
-  handleClose(): void;
+  onClose(): void;
 }
 
-const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, handleClose }) => {
+const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, dialogOptions, onClose }) => {
   if (dialog == null) {
     return <></>;
   }
 
   switch (dialog) {
-    case EmeraldDialogs.ABOUT:
-      return <AboutDialog onClose={handleClose} />;
-    case EmeraldDialogs.SIGN_TX:
-      return <WaitForSignDialog />;
+    case screen.Dialogs.ABOUT:
+      return <AboutDialog onClose={onClose} />;
+    case screen.Dialogs.SIGN_TX:
+      return <WaitForSignDialog onClose={onClose} />;
+    case screen.Dialogs.WALLET_SETTINGS:
+      return <WalletSettingsDialog walletId={dialogOptions as string} onClose={onClose} />;
     default:
       throw new Error(`Unsupported dialog: ${dialog}`);
   }
 };
 
-export default connect<StateProps, DispatchProps, {}, IState>(
+export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => screen.selectors.getCurrentDialog(state),
   (dispatch) => ({
-    handleClose() {
+    onClose() {
       dispatch(screen.actions.closeDialog());
     },
   }),

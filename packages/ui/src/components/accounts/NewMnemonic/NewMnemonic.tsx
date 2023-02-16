@@ -2,7 +2,6 @@ import { Box, Button, Chip, Grid, Typography, createStyles } from '@material-ui/
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { ConfirmedPasswordInput } from '../../../index';
 
@@ -147,10 +146,10 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   let content;
   let title: string;
 
-  const [mnemonicRandomParts, setMnemonicRandomParts] = useState<MnemonicRandomPartType[]>([]);
-  const [mnemonicSelectedParts, setMnemonicSelectedParts] = useState<MnemonicSelectedPartType[]>([]);
+  const [mnemonicRandomParts, setMnemonicRandomParts] = React.useState<MnemonicRandomPartType[]>([]);
+  const [mnemonicSelectedParts, setMnemonicSelectedParts] = React.useState<MnemonicSelectedPartType[]>([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let mnemonicParts: MnemonicRandomPartType[] = [];
 
     if (confirming) {
@@ -166,7 +165,7 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
     setMnemonicRandomParts(mnemonicParts);
   }, [confirming, mnemonic]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setConfirmation(mnemonicSelectedParts.map((selected) => selected.name).join(' '));
   }, [mnemonicSelectedParts]);
 
