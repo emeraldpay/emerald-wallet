@@ -26,12 +26,13 @@ export interface FiatCurrencies {
 
 export interface StateProps {
   fiatCurrencies: FiatCurrencies[];
+  loading: boolean;
   totalBalance: BigAmount;
 }
 
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
 
-const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, totalBalance }) => {
+const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalance }) => {
   const styles = useStyles();
 
   const fiatCurrency = React.useMemo(() => totalBalance.units.top.code as CurrencyCode, [totalBalance]);
@@ -49,8 +50,8 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, totalBalance }) => 
 
   const totalFormatted = fiatFormatter.format(new CurrencyAmount(totalBalance.number, fiatCurrency));
 
-  return (
-    <div>
+  return loading ? null : (
+    <>
       <Button classes={styles} disabled={false} label={totalFormatted} variant="text" onClick={handleOpen} />
       <Menu
         anchorEl={menuElement}
@@ -82,7 +83,7 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, totalBalance }) => 
           })}
         </List>
       </Menu>
-    </div>
+    </>
   );
 };
 

@@ -54,7 +54,7 @@ const Component: React.FC<StateProps & DispatchProps> = ({
   }, [walletsCount, isGlobalKeySet]);
 
   return (
-    <div>
+    <>
       <Button variant="text" primary={true} onClick={handleClick} icon={<MenuIcon />} />
       <Popover open={element != null} anchorEl={element} onClose={handleClose}>
         <List>
@@ -110,7 +110,7 @@ const Component: React.FC<StateProps & DispatchProps> = ({
           </ListItem>
         </List>
       </Popover>
-    </div>
+    </>
   );
 };
 

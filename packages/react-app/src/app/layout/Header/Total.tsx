@@ -20,6 +20,7 @@ export default connect<StateProps, unknown, unknown, IState>((state) => {
 
   return {
     fiatCurrencies,
+    loading: state.accounts.loading,
     totalBalance: total?.balance ?? new CurrencyAmount(0, state.settings.localeCurrency),
   };
 })(TotalButton);
