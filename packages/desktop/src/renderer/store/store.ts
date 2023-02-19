@@ -15,6 +15,7 @@ import {
   settings,
   triggers,
 } from '@emeraldwallet/store';
+import { RemoteCache } from '@emeraldwallet/store/lib/remote-access/Cache';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
 import { initBalancesState } from './cache/balances';
@@ -29,6 +30,7 @@ const logger = Logger.forCategory('Store');
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
   balances: RemoteBalances,
+  cache: RemoteCache,
   txHistory: RemoteTxHistory,
   txMeta: RemoteTxMeta,
   vault: RemoteVault,
@@ -151,7 +153,11 @@ function startSync(): void {
 
 triggers.onceBlockchainConnected(store).then(startSync);
 
-triggers.onceAccountsLoaded(store).then(() => initBalancesState(api, store));
+triggers.onceAccountsLoaded(store).then(() => {
+  RemoteCache.get('rates').then((rates) => store.dispatch(settings.actions.setRates(JSON.parse(rates))));
+
+  initBalancesState(api, store);
+});
 
 ipcRenderer.send(IpcCommands.EMERALD_READY);
 

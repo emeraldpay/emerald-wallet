@@ -26,7 +26,6 @@ export interface Rates {
 
 export interface SettingsState {
   localeCurrency: CurrencyCode;
-  localeRate?: string;
   mode: Mode;
   rates: Rates;
 }

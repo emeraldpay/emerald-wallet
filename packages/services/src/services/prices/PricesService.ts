@@ -1,5 +1,6 @@
 import { AnyCurrency } from '@emeraldpay/api';
 import { IpcCommands, Logger } from '@emeraldwallet/core';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess, PriceListener } from '../..';
 import { IService } from '../Services';
@@ -16,12 +17,20 @@ class PricesService implements IService {
   private listener: PriceListener | null = null;
 
   private apiAccess: EmeraldApiAccess;
+  private persistentState: PersistentStateManager;
   private webContents?: WebContents;
 
-  constructor(apiAccess: EmeraldApiAccess, ipcMain: IpcMain, webContents: WebContents, defaultFrom: string[]) {
+  constructor(
+    apiAccess: EmeraldApiAccess,
+    ipcMain: IpcMain,
+    persistentState: PersistentStateManager,
+    webContents: WebContents,
+    defaultFrom: string[],
+  ) {
     this.id = 'PricesService';
 
     this.apiAccess = apiAccess;
+    this.persistentState = persistentState;
     this.webContents = webContents;
 
     ipcMain.handle(IpcCommands.PRICES_SET_ASSETS, (event, from: string[]) => {
@@ -78,7 +87,11 @@ class PricesService implements IService {
       log.info(`Request for prices from ${this.from.join(', ')} to ${this.to}`);
 
       this.listener?.request(this.from, this.to, (rates) =>
-        this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/EXCHANGE_RATES', payload: { rates } }),
+        this.persistentState.cache
+          .put('rates', JSON.stringify(rates))
+          .then(() =>
+            this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/EXCHANGE_RATES', payload: { rates } }),
+          ),
       );
     }
 

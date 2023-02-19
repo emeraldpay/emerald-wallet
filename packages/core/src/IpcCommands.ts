@@ -53,6 +53,11 @@ export enum IpcCommands {
   BALANCES_LIST = 'balances-list',
   BALANCES_SET = 'balances-set',
 
+  // Cache
+  CACHE_EVICT = 'cache-evict',
+  CACHE_GET = 'cache-get',
+  CACHE_PUT = 'cache-put',
+
   // Transaction history
   LOAD_TX_HISTORY = 'load-tx-history',
   SUBMIT_TX_HISTORY = 'submit-tx-history',

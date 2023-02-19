@@ -27,6 +27,14 @@ export function setupPersistentStateIpc(persistentState: PersistentStateManager)
     persistentState.balances.set(balance),
   );
 
+  ipcMain.handle(IpcCommands.CACHE_EVICT, (event, id: string) => persistentState.cache.evict(id));
+
+  ipcMain.handle(IpcCommands.CACHE_GET, (event, id: string) => persistentState.cache.get(id));
+
+  ipcMain.handle(IpcCommands.CACHE_PUT, (event, id: string, value: string, ttl?: number) =>
+    persistentState.cache.put(id, value, ttl),
+  );
+
   ipcMain.handle(
     IpcCommands.LOAD_TX_HISTORY,
     (event, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) =>

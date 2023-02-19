@@ -11,7 +11,6 @@ import {
 
 const INITIAL_STATE: SettingsState = {
   localeCurrency: CurrencyCode.USD,
-  localeRate: undefined,
   mode: {
     assets: [],
     chains: [],
@@ -23,7 +22,7 @@ const INITIAL_STATE: SettingsState = {
 function onExchangeRates(state: SettingsState, action: SetExchangeRatesAction): SettingsState {
   const { rates } = action.payload;
 
-  return { ...state, rates, localeRate: rates ? rates.ETH : undefined };
+  return { ...state, rates };
 }
 
 function onSetAssets(state: SettingsState, action: SetAssetsAction): SettingsState {
