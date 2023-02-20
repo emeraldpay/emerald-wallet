@@ -127,7 +127,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 <Typography className={styles.title}>{wallet.name}</Typography>
               </Grid>
               <Grid item className={styles.titleLine} xs={4}>
-                {total && <Balance classes={{ coin: styles.totalBalance }} balance={total.balance} />}
+                {total != null && <Balance classes={{ coin: styles.totalBalance }} balance={total.balance} />}
               </Grid>
               <Grid item xs={12}>
                 {assets.map((asset) => (

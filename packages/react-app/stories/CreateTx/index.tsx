@@ -46,7 +46,7 @@ storiesOf('CreateTx Ethereum', module)
       tx={ethereumTx}
       txFeeToken="ETH"
       getBalance={() => new Wei(0)}
-      getTokenBalanceForAddress={() => new Wei(0)}
+      getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}
       onChangeTo={action('onChangeTo')}
     />
@@ -64,7 +64,7 @@ storiesOf('CreateTx Ethereum', module)
       tx={ethereumTx}
       txFeeToken="ETH"
       getBalance={() => new Wei(0)}
-      getTokenBalanceForAddress={() => new Wei(0)}
+      getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}
       onChangeTo={action('onChangeTo')}
     />

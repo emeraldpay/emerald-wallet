@@ -34,7 +34,7 @@ describe('CreateTx', () => {
             stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
             getBalance={() => new Wei(0)}
-            getTokenBalanceForAddress={() => tokenAmount(0, 'dai')}
+            getTokenBalance={() => tokenAmount(0, 'dai')}
           />
         </ThemeProvider>
       </Provider>,
@@ -56,7 +56,7 @@ describe('CreateTx', () => {
             stdGasPrice={{ max: 0, priority: 0 }}
             onChangeTo={() => undefined}
             getBalance={() => new Wei(0)}
-            getTokenBalanceForAddress={() => tokenAmount(0, 'dai')}
+            getTokenBalance={() => tokenAmount(0, 'dai')}
           />
         </ThemeProvider>
       </Provider>,

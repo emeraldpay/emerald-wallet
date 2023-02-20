@@ -85,7 +85,7 @@ interface CreateTxState {
 interface DispatchFromProps {
   checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(tx: EthereumTransaction): Promise<number>;
-  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   onCancel(): void;
   signAndSend(tokenRegistry: TokenRegistry, request: Request): void;
 }
@@ -109,11 +109,11 @@ interface Props {
   tokenSymbols: string[];
   txFeeSymbol: string;
   value?: any;
-  getBalance: (address: string) => WeiAny;
-  getBalancesByAddress: (address: string) => string[];
-  getEntryByAddress: (address: string) => WalletEntry | undefined;
-  getFiatForAddress: (address: string, token: string) => string;
-  getTokenBalanceForAddress: (address: string, token: string) => BigAmount;
+  getBalance(address: string): WeiAny;
+  getBalancesByAddress(address: string): string[];
+  getEntryByAddress(address: string): WalletEntry | undefined;
+  getFiatBalance(token: string, address?: string): string | null;
+  getTokenBalance(token: string, address?: string): BigAmount;
 }
 
 const { TxTarget } = workflow;
@@ -154,7 +154,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const tx = this.transaction;
 
     if (this.isToken(tx)) {
-      return this.props.getTokenBalanceForAddress(tx.from!, this.state.token);
+      return this.props.getTokenBalance(this.state.token, tx.from);
     }
 
     return this.props.getBalance(tx.from!);
@@ -206,7 +206,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const tx = this.transaction;
 
     if (this.isToken(tx)) {
-      const balance = this.props.getTokenBalanceForAddress(from, this.state.token);
+      const balance = this.props.getTokenBalance(this.state.token, from);
 
       tx.setTotalBalance(balance);
     } else {
@@ -228,7 +228,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   };
 
   public onChangeToken = (tokenSymbol: any) => {
-    const { blockchain, tokenRegistry, getBalance, getTokenBalanceForAddress } = this.props;
+    const { blockchain, tokenRegistry, getBalance, getTokenBalance } = this.props;
     const { token, transaction } = this.state;
 
     const { coinTicker } = Blockchains[blockchain].params;
@@ -268,7 +268,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       });
 
       tx.totalBalance = getBalance(tx.from!);
-      tx.setTotalBalance(getTokenBalanceForAddress(tx.from!, tokenSymbol));
+      tx.setTotalBalance(getTokenBalance(tokenSymbol, tx.from));
     }
 
     this.transaction = tx;
@@ -439,8 +439,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       txFeeSymbol,
       getBalance,
       getBalancesByAddress,
-      getFiatForAddress,
-      getTokenBalanceForAddress,
+      getFiatBalance,
+      getTokenBalance,
       onCancel,
     } = this.props;
     const { initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, token } = this.state;
@@ -460,7 +460,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             tx={tx}
             txFeeToken={txFeeSymbol}
             token={token}
-            fiatBalance={getFiatForAddress(tx.from!, token)}
+            fiatBalance={getFiatBalance(token, tx.from)}
             currency={currency}
             tokenRegistry={tokenRegistry}
             tokenSymbols={tokenSymbols}
@@ -477,7 +477,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onSetPriorityGasPrice={this.onSetPriorityGasPrice}
             getBalance={getBalance}
             getBalancesByAddress={getBalancesByAddress}
-            getTokenBalanceForAddress={getTokenBalanceForAddress}
+            getTokenBalance={getTokenBalance}
           />
         );
       case PAGES.SIGN:
@@ -587,7 +587,7 @@ export default connect(
       gasLimit: ownProps.gasLimit ?? DEFAULT_GAS_LIMIT,
       token: blockchain.params.coinTicker,
       tokenSymbols: allTokens.map((i) => i.symbol),
-      getBalance: (address: string): WeiAny => {
+      getBalance(address) {
         const entry = getEntryByAddress(address);
 
         if (entry == null || !isEthereumEntry(entry)) {
@@ -608,31 +608,50 @@ export default connect(
 
         return [balance, ...tokensBalances].map(formatAmount);
       },
-      getFiatForAddress: (address: string, token: string): string => {
-        if (token !== txFeeSymbol) {
-          return '??';
+      getFiatBalance(token, address) {
+        if (address == null) {
+          return null;
         }
 
-        const entry = getEntryByAddress(address);
+        let balance: BigAmount;
 
-        if (entry == null || !isEthereumEntry(entry)) {
-          return fiatFormatter.format(zero);
+        if (tokenRegistry.hasSymbol(blockchainCode, token)) {
+          const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
+          const zeroAmount = tokenData.getAmount(0);
+
+          balance = tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address) ?? zeroAmount;
+        } else {
+          const entry = getEntryByAddress(address);
+
+          if (entry == null || !isEthereumEntry(entry)) {
+            return null;
+          }
+
+          balance = accounts.selectors.getBalance(state, entry.id, zero);
         }
 
-        const newBalance = accounts.selectors.getBalance(state, entry.id, zero)!;
-        const rate = settings.selectors.fiatRate(state, token) ?? 0;
-        const fiat = CurrencyAmount.create(
-          newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate).toNumber(),
+        const rate = settings.selectors.fiatRate(state, token);
+
+        if (rate == null) {
+          return null;
+        }
+
+        const fiatBalance = CurrencyAmount.create(
+          balance.getNumberByUnit(balance.units.top).multipliedBy(rate).toNumber(),
           settings.selectors.fiatCurrency(state),
         );
 
-        return fiatFormatter.format(fiat);
+        return fiatFormatter.format(fiatBalance);
       },
-      getTokenBalanceForAddress: (address: string, token: string): BigAmount => {
+      getTokenBalance(token, address) {
         const { code: blockchainCode } = blockchain.params;
 
         const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
         const zeroAmount = tokenData.getAmount(0);
+
+        if (address == null) {
+          return zeroAmount;
+        }
 
         return tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address) ?? zeroAmount;
       },

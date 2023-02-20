@@ -19,7 +19,7 @@ const styles = (theme: Theme): StyleRules =>
 
 interface Props {
   balance?: BigAmount;
-  fiatBalance?: string;
+  fiatBalance?: string | null;
   fiatCurrency?: string;
   selectedToken: string;
   tokenSymbols: string[];
@@ -28,14 +28,16 @@ interface Props {
 }
 
 export class TokenField extends React.Component<Props & WithStyles<typeof styles>> {
-  public onChangeToken = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+  onChangeToken = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
     this.props.onChangeToken?.(value);
   };
 
-  public render(): ReactElement {
-    const { classes, selectedToken, balance, getBalanceByToken } = this.props;
+  onRenderValue<T>(value: T): T {
+    return value;
+  }
 
-    const tokenSymbols = this.props.tokenSymbols ?? [];
+  public render(): ReactElement {
+    const { balance, classes, fiatBalance, fiatCurrency, selectedToken, tokenSymbols, getBalanceByToken } = this.props;
 
     return (
       <>
@@ -44,17 +46,17 @@ export class TokenField extends React.Component<Props & WithStyles<typeof styles
           select
           value={selectedToken}
           onChange={this.onChangeToken}
-          SelectProps={{ renderValue: (value) => <>{value}</> }}
+          SelectProps={{ renderValue: this.onRenderValue }}
         >
-          {tokenSymbols.map((symbol) => (
+          {tokenSymbols?.map((symbol) => (
             <MenuItem key={symbol} value={symbol}>
               <ListItemText primary={symbol} secondary={formatAmount(getBalanceByToken(symbol))} />
             </MenuItem>
           ))}
         </TextField>
         <div className={classes.balance} data-testid="balance">
-          {balance == null ? '?' : formatAmount(balance)}
-          {` / ${this.props.fiatBalance} ${this.props.fiatCurrency}`}
+          {balance == null ? null : formatAmount(balance)}
+          {fiatBalance == null || fiatCurrency == null ? null : ` / ${fiatBalance} ${fiatCurrency}`}
         </div>
       </>
     );
