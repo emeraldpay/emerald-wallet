@@ -25,6 +25,7 @@ import {
   blockchainCodeToId,
   blockchainIdToCode,
 } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
 import { createSelector } from 'reselect';
 import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
 import * as accounts from './index';
@@ -77,17 +78,23 @@ export function allEntriesByBlockchain(state: IState, code: BlockchainCode): Wal
  * assets doesn't have an exchange rate defined yet
  */
 export function fiatTotalBalance(state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
-  const converted = assets.map((asset) => {
-    const rate = settings.selectors.fiatRate(state, asset.balance.units.top.code) ?? 0;
+  const converted = assets
+    .map((asset) => {
+      const rate = settings.selectors.fiatRate(state, asset.balance.units.top.code);
 
-    return asset.balance.getNumberByUnit(asset.balance.units.top).multipliedBy(rate);
-  });
+      if (rate == null) {
+        return null;
+      }
+
+      return asset.balance.getNumberByUnit(asset.balance.units.top).multipliedBy(rate);
+    })
+    .filter((balance): balance is BigNumber => balance != null);
 
   if (converted.length === 0) {
     return undefined;
   }
 
-  const total = converted.reduce((first, second) => first.plus(second));
+  const total = converted.reduce((carry, balance) => carry.plus(balance));
 
   return { balance: new CurrencyAmount(total.multipliedBy(100), state.settings.localeCurrency) };
 }

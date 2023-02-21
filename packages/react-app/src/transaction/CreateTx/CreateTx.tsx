@@ -66,7 +66,7 @@ export interface Props {
   classes: Record<keyof typeof styles, string>;
   currency?: string;
   eip1559: boolean;
-  fiatBalance?: string;
+  fiatBalance?: string | null;
   initializing: boolean;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
@@ -79,7 +79,7 @@ export interface Props {
   txFeeToken: string;
   getBalance(address: string): WeiAny;
   getBalancesByAddress?(address: string): string[];
-  getTokenBalanceForAddress(address: string, token: string): BigAmount;
+  getTokenBalance(token: string, address?: string): BigAmount;
   onCancel?(): void;
   onChangeAmount?(amount: BigAmount): void;
   onChangeFrom?(from: string): void;
@@ -135,14 +135,14 @@ class CreateTx extends React.Component<Props, State> {
   }
 
   public getBalanceByToken = (token: string): BigAmount => {
-    const { tx, getBalance, getTokenBalanceForAddress } = this.props;
+    const { tx, getBalance, getTokenBalance } = this.props;
 
     if (tx.from == null) {
       return amountFactory(tx.blockchain)(0);
     }
 
     if (this.props.tokenRegistry.hasSymbol(tx.blockchain, token.toUpperCase())) {
-      return getTokenBalanceForAddress(tx.from, token);
+      return getTokenBalance(token, tx.from);
     }
 
     return getBalance(tx.from);

@@ -1,13 +1,5 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import {
-  AddressRole,
-  EntryId,
-  IconDetails,
-  SeedDescription,
-  Uuid,
-  Wallet,
-  WalletEntry,
-} from '@emeraldpay/emerald-vault-core';
+import { AddressRole, EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BalanceUtxo, BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
@@ -20,7 +12,7 @@ export interface IBalanceValue {
  * Balance in original "face" value, and converted to a common currency
  */
 export interface BalanceValueConverted {
-  converted: IBalanceValue;
+  converted?: IBalanceValue;
   rate: number;
   source: IBalanceValue;
 }
