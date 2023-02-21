@@ -66,8 +66,6 @@ function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
 }
 
 function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
-  yield put(setLoadingAction(true));
-
   let wallets: Wallet[] = yield call(vault.listWallets);
 
   wallets = wallets
@@ -90,9 +88,10 @@ function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
     });
 
   yield put(setWalletsAction(wallets));
+  yield put(setLoadingAction(false));
+
   // Saga doesn't support thunk action, so we make conversion to unknown type and then to Action type
   yield put(fetchErc20BalancesAction() as unknown as Action);
-  yield put(setLoadingAction(false));
 
   const accounts = yield select(allEntries);
 
