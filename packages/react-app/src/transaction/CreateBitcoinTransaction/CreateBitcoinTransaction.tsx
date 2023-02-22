@@ -38,6 +38,7 @@ interface StateProps {
   blockchain: BlockchainCode;
   defaultFee: DefaultFee<number>;
   entry: BitcoinEntry;
+  feeTtl: number;
   seedId: Uuid;
   utxo: BalanceUtxo[];
 }
@@ -45,7 +46,7 @@ interface StateProps {
 interface DispatchProps {
   onBroadcast(data: BroadcastData): void;
   onCancel?(): void;
-  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee<number>): () => Promise<FeePrices<number>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee<number>, feeTtl: number): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
@@ -53,6 +54,7 @@ const CreateBitcoinTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   blockchain,
   defaultFee,
   entry,
+  feeTtl,
   seedId,
   source,
   utxo,
@@ -98,7 +100,7 @@ const CreateBitcoinTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
           create={txBuilder}
           entry={entry}
           source={source}
-          getFees={getFees(blockchain, defaultFee)}
+          getFees={getFees(blockchain, defaultFee, feeTtl)}
           onCreate={(tx, fee) => {
             setFee(fee);
             setTx(tx);
@@ -180,13 +182,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       entry,
       blockchain,
       defaultFee: application.selectors.getDefaultFee<number>(state, blockchain),
+      feeTtl: application.selectors.getFeeTtl(state, blockchain),
       seedId: entry.key.seedId,
       utxo: accounts.selectors.getUtxo(state, entry.id),
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
-    getFees(blockchain, defaultFee) {
+    getFees(blockchain, defaultFee, feeTtl) {
       return async () => {
         try {
           const fees: number[] = await Promise.all([
@@ -203,17 +206,27 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             return first > second ? 1 : -1;
           });
 
-          return {
+          const fee = {
             avgLast,
             avgMiddle,
             avgTail5,
           };
+
+          await dispatch(application.actions.cachePut(`fee.${blockchain}`, JSON.stringify(fee), feeTtl));
+
+          return fee;
         } catch (exception) {
-          return {
-            avgLast: defaultFee.min,
-            avgMiddle: defaultFee.max,
-            avgTail5: defaultFee.std,
-          };
+          const cachedFee = await dispatch(application.actions.cacheGet(`fee.${blockchain}`));
+
+          if (cachedFee == null) {
+            return {
+              avgLast: defaultFee.min,
+              avgMiddle: defaultFee.max,
+              avgTail5: defaultFee.std,
+            };
+          }
+
+          return JSON.parse(cachedFee);
         }
       };
     },

@@ -20,12 +20,13 @@ import {
 import BigNumber from 'bignumber.js';
 import { BroadcastData, SignData } from './types';
 import { findWalletByEntryId } from '../accounts/selectors';
+import { application } from '../index';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import { IErrorAction, IOpenAction } from '../screen/types';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
-import { DEFAULT_FEE, DefaultFee, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
+import { DEFAULT_FEE, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
 import { WrappedError } from '../WrappedError';
 
 const log = Logger.forCategory('Store::Transaction');
@@ -333,8 +334,8 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
   return first.gt(second) ? 1 : -1;
 }
 
-export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Dispatched<FeePrices<GasPrices>> {
-  return async (dispatch) => {
+export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPrices>> {
+  return async (dispatch, getState, extra) => {
     let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
 
     results = await Promise.allSettled(
@@ -389,23 +390,31 @@ export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Disp
     );
 
     if (avgTail5.max.eq(0)) {
-      return {
-        avgLast: {
-          max: defaultFee.min,
-          priority: defaultFee.priority_min ?? '0',
-        },
-        avgMiddle: {
-          max: defaultFee.max,
-          priority: defaultFee.priority_max ?? '0',
-        },
-        avgTail5: {
-          max: defaultFee.std,
-          priority: defaultFee.priority_std ?? '0',
-        },
-      };
+      const cachedFee = await extra.api.cache.get(`fee.${blockchain}`);
+
+      if (cachedFee == null) {
+        const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
+
+        return {
+          avgLast: {
+            max: defaultFee.min,
+            priority: defaultFee.priority_min ?? '0',
+          },
+          avgMiddle: {
+            max: defaultFee.max,
+            priority: defaultFee.priority_max ?? '0',
+          },
+          avgTail5: {
+            max: defaultFee.std,
+            priority: defaultFee.priority_std ?? '0',
+          },
+        };
+      }
+
+      return JSON.parse(cachedFee);
     }
 
-    return {
+    const fee = {
       avgLast: {
         max: avgLast.max.toString(),
         priority: avgLast.priority.toString(),
@@ -419,6 +428,14 @@ export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Disp
         priority: avgTail5.priority.toString(),
       },
     };
+
+    await extra.api.cache.put(
+      `fee.${blockchain}`,
+      JSON.stringify(fee),
+      application.selectors.getFeeTtl(getState(), blockchain),
+    );
+
+    return fee;
   };
 }
 
