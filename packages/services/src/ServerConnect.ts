@@ -26,8 +26,8 @@ class ServerConnect {
     const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
 
     this.headers['User-Agent'] = [
-      `Electron/${versions.electron} (${details})`,
       `EmeraldWallet/${this.appVersion} (+https://emerald.cash)`,
+      `Electron/${versions.electron} (${details})`,
       `Chrome/${versions.chrome}`,
     ].join(' ');
   }

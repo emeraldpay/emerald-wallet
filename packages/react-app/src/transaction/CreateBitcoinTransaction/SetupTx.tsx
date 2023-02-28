@@ -6,11 +6,11 @@ import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import {
   Box,
   CircularProgress,
+  createStyles,
   FormControlLabel,
   FormHelperText,
   Slider,
   Switch,
-  createStyles,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
@@ -148,6 +148,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
       <FormRow>
         <AmountField
           amount={amount}
+          maxDisabled={initializing}
           units={create.requiredAmount.units}
           onChangeAmount={onSetAmount}
           onMaxClicked={onSetAmountMax}

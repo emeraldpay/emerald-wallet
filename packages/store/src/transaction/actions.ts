@@ -139,7 +139,7 @@ export function signBitcoinTransaction(
       .signTx(entryId, tx, password)
       .then(({ raw, txid }) => handler(txid, raw))
       .catch((error) => {
-        dispatch(showError(error));
+        dispatch(showError(new WrappedError(error)));
 
         return handler(null, null, 'Internal error. ' + error?.message);
       });
