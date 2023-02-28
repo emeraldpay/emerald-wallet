@@ -389,29 +389,35 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPric
       [],
     );
 
-    if (avgTail5.max.eq(0)) {
+    if (avgMiddle.max.eq(0)) {
+      const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
+
+      const defaults = {
+        avgLast: {
+          max: defaultFee.min,
+          priority: defaultFee.priority_min ?? '0',
+        },
+        avgMiddle: {
+          max: defaultFee.max,
+          priority: defaultFee.priority_max ?? '0',
+        },
+        avgTail5: {
+          max: defaultFee.std,
+          priority: defaultFee.priority_std ?? '0',
+        },
+      };
+
       const cachedFee = await extra.api.cache.get(`fee.${blockchain}`);
 
       if (cachedFee == null) {
-        const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
-
-        return {
-          avgLast: {
-            max: defaultFee.min,
-            priority: defaultFee.priority_min ?? '0',
-          },
-          avgMiddle: {
-            max: defaultFee.max,
-            priority: defaultFee.priority_max ?? '0',
-          },
-          avgTail5: {
-            max: defaultFee.std,
-            priority: defaultFee.priority_std ?? '0',
-          },
-        };
+        return defaults;
       }
 
-      return JSON.parse(cachedFee);
+      try {
+        return JSON.parse(cachedFee);
+      } catch (exception) {
+        return defaults;
+      }
     }
 
     const fee = {

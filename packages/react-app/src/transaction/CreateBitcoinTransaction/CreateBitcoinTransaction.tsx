@@ -191,14 +191,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (dispatch: any, ownProps) => ({
     getFees(blockchain, defaultFee, feeTtl) {
       return async () => {
-        try {
-          const fees: number[] = await Promise.all([
-            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
-            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
-            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
-          ]);
+        const fees: number[] = await Promise.all([
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
+        ]);
 
-          const [avgLast, avgTail5, avgMiddle] = fees.sort((first, second) => {
+        const [avgLast, avgTail5, avgMiddle] = fees
+          .map((fee) => fee ?? 0)
+          .sort((first, second) => {
             if (first === second) {
               return 0;
             }
@@ -206,28 +207,35 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             return first > second ? 1 : -1;
           });
 
-          const fee = {
-            avgLast,
-            avgMiddle,
-            avgTail5,
+        if (avgMiddle === 0) {
+          const defaults = {
+            avgLast: defaultFee.min,
+            avgMiddle: defaultFee.max,
+            avgTail5: defaultFee.std,
           };
 
-          await dispatch(application.actions.cachePut(`fee.${blockchain}`, JSON.stringify(fee), feeTtl));
-
-          return fee;
-        } catch (exception) {
           const cachedFee = await dispatch(application.actions.cacheGet(`fee.${blockchain}`));
 
           if (cachedFee == null) {
-            return {
-              avgLast: defaultFee.min,
-              avgMiddle: defaultFee.max,
-              avgTail5: defaultFee.std,
-            };
+            return defaults;
           }
 
-          return JSON.parse(cachedFee);
+          try {
+            return JSON.parse(cachedFee);
+          } catch (exception) {
+            return defaults;
+          }
         }
+
+        const fee = {
+          avgLast,
+          avgMiddle,
+          avgTail5,
+        };
+
+        await dispatch(application.actions.cachePut(`fee.${blockchain}`, JSON.stringify(fee), feeTtl));
+
+        return fee;
       };
     },
     getXPubPositionalAddress(entryId, xPub, role) {
