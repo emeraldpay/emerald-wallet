@@ -39,6 +39,32 @@ const api: WalletApi = {
 
 export const store = createStore(api, new BackendApiInvoker());
 
+function checkOptionsUpdates(stored: SettingsOptions): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateOptions(stored).then((options) => store.dispatch(application.actions.setOptions(options) as any));
+}
+
+function checkTokensUpdates(stored: TokenData[]): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateTokens(stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
+}
+
+function checkWalletUpdates(): void {
+  checkUpdate().then((versionDetails) => {
+    if (!versionDetails.isLatest) {
+      store.dispatch(
+        screen.actions.showNotification(
+          `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
+          'info',
+          20 * 1000,
+          'Update',
+          screen.actions.openLink(versionDetails.downloadLink),
+        ),
+      );
+    }
+  });
+}
+
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
 
@@ -84,32 +110,6 @@ function getInitialScreen(): void {
   );
 }
 
-function checkOptionsUpdates(stored: SettingsOptions): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateOptions(stored).then((options) => store.dispatch(application.actions.setOptions(options) as any));
-}
-
-function checkTokensUpdates(stored: TokenData[]): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateTokens(stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
-}
-
-function checkWalletUpdates(): void {
-  checkUpdate().then((versionDetails) => {
-    if (!versionDetails.isLatest) {
-      store.dispatch(
-        screen.actions.showNotification(
-          `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
-          'info',
-          20 * 1000,
-          'Update',
-          screen.actions.openLink(versionDetails.downloadLink),
-        ),
-      );
-    }
-  });
-}
-
 function startSync(): void {
   logger.info('Start synchronization');
 
@@ -149,17 +149,15 @@ function startSync(): void {
 
     store.dispatch(application.actions.connecting(false));
   });
+
+  triggers.onceAccountsLoaded(store).then(() => {
+    RemoteCache.get('rates').then((rates) => store.dispatch(settings.actions.setRates(JSON.parse(rates))));
+
+    initBalancesState(api, store);
+  });
+
+  ipcRenderer.send(IpcCommands.EMERALD_READY);
 }
-
-triggers.onceBlockchainConnected(store).then(startSync);
-
-triggers.onceAccountsLoaded(store).then(() => {
-  RemoteCache.get('rates').then((rates) => store.dispatch(settings.actions.setRates(JSON.parse(rates))));
-
-  initBalancesState(api, store);
-});
-
-ipcRenderer.send(IpcCommands.EMERALD_READY);
 
 export function startStore(): void {
   try {
@@ -174,6 +172,7 @@ export function startStore(): void {
     store.dispatch(settings.actions.loadSettings());
 
     listenElectron();
+    startSync();
   } catch (exception) {
     logger.error(exception);
   }

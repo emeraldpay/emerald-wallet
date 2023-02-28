@@ -1,7 +1,7 @@
 import { Store } from 'redux';
 import { TERMS_VERSION } from './config';
 import { Dispatcher } from './types';
-import { IState, accounts, application, blockchains, settings } from './index';
+import { IState, accounts, application, settings } from './index';
 
 /**
  * Trigger state value, which is any string representing the state. The trigger fires when the state value changes from
@@ -38,10 +38,6 @@ const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<I
 
 export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
   return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
-}
-
-export function onceBlockchainConnected(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => blockchains.selectors.hasAny(store.getState()), resolve, store));
 }
 
 export function onceModeSet(store: Store<IState>): Promise<void> {
