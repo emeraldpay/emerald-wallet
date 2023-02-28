@@ -227,21 +227,27 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
     async getTopFee(blockchain, defaultFee) {
-      let max: string | null = null;
+      let avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
 
-      try {
-        let avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
-
-        if (avgTop == null || new BigNumber(avgTop).eq(0)) {
-          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
-        }
-
-        ({ max = avgTop } = avgTop);
-      } catch (exception) {
-        // Nothing
+      if (avgTop == null) {
+        avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
       }
 
-      return max ?? defaultFee.max;
+      if (avgTop == null) {
+        const cachedFee = await dispatch(application.actions.cacheGet(`fee.${blockchain}`));
+
+        if (cachedFee == null) {
+          return defaultFee.max;
+        }
+
+        try {
+          ({ avgTop } = JSON.parse(cachedFee));
+        } catch (exception) {
+          // Nothing
+        }
+      }
+
+      return avgTop ?? defaultFee.max;
     },
     goBack() {
       dispatch(screen.actions.goBack());

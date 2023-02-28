@@ -12,18 +12,7 @@ import {
   formatAmount,
   workflow,
 } from '@emeraldwallet/core';
-import {
-  DefaultFee,
-  FEE_KEYS,
-  GasPrices,
-  IState,
-  SignData,
-  accounts,
-  application,
-  screen,
-  tokens,
-  transaction,
-} from '@emeraldwallet/store';
+import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
@@ -99,7 +88,6 @@ interface StylesProps {
 interface StateProps {
   addresses: string[];
   blockchain: BlockchainCode;
-  defaultFee: DefaultFee;
   eip1559: boolean;
   tokenRegistry: TokenRegistry;
   getBalance(address?: string): BigAmount;
@@ -111,7 +99,7 @@ interface StateProps {
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(tx: EthereumTransaction): Promise<number>;
-  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
+  getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   goBack(): void;
   signTransaction(entryId: string, tx: workflow.CreateErc20WrappedTx, token: Token, password?: string): Promise<void>;
 }
@@ -122,7 +110,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   addresses,
   blockchain,
   classes,
-  defaultFee,
   eip1559,
   entry: { address },
   token,
@@ -296,7 +283,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   React.useEffect(
     () => {
       (async (): Promise<void> => {
-        const fees = await getFees(blockchain, defaultFee);
+        const fees = await getFees(blockchain);
 
         const { avgLast, avgMiddle, avgTail5 } = fees;
 
@@ -601,7 +588,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       blockchain,
       tokenRegistry,
       addresses: [...uniqueAddresses],
-      defaultFee: application.selectors.getDefaultFee(state, blockchain),
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
         if (address == null) {
@@ -666,8 +652,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     estimateGas(tx) {
       return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
     },
-    getFees(blockchain, defaultFee) {
-      return dispatch(transaction.actions.getFee(blockchain, defaultFee));
+    getFees(blockchain) {
+      return dispatch(transaction.actions.getFee(blockchain));
     },
     goBack() {
       dispatch(screen.actions.goBack());

@@ -72,6 +72,14 @@ export function setTokens(tokens: TokenData[]): Dispatched<void, SetAssetsAction
   };
 }
 
+export function cacheGet(id: string): Dispatched<string | null> {
+  return (dispatch, getState, extra) => extra.api.cache.get(id);
+}
+
+export function cachePut(id: string, value: string, ttl?: number): Dispatched {
+  return (dispatch, getState, extra) => extra.api.cache.put(id, value, ttl);
+}
+
 export function fsReadFile(filePath: string): Dispatched<Uint8Array | null> {
   return () => ipcRenderer.invoke(IpcCommands.FS_READ_FILE, filePath);
 }
