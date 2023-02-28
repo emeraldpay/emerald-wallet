@@ -6,6 +6,10 @@ export function getDefaultFee<T = GasPriceType>(state: IState, blockchain: Block
   return JSON.parse(state[moduleName].options[`default_fee.${blockchainCodeToId(blockchain)}`] as string);
 }
 
+export function getFeeTtl(state: IState, blockchain: BlockchainCode): number {
+  return state[moduleName].options[`fee_ttl.${blockchainCodeToId(blockchain)}`] as number;
+}
+
 export function getMessage(state: IState): ApplicationMessage {
   return state[moduleName].message;
 }
