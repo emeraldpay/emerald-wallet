@@ -224,6 +224,7 @@ class CreateTx extends React.Component<Props, State> {
         <FormRow>
           <AmountField
             amount={tx.getAmount()}
+            maxDisabled={initializing}
             units={tx.getAmount().units}
             onChangeAmount={
               onChangeAmount ||

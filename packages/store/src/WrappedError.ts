@@ -16,6 +16,9 @@ export class WrappedError extends Error {
     const [, ipcChannel, unwrappedMessage] = errorMessage.match(WrappedError.errorRegex) ?? [];
 
     switch (unwrappedMessage) {
+      case '200: CryptoFailed(WrongKey)':
+        super("You've entered an invalid password. Please double check your password and try again.");
+        break;
       case 'nonce too low':
         super(`Transaction ${transaction?.state === State.CONFIRMED ? 'already confirmed' : unwrappedMessage}`);
         break;

@@ -13,6 +13,7 @@ interface Actions {
 interface OwnProps {
   amount?: BigAmount | undefined;
   disabled?: boolean;
+  maxDisabled?: boolean;
   units: Units;
   onChangeAmount: (amount: BigAmount) => void;
   onMaxClicked?: () => void;
@@ -45,6 +46,7 @@ function amountOrDefault(amount: BigAmount | undefined): string {
 
 const Component: React.FC<Actions & OwnProps> = ({
   disabled = false,
+  maxDisabled = false,
   amount,
   units,
   onChangeAmount,
@@ -130,7 +132,7 @@ const Component: React.FC<Actions & OwnProps> = ({
       <Button
         className={styles.button}
         color={allowAmountUpdate ? 'primary' : 'secondary'}
-        disabled={disabled}
+        disabled={disabled || maxDisabled}
         onClick={handleMaxClick}
       >
         MAX
