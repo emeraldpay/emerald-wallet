@@ -5,7 +5,7 @@ import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper, T
 import * as React from 'react';
 import { connect } from 'react-redux';
 import SelectCoins from './SelectCoins';
-import LedgerWait from '../ledger/LedgerWait';
+import WaitLedger from '../ledger/WaitLedger';
 
 enum Stages {
   SELECT = 0,
@@ -76,7 +76,7 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
         )}
         {stage === Stages.CONFIRM &&
           (isHardware ? (
-            <LedgerWait fullSize onConnected={handleCreate} />
+            <WaitLedger fullSize onConnected={handleCreate} />
           ) : (
             <>
               <FormRow>
@@ -119,9 +119,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     let isHardware = false;
 
     if (reserved != null) {
-      const seed = accounts.selectors.getSeed(state, reserved.seedId);
-
-      isHardware = seed?.type === 'ledger';
+      isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: reserved.seedId });
     }
 
     const enabledBlockchains =

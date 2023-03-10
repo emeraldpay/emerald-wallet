@@ -3,7 +3,8 @@ import { txhistory } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import TxHistory from '../../src/transactions/TxHistory';
-import { BackendMock } from '../backendMock';
+import { MemoryApiMock } from '../__mocks__/apiMock';
+import { BackendMock } from '../__mocks__/backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
 import { createWallets, setRates, wallet3 } from '../wallets';
@@ -119,14 +120,19 @@ const txBitcoin2: PersistentState.Transaction = {
   txId: '0x4',
 };
 
+const api = new MemoryApiMock();
 const backend = new BackendMock();
 
-backend.txHistory.insertTransactions([txEthereum1, txBitcoin1, txEthereum2, txBitcoin2]);
+api.txHistory.insertTransactions([txEthereum1, txBitcoin1, txEthereum2, txBitcoin2]);
 
 storiesOf('TxHistory', module)
   .addDecorator(withTheme)
   .addDecorator(
-    providerForStore(backend, [...setRates, ...createWallets, txhistory.actions.loadTransactions(wallet3.id, true)]),
+    providerForStore(api, backend, [
+      ...setRates,
+      ...createWallets,
+      txhistory.actions.loadTransactions(wallet3.id, true),
+    ]),
   )
   .add('transactions', () => (
     <div style={{ height: '100vh' }}>

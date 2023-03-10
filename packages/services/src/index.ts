@@ -4,7 +4,7 @@ export { PriceListener } from './services/prices/PricesListener';
 export { default as PricesService } from './services/prices/PricesService';
 export { TxService } from './services/transactions/TxService';
 export { BlockchainStatusService } from './services/BlockchainStatusService';
-export { ConnStatus } from './services/ConnStatus';
+export { ConnectionStatus } from './services/ConnectionStatus';
 export { Services } from './services/Services';
 export { ChainListener } from './ChainListener';
 export { default as ChainRpcConnections } from './ChainRpcConnections';

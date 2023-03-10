@@ -6,29 +6,25 @@ import { IAddAccountState } from './add-account/types';
 import { AddressBookState, moduleName as addressBookModule } from './address-book/types';
 import { ApplicationState, moduleName as applicationModule } from './application/types';
 import { BlockchainsState, moduleName as blockchainsModule } from './blockchains/types';
-import { IConnState, moduleName as connModule } from './conn/types';
+import { ConnectionState, moduleName as connectionModule } from './connection/types';
 import { IHDPreviewState } from './hdpath-preview/types';
-import { HWKeyState } from './hwkey/types';
 import { ScreenState } from './screen/types';
 import { SettingsState } from './settings/types';
 import { TokensState, moduleName as tokensModule } from './tokens/types';
-import { BroadcastData, SignData } from './transaction/types';
-import { Triggers } from './triggers';
 import { HistoryState } from './txhistory/types';
 
-export { SignData, BroadcastData };
+export { BroadcastData, SignData } from './transaction/types';
 
 export interface IState {
   [accountsModule]: IAccountsState;
   [addressBookModule]: AddressBookState;
   [applicationModule]: ApplicationState;
   [blockchainsModule]: BlockchainsState;
-  [connModule]: IConnState;
+  [connectionModule]: ConnectionState;
   [tokensModule]: TokensState;
   addAccount?: IAddAccountState;
   hdpathPreview?: IHDPreviewState;
   history: HistoryState;
-  hwkey: HWKeyState;
   screen: ScreenState;
   settings: SettingsState;
 }
@@ -38,7 +34,6 @@ export type GetState = () => IState;
 export interface IExtraArgument {
   api: WalletApi;
   backendApi: BackendApi;
-  triggers: Triggers;
 }
 
 export interface Dispatcher<A extends Action = AnyAction> extends Dispatch<A> {
@@ -67,4 +62,4 @@ export interface DefaultFee<T = GasPriceType> {
   priority_std?: string;
 }
 
-export type FeePrices<T = GasPriceType> = Record<typeof FEE_KEYS[number], T>;
+export type FeePrices<T = GasPriceType> = Record<(typeof FEE_KEYS)[number], T>;

@@ -1,6 +1,5 @@
-import { Logger } from '@emeraldwallet/core';
+import { Logger, config } from '@emeraldwallet/core';
 import { App, i18n } from '@emeraldwallet/react-app';
-import { config } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import BigNumber from 'bignumber.js';
 import * as ElectronLogger from 'electron-log';

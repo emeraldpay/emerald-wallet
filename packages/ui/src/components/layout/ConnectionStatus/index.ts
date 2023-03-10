@@ -1,1 +1,1 @@
-export { default } from './ConnectionStatus';
+export { default, StateProps as ConnectionStateProps } from './ConnectionStatus';

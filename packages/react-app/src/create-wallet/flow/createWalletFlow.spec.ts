@@ -239,8 +239,7 @@ describe("Account", () => {
     let result: Result | undefined = undefined;
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_HD_ACCOUNT, (it) => result = it);
     expect(start.canGoNext()).toBeFalsy();
-    let act = start
-      .applyHDAccount(1, { [BlockchainCode.ETH]: '' }, { [BlockchainCode.ETH]: 1 });
+    let act = start.applyAccount(1, { [BlockchainCode.ETH]: 1 });
     expect(act.canGoNext()).toBeTruthy();
     act = act.applyNext();
     expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED)

@@ -6,6 +6,7 @@ import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import WaitLedger from '../../ledger/WaitLedger';
 
 const useStyles = makeStyles(
   createStyles({
@@ -20,7 +21,7 @@ const useStyles = makeStyles(
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   goBack(): void;
-  signTransaction(tx: EthereumTransaction, accountId?: string, password?: string): Promise<void>;
+  signTransaction(tx: EthereumTransaction, entryId?: string, password?: string): Promise<void>;
 }
 
 interface OwnProps {
@@ -28,11 +29,13 @@ interface OwnProps {
 }
 
 interface StateProps {
-  accountId?: string;
+  entryId?: string;
+  isHardware: boolean;
 }
 
 const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> = ({
-  accountId,
+  entryId,
+  isHardware,
   transaction,
   checkGlobalKey,
   goBack,
@@ -46,31 +49,41 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
   const onSignTransaction = useCallback(async () => {
     setPasswordError(undefined);
 
-    const correctPassword = await checkGlobalKey(password);
-
-    if (correctPassword) {
-      await signTransaction(transaction, accountId, password);
+    if (isHardware) {
+      await signTransaction(transaction, entryId);
     } else {
-      setPasswordError('Incorrect password');
+      const correctPassword = await checkGlobalKey(password);
+
+      if (correctPassword) {
+        await signTransaction(transaction, entryId, password);
+      } else {
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [accountId, password, transaction, checkGlobalKey, signTransaction]);
+  }, [entryId, isHardware, password, transaction, checkGlobalKey, signTransaction]);
 
   return (
     <Page title="Cancel Transaction" leftIcon={<Back onClick={goBack} />}>
-      <FormRow>
-        <FormLabel>Password</FormLabel>
-        <PasswordInput error={passwordError} onChange={setPassword} />
-      </FormRow>
+      {isHardware ? (
+        <WaitLedger fullSize blockchain={transaction.blockchain} onConnected={() => onSignTransaction()} />
+      ) : (
+        <FormRow>
+          <FormLabel>Password</FormLabel>
+          <PasswordInput error={passwordError} onChange={setPassword} />
+        </FormRow>
+      )}
       <FormRow last>
         <FormLabel />
         <ButtonGroup classes={{ container: styles.buttons }}>
           <Button label="Cancel" onClick={goBack} />
-          <Button
-            label="Sign Transaction"
-            disabled={password.length === 0}
-            primary={true}
-            onClick={onSignTransaction}
-          />
+          {!isHardware && (
+            <Button
+              label="Sign Transaction"
+              disabled={password.length === 0}
+              primary={true}
+              onClick={onSignTransaction}
+            />
+          )}
         </ButtonGroup>
       </FormRow>
     </Page>
@@ -78,12 +91,27 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const { blockchain, from } = ownProps.transaction;
+  (state, { transaction: { blockchain, from } }) => {
+    const entry = accounts.selectors.findAccountByAddress(state, from, blockchain);
 
-    const account = accounts.selectors.findAccountByAddress(state, from, blockchain);
+    let isHardware = false;
 
-    return { accountId: account?.id };
+    if (entry != null) {
+      const wallet = accounts.selectors.findWalletByEntryId(state, entry.id);
+
+      if (wallet != null) {
+        const [account] = wallet.reserved ?? [];
+
+        if (account != null) {
+          isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: account.seedId });
+        }
+      }
+    }
+
+    return {
+      isHardware,
+      entryId: entry?.id,
+    };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
@@ -93,8 +121,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    async signTransaction(tx, password, accountId) {
-      if (accountId == null || tx.to == null) {
+    async signTransaction(tx, password, entryId) {
+      if (entryId == null || tx.to == null) {
         return;
       }
 
@@ -114,7 +142,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
       const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
-          accountId,
+          entryId,
           {
             ...tx,
             data: '',

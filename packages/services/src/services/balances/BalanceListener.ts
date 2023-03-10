@@ -111,7 +111,7 @@ export class BalanceListener implements IService {
                 vout: utxo.vout,
               })),
             },
-        }),
+          }),
         ),
     );
 

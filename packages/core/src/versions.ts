@@ -1,5 +1,3 @@
-import os from 'os';
-
 export interface Versions {
   appVersion?: string;
   gitVersion?: { [key: string]: string };

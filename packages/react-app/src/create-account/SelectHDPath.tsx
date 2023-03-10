@@ -1,8 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, HDPath, amountDecoder, formatAmount, isEthereum } from '@emeraldwallet/core';
-import { IState, accounts, hdpathPreview, hwkey } from '@emeraldwallet/store';
-import { HDPathIndexes, IAddressState } from '@emeraldwallet/store/lib/hdpath-preview/types';
+import { HDPathIndexes, IAddressState, IState, accounts, hdpathPreview } from '@emeraldwallet/store';
 import { Address, Table } from '@emeraldwallet/ui';
 import {
   Grid,
@@ -15,13 +14,12 @@ import {
   Tooltip,
   Typography,
   createStyles,
+  makeStyles,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import BeenhereIcon from '@material-ui/icons/Beenhere';
-import ClearIcon from '@material-ui/icons/Clear';
+import { Clear as UnusedIcon, Beenhere as UsedIcon } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
-import { ChangeEvent, Dispatch } from 'react';
+import { ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 import HDPathCounter from './HDPathCounter';
 
@@ -38,7 +36,7 @@ const useStyles = makeStyles(
       color: '#d0d0d0',
     },
     hdPathCell: {
-      width: 160,
+      width: 180,
     },
     hdPathIndex: {
       fontSize: '1rem',
@@ -46,82 +44,40 @@ const useStyles = makeStyles(
   }),
 );
 
-type Actions = {
-  onAccountUpdate(
-    account: number,
-    ready: boolean,
-    addresses: Partial<Record<BlockchainCode, string>>,
-    indexes: HDPathIndexes,
-  ): void;
-  onReady(
-    account: number,
-    ready: boolean,
-    addresses: Partial<Record<BlockchainCode, string>>,
-    indexes: HDPathIndexes,
-  ): void;
-  onStart(): void;
-};
-
-type OwnProps = {
+interface OwnProps {
   blockchains: BlockchainCode[];
   seed: SeedReference;
-  onChange(
-    account: number | undefined,
-    addresses: Partial<Record<BlockchainCode, string>>,
-    indexes: HDPathIndexes,
-  ): void;
-};
+  onChange(accountId: number | undefined, indexes: HDPathIndexes): void;
+}
 
-type StateProps = {
+interface StateProps {
   disabledAccounts: number[];
-  initAccountId: number;
-  isHWKey: boolean;
-  isPreloaded: boolean;
-  table: IAddressState[];
-};
+  hdPathDisplay: IAddressState[];
+  indexes: HDPathIndexes;
+  initialAccountId: number;
+  isHardware: boolean;
+}
+
+interface DispatchProps {
+  onInit(): void;
+  onUpdate(accountId: number, indexes: HDPathIndexes): void;
+}
 
 const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
 
-const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
+const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
   disabledAccounts,
-  initAccountId,
-  isHWKey,
-  isPreloaded,
-  table,
-  onAccountUpdate,
-  onReady,
-  onStart,
+  hdPathDisplay,
+  indexes,
+  initialAccountId,
+  isHardware,
+  onChange,
+  onInit,
+  onUpdate,
 }) => {
   const styles = useStyles();
 
-  const [accountId, setAccountId] = React.useState(initAccountId);
-  const [initialized, setInitialized] = React.useState(false);
-  const [indexes, setIndexes] = React.useState<HDPathIndexes>(
-    table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}),
-  );
-
-  const addresses = React.useMemo(
-    () =>
-      table.reduce<Partial<Record<BlockchainCode, string>>>((carry, item) => {
-        if (item.xpub == null && item.address == null) {
-          return carry;
-        }
-
-        return {
-          ...carry,
-          [item.blockchain]: item.xpub ?? item.address,
-        };
-      }, {}),
-    [table],
-  );
-
-  const isReady = React.useMemo(() => !isHWKey || isPreloaded, [isHWKey, isPreloaded]);
-
-  const isActive = React.useCallback((item: IAddressState) => {
-    const amountReader = amountDecoder(item.blockchain);
-
-    return item.balance != null && amountReader(item.balance).isPositive();
-  }, []);
+  const [accountId, setAccountId] = React.useState(initialAccountId);
 
   const renderAddress = React.useCallback(
     (value: string | undefined | null, blockchain: BlockchainCode) => {
@@ -129,7 +85,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
         return <Address address={value} disableCopy={true} />;
       }
 
-      if (isHWKey) {
+      if (isHardware) {
         const appTitle = Blockchains[blockchain].getTitle();
 
         return (
@@ -141,8 +97,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
 
       return <Skeleton variant="text" width={380} height={12} />;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isHWKey],
+    [isHardware, styles],
   );
 
   const renderBalance = React.useCallback(
@@ -156,56 +111,41 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
 
       return <Typography>{formatAmount(amount)}</Typography>;
     },
+    [styles],
+  );
+
+  React.useEffect(
+    () => {
+      onInit();
+
+      onUpdate(accountId, indexes);
+      onChange(accountId, indexes);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
-  const onAccountChange = React.useCallback(
-    (path: HDPath) => {
-      setAccountId(path.account);
+  const onAccountChange = (path: HDPath): void => {
+    setAccountId(path.account);
 
-      onAccountUpdate(path.account, isReady, addresses, indexes);
-    },
-    [addresses, indexes, isReady, onAccountUpdate],
-  );
+    onUpdate(path.account, indexes);
+    onChange(path.account, indexes);
+  };
 
-  const onIndexChange = React.useCallback(
+  const onIndexChange =
     (item: IAddressState) =>
-      ({ target: { value } }: ChangeEvent<{ value: unknown }>) => {
-        const newIndexes = { ...indexes };
+    ({ target: { value } }: ChangeEvent<{ value: unknown }>) => {
+      const newIndexes = { ...indexes, [item.blockchain]: parseInt(value as string, 10) };
 
-        newIndexes[item.blockchain] = parseInt(value as string, 10);
+      onUpdate(accountId, newIndexes);
+      onChange(accountId, newIndexes);
+    };
 
-        onAccountUpdate(accountId, isReady, addresses, newIndexes);
-      },
-    [accountId, addresses, indexes, isReady, onAccountUpdate],
-  );
+  const isActive = (item: IAddressState): boolean => {
+    const amountReader = amountDecoder(item.blockchain);
 
-  React.useEffect(
-    () => {
-      if (!initialized) {
-        onStart();
-
-        onAccountUpdate(accountId, isReady, addresses, indexes);
-
-        setInitialized(true);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onStart, onAccountUpdate],
-  );
-
-  React.useEffect(
-    () => {
-      onReady(accountId, isReady, addresses, indexes);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isHWKey, isPreloaded],
-  );
-
-  React.useEffect(() => {
-    setIndexes(table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}));
-  }, [table]);
+    return item.balance != null && amountReader(item.balance).isPositive();
+  };
 
   let previousItem: IAddressState | undefined;
 
@@ -218,8 +158,8 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
   };
 
   return (
-    <Grid container={true}>
-      <Grid item={true} xs={12}>
+    <Grid container>
+      <Grid item xs={12}>
         <HDPathCounter
           base={BASE_HD_PATH.toString()}
           start={accountId}
@@ -227,7 +167,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
           onChange={onAccountChange}
         />
       </Grid>
-      <Grid item={true} xs={12}>
+      <Grid item xs={12}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -240,7 +180,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {table.map((item, index) => {
+            {hdPathDisplay.map((item, index) => {
               const hdpath = HDPath.parse(item.hdpath);
 
               const element = (
@@ -265,7 +205,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
                         item.hdpath
                       )
                     ) : (
-                      ''
+                      <></>
                     )}
                   </TableCell>
                   <TableCell>{isChanged(item) ? renderAddress(item.address, item.blockchain) : ''}</TableCell>
@@ -273,7 +213,7 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
                   <TableCell>{item.asset}</TableCell>
                   <TableCell>
                     <Tooltip title={isActive(item) ? 'You had used this address before' : 'New inactive address'}>
-                      {isActive(item) ? <BeenhereIcon /> : <ClearIcon className={styles.inactiveCheck} />}
+                      {isActive(item) ? <UsedIcon /> : <UnusedIcon className={styles.inactiveCheck} />}
                     </Tooltip>
                   </TableCell>
                 </TableRow>
@@ -290,14 +230,12 @@ const SelectHDPath: React.FC<Actions & OwnProps & StateProps> = ({
   );
 };
 
-export default connect(
-  (state: IState, ownProps: OwnProps): StateProps => {
-    let { seed } = ownProps;
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, { seed }) => {
+    const isHardware = accounts.selectors.isHardwareSeed(state, seed);
 
-    const isHWSeed = accounts.selectors.isHardwareSeed(state, seed);
-
-    // if ledger seed, check if it's already used and get id
-    if (isHWSeed && isLedger(seed)) {
+    // If ledger seed, check if it's already used and get id
+    if (isHardware && isLedger(seed)) {
       const ledgerSeed = accounts.selectors.findLedgerSeed(state);
 
       if (ledgerSeed?.id) {
@@ -314,34 +252,33 @@ export default connect(
       .map(({ reserved }) => reserved?.map(({ accountId }) => accountId) ?? [])
       .reduce((result, accountId) => result.concat(accountId), []);
 
-    let accountId = 0;
+    let initialAccountId = 0;
 
-    while (disabledAccounts.indexOf(accountId) >= 0) {
-      accountId++;
+    while (disabledAccounts.indexOf(initialAccountId) >= 0) {
+      initialAccountId++;
     }
+
+    const hdPathDisplay = hdpathPreview.selectors.getCurrentDisplay(state, seed);
 
     return {
       disabledAccounts,
-      initAccountId: accountId,
-      isHWKey: isHWSeed,
-      isPreloaded: hdpathPreview.selectors.isPreloaded(state),
-      table: hdpathPreview.selectors.getCurrentDisplay(state, seed),
+      hdPathDisplay,
+      initialAccountId,
+      isHardware,
+      indexes: hdPathDisplay.reduce(
+        (carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }),
+        {},
+      ),
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  (dispatch: any, { blockchains, seed }) => {
     return {
-      onAccountUpdate(account, ready, addresses, indexes) {
-        dispatch(hdpathPreview.actions.displayAccount(account, indexes));
-
-        ownProps.onChange(ready ? account : undefined, addresses, indexes);
+      onInit() {
+        dispatch(hdpathPreview.actions.init(blockchains, seed));
       },
-      onReady(account, ready, addresses, indexes) {
-        ownProps.onChange(ready ? account : undefined, addresses, indexes);
-      },
-      onStart() {
-        dispatch(hdpathPreview.actions.init(ownProps.blockchains, ownProps.seed));
-        dispatch(hwkey.actions.setWatch(true));
+      onUpdate(accountId, indexes) {
+        dispatch(hdpathPreview.actions.displayAccount(accountId, indexes));
       },
     };
   },

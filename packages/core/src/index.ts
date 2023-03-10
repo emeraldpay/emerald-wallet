@@ -1,8 +1,9 @@
 import * as blockchains from './blockchains';
+import * as config from './config';
 import * as utils from './utils';
 import * as workflow from './workflow';
 
-export { blockchains, workflow, utils };
+export { blockchains, config, workflow, utils };
 
 export {
   BalanceUtxo,

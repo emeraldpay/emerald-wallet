@@ -1,7 +1,6 @@
-import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
-import { IdSeedReference, isIdSeedReference } from '@emeraldpay/emerald-vault-core/lib/types';
-import { Blockchains, HDPath, isBitcoin, isEthereum } from '@emeraldwallet/core';
-import { Entry, IAddressState, isEqualSeed } from './types';
+import { SeedReference, isIdSeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
+import { Blockchains, HDPath } from '@emeraldwallet/core';
+import { Entry, HDPathAddresses, IAddressState, isEqualSeed } from './types';
 import * as accountSelectors from '../accounts/selectors';
 import { IState } from '../types';
 
@@ -37,7 +36,9 @@ function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressS
     fullHDPath = accountHDPath.forAddress(0, 0);
   }
 
-  const existing = state.hdpathPreview?.accounts.find(
+  const { accounts = [] } = state.hdpathPreview ?? {};
+
+  const existing = accounts.find(
     (item) => item.blockchain === entry.blockchain && item.hdpath === fullHDPath.toString(),
   );
 
@@ -50,12 +51,12 @@ function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressS
     };
   }
 
-  const asAccount = state.hdpathPreview?.accounts.find(
+  const account = accounts.find(
     (item) => item.blockchain === entry.blockchain && item.hdpath === accountHDPath.toString(),
   );
 
-  if (asAccount != null) {
-    existing.xpub = asAccount.address;
+  if (account != null) {
+    existing.xpub = account.address;
   }
 
   return existing;
@@ -65,22 +66,24 @@ export function getCurrentDisplay(state: IState, seed: SeedReference): IAddressS
   return state.hdpathPreview?.display.entries.map((entry) => getByEntry(state, entry, seed)) ?? [];
 }
 
-export function isPreloaded(state: IState): boolean {
-  if (state.hdpathPreview == null) {
-    return false;
-  }
+export function getCurrentAddresses(state: IState): HDPathAddresses {
+  const { accounts = [], display } = state.hdpathPreview ?? {};
+  const { entries = [] } = display ?? {};
 
-  const emptySeed: IdSeedReference = {
-    type: 'id',
-    value: 'none',
-  };
-
-  return state.hdpathPreview.display.entries.every((entry) => {
-    const full = getByEntry(state, entry, emptySeed);
-
-    return (
-      (isBitcoin(full.blockchain) && full.xpub != null && full.xpub.length > 0) ||
-      (isEthereum(full.blockchain) && full.address != null && full.address.length > 0)
+  return entries.reduce((carry, entry) => {
+    const account = accounts.find(
+      (item) =>
+        item.blockchain === entry.blockchain &&
+        (item.hdpath === entry.hdpath || item.hdpath === HDPath.parse(entry.hdpath).asAccount().toString()),
     );
-  });
+
+    if (account?.xpub == null && account?.address == null) {
+      return carry;
+    }
+
+    return {
+      ...carry,
+      [account.blockchain]: account.xpub ?? account.address,
+    };
+  }, {});
 }

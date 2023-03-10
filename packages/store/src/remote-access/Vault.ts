@@ -7,6 +7,7 @@ import {
   ExportedWeb3Json,
   HWKeyDetails,
   IEmeraldVault,
+  IconDetails,
   IdSeedReference,
   LedgerSeedReference,
   OddPasswordItem,
@@ -20,7 +21,8 @@ import {
   UnsignedTx,
   Uuid,
   Wallet,
-  IconDetails,
+  WatchEvent,
+  WatchRequest,
 } from '@emeraldpay/emerald-vault-core';
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
@@ -183,6 +185,10 @@ class Vault implements IEmeraldVault {
 
   setIcon(walletId: Uuid, icon: ArrayBuffer | Uint8Array | null): Promise<boolean> {
     return ipcRenderer.invoke(IpcCommands.VAULT_SET_ICON, walletId, icon);
+  }
+
+  watch(request: WatchRequest): Promise<WatchEvent> {
+    return ipcRenderer.invoke(IpcCommands.VAULT_WATCH, request);
   }
 }
 

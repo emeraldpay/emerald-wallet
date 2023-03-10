@@ -60,7 +60,7 @@ const WalletReference: React.FC<OwnProps> = ({ assets, walletIcon, wallet, class
         )}
       </CardMedia>
       <CardContent className={classes.content}>
-        <Typography>{wallet.name ?? '--'}</Typography>
+        <Typography>{wallet.name ?? ''}</Typography>
         <Typography variant="body2" className={styles.walletId}>
           {wallet.id}
         </Typography>

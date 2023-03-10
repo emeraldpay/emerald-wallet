@@ -26,52 +26,55 @@ import {
   Switch,
   TextField,
   createStyles,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import WaitLedger from '../../ledger/WaitLedger';
 
-const styles = createStyles({
-  inputField: {
-    flexGrow: 5,
-  },
-  gasPriceTypeBox: {
-    width: '240px',
-    float: 'left',
-    height: '40px',
-  },
-  gasPriceSliderBox: {
-    width: '300px',
-    float: 'left',
-  },
-  gasPriceHelpBox: {
-    width: '500px',
-    clear: 'left',
-  },
-  gasPriceSlider: {
-    width: '300px',
-    marginBottom: '10px',
-    paddingTop: '10px',
-  },
-  gasPriceHelp: {
-    position: 'initial',
-    paddingLeft: '10px',
-  },
-  gasPriceMarkLabel: {
-    fontSize: '0.7em',
-    opacity: 0.8,
-  },
-  gasPriceValueLabel: {
-    fontSize: '0.7em',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'end',
-    width: '100%',
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    inputField: {
+      flexGrow: 5,
+    },
+    gasPriceTypeBox: {
+      width: '240px',
+      float: 'left',
+      height: '40px',
+    },
+    gasPriceSliderBox: {
+      width: '300px',
+      float: 'left',
+    },
+    gasPriceHelpBox: {
+      width: '500px',
+      clear: 'left',
+    },
+    gasPriceSlider: {
+      width: '300px',
+      marginBottom: '10px',
+      paddingTop: '10px',
+    },
+    gasPriceHelp: {
+      position: 'initial',
+      paddingLeft: '10px',
+    },
+    gasPriceMarkLabel: {
+      fontSize: '0.7em',
+      opacity: 0.8,
+    },
+    gasPriceValueLabel: {
+      fontSize: '0.7em',
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+  }),
+);
 
 enum Stages {
   SETUP = 'setup',
@@ -82,13 +85,10 @@ interface OwnProps {
   entry: WalletEntry;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
 interface StateProps {
   balanceByToken: Record<string, BigAmount>;
   eip1559: boolean;
+  isHardware: boolean;
   ownAddresses: string[];
   recoverBlockchain: IBlockchain;
   tokensData: TokenData[];
@@ -106,11 +106,11 @@ interface DispatchProps {
 
 const minimalUnit = new Unit(9, '', undefined);
 
-const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
+const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   entry: { address: fromAddress },
   eip1559,
   balanceByToken,
-  classes,
+  isHardware,
   ownAddresses,
   recoverBlockchain,
   tokensData,
@@ -122,6 +122,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   goBack,
   signTransaction,
 }) => {
+  const styles = useStyles();
+
   const [initializing, setInitializing] = useState(true);
   const [stage, setStage] = useState(Stages.SETUP);
 
@@ -213,16 +215,20 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const onSignTransaction = useCallback(async () => {
     setPasswordError(undefined);
 
-    const correctPassword = await checkGlobalKey(password);
+    const tx = workflow.CreateEthereumTx.fromPlain(transaction);
 
-    if (correctPassword) {
-      const tx = workflow.CreateEthereumTx.fromPlain(transaction);
-
-      await signTransaction(tx, password);
+    if (isHardware) {
+      await signTransaction(tx);
     } else {
-      setPasswordError('Incorrect password');
+      const correctPassword = await checkGlobalKey(password);
+
+      if (correctPassword) {
+        await signTransaction(tx, password);
+      } else {
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [password, transaction, checkGlobalKey, signTransaction]);
+  }, [isHardware, password, transaction, checkGlobalKey, signTransaction]);
 
   React.useEffect(
     () => {
@@ -314,8 +320,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               </FormRow>
               <FormRow>
                 <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-                <Box className={classes.inputField}>
-                  <Box className={classes.gasPriceTypeBox}>
+                <Box className={styles.inputField}>
+                  <Box className={styles.gasPriceTypeBox}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -337,14 +343,14 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     />
                   </Box>
                   {!useStdMaxGasPrice && (
-                    <Box className={classes.gasPriceSliderBox}>
+                    <Box className={styles.gasPriceSliderBox}>
                       <Slider
                         aria-labelledby="discrete-slider"
                         classes={{
-                          markLabel: classes.gasPriceMarkLabel,
-                          valueLabel: classes.gasPriceValueLabel,
+                          markLabel: styles.gasPriceMarkLabel,
+                          valueLabel: styles.gasPriceValueLabel,
                         }}
-                        className={classes.gasPriceSlider}
+                        className={styles.gasPriceSlider}
                         defaultValue={stdMaxGasPriceNumber}
                         marks={[
                           { value: lowMaxGasPriceNumber, label: 'Slow' },
@@ -360,8 +366,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       />
                     </Box>
                   )}
-                  <Box className={classes.gasPriceHelpBox}>
-                    <FormHelperText className={classes.gasPriceHelp}>
+                  <Box className={styles.gasPriceHelpBox}>
+                    <FormHelperText className={styles.gasPriceHelp}>
                       {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
                     </FormHelperText>
                   </Box>
@@ -370,8 +376,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               {eip1559 && (
                 <FormRow>
                   <FormLabel top>Priority gas price</FormLabel>
-                  <Box className={classes.inputField}>
-                    <Box className={classes.gasPriceTypeBox}>
+                  <Box className={styles.inputField}>
+                    <Box className={styles.gasPriceTypeBox}>
                       <FormControlLabel
                         control={
                           <Switch
@@ -393,14 +399,14 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                       />
                     </Box>
                     {!useStdPriorityGasPrice && (
-                      <Box className={classes.gasPriceSliderBox}>
+                      <Box className={styles.gasPriceSliderBox}>
                         <Slider
                           aria-labelledby="discrete-slider"
                           classes={{
-                            markLabel: classes.gasPriceMarkLabel,
-                            valueLabel: classes.gasPriceValueLabel,
+                            markLabel: styles.gasPriceMarkLabel,
+                            valueLabel: styles.gasPriceValueLabel,
                           }}
-                          className={classes.gasPriceSlider}
+                          className={styles.gasPriceSlider}
                           defaultValue={stdPriorityGasPriceNumber}
                           marks={[
                             { value: lowPriorityGasPriceNumber, label: 'Slow' },
@@ -416,8 +422,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                         />
                       </Box>
                     )}
-                    <Box className={classes.gasPriceHelpBox}>
-                      <FormHelperText className={classes.gasPriceHelp}>
+                    <Box className={styles.gasPriceHelpBox}>
+                      <FormHelperText className={styles.gasPriceHelp}>
                         {priorityGasPrice.toFixed(2)} {gasPriceUnit.toString()}
                       </FormHelperText>
                     </Box>
@@ -426,7 +432,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               )}
               <FormRow>
                 <FormLabel />
-                <ButtonGroup classes={{ container: classes.buttons }}>
+                <ButtonGroup classes={{ container: styles.buttons }}>
                   {initializing && (
                     <Button
                       disabled
@@ -445,24 +451,29 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormRow>
-            <FormLabel />
+          <div>
             Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
-          </FormRow>
-          <FormRow>
-            <FormLabel>Password</FormLabel>
-            <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormRow>
+          </div>
+          {isHardware ? (
+            <WaitLedger fullSize blockchain={transaction.blockchain} onConnected={() => onSignTransaction()} />
+          ) : (
+            <FormRow>
+              <FormLabel>Password</FormLabel>
+              <PasswordInput error={passwordError} onChange={setPassword} />
+            </FormRow>
+          )}
           <FormRow last>
             <FormLabel />
-            <ButtonGroup classes={{ container: classes.buttons }}>
+            <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
-              <Button
-                label="Sign Transaction"
-                disabled={password.length === 0}
-                primary={true}
-                onClick={onSignTransaction}
-              />
+              {!isHardware && (
+                <Button
+                  label="Sign Transaction"
+                  disabled={password.length === 0}
+                  primary={true}
+                  onClick={onSignTransaction}
+                />
+              )}
             </ButtonGroup>
           </FormRow>
         </>
@@ -472,9 +483,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const { entry } = ownProps;
-
+  (state, { entry }) => {
     const recoverBlockchainCode = blockchainIdToCode(entry.blockchain);
     const recoverBlockchain = Blockchains[recoverBlockchainCode];
 
@@ -490,12 +499,30 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       entryTokenBalances = tokens.selectors.selectBalances(state, recoverBlockchainCode, entry.address?.value) ?? [];
     }
 
+    let isHardware = false;
+
+    const wallet = accounts.selectors.findWalletByEntryId(state, entry.id);
+
+    if (wallet != null) {
+      const [account] = wallet.reserved ?? [];
+
+      if (account != null) {
+        isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: account.seedId });
+      }
+    }
+
     const balanceByToken = entryTokenBalances.reduce(
       (carry, balance) => ({ ...carry, [balance.units.base.code]: balance }),
       {
         [recoverBlockchain.params.coinTicker]: balance,
       },
     );
+
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
+
+    const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
+    const tokensData =
+      tokenRegistry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
 
     const uniqueAddresses =
       accounts.selectors
@@ -506,14 +533,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           new Set(),
         ) ?? new Set();
 
-    const tokenRegistry = new TokenRegistry(state.application.tokens);
-
-    const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
-    const tokensData =
-      tokenRegistry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
-
     return {
       balanceByToken,
+      isHardware,
       recoverBlockchain,
       wrongBlockchain,
       eip1559: recoverBlockchain.params.eip1559 ?? false,
@@ -540,7 +562,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => ({
+  (dispatch: any, { entry }) => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
@@ -559,7 +581,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(ownProps.entry.id, tx.build(), password),
+        transaction.actions.signTransaction(entry.id, tx.build(), password),
       );
 
       if (signed != null) {
@@ -578,4 +600,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
   }),
-)(withStyles(styles)(CreateRecoverTransaction));
+)(CreateRecoverTransaction);

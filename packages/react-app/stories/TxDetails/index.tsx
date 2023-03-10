@@ -3,13 +3,16 @@ import { StoredTransaction } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import TxDetails from '../../src/transactions/TxDetails';
-import { BackendMock } from '../backendMock';
+import { MemoryApiMock } from '../__mocks__/apiMock';
+import { BackendMock } from '../__mocks__/backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 
+const api = new MemoryApiMock();
 const backend = new BackendMock();
+
 const tokenRegistry = new TokenRegistry([]);
 
 const txEthereum = new StoredTransaction(
@@ -76,7 +79,7 @@ const txBitcoin2 = new StoredTransaction(
 );
 
 storiesOf('TxDetails', module)
-  .addDecorator(providerForStore(backend))
+  .addDecorator(providerForStore(api, backend))
   .addDecorator(withTheme)
   .add('ethereum', () => <TxDetails tx={txEthereum} />)
   .add('bitcoin 1', () => <TxDetails tx={txBitcoin1} />)

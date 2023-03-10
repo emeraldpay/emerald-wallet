@@ -1,7 +1,6 @@
 import { IState, screen } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import WaitForSignDialog from '../../../transaction/WaitForSignDialog';
 import WalletSettingsDialog from '../../../wallets/WalletSettingsDialog';
 import AboutDialog from '../../AboutDialog';
 
@@ -22,8 +21,6 @@ const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, dialogOptions, o
   switch (dialog) {
     case screen.Dialogs.ABOUT:
       return <AboutDialog onClose={onClose} />;
-    case screen.Dialogs.SIGN_TX:
-      return <WaitForSignDialog onClose={onClose} />;
     case screen.Dialogs.WALLET_SETTINGS:
       return <WalletSettingsDialog walletId={dialogOptions as string} onClose={onClose} />;
     default:

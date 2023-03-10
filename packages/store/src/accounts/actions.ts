@@ -15,6 +15,8 @@ import {
   Uuid,
   Wallet,
   WalletEntry,
+  WatchEvent,
+  WatchRequest,
 } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -432,4 +434,8 @@ export function setWalletIcon(id: Uuid, icon: Uint8Array | null): Dispatched<boo
 
     return result;
   };
+}
+
+export function watchHardwareConnection(request: WatchRequest): Dispatched<WatchEvent> {
+  return (dispatch, getState, extra) => extra.api.vault.watch(request);
 }

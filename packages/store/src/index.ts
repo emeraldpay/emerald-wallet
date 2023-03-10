@@ -3,10 +3,8 @@ import * as addAccount from './add-account';
 import * as addressBook from './address-book';
 import * as application from './application';
 import * as blockchains from './blockchains';
-import * as config from './config';
-import * as connection from './conn';
+import * as connection from './connection';
 import * as hdpathPreview from './hdpath-preview';
-import * as hwkey from './hwkey';
 import * as screen from './screen';
 import * as settings from './settings';
 import * as tokens from './tokens';
@@ -16,25 +14,21 @@ import * as txhistory from './txhistory';
 import * as wallet from './wallet';
 
 export {
-  application,
-  addressBook,
   accounts,
+  addAccount,
+  addressBook,
+  application,
   blockchains,
-  screen,
-  txhistory,
-  hwkey,
   connection,
+  hdpathPreview,
+  screen,
   settings,
   tokens,
   transaction,
+  triggers,
+  txhistory,
   wallet,
-  addAccount,
-  hdpathPreview,
 };
-
-export { triggers };
-
-export { config };
 
 export {
   DEFAULT_FEE,
@@ -51,7 +45,7 @@ export {
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';
 
-export { HDPathIndexes } from './hdpath-preview/types';
+export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
 
 export { StoredTransaction } from './txhistory/types';
 

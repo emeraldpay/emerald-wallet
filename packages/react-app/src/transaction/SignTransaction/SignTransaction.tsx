@@ -4,6 +4,7 @@ import { ArrowRight, Button, ButtonGroup, FormLabel, FormRow, IdentityIcon, Pass
 import { StyleRulesCallback, Theme, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import WaitLedger from '../../ledger/WaitLedger';
 
 interface OwnProps {
   passwordError?: string;
@@ -25,20 +26,6 @@ type Props = OwnProps & StateProps & DispatchProps;
 
 const styles: StyleRulesCallback<Theme, Props> = (theme) =>
   createStyles({
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      paddingTop: 35,
-      width: '100%',
-    },
-    fee: {
-      display: 'flex',
-      justifyContent: 'center',
-      paddingTop: 35,
-    },
-    feeText: {
-      color: theme.palette.text.secondary,
-    },
     address: {
       alignItems: 'center',
       display: 'flex',
@@ -49,16 +36,52 @@ const styles: StyleRulesCallback<Theme, Props> = (theme) =>
       minHeight: '1rem',
       paddingTop: 10,
     },
+    addresses: {
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    addressesDirection: {
+      alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    },
+    addressesDirectionAmount: {
+      alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+    addressesDirectionAmountText: {
+      fontSize: '28px',
+    },
+    addressesDirectionArrow: {
+      display: 'flex',
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      paddingTop: 10,
+      width: '100%',
+    },
+    fee: {
+      display: 'flex',
+      justifyContent: 'center',
+      paddingTop: 10,
+    },
+    feeText: {
+      color: theme.palette.text.secondary,
+    },
   });
 
-type AddressLineProps = {
+interface AddressLineProps {
   address?: string;
   name?: string;
-};
+}
 
 const AddressLine: React.FC<AddressLineProps & WithStyles<typeof styles>> = ({ classes, address = '', name = '' }) => (
   <div className={classes.address}>
-    <IdentityIcon size={60} id={address} />
+    <IdentityIcon size={50} id={address} />
     <div className={classes.addressField}>{address}</div>
     <div className={classes.addressField}>{name}</div>
   </div>
@@ -122,26 +145,19 @@ class SignTransaction extends React.Component<StyledProps, State> {
 
     return (
       <div>
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
+        <div className={classes.addresses}>
           <AddressLine
             address={transaction.from}
             classes={classes}
             name={transaction.from == null ? undefined : nameByAddress[transaction.from]}
           />
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-              <div style={{ fontSize: '28px' }} title={transaction.amount.toString()}>
+          <div className={classes.addressesDirection}>
+            <div className={classes.addressesDirectionAmount}>
+              <div className={classes.addressesDirectionAmountText} title={transaction.amount.toString()}>
                 {display.amount()} {display.amountUnit()}
               </div>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div className={classes.addressesDirectionArrow}>
               <ArrowRight />
             </div>
           </div>
@@ -156,7 +172,9 @@ class SignTransaction extends React.Component<StyledProps, State> {
             Plus {display.feeCost()} {display.feeCostUnit()} for {display.fee()} {display.feeUnit()}.
           </span>
         </div>
-        {!isHardware && (
+        {isHardware ? (
+          <WaitLedger fullSize blockchain={transaction.blockchain} onConnected={() => onSubmit()} />
+        ) : (
           <FormRow>
             <FormLabel>Password</FormLabel>
             <PasswordInput error={passwordError} onChange={this.handlePasswordChange} />
@@ -165,12 +183,9 @@ class SignTransaction extends React.Component<StyledProps, State> {
         <FormRow last>
           <ButtonGroup classes={{ container: classes.buttons }}>
             <Button label="Cancel" onClick={onCancel} />
-            <Button
-              disabled={!isHardware && password.length === 0}
-              primary={true}
-              label="Sign Transaction"
-              onClick={onSubmit}
-            />
+            {!isHardware && (
+              <Button disabled={password.length === 0} primary={true} label="Sign Transaction" onClick={onSubmit} />
+            )}
           </ButtonGroup>
         </FormRow>
       </div>

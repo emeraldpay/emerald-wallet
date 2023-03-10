@@ -1,72 +1,64 @@
-import {Warning} from '../../../icons';
-import {amber} from '@material-ui/core/colors';
+import { StyleRules, Theme, WithStyles } from '@material-ui/core';
+import { amber } from '@material-ui/core/colors';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
+import { Warning } from '../../../icons';
 
-export interface IProps {
-  classes?: any;
+const styles = (theme: Theme): StyleRules =>
+  createStyles({
+    icon: {
+      float: 'left',
+      marginRight: 10,
+    },
+    message: {
+      display: 'inline',
+    },
+    statusConnectionIssues: {
+      backgroundColor: amber[700],
+    },
+    statusDisconnected: {
+      backgroundColor: theme.palette.error.dark,
+    },
+  });
+
+export interface StateProps {
   status: string;
 }
 
-interface IState {
-  open: boolean;
-}
+type Props = StateProps & WithStyles<typeof styles>;
 
-const styles = (theme) => createStyles({
-  none: {
-  },
-  issues: {
-    backgroundColor: amber[700]
-  },
-  disconnected: {
-    backgroundColor: theme.palette.error.dark
-  },
+class ConnectionStatus extends React.Component<Props> {
+  public render(): React.ReactElement {
+    const { classes, status } = this.props;
 
-  icon: {
-    float: 'left',
-    marginRight: '10px'
-  },
-  message: {
-    display: 'inline'
-  }
-});
+    let className: string | undefined;
+    let message: string | undefined;
 
-class ConnectionStatus extends React.Component<IProps, IState> {
-  constructor (props) {
-    super(props);
-    this.state = { open: props.open || false };
-  }
+    switch (status) {
+      case 'CONNECTION_ISSUES':
+        className = classes.statusConnectionIssues;
+        message = 'Connection issues, please check your Internet connection';
 
-  public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
-    if (nextProps.status) {
-      if (nextProps.status === 'CONNECTED' || typeof nextProps.status === 'undefined') {
-        this.setState({ open: false });
-      } else {
-        this.setState({ open: true });
-      }
+        break;
+      case 'DISCONNECTED':
+        className = classes.statusDisconnected;
+        message = 'Unable to connect to Emerald Services. Please check your Internet connection';
+
+        break;
     }
-  }
 
-  public render () {
-    const { classes } = this.props;
-    let message = null;
-    let type = 'none';
-    if (this.props.status === 'CONNECTION_ISSUES') {
-      message = 'Connection issues, please check your Internet connection';
-      type = 'issues';
-    } else if (this.props.status === 'DISCONNECTED') {
-      message = 'Unable to connect to Emerald Services. Please check your Internet connection';
-      type = 'disconnected';
-    }
     return (
-      <Snackbar
-        open={this.state.open}
-      >
+      <Snackbar open={status !== 'CONNECTED'}>
         <SnackbarContent
-          className={classes[type]}
-          message={<span><Warning className={classes.icon}/><span className={classes.message}>{message}</span></span>}
+          className={className}
+          message={
+            <>
+              <Warning className={classes.icon} />
+              <span className={classes.message}>{message}</span>
+            </>
+          }
         />
       </Snackbar>
     );

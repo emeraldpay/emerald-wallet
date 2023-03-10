@@ -1,5 +1,5 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, TokenRegistry } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
 import {
   ActionTypes,
   HDPathIndexes,
@@ -11,7 +11,6 @@ import {
   ISetAddress,
   ISetBalance,
 } from './types';
-import { isBlockchainOpen } from '../hwkey/selectors';
 import { accounts } from '../index';
 import { Dispatched } from '../types';
 
@@ -29,11 +28,11 @@ export function loadAddresses(
     const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
 
     dispatch({
-    account,
-    blockchain,
-    index,
-    seed,
-    type: ActionTypes.LOAD_ADDRESSES,
+      account,
+      blockchain,
+      index,
+      seed,
+      type: ActionTypes.LOAD_ADDRESSES,
       assets: [coinTicker, ...tokens],
     });
   };
@@ -101,7 +100,7 @@ export function displayAccount(
   account: number,
   indexes?: HDPathIndexes,
 ): Dispatched<void, IDisplayAccount | ILoadAddresses> {
-  return (dispatch, getState) => {
+  return (dispatch, getState, extra) => {
     dispatch({
       account,
       indexes,
@@ -115,8 +114,31 @@ export function displayAccount(
     if (seed != null) {
       const isHardware = accounts.selectors.isHardwareSeed(state, seed);
 
-      state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
-        if (!isHardware || isBlockchainOpen(state, blockchain)) {
+      const { blockchains = [] } = state.hdpathPreview?.display ?? {};
+
+      blockchains.forEach((blockchain) => {
+        if (isHardware) {
+          extra.api.vault
+            .watch({
+              blockchain: blockchainCodeToId(blockchain),
+              type: 'available',
+            })
+            .then((event) =>
+              event.devices.forEach((device) => {
+                let hwSeed = seed;
+
+                if (device.seed != null) {
+                  hwSeed = { type: 'id', value: device.seed };
+                }
+
+                dispatch(loadAddresses(hwSeed, blockchain, account, indexes?.[blockchain]));
+
+                if (blockchain === BlockchainCode.ETC && blockchains.includes(BlockchainCode.ETH)) {
+                  dispatch(loadAddresses(hwSeed, BlockchainCode.ETH, account, indexes?.[BlockchainCode.ETH]));
+                }
+              }),
+            );
+        } else {
           dispatch(loadAddresses(seed, blockchain, account, indexes?.[blockchain]));
         }
       });

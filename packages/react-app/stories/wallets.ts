@@ -146,30 +146,23 @@ export const createSeeds = [
   ]),
 ];
 
-export const setRates = [
-  settings.actions.setRates({
-    ETH: '205.1761',
-    ETC: '5.234',
-    DAI: '1.001',
-    USDT: '0.9985',
-    BTC: '11407.35',
-  }),
-];
-
 export const createWallets = [accounts.actions.setWalletsAction([wallet1, wallet2, wallet3])];
 
 export const setBalances = [
   accounts.actions.setBalanceAction({
-    entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
+    address: '0x9d8e3fed246384e726b5962577503b916fb246d7',
     balance: '918522410056000000000000/WEI',
+    entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
   }),
   accounts.actions.setBalanceAction({
-    entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-2',
+    address: '0x577503b916fb246d79d8e3fed246384e726b5962',
     balance: '498123400000000000000000/WEI',
+    entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-2',
   }),
   accounts.actions.setBalanceAction({
+    address: 'bc1qthnuqj3pn8a6p45369ucre8c5604ntvsf78kxa',
+    balance: '45040621/SAT',
     entryId: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3',
-    balance: '',
     utxo: [
       {
         txid: 'fc883954a9b3a234106f40af04264d56704b9006a9c205ea8ac4c0dc7bab379a',
@@ -205,4 +198,14 @@ export const setBalances = [
     },
     '0x9d8e3fed246384e726b5962577503b916fb246d7',
   ),
+];
+
+export const setRates = [
+  settings.actions.setRates({
+    ETH: '205.1761',
+    ETC: '5.234',
+    DAI: '1.001',
+    USDT: '0.9985',
+    BTC: '11407.35',
+  }),
 ];

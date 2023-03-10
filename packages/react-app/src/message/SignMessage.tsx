@@ -31,7 +31,7 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import LedgerWait from '../ledger/LedgerWait';
+import WaitLedger from '../ledger/WaitLedger';
 
 const useStyles = makeStyles(
   createStyles({
@@ -382,7 +382,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
       {stage === Stages.SIGN && (
         <>
           {seed?.type === 'ledger' ? (
-            <LedgerWait fullSize onConnected={onLedgerConnected} />
+            <WaitLedger fullSize onConnected={onLedgerConnected} />
           ) : (
             <>
               <FormRow>

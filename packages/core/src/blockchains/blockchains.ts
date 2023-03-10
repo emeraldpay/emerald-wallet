@@ -54,7 +54,7 @@ export const Blockchains: Record<BlockchainCode | string, IBlockchain> = {
       100,
       true,
     ),
-    'Ethereum Goerli Testnet',
+    'Goerli Testnet',
   ),
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
