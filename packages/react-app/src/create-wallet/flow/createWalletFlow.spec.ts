@@ -240,6 +240,7 @@ describe("Account", () => {
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_HD_ACCOUNT, (it) => result = it);
     expect(start.canGoNext()).toBeFalsy();
     let act = start.applyAccount(1, { [BlockchainCode.ETH]: 1 });
+    act = act.applyAddresses({ [BlockchainCode.ETH]: '0x0' });
     expect(act.canGoNext()).toBeTruthy();
     act = act.applyNext();
     expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED)
