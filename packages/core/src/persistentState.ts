@@ -320,6 +320,24 @@ export interface Balance {
    * Timestamp when it was cached. Set automatically when added to the persistent state.
    */
   timestamp?: Date | undefined;
+
+  /**
+   * Individual components of the balance for the current address.
+   * Must contain only _unspent_ transactions and the total amount MUST equal the main `amount` field of the `Balance` object.
+   * If the total amount is not equal to the utxo sum then the utxo are ignored by the persistent store.
+   *
+   * Should be undefined for Ethereum.
+   */
+  utxo?: Utxo[] | undefined;
+}
+
+/**
+ * Bitcoin UTXO details
+ */
+export interface Utxo {
+  txid: string,
+  vout: number,
+  amount: number,
 }
 
 /**
