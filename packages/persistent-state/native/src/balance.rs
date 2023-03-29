@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use emerald_vault::blockchain::bitcoin::XPub;
 use neon::prelude::{FunctionContext, JsString};
 use num_bigint::BigUint;
-use emerald_wallet_state::access::balance::{Balance, Balances};
+use emerald_wallet_state::access::balance::{Balance, Balances, Utxo};
 use emerald_wallet_state::access::xpubpos::XPubPosition;
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
@@ -17,6 +17,15 @@ pub struct BalanceJson {
   address: String,
   blockchain: u32,
   asset: String,
+  #[serde(default)]
+  utxo: Vec<UtxoJson>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UtxoJson {
+  txid: String,
+  vout: u32,
+  amount: u64,
 }
 
 impl From<&Balance> for BalanceJson {
@@ -27,6 +36,17 @@ impl From<&Balance> for BalanceJson {
       address: value.address.clone(),
       blockchain: value.blockchain,
       asset: value.asset.clone(),
+      utxo: value.utxo.iter().map(|u| u.into()).collect()
+    }
+  }
+}
+
+impl From<&Utxo> for UtxoJson {
+  fn from(value: &Utxo) -> Self {
+    UtxoJson {
+      txid: value.txid.clone(),
+      vout: value.vout,
+      amount: value.amount
     }
   }
 }
@@ -42,7 +62,18 @@ impl TryFrom<BalanceJson> for Balance {
       address: value.address,
       blockchain: value.blockchain,
       asset: value.asset,
+      utxo: value.utxo.iter().map(|u| u.into()).collect()
     })
+  }
+}
+
+impl From<&UtxoJson> for Utxo {
+  fn from(value: &UtxoJson) -> Self {
+    Utxo {
+      txid: value.txid.clone(),
+      vout: value.vout,
+      amount: value.amount,
+    }
   }
 }
 
