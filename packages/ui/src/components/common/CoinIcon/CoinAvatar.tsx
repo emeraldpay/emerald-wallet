@@ -7,26 +7,23 @@ import CoinIcon from './CoinIcon';
 
 const useStyle = makeStyles((theme: Theme) =>
   createStyles({
-    btc: {
-      backgroundColor: '#f90',
-    },
-    etc: {
-      backgroundColor: '#00c957',
-    },
-    eth: {
-      backgroundColor: '#627eea',
-    },
-    goerli: {
-      backgroundColor: '#4a4f55',
-    },
-    testbtc: {
-      backgroundColor: '#9a7e55',
-    },
-    center: {
-      margin: '0 auto',
-    },
     container: {
       display: 'inline-block',
+    },
+    btcBlockchain: {
+      backgroundColor: '#f90',
+    },
+    etcBlockchain: {
+      backgroundColor: '#00c957',
+    },
+    ethBlockchain: {
+      backgroundColor: '#627eea',
+    },
+    goerliBlockchain: {
+      backgroundColor: '#4a4f55',
+    },
+    testbtcBlockchain: {
+      backgroundColor: '#9a7e55',
     },
     defaultSize: {
       width: theme.spacing(4),
@@ -51,18 +48,12 @@ interface OwnProps {
   size?: 'default' | 'small' | 'large';
 }
 
-const CoinAvatar: React.FC<OwnProps> = ({ blockchain, center, className, size = 'default' }) => {
+const CoinAvatar: React.FC<OwnProps> = ({ blockchain, className, size = 'default' }) => {
   const classes = useStyle();
 
   return (
     <div className={classNames(classes.container, className)}>
-      <Avatar
-        className={classNames(
-          classes[size + 'Size'],
-          classes[blockchain.toLowerCase()],
-          center === true ? classes.center : null,
-        )}
-      >
+      <Avatar className={classNames(classes[`${blockchain.toLowerCase()}Blockchain`], classes[`${size}Size`])}>
         <CoinIcon blockchain={blockchain} size={size} />
       </Avatar>
     </div>

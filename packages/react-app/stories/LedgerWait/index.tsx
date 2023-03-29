@@ -1,16 +1,12 @@
-import {storiesOf} from '@storybook/react';
-import {action} from '@storybook/addon-actions';
+import { action } from '@storybook/addon-actions';
+import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import LedgerWait from "../../src/ledger/LedgerWait";
-import withTheme from "../themeProvider";
-import withProvider from "../storeProvider";
+import WaitLedger from '../../src/ledger/WaitLedger';
+import withProvider from '../storeProvider';
+import withTheme from '../themeProvider';
 
-storiesOf('LedgerWait', module)
+storiesOf('WaitLedger', module)
   .addDecorator(withProvider)
   .addDecorator(withTheme)
-  .add('default', () => (
-    <LedgerWait onConnected={action("Connected")}/>
-  ))
-  .add('full size', () => (
-    <LedgerWait fullSize={true} onConnected={action("Connected")}/>
-  ));
+  .add('default', () => <WaitLedger onConnected={action('Connected')} />)
+  .add('full size', () => <WaitLedger fullSize onConnected={action('Connected')} />);

@@ -11,81 +11,89 @@ import {
   transaction,
 } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Box, CircularProgress, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
+import { Box, CircularProgress, FormHelperText, Slider, createStyles, makeStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import WaitLedger from '../../ledger/WaitLedger';
 
-const styles = createStyles({
-  inputField: {
-    flexGrow: 5,
-  },
-  gasPriceSliderBox: {
-    float: 'left',
-    marginLeft: 20,
-    width: 300,
-  },
-  gasPriceHelpBox: {
-    clear: 'left',
-    width: 500,
-  },
-  gasPriceSlider: {
-    marginBottom: 10,
-    paddingTop: 10,
-    width: 300,
-  },
-  gasPriceHelp: {
-    paddingTop: 10,
-    position: 'initial',
-  },
-  gasPriceMarkLabel: {
-    fontSize: '0.7em',
-    opacity: 0.8,
-  },
-  gasPriceValueLabel: {
-    fontSize: '0.55em',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'end',
-    width: '100%',
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    inputField: {
+      flexGrow: 5,
+    },
+    gasPriceSliderBox: {
+      float: 'left',
+      marginLeft: 20,
+      width: 300,
+    },
+    gasPriceHelpBox: {
+      clear: 'left',
+      width: 500,
+    },
+    gasPriceSlider: {
+      marginBottom: 10,
+      paddingTop: 10,
+      width: 300,
+    },
+    gasPriceHelp: {
+      paddingTop: 10,
+      position: 'initial',
+    },
+    gasPriceMarkLabel: {
+      fontSize: '0.7em',
+      opacity: 0.8,
+    },
+    gasPriceValueLabel: {
+      fontSize: '0.55em',
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+  }),
+);
+
+enum Stages {
+  SETUP = 'setup',
+  SIGN = 'sign',
+}
 
 interface OwnProps {
   transaction: EthereumTransaction;
 }
 
 interface StateProps {
-  accountId?: string;
+  entryId?: string;
   defaultFee: DefaultFee;
+  isHardware: boolean;
 }
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<GasPriceType>;
   goBack(): void;
-  signTransaction(tx: EthereumTransaction, accountId?: string, password?: string): Promise<void>;
-}
-
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
+  signTransaction(tx: EthereumTransaction, entryId?: string, password?: string): Promise<void>;
 }
 
 const minimalUnit = new Unit(9, '', undefined);
 
-const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps & StylesProps> = ({
-  accountId,
-  classes,
+const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps> = ({
+  entryId,
   defaultFee,
+  isHardware,
   transaction,
   checkGlobalKey,
   getTopFee,
   goBack,
   signTransaction,
 }) => {
+  const styles = useStyles();
+
   const [initializing, setInitializing] = useState(true);
+  const [stage, setStage] = useState(Stages.SETUP);
 
   const factory = React.useMemo(() => amountFactory(transaction.blockchain), [transaction.blockchain]);
 
@@ -103,31 +111,41 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
   const onSignTransaction = useCallback(async () => {
     setPasswordError(undefined);
 
-    const correctPassword = await checkGlobalKey(password);
+    const newGasPrice = BigAmount.createFor(gasPrice, factory(0).units, factory, txGasPriceUnit).number;
 
-    if (correctPassword) {
-      const newGasPrice = BigAmount.createFor(gasPrice, factory(0).units, factory, txGasPriceUnit).number;
+    let gasPrices: Record<'gasPrice', BigNumber> | Record<'maxGasPrice', BigNumber>;
 
-      let gasPrices: Record<'gasPrice', BigNumber> | Record<'maxGasPrice', BigNumber>;
+    if (transaction.type === EthereumTransactionType.EIP1559) {
+      gasPrices = { maxGasPrice: newGasPrice };
+    } else {
+      gasPrices = { gasPrice: newGasPrice };
+    }
 
-      if (transaction.type === EthereumTransactionType.EIP1559) {
-        gasPrices = { maxGasPrice: newGasPrice };
-      } else {
-        gasPrices = { gasPrice: newGasPrice };
-      }
-
+    if (isHardware) {
       await signTransaction(
         {
           ...transaction,
           ...gasPrices,
         },
-        accountId,
-        password,
+        entryId,
       );
     } else {
-      setPasswordError('Incorrect password');
+      const correctPassword = await checkGlobalKey(password);
+
+      if (correctPassword) {
+        await signTransaction(
+          {
+            ...transaction,
+            ...gasPrices,
+          },
+          entryId,
+          password,
+        );
+      } else {
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [accountId, factory, gasPrice, password, transaction, txGasPriceUnit, checkGlobalKey, signTransaction]);
+  }, [entryId, factory, gasPrice, isHardware, password, transaction, txGasPriceUnit, checkGlobalKey, signTransaction]);
 
   React.useEffect(
     () => {
@@ -154,56 +172,74 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
 
   return (
     <Page title="Speed Up Transaction" leftIcon={<Back onClick={goBack} />}>
-      <FormRow>
-        <FormLabel>Gas price</FormLabel>
-        <Box className={classes.inputField}>
-          <Box className={classes.gasPriceSliderBox}>
-            <Slider
-              aria-labelledby="discrete-slider"
-              classes={{
-                markLabel: classes.gasPriceMarkLabel,
-                valueLabel: classes.gasPriceValueLabel,
-              }}
-              className={classes.gasPriceSlider}
-              defaultValue={minGasPriceNumber}
-              disabled={initializing}
-              marks={[
-                { value: minGasPriceNumber, label: 'Normal' },
-                { value: maxGasPriceNumber, label: 'Urgent' },
-              ]}
-              max={maxGasPriceNumber}
-              min={minGasPriceNumber}
-              step={0.01}
-              valueLabelDisplay="auto"
-              valueLabelFormat={(value): string => value.toFixed(2)}
-              getAriaValueText={(): string => `${gasPrice.toFixed(2)} ${txGasPriceUnit.toString()}`}
-              onChange={(event, value): void => setGasPrice(value as number)}
-            />
-          </Box>
-          <Box className={classes.gasPriceHelpBox}>
-            <FormHelperText className={classes.gasPriceHelp}>
-              {gasPrice.toFixed(2)} {txGasPriceUnit.toString()}
-            </FormHelperText>
-          </Box>
-        </Box>
-      </FormRow>
-      <FormRow>
-        <FormLabel>Password</FormLabel>
-        <PasswordInput error={passwordError} onChange={setPassword} />
-      </FormRow>
+      {stage === Stages.SETUP && (
+        <>
+          <FormRow>
+            <FormLabel>Gas price</FormLabel>
+            <Box className={styles.inputField}>
+              <Box className={styles.gasPriceSliderBox}>
+                <Slider
+                  aria-labelledby="discrete-slider"
+                  classes={{
+                    markLabel: styles.gasPriceMarkLabel,
+                    valueLabel: styles.gasPriceValueLabel,
+                  }}
+                  className={styles.gasPriceSlider}
+                  defaultValue={minGasPriceNumber}
+                  disabled={initializing}
+                  marks={[
+                    { value: minGasPriceNumber, label: 'Normal' },
+                    { value: maxGasPriceNumber, label: 'Urgent' },
+                  ]}
+                  max={maxGasPriceNumber}
+                  min={minGasPriceNumber}
+                  step={0.01}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value): string => value.toFixed(2)}
+                  getAriaValueText={(): string => `${gasPrice.toFixed(2)} ${txGasPriceUnit.toString()}`}
+                  onChange={(event, value): void => setGasPrice(value as number)}
+                />
+              </Box>
+              <Box className={styles.gasPriceHelpBox}>
+                <FormHelperText className={styles.gasPriceHelp}>
+                  {gasPrice.toFixed(2)} {txGasPriceUnit.toString()}
+                </FormHelperText>
+              </Box>
+            </Box>
+          </FormRow>
+          {!isHardware && (
+            <FormRow>
+              <FormLabel>Password</FormLabel>
+              <PasswordInput error={passwordError} onChange={setPassword} />
+            </FormRow>
+          )}
+        </>
+      )}
+      {stage === Stages.SIGN && (
+        <WaitLedger fullSize blockchain={transaction.blockchain} onConnected={() => onSignTransaction} />
+      )}
       <FormRow last>
         <FormLabel />
-        <ButtonGroup classes={{ container: classes.buttons }}>
+        <ButtonGroup classes={{ container: styles.buttons }}>
           {initializing && (
             <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
           )}
           <Button label="Cancel" onClick={goBack} />
-          <Button
-            label="Sign Transaction"
-            disabled={initializing || password.length === 0}
-            primary={true}
-            onClick={onSignTransaction}
-          />
+          {isHardware && stage === Stages.SETUP ? (
+            <Button
+              label="Create Transaction"
+              disabled={initializing}
+              primary={true}
+              onClick={() => setStage(Stages.SIGN)}
+            />
+          ) : (
+            <Button
+              label="Sign Transaction"
+              disabled={initializing || password.length === 0}
+              primary={true}
+              onClick={onSignTransaction}
+            />
+          )}
         </ButtonGroup>
       </FormRow>
     </Page>
@@ -211,13 +247,26 @@ const CreateSpeedUpTransaction: React.FC<OwnProps & DispatchProps & StateProps &
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const { blockchain, from } = ownProps.transaction;
+  (state, { transaction: { blockchain, from } }) => {
+    const entry = accounts.selectors.findAccountByAddress(state, from, blockchain);
 
-    const account = accounts.selectors.findAccountByAddress(state, from, blockchain);
+    let isHardware = false;
+
+    if (entry != null) {
+      const wallet = accounts.selectors.findWalletByEntryId(state, entry.id);
+
+      if (wallet != null) {
+        const [account] = wallet.reserved ?? [];
+
+        if (account != null) {
+          isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: account.seedId });
+        }
+      }
+    }
 
     return {
-      accountId: account?.id,
+      isHardware,
+      entryId: entry?.id,
       defaultFee: application.selectors.getDefaultFee(state, blockchain),
     };
   },
@@ -252,8 +301,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    async signTransaction(tx, password, accountId) {
-      if (accountId == null || tx.to == null) {
+    async signTransaction(tx, password, entryId) {
+      if (entryId == null || tx.to == null) {
         return;
       }
 
@@ -275,7 +324,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
       const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
-          accountId,
+          entryId,
           {
             ...tx,
             gasPrice: gasPrice?.number,
@@ -302,4 +351,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
   }),
-)(withStyles(styles)(CreateSpeedUpTransaction));
+)(CreateSpeedUpTransaction);

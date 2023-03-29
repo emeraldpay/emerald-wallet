@@ -4,9 +4,13 @@ import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import SignTransaction from '../../src/transaction/SignTransaction';
-import { BackendMock } from '../backendMock';
+import { MemoryApiMock } from '../__mocks__/apiMock';
+import { BackendMock } from '../__mocks__/backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
+
+const api = new MemoryApiMock();
+const backend = new BackendMock();
 
 const ethereumTx = new workflow.CreateEthereumTx({
   amount: new Wei('10000'),
@@ -19,10 +23,8 @@ const ethereumTx = new workflow.CreateEthereumTx({
   type: EthereumTransactionType.EIP1559,
 });
 
-const backend = new BackendMock();
-
 storiesOf('SignTx', module)
-  .addDecorator(providerForStore(backend))
+  .addDecorator(providerForStore(api, backend))
   .addDecorator(withTheme)
   .add('default', () => (
     <SignTransaction

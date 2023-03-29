@@ -76,12 +76,12 @@ function onClean(): IHDPreviewState {
 function onInit(state: IHDPreviewState, action: IInit): IHDPreviewState {
   return {
     ...state,
+    active: true,
     display: {
       ...state.display,
       blockchains: action.blockchains,
       seed: action.seed,
     },
-    active: true,
   };
 }
 

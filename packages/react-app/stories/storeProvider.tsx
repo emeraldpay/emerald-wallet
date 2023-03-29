@@ -1,40 +1,49 @@
 import { WalletApi } from '@emeraldwallet/core';
 import { createStore } from '@emeraldwallet/store';
+import { Dispatched } from '@emeraldwallet/store/lib/types';
 import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
+import { Action } from 'redux';
+import { ApiMock, MemoryApiMock } from './__mocks__/apiMock';
+import { BackendMock } from './__mocks__/backendMock';
 import {
   AddressBookMock,
-  ApiMock,
-  BackendMock,
+  BalancesMock,
+  CacheMock,
   TxHistoryMock,
   TxMetaMock,
-  VaultMock,
   XPubPosMock,
-} from './backendMock';
+} from './__mocks__/persistentStateMock';
+import { VaultMock } from './__mocks__/vaultMock';
 
-function createApi(backend: BackendMock): WalletApi {
+function createApi(api: MemoryApiMock): WalletApi {
   return new ApiMock(
-    new AddressBookMock(backend.addressBook),
-    new TxHistoryMock(backend.txHistory),
-    new TxMetaMock(backend.txMeta),
-    new VaultMock(backend.vault),
-    new XPubPosMock(backend.xPubPos),
+    new AddressBookMock(api.addressBook),
+    new BalancesMock(api.balances),
+    new CacheMock(api.cache),
+    new TxHistoryMock(api.txHistory),
+    new TxMetaMock(api.txMeta),
+    new VaultMock(api.vault),
+    new XPubPosMock(api.xPubPos),
   );
 }
 
-const defaultBackend = new BackendMock();
+export function providerForStore(
+  api: MemoryApiMock,
+  backend: BackendMock,
+  actions: Array<Action | Dispatched> = [],
+): DecoratorFunction<ReactElement> {
+  const store = createStore(createApi(api), backend);
 
-const defaultStore = createStore(createApi(defaultBackend), defaultBackend);
-
-export function providerForStore(backend: BackendMock, init = []): DecoratorFunction<ReactElement> {
-  const store = createStore(createApi(backend), backend);
-
-  init?.forEach((action) => store.dispatch(action));
+  actions?.forEach((action) => store.dispatch(action as Action));
 
   return (story) => <Provider store={store}>{story()}</Provider>;
 }
+
+const defaultBackend = new BackendMock();
+const defaultStore = createStore(createApi(new MemoryApiMock()), defaultBackend);
 
 const withProvider: DecoratorFunction<ReactElement> = (story) => <Provider store={defaultStore}>{story()}</Provider>;
 

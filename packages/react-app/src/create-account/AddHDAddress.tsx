@@ -18,7 +18,7 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import LedgerWait from '../ledger/LedgerWait';
+import WaitLedger from '../ledger/WaitLedger';
 
 const styles = createStyles({
   blockchains: {
@@ -262,7 +262,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
     >
       {stage === Stage.UNLOCK &&
         (seed?.type === 'ledger' ? (
-          <LedgerWait fullSize onConnected={() => setStage(Stage.LIST)} />
+          <WaitLedger fullSize onConnected={() => setStage(Stage.LIST)} />
         ) : (
           <>
             <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>

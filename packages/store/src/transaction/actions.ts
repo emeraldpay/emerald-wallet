@@ -97,7 +97,7 @@ function signTx(entryId: string, tx: EthereumTransaction, vault: IEmeraldVault, 
 export function signTransaction(
   entryId: string,
   transaction: EthereumTransaction,
-  password?: string,
+  password: string | undefined,
 ): Dispatched<SignData | undefined> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch, getState, extra) => {
@@ -126,12 +126,12 @@ export function signTransaction(
   };
 }
 
-type SignHandler = (txid: string | null, raw: string | null, err?: string) => void;
+type SignHandler = (txId: string | null, raw: string | null) => void;
 
 export function signBitcoinTransaction(
   entryId: EntryId,
   tx: UnsignedBitcoinTx,
-  password: string,
+  password: string | undefined,
   handler: SignHandler,
 ): Dispatched {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -142,7 +142,7 @@ export function signBitcoinTransaction(
       .catch((error) => {
         dispatch(showError(new WrappedError(error)));
 
-        return handler(null, null, 'Internal error. ' + error?.message);
+        return handler(null, null);
       });
   };
 }

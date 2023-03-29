@@ -14,6 +14,7 @@ storiesOf('TotalButton', module).add('default', () => (
         fiatAmount: new CurrencyAmount(0, 'USD'),
       },
     ]}
+    loading={false}
     totalBalance={new CurrencyAmount(0, 'USD')}
   />
 ));

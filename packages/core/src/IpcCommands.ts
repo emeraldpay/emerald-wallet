@@ -108,6 +108,7 @@ export enum IpcCommands {
   VAULT_TRY_UPGRADE_ODD_ITEMS = 'vault-try-upgrade-odd-items',
   VAULT_UPDATE_SEED = 'vault-update-seed',
   VAULT_VERIFY_GLOBAL_KEY = 'vault-verify-global-key',
+  VAULT_WATCH = 'vault-watch',
 
   // ENS
   LOOKUP_ADDRESS = 'lookup-address',

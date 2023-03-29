@@ -1,15 +1,15 @@
-import { SeedReference, Uuid } from "@emeraldpay/emerald-vault-core";
-import { BlockchainCode } from "@emeraldwallet/core";
-import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
+import { SeedReference, Uuid } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { HDPathAddresses, HDPathIndexes } from '@emeraldwallet/store';
 
 export enum KeySourceType {
-  SEED_SELECTED,
+  LEDGER,
+  PK_ANY,
+  PK_RAW,
+  PK_WEB3_JSON,
   SEED_GENERATE,
   SEED_IMPORT,
-  PK_ANY,
-  PK_WEB3_JSON,
-  PK_RAW,
-  LEDGER
+  SEED_SELECTED,
 }
 
 export interface SeedSelected {
@@ -47,7 +47,7 @@ export interface LedgerSeed {
 }
 
 export type KeysSource =
-  SeedSelected
+  | SeedSelected
   | SeedCreate
   | PkImportJson
   | PkImportRaw
@@ -55,67 +55,73 @@ export type KeysSource =
   | LedgerSeed
   | 'start-ledger';
 
-export function isSeedSelected(obj: KeysSource): obj is SeedSelected {
-  return typeof obj == 'object' && obj.type == KeySourceType.SEED_SELECTED
+export function isSeedSelected(source: KeysSource): source is SeedSelected {
+  return typeof source === 'object' && source.type == KeySourceType.SEED_SELECTED;
 }
 
-export function isSeedCreate(obj: KeysSource): obj is SeedCreate {
-  return typeof obj == 'object' && (obj.type == KeySourceType.SEED_GENERATE || obj.type == KeySourceType.SEED_IMPORT)
-}
-
-export function isPk(obj: KeysSource): obj is (PkImportRaw | PkImportJson) {
-  return typeof obj == 'object' && (
-    obj.type == KeySourceType.PK_WEB3_JSON || obj.type == KeySourceType.PK_RAW || obj.type == KeySourceType.PK_ANY
+export function isSeedCreate(source: KeysSource): source is SeedCreate {
+  return (
+    typeof source === 'object' &&
+    (source.type == KeySourceType.SEED_GENERATE || source.type == KeySourceType.SEED_IMPORT)
   );
 }
 
-export function isLedger(obj: KeysSource): obj is LedgerSeed {
-  return typeof obj == "object" && obj.type == KeySourceType.LEDGER;
+export function isPk(source: KeysSource): source is PkImportRaw | PkImportJson {
+  return (
+    typeof source === 'object' &&
+    (source.type === KeySourceType.PK_WEB3_JSON ||
+      source.type === KeySourceType.PK_RAW ||
+      source.type === KeySourceType.PK_ANY)
+  );
 }
 
-export function isLedgerStart(obj: KeysSource): boolean {
-  return typeof obj == "string" && obj == "start-ledger";
+export function isLedger(source: KeysSource): source is LedgerSeed {
+  return typeof source === 'object' && source.type === KeySourceType.LEDGER;
+}
+
+export function isLedgerStart(source: KeysSource): boolean {
+  return typeof source === 'string' && source === 'start-ledger';
 }
 
 export function isPkJson(obj: KeysSource): obj is PkImportJson {
-  return isPk(obj) && obj.type == KeySourceType.PK_WEB3_JSON;
+  return isPk(obj) && obj.type === KeySourceType.PK_WEB3_JSON;
 }
 
 export function isPkRaw(obj: KeysSource): obj is PkImportRaw {
-  return isPk(obj) && obj.type == KeySourceType.PK_RAW;
+  return isPk(obj) && obj.type === KeySourceType.PK_RAW;
 }
 
-export interface TWalletOptions {
+export interface Options {
   label?: string;
 }
 
 export interface Result {
-  type: KeysSource;
-  options: TWalletOptions;
+  addresses?: HDPathAddresses;
   blockchains: BlockchainCode[];
-  seedAccount?: number;
-  seed?: SeedReference;
-  addresses?: Partial<Record<BlockchainCode, string>>;
   indexes?: HDPathIndexes;
+  options: Options;
+  seed?: SeedReference;
+  seedAccount?: number;
+  type: KeysSource;
 }
 
 export function defaultResult(): Result {
   return {
-    type: {
-      type: KeySourceType.SEED_GENERATE
-    },
-    options: {},
-    blockchains: [],
     addresses: {},
-  }
+    blockchains: [],
+    options: {},
+    type: {
+      type: KeySourceType.SEED_GENERATE,
+    },
+  };
 }
 
 export interface StepDescription {
-  title: string;
   code: string;
+  title: string;
 }
 
 export interface StepDetails {
-  index: number;
   code: string;
+  index: number;
 }

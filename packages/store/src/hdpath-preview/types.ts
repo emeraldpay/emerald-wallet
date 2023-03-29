@@ -127,4 +127,5 @@ export type IHDPreviewAction =
   | IDisplayAccount
   | IInit;
 
+export type HDPathAddresses = Partial<Record<BlockchainCode, string>>;
 export type HDPathIndexes = { [blockchain: string]: number | undefined };

@@ -4,7 +4,7 @@ import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import {
   BalanceListener,
   BlockchainStatusService,
-  ConnStatus,
+  ConnectionStatus,
   EmeraldApiAccess,
   PricesService,
   Services,
@@ -56,7 +56,7 @@ export function createServices(
   const services = new Services();
 
   services.add(new BalanceListener(ipcMain, persistentState, webContents, apiAccess));
-  services.add(new ConnStatus(ipcMain, webContents, apiAccess));
+  services.add(new ConnectionStatus(ipcMain, webContents, apiAccess));
   services.add(new TxService(apiAccess, persistentState, vault, ipcMain, webContents, settings));
 
   for (const chain of apiMode.chains) {

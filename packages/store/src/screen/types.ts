@@ -13,7 +13,6 @@ export enum ActionTypes {
 
 export enum Dialogs {
   ABOUT = 'about',
-  SIGN_TX = 'sign-tx',
   WALLET_SETTINGS = 'wallet-settings',
 }
 

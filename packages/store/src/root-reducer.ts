@@ -8,7 +8,6 @@ import {
   blockchains,
   connection,
   hdpathPreview,
-  hwkey,
   screen,
   settings,
   tokens,
@@ -26,6 +25,5 @@ export const rootReducer = combineReducers<IState>({
   blockchains: blockchains.reducer,
   hdpathPreview: hdpathPreview.reducer,
   history: txhistory.reducer,
-  hwkey: hwkey.reducer,
   settings: settings.reducer,
 });

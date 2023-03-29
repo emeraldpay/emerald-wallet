@@ -1,7 +1,14 @@
+import { config } from '@emeraldwallet/core';
 import { Store } from 'redux';
-import { TERMS_VERSION } from './config';
 import { Dispatcher } from './types';
 import { IState, accounts, application, settings } from './index';
+
+export enum TriggerStatus {
+  CONTINUE,
+  STOP,
+}
+
+export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
 
 /**
  * Trigger state value, which is any string representing the state. The trigger fires when the state value changes from
@@ -13,14 +20,7 @@ import { IState, accounts, application, settings } from './index';
  */
 export type TriggerState = (state: IState) => string | undefined;
 
-export enum TriggerStatus {
-  CONTINUE,
-  STOP,
-}
-
-export type TriggerProcess = (state: IState, dispatch: Dispatcher) => TriggerStatus;
-
-const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<IState>): void => {
+const handleTrigger = (store: Store<IState>, check: () => boolean, resolve: () => void): void => {
   if (check()) {
     resolve();
 
@@ -37,81 +37,25 @@ const handleTrigger = (check: () => boolean, resolve: () => void, store: Store<I
 };
 
 export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
-  return new Promise((resolve) => handleTrigger(() => !accounts.selectors.isLoading(store.getState()), resolve, store));
+  return new Promise((resolve) => handleTrigger(store, () => !accounts.selectors.isLoading(store.getState()), resolve));
 }
 
 export function onceModeSet(store: Store<IState>): Promise<void> {
   return new Promise((resolve) =>
     handleTrigger(
+      store,
       () => {
         const { id, chains } = settings.selectors.getMode(store.getState());
 
         return id !== 'default' && chains.length > 0;
       },
       resolve,
-      store,
     ),
   );
 }
 
 export function onceServicesStart(store: Store<IState>): Promise<void> {
   return new Promise((resolve) =>
-    handleTrigger(() => application.selectors.terms(store.getState()) === TERMS_VERSION, resolve, store),
+    handleTrigger(store, () => application.selectors.terms(store.getState()) === config.TERMS_VERSION, resolve),
   );
-}
-
-export class Triggers {
-  private store?: Store<IState>;
-
-  setStore(store: Store): void {
-    this.store = store;
-  }
-
-  add(check: TriggerState, handler: TriggerProcess): void {
-    if (this.store == null) {
-      console.warn('Store is not ready for triggers');
-    } else {
-      let last: string | undefined = undefined;
-
-      const unsubscribe = this.store.subscribe(() => {
-        const { dispatch, getState } = this.store ?? {};
-
-        const state = getState?.();
-
-        if (dispatch != null && state != null) {
-          const current = check(state);
-
-          if ((last == null && current != null) || (typeof last === 'string' && last !== current)) {
-            last = current;
-
-            const status = handler(state, dispatch);
-
-            if (status === TriggerStatus.STOP) {
-              unsubscribe();
-            }
-          }
-        }
-      });
-    }
-  }
-
-  schedule(period: number, handler: TriggerProcess): void {
-    const execute = (): void => {
-      const { dispatch, getState } = this.store ?? {};
-
-      const state = getState?.();
-
-      let status = TriggerStatus.CONTINUE;
-
-      if (dispatch != null && state != null) {
-        status = handler(state, dispatch);
-      }
-
-      if (status == TriggerStatus.CONTINUE) {
-        setTimeout(execute, period);
-      }
-    };
-
-    setTimeout(execute, period);
-  }
 }

@@ -3,7 +3,7 @@ import { IpcMain, WebContents } from 'electron';
 import { IService } from './Services';
 import { EmeraldApiAccess } from '..';
 
-export class ConnStatus implements IService {
+export class ConnectionStatus implements IService {
   public id: string;
 
   private apiAccess: EmeraldApiAccess;
@@ -18,7 +18,7 @@ export class ConnStatus implements IService {
 
   start(): void {
     this.apiAccess.statusListener((status) =>
-      this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'CONN/SET_STATUS', payload: { status } }),
+      this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'CONNECTION/SET_STATUS', payload: { status } }),
     );
   }
 

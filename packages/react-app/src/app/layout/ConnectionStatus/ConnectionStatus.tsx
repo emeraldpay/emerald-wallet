@@ -1,11 +1,7 @@
-import { connection } from '@emeraldwallet/store';
-import { ConnectionStatus } from '@emeraldwallet/ui';
+import { IState, connection } from '@emeraldwallet/store';
+import { ConnectionStateProps, ConnectionStatus } from '@emeraldwallet/ui';
 import { connect } from 'react-redux';
 
-export default connect(
-  (state, ownProps) => {
-    return {
-      status: connection.selectors.getStatus(state)
-    };
-  }
-)(ConnectionStatus);
+export default connect<ConnectionStateProps, unknown, unknown, IState>((state) => ({
+  status: connection.selectors.getStatus(state),
+}))(ConnectionStatus);

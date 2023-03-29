@@ -86,7 +86,7 @@ jobs:
           override: true
 
       - name: Install system libs
-        run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
+        run: sudo apt-get install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
         if: runner.os == 'Linux'
 
       - name: Install Global JS components

@@ -1,7 +1,7 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { SeedDefinition, Uuid } from '@emeraldpay/emerald-vault-core';
-import { IBlockchain } from '@emeraldwallet/core';
-import { IState, accounts, screen } from '@emeraldwallet/store';
+import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
+import { HDPathAddresses, IState, accounts, hdpathPreview, screen } from '@emeraldwallet/store';
 import { Button, ButtonGroup, ImportMnemonic, ImportPk, NewMnemonic } from '@emeraldwallet/ui';
 import {
   Card,
@@ -26,7 +26,7 @@ import WalletOptions from './WalletOptions';
 import SelectCoins from '../create-account/SelectCoins';
 import SelectHDPath from '../create-account/SelectHDPath';
 import UnlockSeed from '../create-account/UnlockSeed';
-import LedgerWait from '../ledger/LedgerWait';
+import WaitLedger from '../ledger/WaitLedger';
 
 const useStyles = makeStyles(
   createStyles({
@@ -63,6 +63,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  addresses: HDPathAddresses;
   hasWallets: boolean;
 }
 
@@ -79,6 +80,7 @@ function isValidMnemonic(text: string): boolean {
  * Multistep wizard to create a new Wallet. The wallet can be created from an existing/new seed or private key.
  */
 export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  addresses,
   blockchains,
   hasWallets,
   seeds,
@@ -91,6 +93,8 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   onSaveSeed,
 }) => {
   const styles = useStyles();
+
+  const prevAddressesState = React.useRef<HDPathAddresses>({});
 
   const [walletId, setWalletId] = React.useState('');
 
@@ -111,6 +115,22 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
       ),
     );
   }, [onCreate, onError]);
+
+  React.useEffect(() => {
+    const { current: oldAddresses } = prevAddressesState;
+
+    const blockchains = Object.keys(addresses) as BlockchainCode[];
+    const oldBlockchains = Object.keys(oldAddresses) as BlockchainCode[];
+
+    if (
+      (oldBlockchains.length > 0 && blockchains.length === 0) ||
+      blockchains.reduce((carry, blockchain) => carry || oldAddresses[blockchain] !== addresses[blockchain], false)
+    ) {
+      prevAddressesState.current = addresses;
+
+      setStep(step.applyAddresses.call(step, addresses));
+    }
+  }, [addresses, step]);
 
   const applyWithState = function <T extends unknown[]>(fn: (...args: T) => CreateWalletFlow): (...args: T) => void {
     return (...args) => setStep(fn.call(step, ...args));
@@ -139,13 +159,13 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
     activeStepPage = (
       <NewMnemonic
         onGenerate={mnemonicGenerator}
-        onContinue={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}
+        onContinue={(mnemonic, password) => applyWithState(step.applyMnemonic)(mnemonic, password)}
       />
     );
   } else if (page.code === STEP_CODE.MNEMONIC_IMPORT) {
     activeStepPage = (
       <ImportMnemonic
-        onSubmit={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}
+        onSubmit={(mnemonic, password) => applyWithState(step.applyMnemonic)(mnemonic, password)}
         isValidMnemonic={isValidMnemonic}
       />
     );
@@ -160,7 +180,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
       />
     );
   } else if (page.code === STEP_CODE.LEDGER_OPEN) {
-    activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)} />;
+    activeStepPage = <WaitLedger fullSize onConnected={applyWithState(step.applyLedgerConnected)} />;
   } else if (page.code === STEP_CODE.LOCK_SEED) {
     const onLock = (globalPassword: string): void => {
       if (onSaveSeed == null) {
@@ -178,12 +198,12 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
         },
       };
 
-      onSaveSeed(save).then((id) => setStep(step.applyMnemonicSaved(id, globalPassword)));
+      onSaveSeed(save).then((id) => applyWithState(step.applyMnemonicSaved)(id, globalPassword));
     };
 
     activeStepPage = <SaveMnemonic onPassword={onLock} />;
   } else if (page.code === STEP_CODE.SELECT_HD_ACCOUNT) {
-    const seed = step.getResult().seed;
+    const { seed } = step.getResult();
 
     if (seed == null) {
       throw new Error('Invalid state: seed is undefined');
@@ -193,7 +213,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
       <SelectHDPath
         blockchains={step.getResult().blockchains}
         seed={seed}
-        onChange={applyWithState(step.applyHDAccount)}
+        onChange={applyWithState(step.applyAccount)}
       />
     );
   } else if (page.code === STEP_CODE.CREATED) {
@@ -220,7 +240,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
         {(hasWallets || page.code !== STEP_CODE.KEY_SOURCE) && (
           <Button disabled={page.code === STEP_CODE.CREATED} label="Cancel" onClick={hasWallets ? onCancel : onReset} />
         )}
-        <Button primary disabled={!step.canGoNext()} label="Next" onClick={() => setStep(step.applyNext())} />
+        <Button primary disabled={!step.canGoNext()} label="Next" onClick={() => applyWithState(step.applyNext)()} />
       </ButtonGroup>
     );
   }
@@ -234,16 +254,17 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   );
 };
 
-export default connect(
-  (state: IState): StateProps => ({
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state) => ({
+    addresses: hdpathPreview.selectors.getCurrentAddresses(state),
     hasWallets: state.accounts.wallets.length > 0,
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any): DispatchProps => ({
+  (dispatch: any) => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    onOpen: (walletId: string) => {
+    onOpen(walletId) {
       dispatch(screen.actions.gotoScreen('wallet', walletId));
     },
   }),

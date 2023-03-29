@@ -25,7 +25,6 @@ import {
   IState,
   SignData,
   accounts,
-  hwkey,
   screen,
   settings,
   tokens,
@@ -505,7 +504,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 }
 
-async function sign(
+function sign(
   dispatch: any,
   ownProps: OwnProps,
   tokenRegistry: TokenRegistry,
@@ -517,11 +516,6 @@ async function sign(
     console.warn('Invalid tx', from, to);
 
     return Promise.resolve(null);
-  }
-
-  if (password == null) {
-    await dispatch(hwkey.actions.setWatch(false));
-    await dispatch(screen.actions.showDialog(screen.Dialogs.SIGN_TX));
   }
 
   return dispatch(transaction.actions.signTransaction(entryId, tx.build(), password));

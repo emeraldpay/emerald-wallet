@@ -22,54 +22,57 @@ import {
   Slider,
   Switch,
   createStyles,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import WaitLedger from '../../ledger/WaitLedger';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FromField from '../CreateTx/FromField';
 
-const styles = createStyles({
-  inputField: {
-    flexGrow: 5,
-  },
-  gasPriceTypeBox: {
-    width: '240px',
-    float: 'left',
-    height: '40px',
-  },
-  gasPriceSliderBox: {
-    width: '300px',
-    float: 'left',
-  },
-  gasPriceHelpBox: {
-    width: '500px',
-    clear: 'left',
-  },
-  gasPriceSlider: {
-    width: '300px',
-    marginBottom: '10px',
-    paddingTop: '10px',
-  },
-  gasPriceHelp: {
-    position: 'initial',
-    paddingLeft: '10px',
-  },
-  gasPriceMarkLabel: {
-    fontSize: '0.7em',
-    opacity: 0.8,
-  },
-  gasPriceValueLabel: {
-    fontSize: '0.7em',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'end',
-    width: '100%',
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    inputField: {
+      flexGrow: 5,
+    },
+    gasPriceTypeBox: {
+      width: '240px',
+      float: 'left',
+      height: '40px',
+    },
+    gasPriceSliderBox: {
+      width: '300px',
+      float: 'left',
+    },
+    gasPriceHelpBox: {
+      width: '500px',
+      clear: 'left',
+    },
+    gasPriceSlider: {
+      width: '300px',
+      marginBottom: '10px',
+      paddingTop: '10px',
+    },
+    gasPriceHelp: {
+      position: 'initial',
+      paddingLeft: '10px',
+    },
+    gasPriceMarkLabel: {
+      fontSize: '0.7em',
+      opacity: 0.8,
+    },
+    gasPriceValueLabel: {
+      fontSize: '0.7em',
+    },
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+  }),
+);
 
 enum Stages {
   SETUP = 'setup',
@@ -81,14 +84,11 @@ interface OwnProps {
   token: string;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
 interface StateProps {
   addresses: string[];
   blockchain: BlockchainCode;
   eip1559: boolean;
+  isHardware: boolean;
   tokenRegistry: TokenRegistry;
   getBalance(address?: string): BigAmount;
   getBalancesByAddress(address: string, token: string): string[];
@@ -106,12 +106,12 @@ interface DispatchProps {
 
 const minimalUnit = new Unit(9, '', undefined);
 
-const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
+const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   addresses,
   blockchain,
-  classes,
   eip1559,
   entry: { address },
+  isHardware,
   token,
   tokenRegistry,
   checkGlobalKey,
@@ -124,6 +124,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   goBack,
   signTransaction,
 }) => {
+  const styles = useStyles();
+
   const coinTicker = React.useMemo(() => Blockchains[blockchain].params.coinTicker, [blockchain]);
   const zeroAmount = React.useMemo(() => amountFactory(blockchain)(0), [blockchain]);
 
@@ -255,9 +257,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   );
 
   const onSignTransaction = useCallback(async () => {
-    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
     setPasswordError(undefined);
+
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     if (tx.address == null) {
       return;
@@ -269,16 +271,21 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       return;
     }
 
-    const correctPassword = await checkGlobalKey(password);
+    const blockchainCode = blockchainIdToCode(entry.blockchain);
+    const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
 
-    if (correctPassword) {
-      const blockchainCode = blockchainIdToCode(entry.blockchain);
-
-      await signTransaction(entry.id, tx, tokenRegistry.bySymbol(blockchainCode, token), password);
+    if (isHardware) {
+      await signTransaction(entry.id, tx, tokenData);
     } else {
-      setPasswordError('Incorrect password');
+      const correctPassword = await checkGlobalKey(password);
+
+      if (correctPassword) {
+        await signTransaction(entry.id, tx, tokenData, password);
+      } else {
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [convertTx, password, token, tokenRegistry, checkGlobalKey, getEntryByAddress, signTransaction]);
+  }, [convertTx, getEntryByAddress, isHardware, tokenRegistry, token, signTransaction, checkGlobalKey, password]);
 
   React.useEffect(
     () => {
@@ -399,8 +406,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
           </FormRow>
           <FormRow>
             <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-            <Box className={classes.inputField}>
-              <Box className={classes.gasPriceTypeBox}>
+            <Box className={styles.inputField}>
+              <Box className={styles.gasPriceTypeBox}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -423,14 +430,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 />
               </Box>
               {!useStdMaxGasPrice && (
-                <Box className={classes.gasPriceSliderBox}>
+                <Box className={styles.gasPriceSliderBox}>
                   <Slider
                     aria-labelledby="discrete-slider"
                     classes={{
-                      markLabel: classes.gasPriceMarkLabel,
-                      valueLabel: classes.gasPriceValueLabel,
+                      markLabel: styles.gasPriceMarkLabel,
+                      valueLabel: styles.gasPriceValueLabel,
                     }}
-                    className={classes.gasPriceSlider}
+                    className={styles.gasPriceSlider}
                     defaultValue={stdMaxGasPriceNumber}
                     marks={[
                       { value: lowMaxGasPriceNumber, label: 'Slow' },
@@ -449,8 +456,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                   />
                 </Box>
               )}
-              <Box className={classes.gasPriceHelpBox}>
-                <FormHelperText className={classes.gasPriceHelp}>
+              <Box className={styles.gasPriceHelpBox}>
+                <FormHelperText className={styles.gasPriceHelp}>
                   {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
                 </FormHelperText>
               </Box>
@@ -459,8 +466,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
           {eip1559 && (
             <FormRow>
               <FormLabel top>Priority gas price</FormLabel>
-              <Box className={classes.inputField}>
-                <Box className={classes.gasPriceTypeBox}>
+              <Box className={styles.inputField}>
+                <Box className={styles.gasPriceTypeBox}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -483,14 +490,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                   />
                 </Box>
                 {!useStdPriorityGasPrice && (
-                  <Box className={classes.gasPriceSliderBox}>
+                  <Box className={styles.gasPriceSliderBox}>
                     <Slider
                       aria-labelledby="discrete-slider"
                       classes={{
-                        markLabel: classes.gasPriceMarkLabel,
-                        valueLabel: classes.gasPriceValueLabel,
+                        markLabel: styles.gasPriceMarkLabel,
+                        valueLabel: styles.gasPriceValueLabel,
                       }}
-                      className={classes.gasPriceSlider}
+                      className={styles.gasPriceSlider}
                       defaultValue={stdPriorityGasPriceNumber}
                       marks={[
                         { value: lowPriorityGasPriceNumber, label: 'Slow' },
@@ -509,17 +516,17 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                     />
                   </Box>
                 )}
-                <Box className={classes.gasPriceHelpBox}>
-                  <FormHelperText className={classes.gasPriceHelp}>
+                <Box className={styles.gasPriceHelpBox}>
+                  <FormHelperText className={styles.gasPriceHelp}>
                     {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
                   </FormHelperText>
                 </Box>
               </Box>
             </FormRow>
           )}
-          <FormRow classes={{ container: classes.buttons }}>
+          <FormRow classes={{ container: styles.buttons }}>
             <FormLabel />
-            <ButtonGroup classes={{ container: classes.buttons }}>
+            <ButtonGroup classes={{ container: styles.buttons }}>
               {initializing && (
                 <Button disabled icon={<CircularProgress size={16} />} label="Checking the network" variant="text" />
               )}
@@ -536,26 +543,29 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       )}
       {stage === Stages.SIGN && (
         <>
-          <FormRow>
-            <FormLabel />
-            <div>
-              Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
-            </div>
-          </FormRow>
-          <FormRow>
-            <FormLabel>Password</FormLabel>
-            <PasswordInput error={passwordError} onChange={setPassword} />
-          </FormRow>
+          <div>
+            Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
+          </div>
+          {isHardware ? (
+            <WaitLedger fullSize blockchain={currentTx.blockchain} onConnected={() => onSignTransaction()} />
+          ) : (
+            <FormRow>
+              <FormLabel>Password</FormLabel>
+              <PasswordInput error={passwordError} onChange={setPassword} />
+            </FormRow>
+          )}
           <FormRow last>
             <FormLabel />
-            <ButtonGroup classes={{ container: classes.buttons }}>
+            <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
-              <Button
-                label="Sign Transaction"
-                disabled={password.length === 0}
-                primary={true}
-                onClick={onSignTransaction}
-              />
+              {!isHardware && (
+                <Button
+                  label="Sign Transaction"
+                  disabled={password.length === 0}
+                  primary={true}
+                  onClick={onSignTransaction}
+                />
+              )}
             </ButtonGroup>
           </FormRow>
         </>
@@ -565,12 +575,24 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const { entry } = ownProps;
-
+  (state, { entry }) => {
     const blockchain = blockchainIdToCode(entry.blockchain);
     const factory = amountFactory(blockchain);
     const zero = factory(0);
+
+    let isHardware = false;
+
+    const wallet = accounts.selectors.findWalletByEntryId(state, entry.id);
+
+    if (wallet != null) {
+      const [account] = wallet.reserved ?? [];
+
+      if (account != null) {
+        isHardware = accounts.selectors.isHardwareSeed(state, { type: 'id', value: account.seedId });
+      }
+    }
+
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
 
     const uniqueAddresses =
       accounts.selectors
@@ -582,10 +604,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           new Set(),
         ) ?? new Set();
 
-    const tokenRegistry = new TokenRegistry(state.application.tokens);
-
     return {
       blockchain,
+      isHardware,
       tokenRegistry,
       addresses: [...uniqueAddresses],
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
@@ -645,12 +666,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => ({
+  (dispatch: any, { entry }) => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
     estimateGas(tx) {
-      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
+      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(entry.blockchain), tx));
     },
     getFees(blockchain) {
       return dispatch(transaction.actions.getFee(blockchain));
@@ -668,7 +689,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
 
       if (signed != null) {
-        const blockchainCode = blockchainIdToCode(ownProps.entry.blockchain);
+        const blockchainCode = blockchainIdToCode(entry.blockchain);
         const zeroAmount = amountFactory(blockchainCode)(0);
 
         dispatch(
@@ -689,4 +710,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
   }),
-)(withStyles(styles)(CreateConvertTransaction));
+)(CreateConvertTransaction);

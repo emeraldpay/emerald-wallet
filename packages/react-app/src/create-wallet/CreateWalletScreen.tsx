@@ -1,8 +1,15 @@
 import { AddEntry, SeedDefinition, SeedDescription, SeedReference } from '@emeraldpay/emerald-vault-core';
 import { AddJsonEntry, AddRawPkEntry } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BlockchainCode, Blockchains, IBlockchain, blockchainCodeToId } from '@emeraldwallet/core';
-import { IState, accounts, hdpathPreview, hwkey, screen, settings } from '@emeraldwallet/store';
-import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
+import {
+  HDPathAddresses,
+  HDPathIndexes,
+  IState,
+  accounts,
+  hdpathPreview,
+  screen,
+  settings,
+} from '@emeraldwallet/store';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -28,7 +35,7 @@ function entriesForBlockchains(
   seedRef: SeedReference,
   account: number,
   blockchains: BlockchainCode[],
-  addresses: Partial<Record<BlockchainCode, string>>,
+  addresses: HDPathAddresses,
   indexes: HDPathIndexes,
 ): NewEntry[] {
   const entries = blockchains.map<NewEntry>((blockchain) => ({
@@ -87,7 +94,6 @@ export default connect(
         return new Promise((resolve) => dispatch(accounts.actions.generateMnemonic(resolve)));
       },
       onCancel: () => {
-        dispatch(hwkey.actions.setWatch(false));
         dispatch(hdpathPreview.actions.clean());
         dispatch(screen.actions.gotoWalletsScreen());
       },
@@ -217,7 +223,6 @@ export default connect(
             }),
           );
 
-          dispatch(hwkey.actions.setWatch(false));
           dispatch(hdpathPreview.actions.clean());
         });
       },
