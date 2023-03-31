@@ -13,7 +13,7 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
-import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, FormAccordion, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
   CircularProgress,
@@ -34,30 +34,33 @@ import FromField from '../CreateTx/FromField';
 
 const useStyles = makeStyles(
   createStyles({
+    convertMessage: {
+      marginBottom: 20,
+    },
     inputField: {
       flexGrow: 5,
     },
     gasPriceTypeBox: {
-      width: '240px',
       float: 'left',
-      height: '40px',
+      height: 40,
+      width: 240,
     },
     gasPriceSliderBox: {
-      width: '300px',
       float: 'left',
+      width: 300,
     },
     gasPriceHelpBox: {
-      width: '500px',
       clear: 'left',
+      width: 500,
     },
     gasPriceSlider: {
-      width: '300px',
-      marginBottom: '10px',
-      paddingTop: '10px',
+      marginBottom: 10,
+      paddingTop: 10,
+      width: 300,
     },
     gasPriceHelp: {
       position: 'initial',
-      paddingLeft: '10px',
+      paddingLeft: 10,
     },
     gasPriceMarkLabel: {
       fontSize: '0.7em',
@@ -162,6 +165,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(0);
   const [useStdPriorityGasPrice, setUseStdPriorityGasPrice] = React.useState(true);
 
+  const [useEip1559, setUseEip1559] = React.useState(eip1559);
+
   const [stage, setStage] = useState(Stages.SETUP);
   const [password, setPassword] = useState('');
 
@@ -229,7 +234,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
       const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
 
-      if (eip1559) {
+      if (useEip1559) {
         tx.gasPrice = undefined;
         tx.maxGasPrice = gasPrice;
       } else {
@@ -241,7 +246,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
       setConvertTx(tx.dump());
     },
-    [blockchain, convertTx, eip1559, gasPriceUnit, gasPriceUnits],
+    [blockchain, convertTx, gasPriceUnit, gasPriceUnits, useEip1559],
   );
 
   const onChangePriorityGasPrice = useCallback(
@@ -286,6 +291,32 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       }
     }
   }, [convertTx, getEntryByAddress, isHardware, tokenRegistry, token, signTransaction, checkGlobalKey, password]);
+
+  const onUseEip1559Change = React.useCallback(
+    ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
+      const factory = amountFactory(blockchain);
+
+      const gasPrice = BigAmount.createFor(maxGasPrice, gasPriceUnits, factory, gasPriceUnit);
+
+      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+
+      if (checked) {
+        tx.gasPrice = undefined;
+        tx.maxGasPrice = gasPrice;
+        tx.priorityGasPrice = BigAmount.createFor(priorityGasPrice, gasPriceUnits, factory, gasPriceUnit);
+      } else {
+        tx.gasPrice = gasPrice;
+        tx.maxGasPrice = undefined;
+        tx.priorityGasPrice = undefined;
+      }
+
+      tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+      setConvertTx(tx.dump());
+      setUseEip1559(checked);
+    },
+    [blockchain, convertTx, gasPriceUnit, gasPriceUnits, maxGasPrice, priorityGasPrice],
+  );
 
   React.useEffect(
     () => {
@@ -404,92 +435,53 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               onMaxClicked={onClickMaxAmount}
             />
           </FormRow>
-          <FormRow>
-            <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-            <Box className={styles.inputField}>
-              <Box className={styles.gasPriceTypeBox}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={useStdMaxGasPrice}
-                      color="primary"
-                      disabled={initializing}
-                      onChange={(event): void => {
-                        const checked = event.target.checked;
-
-                        if (checked) {
-                          setMaxGasPrice(stdMaxGasPriceNumber);
-                          onChangeMaxGasPrice(stdMaxGasPriceNumber);
-                        }
-
-                        setUseStdMaxGasPrice(checked);
-                      }}
-                    />
-                  }
-                  label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
-                />
-              </Box>
-              {!useStdMaxGasPrice && (
-                <Box className={styles.gasPriceSliderBox}>
-                  <Slider
-                    aria-labelledby="discrete-slider"
-                    classes={{
-                      markLabel: styles.gasPriceMarkLabel,
-                      valueLabel: styles.gasPriceValueLabel,
-                    }}
-                    className={styles.gasPriceSlider}
-                    defaultValue={stdMaxGasPriceNumber}
-                    marks={[
-                      { value: lowMaxGasPriceNumber, label: 'Slow' },
-                      { value: highMaxGasPriceNumber, label: 'Urgent' },
-                    ]}
-                    max={highMaxGasPriceNumber}
-                    min={lowMaxGasPriceNumber}
-                    step={0.01}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(value): string => value.toFixed(2)}
-                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
-                    onChange={(event, value): void => {
-                      setMaxGasPrice(value as number);
-                      onChangeMaxGasPrice(value as number);
-                    }}
-                  />
-                </Box>
-              )}
-              <Box className={styles.gasPriceHelpBox}>
-                <FormHelperText className={styles.gasPriceHelp}>
-                  {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
-                </FormHelperText>
-              </Box>
-            </Box>
-          </FormRow>
-          {eip1559 && (
+          <FormAccordion
+            title={
+              <FormRow last>
+                <FormLabel>Settings</FormLabel>
+                {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPrice.toFixed(2)} {gasPriceOptimalUnit.toString()}
+                {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
+                {useEip1559
+                  ? ` / ${priorityGasPrice.toFixed(2)} ${gasPriceOptimalUnit.toString()} Priority Gas Price`
+                  : null}
+              </FormRow>
+            }
+          >
             <FormRow>
-              <FormLabel top>Priority gas price</FormLabel>
+              <FormLabel>Use EIP-1559</FormLabel>
+              <FormControlLabel
+                control={
+                  <Switch checked={useEip1559} color="primary" disabled={initializing} onChange={onUseEip1559Change} />
+                }
+                label={useEip1559 ? 'Enabled' : 'Disabled'}
+              />
+            </FormRow>
+            <FormRow>
+              <FormLabel top>{useEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
               <Box className={styles.inputField}>
                 <Box className={styles.gasPriceTypeBox}>
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={useStdPriorityGasPrice}
+                        checked={useStdMaxGasPrice}
                         color="primary"
                         disabled={initializing}
                         onChange={(event): void => {
                           const checked = event.target.checked;
 
                           if (checked) {
-                            setPriorityGasPrice(stdPriorityGasPriceNumber);
-                            onChangePriorityGasPrice(stdPriorityGasPriceNumber);
+                            setMaxGasPrice(stdMaxGasPriceNumber);
+                            onChangeMaxGasPrice(stdMaxGasPriceNumber);
                           }
 
-                          setUseStdPriorityGasPrice(checked);
+                          setUseStdMaxGasPrice(checked);
                         }}
                       />
                     }
-                    label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                    label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
                   />
                 </Box>
-                {!useStdPriorityGasPrice && (
+                {!useStdMaxGasPrice && (
                   <Box className={styles.gasPriceSliderBox}>
                     <Slider
                       aria-labelledby="discrete-slider"
@@ -498,32 +490,93 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
                         valueLabel: styles.gasPriceValueLabel,
                       }}
                       className={styles.gasPriceSlider}
-                      defaultValue={stdPriorityGasPriceNumber}
                       marks={[
-                        { value: lowPriorityGasPriceNumber, label: 'Slow' },
-                        { value: highPriorityGasPriceNumber, label: 'Urgent' },
+                        { value: lowMaxGasPriceNumber, label: 'Slow' },
+                        { value: highMaxGasPriceNumber, label: 'Urgent' },
                       ]}
-                      max={highPriorityGasPriceNumber}
-                      min={lowPriorityGasPriceNumber}
+                      max={highMaxGasPriceNumber}
+                      min={lowMaxGasPriceNumber}
                       step={0.01}
+                      value={maxGasPrice}
                       valueLabelDisplay="auto"
-                      valueLabelFormat={(value): string => value.toFixed(2)}
-                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
+                      getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
                       onChange={(event, value): void => {
-                        setPriorityGasPrice(value as number);
-                        onChangePriorityGasPrice(value as number);
+                        setMaxGasPrice(value as number);
+                        onChangeMaxGasPrice(value as number);
                       }}
+                      valueLabelFormat={(value): string => value.toFixed(2)}
                     />
                   </Box>
                 )}
                 <Box className={styles.gasPriceHelpBox}>
                   <FormHelperText className={styles.gasPriceHelp}>
-                    {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
+                    {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
                   </FormHelperText>
                 </Box>
               </Box>
             </FormRow>
-          )}
+            {useEip1559 && (
+              <FormRow>
+                <FormLabel top>Priority gas price</FormLabel>
+                <Box className={styles.inputField}>
+                  <Box className={styles.gasPriceTypeBox}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={useStdPriorityGasPrice}
+                          color="primary"
+                          disabled={initializing}
+                          onChange={(event): void => {
+                            const checked = event.target.checked;
+
+                            if (checked) {
+                              setPriorityGasPrice(stdPriorityGasPriceNumber);
+                              onChangePriorityGasPrice(stdPriorityGasPriceNumber);
+                            }
+
+                            setUseStdPriorityGasPrice(checked);
+                          }}
+                        />
+                      }
+                      label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                    />
+                  </Box>
+                  {!useStdPriorityGasPrice && (
+                    <Box className={styles.gasPriceSliderBox}>
+                      <Slider
+                        aria-labelledby="discrete-slider"
+                        classes={{
+                          markLabel: styles.gasPriceMarkLabel,
+                          valueLabel: styles.gasPriceValueLabel,
+                        }}
+                        className={styles.gasPriceSlider}
+                        marks={[
+                          { value: lowPriorityGasPriceNumber, label: 'Slow' },
+                          { value: highPriorityGasPriceNumber, label: 'Urgent' },
+                        ]}
+                        max={highPriorityGasPriceNumber}
+                        min={lowPriorityGasPriceNumber}
+                        step={0.01}
+                        value={priorityGasPrice}
+                        valueLabelDisplay="auto"
+                        getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
+                        onChange={(event, value): void => {
+                          setPriorityGasPrice(value as number);
+                          onChangePriorityGasPrice(value as number);
+                        }}
+                        valueLabelFormat={(value): string => value.toFixed(2)}
+                      />
+                    </Box>
+                  )}
+                  <Box className={styles.gasPriceHelpBox}>
+                    <FormHelperText className={styles.gasPriceHelp}>
+                      {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
+                    </FormHelperText>
+                  </Box>
+                </Box>
+              </FormRow>
+            )}
+          </FormAccordion>
           <FormRow classes={{ container: styles.buttons }}>
             <FormLabel />
             <ButtonGroup classes={{ container: styles.buttons }}>
@@ -543,7 +596,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       )}
       {stage === Stages.SIGN && (
         <>
-          <div>
+          <div className={styles.convertMessage}>
             Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
           </div>
           {isHardware ? (

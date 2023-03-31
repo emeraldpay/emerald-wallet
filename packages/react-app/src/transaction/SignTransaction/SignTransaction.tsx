@@ -33,6 +33,7 @@ const styles: StyleRulesCallback<Theme, Props> = (theme) =>
       justifyContent: 'center',
     },
     addressField: {
+      lineHeight: '1',
       minHeight: '1rem',
       paddingTop: 10,
     },
@@ -67,7 +68,8 @@ const styles: StyleRulesCallback<Theme, Props> = (theme) =>
     fee: {
       display: 'flex',
       justifyContent: 'center',
-      paddingTop: 10,
+      marginBottom: 20,
+      marginTop: 10,
     },
     feeText: {
       color: theme.palette.text.secondary,

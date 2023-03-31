@@ -55,6 +55,7 @@ storiesOf('CreateTx Ethereum', module)
       getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}
       onChangeTo={action('onChangeTo')}
+      onChangeUseEip1559={action('onChangeUseEip1559')}
     />
   ))
   .add('Create EIP-1559', () => (
@@ -74,6 +75,7 @@ storiesOf('CreateTx Ethereum', module)
       getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}
       onChangeTo={action('onChangeTo')}
+      onChangeUseEip1559={action('onChangeUseEip1559')}
     />
   ))
   .add('AmountField', () => <AmountField units={WEIS} onChangeAmount={action('onChangeAmount')} />)

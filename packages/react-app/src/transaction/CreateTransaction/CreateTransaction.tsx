@@ -77,6 +77,7 @@ interface CreateTxState {
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
   stdGasPrice: GasPrices;
+  useEip1559: boolean;
 }
 
 interface DispatchFromProps {
@@ -143,6 +144,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       page: PAGES.TX,
       token: props.token,
       transaction: tx.dump(),
+      useEip1559: props.eip1559,
     };
   }
 
@@ -298,6 +300,31 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   };
 
+  public onChangeUseEip1559 = (enabled: boolean, max: number, priority: number) => {
+    const { blockchain } = this.props;
+    const { stdGasPrice } = this.state;
+
+    const tx = this.transaction;
+
+    const factory = amountFactory(blockchain);
+
+    if (enabled) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = factory(max) as WeiAny;
+      tx.priorityGasPrice = factory(priority) as WeiAny;
+    } else {
+      tx.gasPrice = factory(max) as WeiAny;
+      tx.maxGasPrice = undefined;
+      tx.priorityGasPrice = undefined;
+    }
+
+    tx.type = enabled ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+    this.transaction = tx;
+
+    this.setState({ useEip1559: enabled });
+  };
+
   public async componentDidMount() {
     const fees = await this.props.getFees(this.props.blockchain);
 
@@ -306,7 +333,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const { avgLast, avgMiddle, avgTail5 } = fees;
     const tx = this.transaction;
 
-    if (this.props.eip1559) {
+    if (this.state.useEip1559) {
       tx.gasPrice = undefined;
       tx.maxGasPrice = factory(avgTail5.max) as WeiAny;
       tx.priorityGasPrice = factory(avgTail5.priority) as WeiAny;
@@ -395,7 +422,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const factory = amountFactory(tx.blockchain);
     const gasPrice = BigAmount.createFor(price, factory(0).units, factory, unit);
 
-    if (this.props.eip1559) {
+    if (this.state.useEip1559) {
       tx.gasPrice = undefined;
       tx.maxGasPrice = gasPrice as WeiAny;
     } else {
@@ -428,7 +455,6 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const {
       blockchain,
       currency,
-      eip1559,
       ownAddresses,
       tokenRegistry,
       tokenSymbols,
@@ -439,7 +465,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       getTokenBalance,
       onCancel,
     } = this.props;
-    const { initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, token } = this.state;
+    const { initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, token, useEip1559 } = this.state;
 
     const tx = this.transaction;
 
@@ -448,7 +474,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         return (
           <CreateTx
             chain={blockchain}
-            eip1559={eip1559}
+            eip1559={useEip1559}
             initializing={initializing}
             highGasPrice={highGasPrice}
             lowGasPrice={lowGasPrice}
@@ -466,6 +492,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onChangeGasLimit={this.onChangeGasLimit}
             onChangeAmount={this.onChangeAmount}
             onChangeTo={this.onChangeTo}
+            onChangeUseEip1559={this.onChangeUseEip1559}
             onSubmit={this.onSubmitCreateTransaction}
             onCancel={onCancel}
             onMaxClicked={this.onMaxClicked}
