@@ -2,7 +2,7 @@ import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
-import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
+import { Button, ButtonGroup, FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
 import {
   Box,
   CircularProgress,
@@ -10,6 +10,7 @@ import {
   FormHelperText,
   Slider,
   Switch,
+  WithStyles,
   createStyles,
   withStyles,
 } from '@material-ui/core';
@@ -18,6 +19,8 @@ import AmountField from './AmountField';
 import FromField from './FromField';
 import ToField from './ToField';
 import TokenField from './TokenField';
+
+const { ValidationResult } = workflow;
 
 const styles = createStyles({
   gasPriceHelp: {
@@ -59,11 +62,8 @@ const styles = createStyles({
   },
 });
 
-const { ValidationResult } = workflow;
-
-export interface Props {
+export interface Props extends WithStyles<typeof styles> {
   chain: BlockchainCode;
-  classes: Record<keyof typeof styles, string>;
   currency?: string;
   eip1559: boolean;
   fiatBalance?: string | null;
@@ -86,6 +86,7 @@ export interface Props {
   onChangeGasLimit?(value: string): void;
   onChangeTo(to: string): void;
   onChangeToken?(tokenSymbol: string): void;
+  onChangeUseEip1559(value: boolean, max: number, priority: number): void;
   onMaxClicked?(): void;
   onSetMaxGasPrice?(value: number, unit: Unit): void;
   onSetPriorityGasPrice?(value: number, unit: Unit): void;
@@ -95,6 +96,7 @@ export interface Props {
 interface State {
   currentMaxGasPrice: number;
   currentPriorityGasPrice: number;
+  useEip1559: boolean;
   useStdMaxGasPrice: boolean;
   useStdPriorityGasPrice: boolean;
 }
@@ -108,6 +110,7 @@ class CreateTx extends React.Component<Props, State> {
     this.state = {
       currentMaxGasPrice: 0,
       currentPriorityGasPrice: 0,
+      useEip1559: props.eip1559,
       useStdMaxGasPrice: true,
       useStdPriorityGasPrice: true,
     };
@@ -153,7 +156,6 @@ class CreateTx extends React.Component<Props, State> {
       chain,
       classes,
       currency,
-      eip1559,
       fiatBalance,
       initializing,
       highGasPrice,
@@ -169,12 +171,14 @@ class CreateTx extends React.Component<Props, State> {
       onChangeFrom,
       onChangeTo,
       onChangeToken,
+      onChangeUseEip1559,
       onMaxClicked,
       onSetMaxGasPrice,
       onSetPriorityGasPrice,
       onSubmit,
     } = this.props;
-    const { currentMaxGasPrice, currentPriorityGasPrice, useStdMaxGasPrice, useStdPriorityGasPrice } = this.state;
+    const { currentMaxGasPrice, currentPriorityGasPrice, useEip1559, useStdMaxGasPrice, useStdPriorityGasPrice } =
+      this.state;
 
     const factory = amountFactory(chain);
 
@@ -235,94 +239,59 @@ class CreateTx extends React.Component<Props, State> {
             onMaxClicked={onMaxClicked}
           />
         </FormRow>
-        <FormRow>
-          <FormLabel top>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-          <Box className={classes.inputField}>
-            <Box className={classes.gasPriceTypeBox}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={useStdMaxGasPrice}
-                    disabled={initializing}
-                    onChange={(event) => {
-                      const checked = event.target.checked;
-
-                      if (checked) {
-                        this.setState({ currentMaxGasPrice: stdMaxGasPriceNumber });
-                        onSetMaxGasPrice?.(stdMaxGasPriceNumber, unit);
-                      }
-
-                      this.setState({ useStdMaxGasPrice: checked });
-                    }}
-                    name="checkedB"
-                    color="primary"
-                  />
-                }
-                label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
-              />
-            </Box>
-            {!useStdMaxGasPrice && (
-              <Box className={classes.gasPriceSliderBox}>
-                <Slider
-                  className={classes.gasPriceSlider}
-                  classes={{
-                    markLabel: classes.gasPriceMarkLabel,
-                    valueLabel: classes.gasPriceValueLabel,
-                  }}
-                  defaultValue={stdMaxGasPriceNumber}
-                  getAriaValueText={() => `${currentMaxGasPrice.toFixed(2)} ${unit.toString()}`}
-                  aria-labelledby="discrete-slider"
-                  valueLabelDisplay="auto"
-                  step={0.01}
-                  marks={[
-                    { value: lowMaxGasPriceNumber, label: 'Slow' },
-                    { value: highMaxGasPriceNumber, label: 'Urgent' },
-                  ]}
-                  min={lowMaxGasPriceNumber}
-                  max={highMaxGasPriceNumber}
-                  onChange={(e, value) => {
-                    this.setState({ currentMaxGasPrice: value as number });
-                    onSetMaxGasPrice?.(value as number, unit);
-                  }}
-                  valueLabelFormat={(value) => value.toFixed(2)}
-                />
-              </Box>
-            )}
-            <Box className={classes.gasPriceHelpBox}>
-              <FormHelperText className={classes.gasPriceHelp}>
-                {currentMaxGasPrice.toFixed(2)} {unit.toString()}
-              </FormHelperText>
-            </Box>
-          </Box>
-        </FormRow>
-        {eip1559 && (
+        <FormAccordion
+          title={
+            <FormRow last>
+              <FormLabel>Settings</FormLabel>
+              {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {currentMaxGasPrice.toFixed(2)} {unit.toString()}
+              {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
+              {useEip1559 ? ` / ${currentPriorityGasPrice.toFixed(2)} ${unit.toString()} Priority Gas Price` : null}
+            </FormRow>
+          }
+        >
           <FormRow>
-            <FormLabel top>Priority gas price</FormLabel>
+            <FormLabel>Use EIP-1559</FormLabel>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={useEip1559}
+                  color="primary"
+                  disabled={initializing}
+                  onChange={({ target: { checked } }) => {
+                    this.setState({ useEip1559: checked });
+
+                    onChangeUseEip1559(checked, currentMaxGasPrice, currentPriorityGasPrice);
+                  }}
+                />
+              }
+              label={useEip1559 ? 'Enabled' : 'Disabled'}
+            />
+          </FormRow>
+          <FormRow>
+            <FormLabel top>{useEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={useStdPriorityGasPrice}
+                      checked={useStdMaxGasPrice}
                       disabled={initializing}
-                      onChange={(event) => {
-                        const checked = event.target.checked;
-
+                      onChange={({ target: { checked } }) => {
                         if (checked) {
-                          this.setState({ currentPriorityGasPrice: stdPriorityGasPriceNumber });
-                          onSetPriorityGasPrice?.(stdPriorityGasPriceNumber, unit);
+                          this.setState({ currentMaxGasPrice: stdMaxGasPriceNumber });
+
+                          onSetMaxGasPrice?.(stdMaxGasPriceNumber, unit);
                         }
 
-                        this.setState({ useStdPriorityGasPrice: checked });
+                        this.setState({ useStdMaxGasPrice: checked });
                       }}
-                      name="checkedB"
                       color="primary"
                     />
                   }
-                  label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                  label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
                 />
               </Box>
-              {!useStdPriorityGasPrice && (
+              {!useStdMaxGasPrice && (
                 <Box className={classes.gasPriceSliderBox}>
                   <Slider
                     className={classes.gasPriceSlider}
@@ -330,20 +299,21 @@ class CreateTx extends React.Component<Props, State> {
                       markLabel: classes.gasPriceMarkLabel,
                       valueLabel: classes.gasPriceValueLabel,
                     }}
-                    defaultValue={stdPriorityGasPriceNumber}
-                    getAriaValueText={() => `${currentPriorityGasPrice.toFixed(2)} ${unit.toString()}`}
+                    getAriaValueText={() => `${currentMaxGasPrice.toFixed(2)} ${unit.toString()}`}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
                     step={0.01}
                     marks={[
-                      { value: lowPriorityGasPriceNumber, label: 'Slow' },
-                      { value: highPriorityGasPriceNumber, label: 'Urgent' },
+                      { value: lowMaxGasPriceNumber, label: 'Slow' },
+                      { value: highMaxGasPriceNumber, label: 'Urgent' },
                     ]}
-                    min={lowPriorityGasPriceNumber}
-                    max={highPriorityGasPriceNumber}
-                    onChange={(e, value) => {
-                      this.setState({ currentPriorityGasPrice: value as number });
-                      onSetPriorityGasPrice?.(value as number, unit);
+                    min={lowMaxGasPriceNumber}
+                    max={highMaxGasPriceNumber}
+                    value={currentMaxGasPrice}
+                    onChange={(event, value) => {
+                      this.setState({ currentMaxGasPrice: value as number });
+
+                      onSetMaxGasPrice?.(value as number, unit);
                     }}
                     valueLabelFormat={(value) => value.toFixed(2)}
                   />
@@ -351,12 +321,73 @@ class CreateTx extends React.Component<Props, State> {
               )}
               <Box className={classes.gasPriceHelpBox}>
                 <FormHelperText className={classes.gasPriceHelp}>
-                  {currentPriorityGasPrice.toFixed(2)} {unit.toString()}
+                  {currentMaxGasPrice.toFixed(2)} {unit.toString()}
                 </FormHelperText>
               </Box>
             </Box>
           </FormRow>
-        )}
+          {useEip1559 && (
+            <FormRow>
+              <FormLabel top>Priority gas price</FormLabel>
+              <Box className={classes.inputField}>
+                <Box className={classes.gasPriceTypeBox}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={useStdPriorityGasPrice}
+                        disabled={initializing}
+                        onChange={({ target: { checked } }) => {
+                          if (checked) {
+                            this.setState({ currentPriorityGasPrice: stdPriorityGasPriceNumber });
+
+                            onSetPriorityGasPrice?.(stdPriorityGasPriceNumber, unit);
+                          }
+
+                          this.setState({ useStdPriorityGasPrice: checked });
+                        }}
+                        color="primary"
+                      />
+                    }
+                    label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                  />
+                </Box>
+                {!useStdPriorityGasPrice && (
+                  <Box className={classes.gasPriceSliderBox}>
+                    <Slider
+                      className={classes.gasPriceSlider}
+                      classes={{
+                        markLabel: classes.gasPriceMarkLabel,
+                        valueLabel: classes.gasPriceValueLabel,
+                      }}
+                      getAriaValueText={() => `${currentPriorityGasPrice.toFixed(2)} ${unit.toString()}`}
+                      aria-labelledby="discrete-slider"
+                      valueLabelDisplay="auto"
+                      step={0.01}
+                      marks={[
+                        { value: lowPriorityGasPriceNumber, label: 'Slow' },
+                        { value: highPriorityGasPriceNumber, label: 'Urgent' },
+                      ]}
+                      min={lowPriorityGasPriceNumber}
+                      max={highPriorityGasPriceNumber}
+                      value={currentPriorityGasPrice}
+                      onChange={(event, value) => {
+                        this.setState({ currentPriorityGasPrice: value as number });
+
+                        onSetPriorityGasPrice?.(value as number, unit);
+                      }}
+                      valueLabelFormat={(value) => value.toFixed(2)}
+                    />
+                  </Box>
+                )}
+                <Box className={classes.gasPriceHelpBox}>
+                  <FormHelperText className={classes.gasPriceHelp}>
+                    {currentPriorityGasPrice.toFixed(2)} {unit.toString()}
+                  </FormHelperText>
+                </Box>
+              </Box>
+            </FormRow>
+          )}
+        </FormAccordion>
         <FormRow last>
           <FormLabel />
           <ButtonGroup classes={{ container: classes.buttons }}>

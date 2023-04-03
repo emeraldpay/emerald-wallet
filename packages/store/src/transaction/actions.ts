@@ -336,13 +336,13 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
 
 export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPrices>> {
   return async (dispatch, getState, extra) => {
-    let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
+    let results = await Promise.allSettled(FEE_KEYS.map((key) => extra.backendApi.estimateFee(blockchain, 128, key)));
 
     results = await Promise.allSettled(
       results.map((result, index) =>
         result.status === 'fulfilled'
           ? Promise.resolve(result.value)
-          : dispatch(estimateFee(blockchain, 256, FEE_KEYS[index])),
+          : extra.backendApi.estimateFee(blockchain, 256, FEE_KEYS[index]),
       ),
     );
 
@@ -442,6 +442,39 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPric
     );
 
     return fee;
+  };
+}
+
+export function getTopFee(blockchain: BlockchainCode): Dispatched<GasPrices> {
+  return async (dispatch, getState, extra) => {
+    let avgTop: GasPrices = await extra.backendApi.estimateFee(blockchain, 128, 'avgTop');
+
+    if (avgTop == null) {
+      avgTop = await extra.backendApi.estimateFee(blockchain, 128, 'avgMiddle');
+    }
+
+    const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
+
+    const defaults: GasPrices = {
+      max: defaultFee.max,
+      priority: defaultFee.priority_max ?? '0',
+    };
+
+    if (avgTop == null) {
+      const cachedFee = await extra.api.cache.get(`fee.${blockchain}`);
+
+      if (cachedFee == null) {
+        return defaults;
+      }
+
+      try {
+        ({ avgTop } = JSON.parse(cachedFee));
+      } catch (exception) {
+        // Nothing
+      }
+    }
+
+    return avgTop ?? defaults;
   };
 }
 
