@@ -25,7 +25,7 @@ pub struct BalanceJson {
 pub struct UtxoJson {
   txid: String,
   vout: u32,
-  amount: u64,
+  amount: String,
 }
 
 impl From<&Balance> for BalanceJson {
@@ -44,9 +44,9 @@ impl From<&Balance> for BalanceJson {
 impl From<&Utxo> for UtxoJson {
   fn from(value: &Utxo) -> Self {
     UtxoJson {
+      amount: value.amount.to_string(),
       txid: value.txid.clone(),
       vout: value.vout,
-      amount: value.amount
     }
   }
 }
@@ -55,25 +55,34 @@ impl TryFrom<BalanceJson> for Balance {
   type Error = StateManagerError;
 
   fn try_from(value: BalanceJson) -> Result<Self, Self::Error> {
+    let mut utxo: Vec<Utxo> = Vec::new();
+
+    for u in value.utxo {
+      utxo.push(u.try_into()?);
+    }
+
     Ok(Balance {
+      utxo,
+      address: value.address,
       amount: BigUint::from_str(value.amount.as_str())
         .map_err(|_| StateManagerError::InvalidJsonField("amount".to_string(), "not a str-encoded number".to_string()))?,
-      ts: value.ts.or(Some(Utc::now())).unwrap(),
-      address: value.address,
-      blockchain: value.blockchain,
       asset: value.asset,
-      utxo: value.utxo.iter().map(|u| u.into()).collect()
+      blockchain: value.blockchain,
+      ts: value.ts.or(Some(Utc::now())).unwrap()
     })
   }
 }
 
-impl From<&UtxoJson> for Utxo {
-  fn from(value: &UtxoJson) -> Self {
-    Utxo {
+impl TryFrom<&UtxoJson> for Utxo {
+  type Error = StateManagerError;
+
+  fn try_from(value: &UtxoJson) -> Result<Self, Self::Error> {
+    Ok(Utxo {
+      amount: u64::from_str(value.amount.as_str())
+        .map_err(|_| StateManagerError::InvalidJsonField("amount".to_string(), "not a numeric string".to_string()))?,
       txid: value.txid.clone(),
       vout: value.vout,
-      amount: value.amount,
-    }
+    })
   }
 }
 

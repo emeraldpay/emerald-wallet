@@ -87,7 +87,7 @@ export class BalanceListener implements IService {
   subscribeBalance(subscription: Subscription): void {
     const subscriber = this.apiAccess.newAddressListener();
 
-    const amountReader = amountFactory(subscription.blockchain);
+    const factory = amountFactory(subscription.blockchain);
 
     subscriber.subscribe(subscription.blockchain, subscription.address, (event) =>
       this.persistentState.balances
@@ -96,18 +96,19 @@ export class BalanceListener implements IService {
           amount: event.balance,
           asset: Blockchains[subscription.blockchain].params.coin,
           blockchain: blockchainCodeToId(subscription.blockchain),
+          utxo: event.utxo?.map(({ txid, vout, value: amount }) => ({ amount, txid, vout })),
         })
         .then(() =>
           this.webContents?.send(IpcCommands.STORE_DISPATCH, {
             type: 'ACCOUNT/SET_BALANCE',
             payload: {
               address: event.address,
-              balance: amountReader(event.balance).encode(),
+              balance: factory(event.balance).encode(),
               entryId: subscription.entryId,
               utxo: event.utxo?.map((utxo) => ({
                 address: event.address,
                 txid: utxo.txid,
-                value: amountReader(utxo.value).encode(),
+                value: factory(utxo.value).encode(),
                 vout: utxo.vout,
               })),
             },

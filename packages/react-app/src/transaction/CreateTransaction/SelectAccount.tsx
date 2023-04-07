@@ -110,7 +110,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           const blockchainCode = blockchainIdToCode(entry.blockchain);
           const zeroAmount = accounts.selectors.zeroAmountFor(blockchainCode);
 
-          const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) ?? zeroAmount;
+          const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount, true) ?? zeroAmount;
 
           let tokenBalances: BigAmount[] = [];
 
