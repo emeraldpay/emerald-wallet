@@ -40,21 +40,25 @@ function onInitState(state: IAccountsState, { balances, entriesByAddress }: Init
           return carry;
         }
 
+        const factory = amountFactory(blockchainIdToCode(blockchain));
+
         const { [address]: entries = [] } = entriesByAddress;
 
         const details = entries
           .filter((entry) => entry.blockchain === blockchain)
-          .map<AccountDetails>(({ blockchain, id }) => ({
-            address,
-            balance: amountFactory(blockchainIdToCode(blockchain))(amount).encode(),
-            entryId: id,
-            utxo: utxo?.map(({ amount, txid, vout }) => ({
+          .map<AccountDetails>(({ id }) => {
+            return {
               address,
-              vout,
-              txid,
-              value: amount.toString(),
-            })),
-          }));
+              balance: factory(amount).encode(),
+              entryId: id,
+              utxo: utxo?.map(({ txid, vout, amount: value }) => ({
+                address,
+                vout,
+                txid,
+                value: factory(value).encode(),
+              })),
+            };
+          });
 
         return [...carry, ...details];
       }, []),

@@ -216,13 +216,13 @@ export function getAddressesBalance<T extends BigAmount>(
         };
       }
 
-      const factory = amountFactory(blockchainCode);
+      const decoder = amountDecoder<T>(blockchainCode);
 
       return (
         utxo?.reduce(
           (utxoCarry, { value }) => ({
             ...utxoCarry,
-            [address]: factory(value).plus(carry[address] ?? zeroAmount) as T,
+            [address]: decoder(value).plus(carry[address] ?? zeroAmount),
           }),
           carry,
         ) ?? carry
