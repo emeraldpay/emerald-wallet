@@ -58,7 +58,7 @@ impl TryFrom<BalanceJson> for Balance {
     let mut utxo: Vec<Utxo> = Vec::new();
 
     for u in value.utxo {
-      utxo.push(u.try_into()?);
+      utxo.push(Utxo::try_from(u)?);
     }
 
     Ok(Balance {
@@ -73,10 +73,10 @@ impl TryFrom<BalanceJson> for Balance {
   }
 }
 
-impl TryFrom<&UtxoJson> for Utxo {
+impl TryFrom<UtxoJson> for Utxo {
   type Error = StateManagerError;
 
-  fn try_from(value: &UtxoJson) -> Result<Self, Self::Error> {
+  fn try_from(value: UtxoJson) -> Result<Self, Self::Error> {
     Ok(Utxo {
       amount: u64::from_str(value.amount.as_str())
         .map_err(|_| StateManagerError::InvalidJsonField("amount".to_string(), "not a numeric string".to_string()))?,
