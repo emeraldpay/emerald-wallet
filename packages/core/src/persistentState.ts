@@ -335,9 +335,9 @@ export interface Balance {
  * Bitcoin UTXO details
  */
 export interface Utxo {
-  txid: string,
-  vout: number,
-  amount: number,
+  txid: string;
+  vout: number;
+  amount: string;
 }
 
 /**
@@ -360,7 +360,6 @@ export interface Balances {
  * A generic cache for data stored between walelt runs
  */
 export interface Cache {
-
   /**
    * Put a value into cache
    *
@@ -383,7 +382,6 @@ export interface Cache {
    * @param id
    */
   evict(id: string): Promise<void>;
-
 }
 
 export interface PersistentState {

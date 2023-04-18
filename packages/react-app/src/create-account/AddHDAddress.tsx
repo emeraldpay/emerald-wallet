@@ -152,6 +152,8 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   );
 
   React.useEffect(() => {
+    let mounted = true;
+
     stage === Stage.LIST &&
       (async () => {
         const entry = entries.find((item) => item.blockchain === selectedBlockchain);
@@ -178,43 +180,49 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
           hdPaths,
         );
 
-        const existed = entries.reduce<number[]>((carry, item) => {
-          if (item.blockchain !== selectedBlockchain || !isSeedPkRef(item, item.key)) {
-            return carry;
-          }
+        if (mounted) {
+          const existed = entries.reduce<number[]>((carry, item) => {
+            if (item.blockchain !== selectedBlockchain || !isSeedPkRef(item, item.key)) {
+              return carry;
+            }
 
-          const { hdPath: itemHdPath } = item.key;
-          const { index } = HDPath.parse(itemHdPath);
+            const { hdPath: itemHdPath } = item.key;
+            const { index } = HDPath.parse(itemHdPath);
 
-          if (index == null) {
-            return carry;
-          }
+            if (index == null) {
+              return carry;
+            }
 
-          return [...carry, index];
-        }, []);
+            return [...carry, index];
+          }, []);
 
-        setSeedAddresses(
-          Object.keys(addresses)
-            .map<HDPath>((item) => HDPath.parse(item))
-            .sort((first: HDPath, second: HDPath) => {
-              if (first.index == null || second.index == null || first.index === second.index) {
-                return 0;
-              }
+          setSeedAddresses(
+            Object.keys(addresses)
+              .map<HDPath>((item) => HDPath.parse(item))
+              .sort((first: HDPath, second: HDPath) => {
+                if (first.index == null || second.index == null || first.index === second.index) {
+                  return 0;
+                }
 
-              return first.index > second.index ? 1 : -1;
-            })
-            .map((item) => {
-              const hdPath = item.toString();
+                return first.index > second.index ? 1 : -1;
+              })
+              .map((item) => {
+                const hdPath = item.toString();
 
-              return {
-                hdPath,
-                seedId,
-                address: addresses[hdPath],
-                existed: item.index == null ? false : existed.includes(item.index),
-              };
-            }),
-        );
+                return {
+                  hdPath,
+                  seedId,
+                  address: addresses[hdPath],
+                  existed: item.index == null ? false : existed.includes(item.index),
+                };
+              }),
+          );
+        }
       })();
+
+    return () => {
+      mounted = false;
+    };
   }, [counter, entries, password, stage, listAddresses, selectedBlockchain]);
 
   return (

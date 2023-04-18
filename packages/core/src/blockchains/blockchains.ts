@@ -180,12 +180,12 @@ export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
   }
 }
 
-export function amountDecoder<T extends BigAmount>(code: BlockchainCode): (n: string) => T {
+export function amountDecoder<T extends BigAmount>(code: BlockchainCode): (value: string) => T {
   const factory = amountFactory(code) as CreateAmount<T>;
 
   const { units } = factory(0);
 
-  return (n) => BigAmount.decodeFor(n, units, factory);
+  return (value) => BigAmount.decodeFor(value, units, factory);
 }
 
 export const ledgerByBlockchain: Record<LedgerApp, BlockchainCode> = {

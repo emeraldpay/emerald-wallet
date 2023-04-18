@@ -11550,7 +11550,6 @@ __metadata:
     eslint-plugin-unused-imports: ^2.0.0
     neon-cli: ^0.10.1
     prettier: ^2.8.3
-    rimraf: ^4.1.2
   languageName: unknown
   linkType: soft
 

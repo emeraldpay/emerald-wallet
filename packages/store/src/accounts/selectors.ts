@@ -181,7 +181,11 @@ export function zeroAmountFor<T extends BigAmount>(blockchain: BlockchainCode): 
   return amountCreate(0);
 }
 
-export function getAddressesBalance<T extends BigAmount>(state: IState, entryId: string): AddressesBalance<T> {
+export function getAddressesBalance<T extends BigAmount>(
+  state: IState,
+  entryId: string,
+  onlyUtxo = false,
+): AddressesBalance<T> {
   const entry = findEntry(state, entryId);
 
   if (entry == null) {
@@ -200,15 +204,29 @@ export function getAddressesBalance<T extends BigAmount>(state: IState, entryId:
   }
 
   if (isBitcoinEntry(entry)) {
-    return entryDetails.reduce<AddressesBalance<T>>((carry, { address, balance }) => {
+    return entryDetails.reduce<AddressesBalance<T>>((carry, { address, balance, utxo }) => {
       if (balance == null) {
         return carry;
       }
 
-      return {
-        ...carry,
-        [address]: amountDecode(balance).plus(carry[address] ?? zeroAmount),
-      };
+      if (!onlyUtxo && utxo == null) {
+        return {
+          ...carry,
+          [address]: amountDecode(balance).plus(carry[address] ?? zeroAmount),
+        };
+      }
+
+      const decoder = amountDecoder<T>(blockchainCode);
+
+      return (
+        utxo?.reduce(
+          (utxoCarry, { value }) => ({
+            ...utxoCarry,
+            [address]: decoder(value).plus(carry[address] ?? zeroAmount),
+          }),
+          carry,
+        ) ?? carry
+      );
     }, {});
   }
 
@@ -230,14 +248,14 @@ export function getAddressesBalance<T extends BigAmount>(state: IState, entryId:
   return {};
 }
 
-export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue: T): T {
+export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue: T, onlyUtxo = false): T {
   const entry = findEntry(state, entryId);
 
   if (entry == null) {
     return defaultValue;
   }
 
-  const addressesBalance = getAddressesBalance<T>(state, entryId);
+  const addressesBalance = getAddressesBalance<T>(state, entryId, onlyUtxo);
   const zeroAmount = zeroAmountFor<T>(blockchainIdToCode(entry.blockchain));
 
   return Object.values(addressesBalance).reduce((carry, balance) => carry.plus(balance), zeroAmount);

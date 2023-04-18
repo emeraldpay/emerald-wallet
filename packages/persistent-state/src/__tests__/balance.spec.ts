@@ -121,10 +121,10 @@ describe('Balance', () => {
       blockchain: 1,
       asset: 'BTC',
       utxo: [
-        {txid: "27bbc1466c2d6e1cb95724a77a226a0c7f7219ab86eb103534e7fd6c13aa5f1e", vout: 0, amount: 460000},
-        {txid: "2a21a7745f8dc1400b3e0fea2ff505c013f5611512bae61eadb0430c79a1f31c", vout: 1, amount: 348516},
-        {txid: "4786c03b9a6aaa1c789b4c315369d58cbbf9129864b0b6442e25ff5841d279e1", vout: 0, amount: 500000}
-      ]
+        { txid: '27bbc1466c2d6e1cb95724a77a226a0c7f7219ab86eb103534e7fd6c13aa5f1e', vout: 0, amount: '460000' },
+        { txid: '2a21a7745f8dc1400b3e0fea2ff505c013f5611512bae61eadb0430c79a1f31c', vout: 1, amount: '348516' },
+        { txid: '4786c03b9a6aaa1c789b4c315369d58cbbf9129864b0b6442e25ff5841d279e1', vout: 0, amount: '500000' },
+      ],
     });
 
     expect(added).toBeTruthy();
@@ -142,9 +142,9 @@ describe('Balance', () => {
     //@ts-ignore
     expect(act[0].utxo.length).toBe(3);
     expect(act[0].utxo).toEqual([
-      {txid: "27bbc1466c2d6e1cb95724a77a226a0c7f7219ab86eb103534e7fd6c13aa5f1e", vout: 0, amount: 460000},
-      {txid: "2a21a7745f8dc1400b3e0fea2ff505c013f5611512bae61eadb0430c79a1f31c", vout: 1, amount: 348516},
-      {txid: "4786c03b9a6aaa1c789b4c315369d58cbbf9129864b0b6442e25ff5841d279e1", vout: 0, amount: 500000}
+      { txid: '27bbc1466c2d6e1cb95724a77a226a0c7f7219ab86eb103534e7fd6c13aa5f1e', vout: 0, amount: '460000' },
+      { txid: '2a21a7745f8dc1400b3e0fea2ff505c013f5611512bae61eadb0430c79a1f31c', vout: 1, amount: '348516' },
+      { txid: '4786c03b9a6aaa1c789b4c315369d58cbbf9129864b0b6442e25ff5841d279e1', vout: 0, amount: '500000' },
     ]);
   });
 });

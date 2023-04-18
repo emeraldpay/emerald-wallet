@@ -33,22 +33,32 @@ function onInitState(state: IAccountsState, { balances, entriesByAddress }: Init
     ...state,
     details: [
       ...state.details,
-      ...balances.reduce<AccountDetails[]>((carry, { address, amount, blockchain }) => {
+      ...balances.reduce<AccountDetails[]>((carry, { address, amount, blockchain, utxo }) => {
         const index = state.details.findIndex((item) => item.address === address);
 
         if (index > -1) {
           return carry;
         }
 
+        const factory = amountFactory(blockchainIdToCode(blockchain));
+
         const { [address]: entries = [] } = entriesByAddress;
 
         const details = entries
           .filter((entry) => entry.blockchain === blockchain)
-          .map<AccountDetails>(({ blockchain, id }) => ({
-            address,
-            balance: amountFactory(blockchainIdToCode(blockchain))(amount).encode(),
-            entryId: id,
-          }));
+          .map<AccountDetails>(({ id }) => {
+            return {
+              address,
+              balance: factory(amount).encode(),
+              entryId: id,
+              utxo: utxo?.map(({ txid, vout, amount: value }) => ({
+                address,
+                vout,
+                txid,
+                value: factory(value).encode(),
+              })),
+            };
+          });
 
         return [...carry, ...details];
       }, []),
