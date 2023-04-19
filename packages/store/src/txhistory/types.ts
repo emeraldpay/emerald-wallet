@@ -57,14 +57,17 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   changes: StoredTransactionChange[];
 
   constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMetaItem | null) {
-    this.block = tx.block;
     this.blockchain = tx.blockchain;
-    this.confirmTimestamp = tx.confirmTimestamp;
     this.sinceTimestamp = tx.sinceTimestamp;
     this.state = tx.state;
     this.status = tx.status;
     this.txId = tx.txId;
     this.version = tx.version;
+
+    if (PersistentState.isConfirmed(tx)) {
+      this.block = tx.block;
+      this.confirmTimestamp = tx.confirmTimestamp;
+    }
 
     this.meta = meta;
 

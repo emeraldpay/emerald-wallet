@@ -41,6 +41,8 @@ pub struct TransactionJson {
   blockchain: u32,
   #[serde(skip_serializing_if = "Option::is_none")]
   block: Option<BlockRefJson>,
+  #[serde(skip_serializing_if = "Option::is_none", rename = "blockPos")]
+  block_pos: Option<u32>,
   #[serde(rename = "txId")]
   tx_id: String,
   #[serde(rename = "sinceTimestamp")]
@@ -107,12 +109,27 @@ impl TryFrom<Transaction> for TransactionJson {
   type Error = StateManagerError;
 
   fn try_from(value: Transaction) -> Result<Self, Self::Error> {
+    let block = value.block.into_option().map(BlockRefJson::from);
+    let confirmed = block.is_some();
+    // block pos must be set only if tx is confirmed
+    let block_pos = if confirmed {
+      Some(value.block_pos)
+    } else {
+      None
+    };
+    // same as above, the confirm_timestamp must be set only if tx is confirmed
+    let confirm_timestamp = if confirmed {
+      if_time(value.confirm_timestamp)
+    } else {
+      None
+    };
     Ok(TransactionJson {
       blockchain: value.blockchain.value() as u32,
-      block: value.block.into_option().map(BlockRefJson::from),
+      block,
+      block_pos,
       tx_id: value.tx_id,
       since_timestamp: Utc.timestamp_millis(value.since_timestamp as i64),
-      confirm_timestamp: if_time(value.confirm_timestamp),
+      confirm_timestamp,
       state: value.state.value() as usize,
       status: value.status.value() as usize,
       changes: value.changes.iter().map(|x| ChangeJson::from(x)).collect(),
@@ -129,7 +146,10 @@ impl TryFrom<TransactionJson> for Transaction {
     proto.blockchain = BlockchainId::from_i32(value.blockchain as i32)
       .ok_or(StateManagerError::InvalidJson("blockchain".to_string()))?;
     if let Some(block_ref) = value.block {
-      proto.set_block(BlockRef::from(block_ref))
+      proto.set_block(BlockRef::from(block_ref));
+    }
+    if let Some(block_pos) = value.block_pos {
+      proto.set_block_pos(block_pos);
     }
     proto.tx_id = value.tx_id;
     proto.since_timestamp = value.since_timestamp.timestamp_millis() as u64;

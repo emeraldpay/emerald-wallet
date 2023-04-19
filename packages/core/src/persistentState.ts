@@ -102,20 +102,17 @@ export interface Change {
   wallet?: EntryId;
 }
 
-/**
- * Transaction details
- */
-export interface Transaction {
-  block?: BlockRef | null;
+export interface UnconfirmedTransaction {
+
   blockchain: number;
+  txId: string;
+  version?: number;
+
   /**
    * Changes and references to the user wallets
    */
   changes: Change[];
-  /**
-   * Timestamp of the moment when the transaction is included in a block
-   */
-  confirmTimestamp?: Date | null;
+
   /**
    * Application state of the transaction. In general, it's PREPARED->SUBMITTED->CONFIRMED, but have other states
    */
@@ -130,9 +127,34 @@ export interface Transaction {
    * It may be OK or FAILED. Before the inclusion it's UNKNOWN
    */
   status: Status;
-  txId: string;
-  version?: number;
 }
+
+export interface TransactionConfirmation {
+  /**
+   * Block that contains the transaction
+   */
+  block: BlockRef;
+  /**
+   * Position of the transaction in the block
+   */
+  blockPos: number;
+  /**
+   * Timestamp of the moment when the transaction is included in a block
+   */
+  confirmTimestamp: Date;
+}
+
+export type ConfirmedTransaction = UnconfirmedTransaction & TransactionConfirmation;
+
+/**
+ * Transaction details
+ */
+export type Transaction = UnconfirmedTransaction | ConfirmedTransaction;
+
+export function isConfirmed(tx: Transaction): tx is ConfirmedTransaction {
+  return typeof tx == "object" && Object.keys(tx).indexOf("block") >= 0;
+}
+
 
 /**
  * Criteria to select transactions when queried

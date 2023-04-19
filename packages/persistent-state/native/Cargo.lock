@@ -395,13 +395,14 @@ dependencies = [
 [[package]]
 name = "emerald-wallet-state"
 version = "0.1.0"
-source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#5a1b204e266cda1d643844079561175014cf2582"
+source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#a84ebc736dc146d3b5b1323a1b2be0fccf454666"
 dependencies = [
  "bitcoin",
  "chrono",
  "emerald-vault",
  "enum-display-derive",
  "fs_extra",
+ "hex",
  "num-bigint 0.4.3",
  "num-traits",
  "protobuf",
