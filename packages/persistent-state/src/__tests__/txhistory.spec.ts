@@ -251,6 +251,89 @@ describe('Tx History', () => {
     expect(act.items.length).toBe(0);
   });
 
+  test('fresh tx comes before confirmed', async () => {
+    const tx1: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      changes: [
+        {
+          type: ChangeType.TRANSFER,
+          amount: '100001',
+          direction: Direction.SPEND,
+          wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+          asset: 'ETH',
+        },
+      ],
+      block: {
+        blockId: '0xe7cc80a837d14cf076eb7b55ec823816f186928c4665d9096e0045d4f5ab6baa',
+        height: 1000,
+        timestamp: new Date('2021-01-05T10:15:23'),
+      },
+      blockPos: 0,
+      sinceTimestamp: new Date('2021-01-05T10:11:12'),
+      confirmTimestamp: new Date('2021-01-05T10:15:23'),
+      state: State.CONFIRMED,
+      status: Status.OK,
+      txId: '0x111823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
+    };
+    const tx2: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      changes: [
+        {
+          type: ChangeType.TRANSFER,
+          amount: '100001',
+          direction: Direction.EARN,
+          wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+          asset: 'ETH',
+        },
+      ],
+      sinceTimestamp: new Date('2021-03-05T10:13:12'),
+      state: State.PREPARED,
+      status: Status.UNKNOWN,
+      txId: '0x222a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
+    };
+    const tx3: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      changes: [
+        {
+          type: ChangeType.TRANSFER,
+          amount: '100001',
+          direction: Direction.SPEND,
+          wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+          asset: 'ETH',
+        },
+      ],
+      block: {
+        blockId: '0xec823880a837d14cf076eb7b554f5ab6baa16f186928c4665d9096e0045de7cc',
+        height: 1001,
+        timestamp: new Date('2021-01-05T10:26:23'),
+      },
+      blockPos: 0,
+      sinceTimestamp: new Date('2021-01-05T10:11:12'),
+      confirmTimestamp: new Date('2021-01-05T10:26:23'),
+      state: State.CONFIRMED,
+      status: Status.OK,
+      txId: '0x33328c6eb7b5ae7cc80a837665d90b6ba23816f18696e0045d4f5d14cf075ec8',
+    };
+
+    await manager.txhistory.submit(tx1);
+    await manager.txhistory.submit(tx2);
+    await manager.txhistory.submit(tx3);
+
+    let filter: PersistentState.TxHistoryFilter = {
+      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293',
+    };
+
+    let act = await manager.txhistory.query(filter);
+
+    //console.log("txes", act.items);
+
+    // tx1 and tx3 are confirmed, tx2 just submitted, so it comes first. then tx3 as it more recent
+    expect(act.items.length).toBe(3);
+    expect(act.items[0].txId).toBe(tx2.txId);
+    expect(act.items[1].txId).toBe(tx3.txId);
+    expect(act.items[2].txId).toBe(tx1.txId);
+  });
+
   test('empty cursor for a new address', async () => {
     const act = await manager.txhistory.getCursor(
       'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa',

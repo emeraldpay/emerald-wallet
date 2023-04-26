@@ -179,20 +179,25 @@ export class TxService implements IService {
                     log.error(`Error while removing transaction for address ${identifier} from state:`, error),
                   );
               } else {
-                let block: PersistentState.BlockRef | null = null;
+
+                let confirmation: PersistentState.TransactionConfirmation | null = null;
+                const now = new Date();
 
                 if (tx.block != null) {
                   const { height, timestamp, hash: blockId } = tx.block;
 
-                  block = {
-                    blockId,
-                    height,
-                    timestamp,
-                  };
+                  confirmation = {
+                    block: {
+                      blockId,
+                      height,
+                      timestamp,
+                    },
+                    blockPos: 0, //TODO get transaction index inside the block
+                    confirmTimestamp: tx.block.timestamp ?? now,
+                  }
                 }
 
                 const blockchainCode = blockchainIdToCode(blockchain);
-                const now = new Date();
 
                 if (tx.xpubIndex != null) {
                   this.persistentState.xpubpos
@@ -200,31 +205,31 @@ export class TxService implements IService {
                     .catch((error) => log.error(`Error while set xPub position for address ${identifier}:`, error));
                 }
 
-                this.persistentState.txhistory
-                  .submit({
-                    block,
-                    blockchain,
-                    changes: tx.changes.map<PersistentState.Change>((change) => {
-                      const asset =
-                        (change.contractAddress == null
-                          ? Blockchains[blockchainCode].params.coinTicker
-                          : this.tokenRegistry?.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+                let baseTransaction: PersistentState.UnconfirmedTransaction = {
+                  blockchain,
+                  changes: tx.changes.map<PersistentState.Change>((change) => {
+                    const asset =
+                      (change.contractAddress == null
+                        ? Blockchains[blockchainCode].params.coinTicker
+                        : this.tokenRegistry?.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
 
-                      return {
-                        asset,
-                        address: change.address,
-                        amount: change.amount,
-                        direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
-                        type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
-                        wallet: change.address === tx.address ? entryId : undefined,
-                      };
-                    }),
-                    confirmTimestamp: tx.mempool ? undefined : tx.block?.timestamp ?? now,
-                    sinceTimestamp: tx.block?.timestamp ?? now,
-                    state: tx.mempool ? State.SUBMITTED : State.CONFIRMED,
-                    status: tx.failed ? Status.FAILED : Status.OK,
-                    txId: tx.txId,
-                  })
+                    return {
+                      asset,
+                      address: change.address,
+                      amount: change.amount,
+                      direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
+                      type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
+                      wallet: change.address === tx.address ? entryId : undefined,
+                    };
+                  }),
+                  sinceTimestamp: tx.block?.timestamp ?? now,
+                  state: tx.mempool ? State.SUBMITTED : State.CONFIRMED,
+                  status: tx.failed ? Status.FAILED : Status.OK,
+                  txId: tx.txId,
+                }
+
+                this.persistentState.txhistory
+                  .submit({...baseTransaction, ...confirmation})
                   .then((merged) => {
                     if (tx.cursor != null && tx.cursor.length > 0) {
                       this.persistentState.txhistory
