@@ -16,9 +16,9 @@ import {
   isLedger,
 } from '@emeraldpay/emerald-vault-core';
 import {
-  BalanceUtxo,
   BlockchainCode,
   CurrencyAmount,
+  InputUtxo,
   TokenRegistry,
   amountDecoder,
   amountFactory,
@@ -27,10 +27,10 @@ import {
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { createSelector } from 'reselect';
-import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
-import * as accounts from './index';
 import { settings, tokens } from '../index';
 import { IState } from '../types';
+import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
+import * as accounts from './index';
 
 type AddressesBalance<T extends BigAmount> = { [address: string]: T };
 type AddressesByBlockchain = Partial<Record<BlockchainCode, Set<string>>>;
@@ -155,12 +155,12 @@ export function getSeed(state: IState, id: Uuid): SeedDescription | undefined {
   return getSeeds(state).find((seed) => seed.id === id);
 }
 
-export function getUtxo(state: IState, entryId: EntryId): BalanceUtxo[] {
+export function getUtxo(state: IState, entryId: EntryId): InputUtxo[] {
   return state[accounts.moduleName].details
     .filter((details) => details.entryId == entryId)
     .reduce((result, x) => {
       return result.concat(x.utxo ?? []);
-    }, [] as BalanceUtxo[]);
+    }, [] as InputUtxo[]);
 }
 
 export function isHardwareSeed(state: IState, seed: SeedReference): boolean {
@@ -222,7 +222,7 @@ export function getAddressesBalance<T extends BigAmount>(
         utxo?.reduce(
           (utxoCarry, { value }) => ({
             ...utxoCarry,
-            [address]: decoder(value).plus(carry[address] ?? zeroAmount),
+            [address]: decoder(value).plus(utxoCarry[address] ?? zeroAmount),
           }),
           carry,
         ) ?? carry

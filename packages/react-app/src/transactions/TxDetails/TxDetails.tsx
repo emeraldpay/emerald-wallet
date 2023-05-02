@@ -1,4 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
+import { EntryId } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   EthereumReceipt,
@@ -15,7 +16,7 @@ import { Address, Back, Balance, Button, ButtonGroup, FormLabel, FormRow, Page }
 import { TextField, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { TxStatus } from './TxStatus';
+import StoredTxView from '../../transaction/StoredTxView/StoredTxView';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
@@ -38,6 +39,7 @@ const useStyles = makeStyles(
 type EnsLookup = { address: string; name: string };
 
 interface OwnProps {
+  entryId: EntryId | undefined;
   tx?: StoredTransaction;
 }
 
@@ -49,14 +51,15 @@ interface DispatchProps {
   getEthReceipt(tx: StoredTransaction): Promise<EthereumReceipt | null>;
   getEthTx(tx: StoredTransaction): Promise<EthereumTransaction | null>;
   goBack(): void;
-  goToCancelTx(tx: EthereumTransaction): void;
+  goToCancelTx(entryId: string | undefined, tx: StoredTransaction): void;
   goToDashboard(): void;
   goToReceipt(tx: StoredTransaction): void;
-  goToSpeedUpTx(tx: EthereumTransaction): void;
+  goToSpeedUpTx(entryId: string | undefined, tx: StoredTransaction): void;
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
 }
 
 const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  entryId,
   transaction,
   getEthTx,
   getEthReceipt,
@@ -143,18 +146,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
         <Typography variant="caption">Transaction not found! Please try again later.</Typography>
       ) : (
         <>
-          <FormRow>
-            <FormLabel>Date</FormLabel>
-            <Typography>{transaction.confirmTimestamp?.toUTCString() ?? 'Pending'}</Typography>
-          </FormRow>
-          <FormRow>
-            <FormLabel>Status</FormLabel>
-            <TxStatus state={transaction.state} status={txStatus} />
-          </FormRow>
-          <FormRow>
-            <FormLabel>Hash</FormLabel>
-            <Address address={transaction.txId} />
-          </FormRow>
+          <StoredTxView tx={{ ...transaction, status: txStatus ?? transaction.status }} />
           <FormRow>
             <FormLabel>Block</FormLabel>
             <Typography>{transaction.block?.height ?? 'Pending'}</Typography>
@@ -167,7 +159,11 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
                 return (
                   <FormRow key={`${change.address}-${index}`}>
-                    <FormLabel>{change.direction === Direction.EARN ? 'To' : 'From'}</FormLabel>{' '}
+                    {txChanges[index - 1]?.direction === change.direction ? (
+                      <FormLabel />
+                    ) : (
+                      <FormLabel top={0}>{change.direction === Direction.EARN ? 'To' : 'From'}</FormLabel>
+                    )}
                     <>
                       <div className={styles.address}>
                         <Address address={change.address ?? 'Unknown address'} disableCopy={change.address == null} />
@@ -215,16 +211,16 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 <FormLabel top>Input Data</FormLabel>
                 <TextField disabled fullWidth multiline maxRows={5} minRows={5} value={ethTx.data} />
               </FormRow>
-              {transaction.state < State.CONFIRMED && (
-                <FormRow>
-                  <FormLabel>Modify</FormLabel>
-                  <ButtonGroup>
-                    <Button onClick={() => goToSpeedUpTx(ethTx)} label="Speed Up" />
-                    <Button onClick={() => goToCancelTx(ethTx)} label="Cancel Transaction" />
-                  </ButtonGroup>
-                </FormRow>
-              )}
             </>
+          )}
+          {transaction.state < State.CONFIRMED && (
+            <FormRow>
+              <FormLabel>Modify</FormLabel>
+              <ButtonGroup>
+                <Button onClick={() => goToCancelTx(entryId, transaction)} label="Revert Transaction" />
+                <Button onClick={() => goToSpeedUpTx(entryId, transaction)} label="Speed Up" />
+              </ButtonGroup>
+            </FormRow>
           )}
           <FormRow last>
             <ButtonGroup classes={{ container: styles.buttons }}>
@@ -253,8 +249,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    goToCancelTx(tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, tx, null, true));
+    goToCancelTx(entryId, tx) {
+      dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, { entryId, tx }, null, true));
     },
     goToDashboard() {
       dispatch(gotoWalletsScreen());
@@ -262,8 +258,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goToReceipt(tx) {
       dispatch(screen.actions.openTxReceipt(tx.txId));
     },
-    goToSpeedUpTx(tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx, null, true));
+    goToSpeedUpTx(entryId, tx) {
+      dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, { entryId, tx }, null, true));
     },
     lookupAddress(blockchain, address) {
       return dispatch(blockchains.actions.lookupAddress(blockchain, address));

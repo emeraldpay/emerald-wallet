@@ -63,3 +63,5 @@ export interface DefaultFee<T = GasPriceType> {
 }
 
 export type FeePrices<T = GasPriceType> = Record<(typeof FEE_KEYS)[number], T>;
+
+export type SignHandler = (txId: string | null, raw: string | null) => void;

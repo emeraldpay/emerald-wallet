@@ -6,7 +6,7 @@ import * as workflow from './workflow';
 export { blockchains, config, workflow, utils };
 
 export {
-  BalanceUtxo,
+  InputUtxo,
   BlockchainCode,
   Blockchains,
   Coin,
@@ -44,6 +44,7 @@ export { default as IFrontApp } from './frontend/IFrontApp';
 export { default as DefaultLogger } from './logging/DefaultLogger';
 export { default as ILogger } from './logging/ILogger';
 export { default as Logger } from './logging/Logger';
+export { BitcoinRawTransaction, BitcoinRawTransactionInput, BitcoinRawTransactionOutput } from './transaction/bitcoin';
 export {
   DEFAULT_GAS_LIMIT,
   DEFAULT_GAS_LIMIT_ERC20,
@@ -53,6 +54,7 @@ export {
   EthereumTransaction,
   EthereumTransactionType,
   EthereumBasicTransaction,
+  isEthereumTransaction,
 } from './transaction/ethereum';
 export { getStandardUnits } from './asset';
 export { BackendApi } from './BackendApi';

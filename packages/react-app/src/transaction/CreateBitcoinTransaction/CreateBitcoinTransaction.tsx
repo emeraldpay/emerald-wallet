@@ -8,7 +8,7 @@ import {
   isBitcoinEntry,
   isSeedPkRef,
 } from '@emeraldpay/emerald-vault-core';
-import { BalanceUtxo, BlockchainCode, blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, InputUtxo, blockchainIdToCode, workflow } from '@emeraldwallet/core';
 import {
   BroadcastData,
   DefaultFee,
@@ -40,7 +40,7 @@ interface StateProps {
   entry: BitcoinEntry;
   feeTtl: number;
   seedId: Uuid;
-  utxo: BalanceUtxo[];
+  utxo: InputUtxo[];
 }
 
 interface DispatchProps {
@@ -188,7 +188,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => ({
+  (dispatch: any) => ({
     getFees(blockchain, defaultFee, feeTtl) {
       return async () => {
         const fees: number[] = await Promise.all([
@@ -243,10 +243,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     onBroadcast(data) {
       dispatch(transaction.actions.broadcastTx(data));
-
-      if ((data.tx as UnsignedBitcoinTx).outputs.length > 1) {
-        dispatch(accounts.actions.nextAddress(ownProps.source, 'change'));
-      }
     },
     onCancel() {
       dispatch(screen.actions.gotoWalletsScreen());

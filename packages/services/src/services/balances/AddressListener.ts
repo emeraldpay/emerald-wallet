@@ -1,6 +1,6 @@
 import { AddressBalance, AssetCode, BalanceRequest, Publisher, Utxo } from '@emeraldpay/api';
 import { BlockchainClient } from '@emeraldpay/api-node';
-import { BlockchainCode, Logger, blockchainCodeToId, isBitcoin, isEthereum, Blockchains } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, Logger, blockchainCodeToId, isBitcoin, isEthereum } from '@emeraldwallet/core';
 
 interface IAccountStatusEvent {
   address: string;
@@ -42,7 +42,7 @@ export class AddressListener {
       .onError((error) => {
         const addressesList = Array.isArray(addresses) ? addresses.join(', ') : addresses;
 
-        log.warn(`Error while subscribing for addresses ${addressesList}`, error);
+        log.error(`Error while subscribing for addresses ${addressesList}`, error);
       });
   }
 

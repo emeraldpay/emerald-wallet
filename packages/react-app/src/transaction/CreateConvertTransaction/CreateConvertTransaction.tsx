@@ -26,7 +26,6 @@ import {
 } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
-import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../../ledger/WaitLedger';
 import AmountField from '../CreateTx/AmountField/AmountField';
@@ -34,9 +33,6 @@ import FromField from '../CreateTx/FromField';
 
 const useStyles = makeStyles(
   createStyles({
-    convertMessage: {
-      marginBottom: 20,
-    },
     inputField: {
       flexGrow: 5,
     },
@@ -68,6 +64,9 @@ const useStyles = makeStyles(
     },
     gasPriceValueLabel: {
       fontSize: '0.7em',
+    },
+    message: {
+      marginBottom: 20,
     },
     buttons: {
       display: 'flex',
@@ -132,8 +131,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const coinTicker = React.useMemo(() => Blockchains[blockchain].params.coinTicker, [blockchain]);
   const zeroAmount = React.useMemo(() => amountFactory(blockchain)(0), [blockchain]);
 
-  const [convertable, setConvertable] = useState<string>(coinTicker);
-  const [initializing, setInitializing] = useState(true);
+  const [convertable, setConvertable] = React.useState<string>(coinTicker);
+  const [initializing, setInitializing] = React.useState(true);
 
   const [convertTx, setConvertTx] = React.useState(() => {
     const tx = new workflow.CreateErc20WrappedTx({
@@ -156,8 +155,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroAmount);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroAmount);
 
-  const [gasPriceUnit, setGasPriceUnit] = useState(zeroAmount.getOptimalUnit(minimalUnit));
-  const [gasPriceUnits, setGasPriceUnits] = useState(zeroAmount.units);
+  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(minimalUnit));
+  const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(0);
   const [useStdMaxGasPrice, setUseStdMaxGasPrice] = React.useState(true);
@@ -167,101 +166,86 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
   const [useEip1559, setUseEip1559] = React.useState(eip1559);
 
-  const [stage, setStage] = useState(Stages.SETUP);
-  const [password, setPassword] = useState('');
+  const [stage, setStage] = React.useState(Stages.SETUP);
+  const [password, setPassword] = React.useState('');
 
-  const [passwordError, setPasswordError] = useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
 
   const oldAmount = React.useRef(convertTx.amount);
 
-  const onChangeConvertable = useCallback(
-    (event, value: string) => {
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onChangeConvertable = (event: React.MouseEvent<HTMLElement>, value: string): void => {
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      const converting = value ?? convertable;
+    const converting = value ?? convertable;
 
-      tx.amount =
-        converting === coinTicker
-          ? amountFactory(blockchain)(tx.amount.number)
-          : tokenRegistry.bySymbol(blockchain, converting).getAmount(tx.amount.number);
-      tx.target = workflow.TxTarget.MANUAL;
-      tx.rebalance();
+    tx.amount =
+      converting === coinTicker
+        ? amountFactory(blockchain)(tx.amount.number)
+        : tokenRegistry.bySymbol(blockchain, converting).getAmount(tx.amount.number);
+    tx.target = workflow.TxTarget.MANUAL;
+    tx.rebalance();
 
-      setConvertable(converting);
-      setConvertTx(tx.dump());
-    },
-    [blockchain, coinTicker, convertTx, convertable, tokenRegistry],
-  );
+    setConvertable(converting);
+    setConvertTx(tx.dump());
+  };
 
-  const onChangeAddress = useCallback(
-    (address: string) => {
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onChangeAddress = (address: string): void => {
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.address = address;
-      tx.totalBalance = getBalance(address);
-      tx.totalTokenBalance = getTokenBalanceByAddress(token, address);
-      tx.rebalance();
+    tx.address = address;
+    tx.totalBalance = getBalance(address);
+    tx.totalTokenBalance = getTokenBalanceByAddress(token, address);
+    tx.rebalance();
 
-      setConvertTx(tx.dump());
-    },
-    [convertTx, token, getBalance, getTokenBalanceByAddress],
-  );
+    setConvertTx(tx.dump());
+  };
 
-  const onChangeAmount = useCallback(
-    (amount: BigAmount) => {
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onChangeAmount = (amount: BigAmount): void => {
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.amount = amount;
-      tx.target = workflow.TxTarget.MANUAL;
+    tx.amount = amount;
+    tx.target = workflow.TxTarget.MANUAL;
 
-      setConvertTx(tx.dump());
-    },
-    [convertTx],
-  );
+    setConvertTx(tx.dump());
+  };
 
-  const onClickMaxAmount = useCallback(() => {
+  const onClickMaxAmount = (): void => {
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     tx.target = workflow.TxTarget.SEND_ALL;
     tx.rebalance();
 
     setConvertTx(tx.dump());
-  }, [convertTx]);
+  };
 
-  const onChangeMaxGasPrice = useCallback(
-    (price: number) => {
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onChangeMaxGasPrice = (price: number): void => {
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
+    const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
 
-      if (useEip1559) {
-        tx.gasPrice = undefined;
-        tx.maxGasPrice = gasPrice;
-      } else {
-        tx.gasPrice = gasPrice;
-        tx.maxGasPrice = undefined;
-      }
+    if (useEip1559) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = gasPrice;
+    } else {
+      tx.gasPrice = gasPrice;
+      tx.maxGasPrice = undefined;
+    }
 
-      tx.rebalance();
+    tx.rebalance();
 
-      setConvertTx(tx.dump());
-    },
-    [blockchain, convertTx, gasPriceUnit, gasPriceUnits, useEip1559],
-  );
+    setConvertTx(tx.dump());
+  };
 
-  const onChangePriorityGasPrice = useCallback(
-    (price: number) => {
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onChangePriorityGasPrice = (price: number): void => {
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.priorityGasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
-      tx.rebalance();
+    tx.priorityGasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
+    tx.rebalance();
 
-      setConvertTx(tx.dump());
-    },
-    [blockchain, convertTx, gasPriceUnit, gasPriceUnits],
-  );
+    setConvertTx(tx.dump());
+  };
 
-  const onSignTransaction = useCallback(async () => {
+  const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
@@ -290,7 +274,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
         setPasswordError('Incorrect password');
       }
     }
-  }, [convertTx, getEntryByAddress, isHardware, tokenRegistry, token, signTransaction, checkGlobalKey, password]);
+  };
 
   const onUseEip1559Change = React.useCallback(
     ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
@@ -596,7 +580,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       )}
       {stage === Stages.SIGN && (
         <>
-          <div className={styles.convertMessage}>
+          <div className={styles.message}>
             Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
           </div>
           {isHardware ? (
@@ -612,12 +596,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               {!isHardware && (
-                <Button
-                  label="Sign Transaction"
-                  disabled={password.length === 0}
-                  primary={true}
-                  onClick={onSignTransaction}
-                />
+                <Button primary disabled={password.length === 0} label="Sign Transaction" onClick={onSignTransaction} />
               )}
             </ButtonGroup>
           </FormRow>

@@ -1,6 +1,17 @@
 import { EstimationMode } from '@emeraldpay/api';
-import { EntryId, IEmeraldVault, SignedTx, UnsignedBitcoinTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import {
+  BitcoinEntry,
+  EntryId,
+  IEmeraldVault,
+  SignedTx,
+  UnsignedBitcoinTx,
+  UnsignedTx,
+  isBitcoinEntry,
+} from '@emeraldpay/emerald-vault-core';
+import {
+  BitcoinRawTransaction,
+  BitcoinRawTransactionInput,
   BlockchainCode,
   Blockchains,
   EthereumAddress,
@@ -8,19 +19,23 @@ import {
   EthereumTransaction,
   EthereumTransactionType,
   EthereumTx,
+  InputUtxo,
   Logger,
   PersistentState,
   TokenRegistry,
+  amountDecoder,
+  amountFactory,
   blockchainCodeToId,
+  blockchainIdToCode,
   isBitcoin,
   isEthereum,
   quantitiesToHex,
   toBigNumber,
+  workflow,
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-import { BroadcastData, SignData } from './types';
-import { findWalletByEntryId } from '../accounts/selectors';
-import { application } from '../index';
+import { findEntry, findWalletByEntryId, zeroAmountFor } from '../accounts/selectors';
+import { IState, SignHandler, application } from '../index';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import { IErrorAction, IOpenAction } from '../screen/types';
@@ -28,6 +43,7 @@ import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
 import { DEFAULT_FEE, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
 import { WrappedError } from '../WrappedError';
+import { BroadcastData, SignData } from './types';
 
 const log = Logger.forCategory('Store::Transaction');
 
@@ -126,8 +142,6 @@ export function signTransaction(
   };
 }
 
-type SignHandler = (txId: string | null, raw: string | null) => void;
-
 export function signBitcoinTransaction(
   entryId: EntryId,
   tx: UnsignedBitcoinTx,
@@ -135,15 +149,35 @@ export function signBitcoinTransaction(
   handler: SignHandler,
 ): Dispatched {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (dispatch: any, getState, extra) => {
-    extra.api.vault
-      .signTx(entryId, tx, password)
-      .then(({ raw, txid }) => handler(txid, raw))
-      .catch((error) => {
-        dispatch(showError(new WrappedError(error)));
+  return async (dispatch: any, getState, extra) => {
+    try {
+      const { raw, txid } = await extra.api.vault.signTx(entryId, tx, password);
 
-        return handler(null, null);
-      });
+      const entry = findEntry(getState(), entryId);
+
+      if (entry != null && isBitcoinEntry(entry)) {
+        const changeXPub = entry.xpub.find(({ role }) => role === 'change');
+
+        if (changeXPub != null) {
+          const index = await extra.api.xPubPos.getNext(changeXPub.xpub);
+          const [{ address: changeAddress }] = await extra.api.vault.listEntryAddresses(entryId, 'change', index, 1);
+
+          const output = tx.outputs.find(({ address }) => address === changeAddress);
+
+          if (output != null) {
+            await extra.api.xPubPos.setCurrentAddressAt(changeXPub.xpub, index);
+          }
+        }
+      }
+
+      handler(txid, raw);
+    } catch (exception) {
+      if (exception instanceof Error) {
+        dispatch(showError(new WrappedError(exception)));
+      }
+
+      handler(null, null);
+    }
   };
 }
 
@@ -166,7 +200,7 @@ export function broadcastTx({
       const feeChange = {
         asset: fee.units.top.code,
         amount: fee.number.toString(),
-        direction: Direction.SPEND,
+        direction: Direction.EARN,
         type: ChangeType.FEE,
       };
 
@@ -268,7 +302,7 @@ export function broadcastTx({
 
       const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-      dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(tokenRegistry, transaction, null)));
+      dispatch(gotoScreen(Pages.TX_DETAILS, { entryId, tx: new StoredTransaction(tokenRegistry, transaction, null) }));
     } catch (exception) {
       if (exception instanceof Error) {
         const transaction = getState().history.transactions.find((tx) => tx.txId === txId);
@@ -498,6 +532,18 @@ export function getEthReceipt(blockchain: BlockchainCode, hash: string): Dispatc
   };
 }
 
+export function getBtcTx(blockchain: BlockchainCode, hash: string): Dispatched<BitcoinRawTransaction | null> {
+  return async (dispatch, getState, extra) => {
+    const rawTx = await extra.backendApi.getBtcTx(blockchain, hash);
+
+    if (rawTx == null) {
+      return null;
+    }
+
+    return rawTx;
+  };
+}
+
 export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<EthereumTransaction | null> {
   return async (dispatch, getState, extra) => {
     const rawTx = await extra.backendApi.getEthTx(blockchain, hash);
@@ -534,4 +580,157 @@ export function getXPubLastIndex(
   start: number,
 ): Dispatched<number | undefined> {
   return (dispatch, getState, extra) => extra.backendApi.getXPubLastIndex(blockchain, xpub, start);
+}
+
+function getBtcTxEntries(state: IState, tx: StoredTransaction): BitcoinEntry[] {
+  const entryById = tx.changes
+    .filter(({ direction }) => direction === Direction.SPEND)
+    .map(({ wallet }) => wallet)
+    .filter((entryId): entryId is EntryId => entryId != null)
+    .map((entryId) => findEntry(state, entryId))
+    .filter((entry): entry is BitcoinEntry => entry != null && isBitcoinEntry(entry))
+    .reduce<Map<EntryId, BitcoinEntry>>((carry, entry) => {
+      if (carry.has(entry.id)) {
+        return carry;
+      }
+
+      return carry.set(entry.id, entry);
+    }, new Map());
+
+  return [...entryById.values()];
+}
+
+interface ExtractedUtxo {
+  restUtxo: InputUtxo[];
+  txUtxo: InputUtxo[];
+}
+
+function extractUtxo(
+  balances: PersistentState.Balance[],
+  inputs: BitcoinRawTransactionInput[],
+  factory: CreateAmount<BigAmount>,
+): ExtractedUtxo {
+  return balances
+    .reduce<InputUtxo[]>(
+      (carry, { address, utxo = [] }) => [
+        ...carry,
+        ...utxo.map(({ amount, txid, vout }) => ({
+          address,
+          txid,
+          vout,
+          value: factory(amount).encode(),
+        })),
+      ],
+      [],
+    )
+    .reduce<ExtractedUtxo>(
+      (carry, item) => {
+        const input = inputs.find(({ txid, vout }) => txid === item.txid && vout === item.vout);
+
+        if (input == null) {
+          return { ...carry, restUtxo: [...carry.restUtxo, item] };
+        }
+
+        return { ...carry, txUtxo: [...carry.txUtxo, { ...item, sequence: input.sequence }] };
+      },
+      { restUtxo: [], txUtxo: [] },
+    );
+}
+
+export function restoreBtcTx(
+  rawTx: BitcoinRawTransaction,
+  tx: StoredTransaction,
+): Dispatched<workflow.CreateBitcoinTx> {
+  return async (dispatch, getState, extra) => {
+    const entries = getBtcTxEntries(getState(), tx);
+
+    if (entries.length === 0) {
+      throw new Error('Entry not found');
+    }
+
+    /**
+     * Currently creating bitcoin transaction supports only single entry
+     */
+    if (entries.length > 1) {
+      throw new Error('Currently support only single entry');
+    }
+
+    const balances = await Promise.all(
+      entries
+        .reduce<string[]>((carry, entry) => [...carry, ...entry.xpub.map(({ xpub }) => xpub)], [])
+        .map((xPub) => extra.api.balances.list(xPub)),
+    );
+
+    const blockchainCode = blockchainIdToCode(tx.blockchain);
+
+    const factory = amountFactory(blockchainCode);
+
+    const { restUtxo, txUtxo } = extractUtxo(balances.flat(), rawTx.vin, factory);
+
+    if (rawTx.vin.length !== txUtxo.length) {
+      throw new Error('Cannot found all inputs in utxo');
+    }
+
+    const [entry] = entries;
+
+    const roleIndexes = await Promise.all(
+      entry.xpub.map(async ({ role, xpub }) => ({ role, index: await extra.api.xPubPos.getNext(xpub) })),
+    );
+    const entryAddresses = await Promise.all(
+      roleIndexes.map(({ index, role }) => extra.api.vault.listEntryAddresses(entry.id, role, 0, index)),
+    );
+
+    let addresses = entryAddresses
+      .flat()
+      .filter(
+        ({ address }) => rawTx.vout.find(({ scriptPubKey: { address: txAddress } }) => address === txAddress) != null,
+      );
+
+    const outputs = rawTx.vout.filter(
+      ({ scriptPubKey: { address: txAddress } }) => addresses.find(({ address }) => address === txAddress) == null,
+    );
+
+    if (outputs.length === 0) {
+      throw new Error('Cannot found receiver address');
+    }
+
+    /**
+     * Currently creating bitcoin transaction supports only single output (`to` address)
+     */
+    if (outputs.length > 1) {
+      throw new Error('Currently supported only single receiver address');
+    }
+
+    if (addresses.length === 0) {
+      const nextEntryAddresses = await Promise.all(
+        roleIndexes.map(({ index, role }) => extra.api.vault.listEntryAddresses(entry.id, role, index, 1)),
+      );
+
+      addresses = nextEntryAddresses.flat();
+    }
+
+    const [
+      {
+        scriptPubKey: { address },
+        value: amount,
+      },
+    ] = outputs;
+
+    const restoredTx = new workflow.CreateBitcoinTx(entry, addresses, txUtxo.concat(restUtxo));
+
+    const decoder = amountDecoder(blockchainCode);
+    const zeroAmount = zeroAmountFor(blockchainCode);
+
+    const fromBitcoin = (value: number): BigAmount =>
+      factory(1).multiply(zeroAmount.units.top.multiplier).multiply(value);
+
+    const inputAmount = txUtxo.reduce((carry, { value }) => carry.plus(decoder(value)), zeroAmount);
+    const outputAmount = rawTx.vout.reduce((carry, { value }) => carry.plus(fromBitcoin(value)), zeroAmount);
+
+    restoredTx.address = address;
+    restoredTx.requiredAmount = fromBitcoin(amount);
+    restoredTx.feePrice = restoredTx.estimateVkbPrice(inputAmount.minus(outputAmount));
+
+    return restoredTx;
+  };
 }

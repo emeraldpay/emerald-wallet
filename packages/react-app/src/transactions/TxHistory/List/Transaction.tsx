@@ -1,23 +1,7 @@
 import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
-import { EntryId, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
-import {
-  BlockchainCode,
-  CurrencyAmount,
-  PersistentState,
-  blockchainIdToCode,
-  formatAmount,
-  isEthereum,
-} from '@emeraldwallet/core';
-import {
-  IState,
-  StoredTransaction,
-  accounts,
-  blockchains,
-  screen,
-  settings,
-  transaction,
-  txhistory,
-} from '@emeraldwallet/store';
+import { EntryId, EntryIdOp, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, CurrencyAmount, PersistentState, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import { IState, StoredTransaction, accounts, blockchains, screen, settings, txhistory } from '@emeraldwallet/store';
 import { CoinAvatar, HashIcon } from '@emeraldwallet/ui';
 import { IconButton, InputAdornment, Menu, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
@@ -28,8 +12,8 @@ import classNames from 'classnames';
 import { DateTime } from 'luxon';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import ProgressPie from './ProgressPie';
 import { WalletTabs } from '../../../wallets/WalletDetails';
+import ProgressPie from './ProgressPie';
 
 const { Direction, State, Status } = PersistentState;
 
@@ -185,6 +169,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  entryId: EntryId | undefined;
   walletIcons: Record<string, string | null>;
   getFiatValue(amount: BigAmount): CurrencyAmount;
   getHeight(blockchain: BlockchainCode): number;
@@ -192,9 +177,9 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  goToCancelTx(tx: StoredTransaction): void;
-  goToSpeedUpTx(tx: StoredTransaction): void;
-  goToTransaction(tx: StoredTransaction): void;
+  goToCancelTx(entryId: EntryId | undefined, tx: StoredTransaction): void;
+  goToSpeedUpTx(entryId: EntryId | undefined, tx: StoredTransaction): void;
+  goToTransaction(entryId: EntryId | undefined, tx: StoredTransaction): void;
   goToWallet(walletId: string): void;
   setTransactionMeta(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem>;
 }
@@ -202,6 +187,7 @@ interface DispatchProps {
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
 
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  entryId,
   tx,
   style,
   walletIcons,
@@ -263,19 +249,14 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     return styles.progressStatusUnknown;
   }, [styles, tx]);
 
-  const onEditLabel = React.useCallback(() => {
-    setLabelEdit(!labelEdit);
-  }, [labelEdit]);
+  const onCloseMenu = (): void => setMenuAnchor(null);
 
-  const onOpenMenu = React.useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onEditLabel = (): void => setLabelEdit(!labelEdit);
+
+  const onOpenMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void =>
     setMenuAnchor(event.currentTarget);
-  }, []);
 
-  const onCloseMenu = React.useCallback(() => {
-    setMenuAnchor(null);
-  }, []);
-
-  const onSaveLabel = React.useCallback(async () => {
+  const onSaveLabel = async (): Promise<void> => {
     await setTransactionMeta({
       ...(tx.meta ?? {
         blockchain: blockchainCode,
@@ -286,7 +267,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     });
 
     setLabelEdit(false);
-  }, [blockchainCode, label, tx, setTransactionMeta]);
+  };
 
   return (
     <div className={styles.container} style={style}>
@@ -338,13 +319,9 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
             <MoreIcon fontSize="inherit" />
           </IconButton>
           <Menu anchorEl={menuAnchor} open={menuAnchor != null} onClose={onCloseMenu}>
-            <MenuItem onClick={() => goToTransaction(tx)}>Details</MenuItem>
-            {isEthereum(blockchainCode) && tx.state < State.CONFIRMED && (
-              <MenuItem onClick={() => goToCancelTx(tx)}>Cancel</MenuItem>
-            )}
-            {isEthereum(blockchainCode) && tx.state < State.CONFIRMED && (
-              <MenuItem onClick={() => goToSpeedUpTx(tx)}>Speed Up</MenuItem>
-            )}
+            <MenuItem onClick={() => goToTransaction(entryId, tx)}>Details</MenuItem>
+            {tx.state < State.CONFIRMED && <MenuItem onClick={() => goToCancelTx(entryId, tx)}>Revert</MenuItem>}
+            {tx.state < State.CONFIRMED && <MenuItem onClick={() => goToSpeedUpTx(entryId, tx)}>Speed Up</MenuItem>}
           </Menu>
         </div>
       </div>
@@ -401,41 +378,39 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state) => ({
-    walletIcons: state.accounts.icons,
-    getFiatValue(amount) {
-      const { top: topUnit } = amount.units;
+  (state, { tx, walletId }) => {
+    return {
+      entryId: tx.changes
+        .map(({ wallet }) => wallet)
+        .filter((entryId): entryId is EntryId => entryId != null)
+        .find((entryId) => EntryIdOp.of(entryId).extractWalletId() === walletId),
+      walletIcons: state.accounts.icons,
+      getFiatValue(amount) {
+        const { top: topUnit } = amount.units;
 
-      const rate = settings.selectors.fiatRate(state, topUnit.code) ?? 0;
-      const value = amount.getNumberByUnit(topUnit).multipliedBy(rate);
+        const rate = settings.selectors.fiatRate(state, topUnit.code) ?? 0;
+        const value = amount.getNumberByUnit(topUnit).multipliedBy(rate);
 
-      return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);
-    },
-    getHeight(blockchain) {
-      return blockchains.selectors.getHeight(state, blockchain);
-    },
-    getWallet(entryId) {
-      return accounts.selectors.findWalletByEntryId(state, entryId);
-    },
-  }),
+        return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);
+      },
+      getHeight(blockchain) {
+        return blockchains.selectors.getHeight(state, blockchain);
+      },
+      getWallet(entryId) {
+        return accounts.selectors.findWalletByEntryId(state, entryId);
+      },
+    };
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    async goToCancelTx(tx) {
-      const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
-
-      if (ethTx != null) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CANCEL, ethTx, null, true));
-      }
+    goToCancelTx(entryId, tx) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CANCEL, { entryId, tx }, null, true));
     },
-    async goToSpeedUpTx(tx) {
-      const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
-
-      if (ethTx != null) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, ethTx, null, true));
-      }
+    goToSpeedUpTx(entryId, tx) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, { entryId, tx }, null, true));
     },
-    goToTransaction(tx) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, tx, { tab: WalletTabs.TRANSACTIONS }));
+    goToTransaction(entryId, tx) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, { entryId, tx }, { tab: WalletTabs.TRANSACTIONS }));
     },
     goToWallet(walletId) {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));

@@ -2,7 +2,7 @@ import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode, blockchainIdToCode } from '../blockchains';
 
-const tokenTypes = ['ERC20', 'ERC721', 'ERC1155'] as const;
+const TOKEN_TYPES = ['ERC20', 'ERC721', 'ERC1155'] as const;
 
 export interface TokenData {
   address: string;
@@ -12,7 +12,7 @@ export interface TokenData {
   name: string;
   stablecoin?: boolean;
   symbol: string;
-  type: typeof tokenTypes[number];
+  type: (typeof TOKEN_TYPES)[number];
   wrapped?: boolean;
 }
 
@@ -21,7 +21,7 @@ export function isToken(value: unknown): value is TokenData {
     value != null &&
     typeof value === 'object' &&
     'type' in value &&
-    typeof (value as { [key: string]: unknown }).type in tokenTypes
+    typeof (value as { [key: string]: unknown }).type in TOKEN_TYPES
   );
 }
 
@@ -33,7 +33,7 @@ export class Token implements TokenData {
   name: string;
   stablecoin?: boolean;
   symbol: string;
-  type: typeof tokenTypes[number];
+  type: (typeof TOKEN_TYPES)[number];
   wrapped?: boolean;
 
   constructor(token: TokenData) {

@@ -36,18 +36,12 @@ interface DispatchProps {
 const WaitLedger: React.FC<DispatchProps & OwnProps> = ({ fullSize = false, awaitConnection, onConnected }) => {
   const styles = useStyles();
 
-  const awaiting = React.useRef(false);
-
-  React.useEffect(() => {
-    let mounted = true;
-
-    if (!awaiting.current) {
-      awaiting.current = true;
+  React.useEffect(
+    () => {
+      let mounted = true;
 
       awaitConnection().then(() => {
         if (mounted) {
-          awaiting.current = false;
-
           onConnected({
             available: true,
             createdAt: new Date(),
@@ -55,12 +49,14 @@ const WaitLedger: React.FC<DispatchProps & OwnProps> = ({ fullSize = false, awai
           });
         }
       });
-    }
 
-    return () => {
-      mounted = false;
-    };
-  }, [awaitConnection, onConnected]);
+      return () => {
+        mounted = false;
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <Grid container className={fullSize ? styles.fullSize : ''}>

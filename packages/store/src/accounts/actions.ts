@@ -27,6 +27,8 @@ import {
   blockchainIdToCode,
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
+import { dispatchRpcError } from '../screen/actions';
+import { Dispatched } from '../types';
 import {
   ActionTypes,
   IBalanceUpdate,
@@ -48,8 +50,6 @@ import {
   InitAccountStateAction,
   SetWalletIconsAction,
 } from './types';
-import { dispatchRpcError } from '../screen/actions';
-import { Dispatched } from '../types';
 
 export function initState(
   balances: PersistentState.Balance[],
@@ -138,6 +138,8 @@ export function importSeedWalletAction(mnemonic: string, password: string): ICre
 }
 
 export function walletCreatedAction(wallet: Wallet): IWalletCreatedAction {
+  ipcRenderer.send(IpcCommands.UPDATE_MAIN_MENU);
+
   return {
     type: ActionTypes.CREATE_WALLET_SUCCESS,
     wallet,

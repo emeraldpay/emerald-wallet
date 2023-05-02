@@ -1,4 +1,4 @@
-import { Button as BaseButton, ButtonProps } from '@material-ui/core';
+import { Button as ButtonBase, ButtonProps } from '@material-ui/core';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
@@ -13,7 +13,7 @@ const styles = createStyles({
   },
 });
 
-const StyledButton = withStyles(styles)(BaseButton);
+const StyledButton = withStyles(styles)(ButtonBase);
 
 const useStyles = makeStyles(
   createStyles({

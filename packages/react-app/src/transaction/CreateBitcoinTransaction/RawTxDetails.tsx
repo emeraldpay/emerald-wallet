@@ -2,26 +2,49 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BlockchainCode, amountDecoder, amountFactory } from '@emeraldwallet/core';
 import { IState, accounts } from '@emeraldwallet/store';
-import { Address, FormLabel, FormRow, TxRef } from '@emeraldwallet/ui';
-import { Typography } from '@material-ui/core';
+import { Address, Balance, FormLabel, FormRow, TxRef } from '@emeraldwallet/ui';
+import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-type Parsed = {
+const useStyles = makeStyles(
+  createStyles({
+    balances: {
+      width: '100%',
+    },
+    balanceItem: {
+      display: 'flex',
+      '& + &': {
+        marginTop: 20,
+      },
+    },
+    balanceItemAddress: {
+      display: 'flex',
+      flex: 1,
+      flexDirection: 'column',
+    },
+  }),
+);
+
+interface ParsedInput {
+  address?: string;
+  amount: BigAmount;
+  txid: string;
+  vout: number;
+}
+
+interface ParsedOutput {
+  address: string;
+  amount: BigAmount;
+}
+
+interface Parsed {
   fee?: BigAmount;
-  inputs: {
-    txid: string;
-    vout: number;
-    address?: string;
-    amount: BigAmount;
-  }[];
-  outputs: {
-    address: string;
-    amount: BigAmount;
-  }[];
-};
+  inputs: ParsedInput[];
+  outputs: ParsedOutput[];
+}
 
 interface OwnProps {
   blockchain: BlockchainCode;
@@ -34,26 +57,39 @@ interface StateProps {
 }
 
 const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
+  const styles = useStyles();
+
   return (
     <>
       <FormRow>
-        <FormLabel top>From</FormLabel>
-        {parsed.inputs.map((input) => (
-          <div key={input.address}>
-            {input.address && <Address address={input.address} />}
-            {typeof input.address == 'undefined' && <TxRef txid={input.txid} vout={input.vout} />}
-            {!input.amount.isZero() && <Typography>{input.amount.toString()}</Typography>}
-          </div>
-        ))}
+        <FormLabel top={0}>From</FormLabel>
+        <div className={styles.balances}>
+          {parsed.inputs.map((input) => (
+            <div key={`${input.txid}:${input.vout}`} className={styles.balanceItem}>
+              <div className={styles.balanceItemAddress}>
+                {input.address == null ? (
+                  <TxRef txid={input.txid} vout={input.vout} />
+                ) : (
+                  <Address address={input.address} />
+                )}
+              </div>
+              <Balance balance={input.amount} />
+            </div>
+          ))}
+        </div>
       </FormRow>
       <FormRow>
-        <FormLabel top>To</FormLabel>
-        {parsed.outputs.map((output) => (
-          <div key={output.address}>
-            <Address address={output.address} />
-            <Typography>{output.amount.toString()}</Typography>
-          </div>
-        ))}
+        <FormLabel top={0}>To</FormLabel>
+        <div className={styles.balances}>
+          {parsed.outputs.map((output, index) => (
+            <div key={`${output.address}-${index}`} className={styles.balanceItem}>
+              <div className={styles.balanceItemAddress}>
+                <Address address={output.address} />
+              </div>
+              <Balance balance={output.amount} />
+            </div>
+          ))}
+        </div>
       </FormRow>
       <FormRow>
         <FormLabel>Fee</FormLabel>
@@ -70,8 +106,8 @@ const RawTxDetails: React.FC<OwnProps & StateProps> = ({ parsed }) => {
 };
 
 export default connect<StateProps, unknown, OwnProps, IState>((state, { blockchain, entryId, rawTx }) => {
-  const decoder = amountDecoder(blockchain);
   const factory = amountFactory(blockchain);
+  const decoder = amountDecoder(blockchain);
 
   const network = blockchain === BlockchainCode.TestBTC ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
 
@@ -80,7 +116,7 @@ export default connect<StateProps, unknown, OwnProps, IState>((state, { blockcha
 
   const inputs = tx.ins.map((input) => {
     const txId = input.hash.reverse().toString('hex');
-    const balance = utxo.find((t) => t.txid == txId && t.vout == input.index);
+    const balance = utxo.find((item) => item.txid == txId && item.vout == input.index);
 
     return {
       address: balance?.address,
@@ -90,12 +126,10 @@ export default connect<StateProps, unknown, OwnProps, IState>((state, { blockcha
     };
   });
 
-  const outputs = tx.outs.map((it) => (
-    {
-      address: bitcoin.address.fromOutputScript(it.script, network),
-      amount: factory(it.value),
-    }
-  ));
+  const outputs = tx.outs.map((output) => ({
+    address: bitcoin.address.fromOutputScript(output.script, network),
+    amount: factory(output.value),
+  }));
 
   const sent = inputs.map((input) => input.amount).reduce((carry, amount) => carry.plus(amount), factory(0));
   const receive = outputs.map((output) => output.amount).reduce((carry, amount) => carry.plus(amount), factory(0));

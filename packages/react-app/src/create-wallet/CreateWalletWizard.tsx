@@ -94,7 +94,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
 }) => {
   const styles = useStyles();
 
-  const prevAddressesState = React.useRef<HDPathAddresses>({});
+  const prevAddresses = React.useRef<HDPathAddresses>({});
 
   const [walletId, setWalletId] = React.useState('');
 
@@ -117,7 +117,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   }, [onCreate, onError]);
 
   React.useEffect(() => {
-    const { current: oldAddresses } = prevAddressesState;
+    const { current: oldAddresses } = prevAddresses;
 
     const blockchains = Object.keys(addresses) as BlockchainCode[];
     const oldBlockchains = Object.keys(oldAddresses) as BlockchainCode[];
@@ -126,7 +126,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
       (oldBlockchains.length > 0 && blockchains.length === 0) ||
       blockchains.reduce((carry, blockchain) => carry || oldAddresses[blockchain] !== addresses[blockchain], false)
     ) {
-      prevAddressesState.current = addresses;
+      prevAddresses.current = addresses;
 
       setStep(step.applyAddresses.call(step, addresses));
     }

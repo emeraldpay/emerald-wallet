@@ -1,6 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { AddressRole, EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BalanceUtxo, BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core';
+import { BlockchainCode, InputUtxo, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -22,7 +22,7 @@ export interface AccountDetails {
   balance?: string;
   entryId: EntryId;
   txcount?: number;
-  utxo?: BalanceUtxo[];
+  utxo?: InputUtxo[];
 }
 
 export interface IAccountsState {
@@ -37,7 +37,7 @@ export interface IBalanceUpdate {
   address: string;
   entryId: EntryId;
   balance: string;
-  utxo?: BalanceUtxo[];
+  utxo?: InputUtxo[];
 }
 
 export enum ActionTypes {

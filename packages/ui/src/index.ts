@@ -13,8 +13,8 @@ export { default as ConnectionStatus, ConnectionStateProps } from './components/
 export { default as ErrorDialog } from './components/common/ErrorDialog';
 export { default as ExportPaperWallet } from './components/accounts/ExportPaperWallet';
 export { default as FormAccordion } from './components/common/Form/FormAccordion';
-export { default as FormRow } from './components/common/Form/FormRow';
 export { default as FormLabel } from './components/common/Form/FormLabel';
+export { default as FormRow } from './components/common/Form/FormRow';
 export { default as HashIcon } from './components/common/HashIcon';
 export { default as IdentityIcon } from './components/common/IdentityIcon';
 export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';

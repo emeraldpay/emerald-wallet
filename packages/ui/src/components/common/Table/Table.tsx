@@ -1,4 +1,4 @@
-import { Table as BaseTable, TableProps, createStyles } from '@material-ui/core';
+import { Table as TableBase, TableProps, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -27,8 +27,8 @@ export const Table: React.FC<OwnProps & TableProps> = ({ className, children, di
   const styles = useStyles();
 
   return (
-    <BaseTable className={classNames(className, divided ? styles.withBorder : styles.withoutBorder)} {...props}>
+    <TableBase className={classNames(className, divided ? styles.withBorder : styles.withoutBorder)} {...props}>
       {children}
-    </BaseTable>
+    </TableBase>
   );
 };

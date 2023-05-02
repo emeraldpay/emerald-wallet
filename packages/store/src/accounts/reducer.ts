@@ -108,12 +108,12 @@ function updateAccountDetails(
   update: Updater<AccountDetails>,
 ): IAccountsState {
   return produce(state, (draft) => {
-    const index = state.details.findIndex((detail) => detail.entryId === entryId);
+    const index = state.details.findIndex((detail) => detail.address === address);
 
     if (index === -1) {
       draft.details.push(update({ address, entryId }));
     } else {
-      draft.details[index] = update({ ...draft.details[index], address });
+      draft.details[index] = update(draft.details[index]);
     }
   });
 }
@@ -121,18 +121,7 @@ function updateAccountDetails(
 function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
   const { address, balance, entryId, utxo } = action.payload;
 
-  return updateAccountDetails(state, address, entryId, (account) => {
-    const newUtxo = (utxo ?? []).filter(
-      (utxo) => !(account.utxo ?? []).some((oldUtxo) => oldUtxo.txid === utxo.txid && oldUtxo.vout === utxo.vout),
-    );
-
-    const copy = { ...account };
-
-    copy.balance = balance;
-    copy.utxo = (account.utxo ?? []).concat(newUtxo);
-
-    return copy;
-  });
+  return updateAccountDetails(state, address, entryId, (account) => ({ ...account, balance, utxo }));
 }
 
 function onWalletsLoaded(state: IAccountsState, action: IWalletsLoaded): IAccountsState {
