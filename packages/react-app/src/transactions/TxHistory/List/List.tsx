@@ -42,44 +42,46 @@ const TransactionsList: React.FC<OwnProps> = ({
 }) => {
   const styles = useStyles();
 
+  const listElement = React.useRef<List | null>(null);
   const initialTxCount = React.useRef(transactions.length);
 
   const [loading, setLoading] = React.useState(false);
+
   const [txIndex, setTxIndex] = React.useState<number | undefined>(
     transactions.findIndex((tx) => tx.txId === lastTxId),
   );
 
-  const calculateRowHeight = React.useCallback(
-    ({ index }: Index) => {
-      const changeCount = transactions[index].changes.filter((change) => change.wallet != null).length;
+  const calculateRowHeight = ({ index }: Index): number => {
+    const changeCount = transactions[index].changes.filter((change) => change.wallet != null).length;
 
-      return changeCount > 1 ? 53 + (changeCount - 1) * 63 + 20 : 73;
-    },
-    [transactions],
-  );
+    return 53 + (changeCount - 1) * 63 + 20;
+  };
 
-  const onScroll = React.useCallback(
-    ({ clientHeight, scrollHeight, scrollTop }: ScrollParams) => {
-      if (transactions.length > initialTxCount.current) {
-        setTxIndex(undefined);
+  const onScroll = ({ clientHeight, scrollHeight, scrollTop }: ScrollParams): void => {
+    if (transactions.length > initialTxCount.current) {
+      setTxIndex(undefined);
+    }
+
+    if (!loading && cursor !== null) {
+      if (clientHeight + scrollTop >= scrollHeight - scrollHeight * 0.1) {
+        setLoading(true);
+
+        onLoadMore().then(() => setLoading(false));
       }
-
-      if (!loading && cursor !== null) {
-        if (clientHeight + scrollTop >= scrollHeight - scrollHeight * 0.1) {
-          setLoading(true);
-
-          onLoadMore().then(() => setLoading(false));
-        }
-      }
-    },
-    [cursor, loading, transactions, onLoadMore],
-  );
+    }
+  };
 
   React.useEffect(() => {
     if (transactions.length > initialTxCount.current) {
       setTxIndex(undefined);
     }
-  }, [transactions]);
+
+    const { current: list } = listElement;
+
+    if (list != null) {
+      Array.from({ length: transactions.length }).forEach((item, index) => list.recomputeRowHeights(index));
+    }
+  }, [transactions.length]);
 
   return transactions.length > 0 ? (
     <div className={styles.container}>
@@ -89,6 +91,7 @@ const TransactionsList: React.FC<OwnProps> = ({
             className={styles.list}
             height={height}
             width={width}
+            ref={listElement}
             rowCount={transactions.length}
             rowHeight={calculateRowHeight}
             rowRenderer={({ index, key, style }) => (

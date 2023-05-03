@@ -11,7 +11,7 @@ export {
   tokenAbi,
   wrapTokenAbi,
 } from './tokens';
-export { BalanceUtxo } from './Bitcoin';
+export { InputUtxo } from './Bitcoin';
 export {
   BlockchainCode,
   Blockchains,

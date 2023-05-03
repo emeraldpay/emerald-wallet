@@ -22,11 +22,15 @@ export class Bitcoin implements IBlockchain {
   }
 }
 
-export interface BalanceUtxo {
+export interface InputUtxo {
   /**
    * Target address
    */
   address: string;
+  /**
+   * Input sequence (nSequence)
+   */
+  sequence?: number;
   /**
    * Bitcoin transaction Id
    */
@@ -36,7 +40,7 @@ export interface BalanceUtxo {
    */
   vout: number;
   /**
-   * encoded BigAmount
+   * Encoded BigAmount
    */
   value: string;
 }

@@ -81,6 +81,6 @@ const txBitcoin2 = new StoredTransaction(
 storiesOf('TxDetails', module)
   .addDecorator(providerForStore(api, backend))
   .addDecorator(withTheme)
-  .add('ethereum', () => <TxDetails tx={txEthereum} />)
-  .add('bitcoin 1', () => <TxDetails tx={txBitcoin1} />)
-  .add('bitcoin 2', () => <TxDetails tx={txBitcoin2} />);
+  .add('ethereum', () => <TxDetails entryId={'74b0a509-9083-4b12-80bb-e01db1fa2293-1'} tx={txEthereum} />)
+  .add('bitcoin 1', () => <TxDetails entryId={'74b0a509-9083-4b12-80bb-e01db1fa2293-1'} tx={txBitcoin1} />)
+  .add('bitcoin 2', () => <TxDetails entryId={'74b0a509-9083-4b12-80bb-e01db1fa2293-1'} tx={txBitcoin2} />);

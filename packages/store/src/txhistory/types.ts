@@ -1,5 +1,5 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { Uuid } from '@emeraldpay/emerald-vault-core';
+import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
 import { PersistentState, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
 
 export class StoredTransactionChange implements PersistentState.Change {
@@ -9,7 +9,7 @@ export class StoredTransactionChange implements PersistentState.Change {
   direction: PersistentState.Direction;
   hdPath?: string;
   type: PersistentState.ChangeType;
-  wallet?: string;
+  wallet?: EntryId;
 
   private readonly blockchain: number;
   private readonly tokenRegistry: TokenRegistry;

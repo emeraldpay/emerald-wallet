@@ -1,6 +1,7 @@
 import { EstimationMode } from '@emeraldpay/api';
 import {
   BackendApi,
+  BitcoinRawTransaction,
   BlockchainCode,
   EthereumBasicTransaction,
   EthereumRawReceipt,
@@ -17,6 +18,7 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.BROADCAST_TX, blockchain, tx);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<any> {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_FEE, blockchain, blocks, mode);
   }
@@ -29,8 +31,8 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.GET_BALANCE, blockchain, address, tokens);
   }
 
-  getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
-    return ipcRenderer.invoke(IpcCommands.GET_NONCE, blockchain, address);
+  getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null> {
+    return ipcRenderer.invoke(IpcCommands.GET_BTC_TX, blockchain, hash);
   }
 
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null> {
@@ -39,6 +41,10 @@ export class BackendApiInvoker implements BackendApi {
 
   getEthTx(blockchain: BlockchainCode, hash: string): Promise<EthereumRawTransaction | null> {
     return ipcRenderer.invoke(IpcCommands.GET_ETH_TX, blockchain, hash);
+  }
+
+  getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
+    return ipcRenderer.invoke(IpcCommands.GET_NONCE, blockchain, address);
   }
 
   getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Promise<number | undefined> {

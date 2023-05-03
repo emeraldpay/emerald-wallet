@@ -186,4 +186,18 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
       return null;
     }
   });
+
+  ipcMain.handle(IpcCommands.GET_BTC_TX, (event, blockchain: BlockchainCode, hash: string) => {
+    return new Promise((resolve) => {
+      apiAccess.blockchainClient
+        .nativeCall(blockchainCodeToId(blockchain), [{ id: 0, method: 'getrawtransaction', payload: [hash, true] }])
+        .onData((response) => {
+          if (isNativeCallResponse(response)) {
+            resolve(response.payload);
+          }
+
+          resolve(null);
+        });
+    });
+  });
 }

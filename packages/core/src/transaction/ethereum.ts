@@ -91,3 +91,13 @@ export interface EthereumReceipt {
   transactionHash: string;
   transactionIndex: number;
 }
+
+export function isEthereumTransaction(tx: unknown): tx is EthereumTransaction {
+  return (
+    typeof tx === 'object' &&
+    tx != null &&
+    'type' in tx &&
+    typeof tx.type === 'number' &&
+    tx.type in EthereumTransactionType
+  );
+}

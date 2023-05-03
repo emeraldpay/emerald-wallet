@@ -16,19 +16,27 @@ const styles = (theme: Theme): StyleRules =>
     },
     top: {
       alignSelf: 'flex-start',
+      lineHeight: '28px',
       paddingTop: 10,
     },
   });
 
 interface OwnProps {
-  top?: boolean;
+  top?: boolean | number;
 }
 
 class Label extends React.Component<OwnProps & WithStyles<typeof styles>> {
   public render(): React.ReactElement {
-    const { classes, children, top = false } = this.props;
+    const { classes, children, top } = this.props;
 
-    return <label className={classNames(classes.root, top ? classes.top : null)}>{children}</label>;
+    return (
+      <label
+        className={classNames(classes.root, top == null ? undefined : classes.top)}
+        style={{ paddingTop: typeof top === 'number' ? top : undefined }}
+      >
+        {children}
+      </label>
+    );
   }
 }
 

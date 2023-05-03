@@ -175,6 +175,12 @@ export class TxService implements IService {
               if (tx.removed) {
                 this.persistentState.txhistory
                   .remove(blockchain, tx.txId)
+                  .then(() =>
+                    this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+                      type: 'WALLET/HISTORY/REMOVE_STORED_TX',
+                      txId: tx.txId,
+                    }),
+                  )
                   .catch((error) =>
                     log.error(`Error while removing transaction for address ${identifier} from state:`, error),
                   );

@@ -41,6 +41,7 @@ export {
   IState,
   PriceSort,
   SignData,
+  SignHandler,
 } from './types';
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';

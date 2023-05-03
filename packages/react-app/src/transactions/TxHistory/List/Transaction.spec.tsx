@@ -64,9 +64,8 @@ describe('Transaction', () => {
     const component = render(
       <Provider store={createStore()}>
         <ThemeProvider theme={Theme}>
-          <Transaction tx={tx} />
+          <Transaction tx={tx} walletId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" />
         </ThemeProvider>
-        ,
       </Provider>,
     );
 

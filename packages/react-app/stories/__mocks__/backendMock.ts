@@ -1,5 +1,11 @@
 import { EstimationMode } from '@emeraldpay/api';
-import { BackendApi, BlockchainCode, EthereumRawReceipt, EthereumRawTransaction } from '@emeraldwallet/core';
+import {
+  BackendApi,
+  BitcoinRawTransaction,
+  BlockchainCode,
+  EthereumRawReceipt,
+  EthereumRawTransaction,
+} from '@emeraldwallet/core';
 
 export class BlockchainMock {
   balances: Record<string, Record<string, string>> = {};
@@ -69,6 +75,10 @@ export class BackendMock implements BackendApi {
   }
 
   getEthReceipt(): Promise<EthereumRawReceipt | null> {
+    return Promise.resolve(null);
+  }
+
+  getBtcTx(): Promise<BitcoinRawTransaction | null> {
     return Promise.resolve(null);
   }
 

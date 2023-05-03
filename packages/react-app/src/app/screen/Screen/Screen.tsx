@@ -73,11 +73,11 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.CREATE_TX_BITCOIN:
       return <CreateBitcoinTransaction source={props.screenItem} />;
     case screen.Pages.CREATE_TX_CANCEL:
-      return <CreateCancelTransaction transaction={props.screenItem} />;
+      return <CreateCancelTransaction entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
       return <CreateTransaction sourceEntry={props.screenItem} />;
     case screen.Pages.CREATE_TX_SPEED_UP:
-      return <CreateSpeedUpTransaction transaction={props.screenItem} />;
+      return <CreateSpeedUpTransaction entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
     case screen.Pages.CREATE_TX_RECOVER:
       return <CreateRecoverTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
@@ -105,7 +105,7 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.SHOW_MESSAGE:
       return <ShowMessage {...props.screenItem} />;
     case screen.Pages.TX_DETAILS:
-      return <TxDetails tx={props.screenItem} />;
+      return <TxDetails entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
     case screen.Pages.WALLET:
       return <WalletDetails initialTab={props.restoreData?.tab} walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:

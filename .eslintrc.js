@@ -40,7 +40,6 @@ module.exports = {
           order: 'asc',
           caseInsensitive: true,
         },
-        groups: ['builtin', 'internal', 'external', 'sibling', 'index'],
         'newlines-between': 'never',
       },
     ],

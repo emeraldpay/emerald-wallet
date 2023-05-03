@@ -6,11 +6,11 @@ import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import {
   Box,
   CircularProgress,
-  createStyles,
   FormControlLabel,
   FormHelperText,
   Slider,
   Switch,
+  createStyles,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
@@ -85,41 +85,32 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   const [minimalFee, setMinimalFee] = React.useState(0);
   const [standardFee, setStandardFee] = React.useState(0);
 
-  const getTotalFee = React.useCallback((price: number) => create.estimateFees(price), [create]);
+  const getTotalFee = (price: number): BigAmount => create.estimateFees(price);
 
-  const onSetAmount = React.useCallback(
-    (value: BigAmount) => {
-      create.requiredAmount = value;
+  const onSetAmount = (value: BigAmount): void => {
+    create.requiredAmount = value;
 
-      setAmount(value);
-    },
-    [create],
-  );
+    setAmount(value);
+  };
 
-  const onSetAmountMax = React.useCallback(() => {
+  const onSetAmountMax = (): void => {
     create.target = workflow.TxTarget.SEND_ALL;
 
     setAmount(create.requiredAmount);
-  }, [create]);
+  };
 
-  const onSetFeePrice = React.useCallback(
-    (value: number) => {
-      create.feePrice = value;
+  const onSetFeePrice = (value: number): void => {
+    create.feePrice = value;
 
-      setAmount(create.requiredAmount);
-      setFeePrice(value);
-    },
-    [create],
-  );
+    setAmount(create.requiredAmount);
+    setFeePrice(value);
+  };
 
-  const onSetTo = React.useCallback(
-    (value: string | undefined) => {
-      const validation = validate(value ?? '');
+  const onSetTo = (value: string | undefined): void => {
+    const validation = validate(value ?? '');
 
-      create.address = validation === false ? '' : validation.address;
-    },
-    [create],
-  );
+    create.address = validation === false ? '' : validation.address;
+  };
 
   React.useEffect(
     () => {
@@ -165,9 +156,11 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
                   disabled={initializing}
                   onChange={(event) => {
                     const checked = event.target.checked;
+
                     if (checked) {
-                      setFeePrice(standardFee);
+                      onSetFeePrice(standardFee);
                     }
+
                     setUseStdFee(checked);
                   }}
                   name="checkedB"

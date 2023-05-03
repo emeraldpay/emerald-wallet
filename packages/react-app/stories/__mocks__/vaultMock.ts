@@ -18,6 +18,7 @@ import {
   Wallet,
   WatchEvent,
 } from '@emeraldpay/emerald-vault-core';
+import { AddressRole } from '@emeraldpay/emerald-vault-core/lib/types';
 
 export const REAL_BTC_TX =
   '0200000000010109dc86940a177b31454881110398b265fef9c55a47e1017b9967408eb0afef8f010000001716001425c5c9' +
@@ -27,9 +28,16 @@ export const REAL_BTC_TX =
   'd9f1068e8d517f2a012102e8e1d7659d6fbc0dbf653826937b09475ba6763c347138965bfebdb762a9b107f8ed0900';
 
 export class MemoryVault {
+  entries: Record<EntryId, Array<CurrentAddress>> = {};
   passwords: Record<Uuid, string> = {};
   seedAddresses: Record<Uuid, Record<string, string>> = {};
   seeds: Uuid[] = [];
+
+  addEntry(id: EntryId, address: CurrentAddress): void {
+    const { [id]: addresses = [] } = this.entries;
+
+    this.entries[id] = [...addresses, address];
+  }
 
   addSeedAddress(seedId: Uuid, hdpath: string, address: string): void {
     if (this.seeds.indexOf(seedId) < 0) {
@@ -128,8 +136,10 @@ export class VaultMock implements IEmeraldVault {
     return Promise.resolve([]);
   }
 
-  listEntryAddresses(): Promise<CurrentAddress[]> {
-    return Promise.resolve([]);
+  listEntryAddresses(id: EntryId, role: AddressRole): Promise<CurrentAddress[]> {
+    const { [id]: addresses = [] } = this.vault.entries;
+
+    return Promise.resolve(addresses.filter(({ role: addressRole }) => addressRole === role));
   }
 
   listSeedAddresses(
