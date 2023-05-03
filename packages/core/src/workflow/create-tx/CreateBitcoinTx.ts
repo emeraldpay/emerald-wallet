@@ -3,7 +3,14 @@ import { BitcoinEntry, CurrentAddress, UnsignedBitcoinTx } from '@emeraldpay/eme
 import { BlockchainCode, InputUtxo, amountDecoder, amountFactory, blockchainIdToCode } from '../../blockchains';
 import { TxTarget, ValidationResult } from './types';
 
-const MAX_SEQUENCE = 4294967295 as const;
+const DEFAULT_SEQUENCE = 0xfffffff0 as const;
+const MAX_SEQUENCE = 0xffffffff as const;
+
+/**
+ * @see https://bitcoinfees.net
+ * @see https://www.buybitcoinworldwide.com/fee-calculator
+ */
+const DEFAULT_VKB_FEE = 1024 as const;
 
 export interface BitcoinTxDetails<T extends BigAmount> {
   change?: T;
@@ -22,32 +29,30 @@ export interface Output {
 }
 
 export interface TxMetric {
-  /** @see https://en.bitcoin.it/wiki/Weight_units */
+  /**
+   * @see https://en.bitcoin.it/wiki/Weight_units
+   */
   weightOf(inputs: InputUtxo[], outputs: Output[]): number;
+}
+
+/**
+ * @see https://en.bitcoin.it/wiki/Weight_units
+ */
+export function convertWUToVB(wu: number): number {
+  return wu / 4;
 }
 
 class AverageTxMetric implements TxMetric {
   weightOf(inputs: InputUtxo[], outputs: Output[]): number {
-    /*
+    /**
      * TODO
-     *   Incorrect for many scenarios, based on numbers from https://en.bitcoin.it/wiki/Weight_units
-     *   "Detailed Example" taken as is
+     *   Incorrect for many scenarios, based on numbers from https://en.bitcoin.it/wiki/Weight_units "Detailed Example"
+     *   taken as is
      */
     return (
       22 + (128 + 16 + 4 + 92) * inputs.length + 16 + 4 + (32 + 4 + 100 + 1 + 1 + 72 + 1 + 33 + 16) * outputs.length
     );
   }
-}
-
-/**
- * @see https://bitcoinfees.net
- * @see https://www.buybitcoinworldwide.com/fee-calculator
- */
-const DEFAULT_VKB_FEE = 1024;
-
-/** @see https://en.bitcoin.it/wiki/Weight_units */
-export function convertWUToVB(wu: number): number {
-  return wu / 4;
 }
 
 export class CreateBitcoinTx {
@@ -171,26 +176,9 @@ export class CreateBitcoinTx {
         vout,
         amount: this.amountDecoder(value).number.toNumber(),
         entryId: this.source.id,
-        sequence: sequence == null ? MAX_SEQUENCE - 15 : sequence < MAX_SEQUENCE ? sequence + 1 : sequence,
+        sequence: this.adjustSequence(sequence),
       })),
       outputs: this.outputs,
-    };
-  }
-
-  debug(): Record<string, unknown> {
-    return {
-      available: this.totalAvailable.toString(),
-      change: this.change.toString(),
-      fees: this.fees.toString(),
-      from: this.tx.from.map((item) => ({
-        address: item.address,
-        amount: item.value,
-      })),
-      send: this.tx.to.amount?.toString(),
-      to: this.outputs.map((item) => ({
-        address: item.address,
-        amount: item.amount,
-      })),
     };
   }
 
@@ -228,19 +216,14 @@ export class CreateBitcoinTx {
       for (let i = 0; i < this.utxo.length && send.minus(fees).isLessThan(amount); i++) {
         from.push(this.utxo[i]);
 
+        fees = this.estimateFeesFor(from, to);
         send = this.totalUtxo(from);
-
-        const weight = this.metric.weightOf(from, to);
-
-        fees = this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
       }
     } else {
       from = this.utxo;
+
+      fees = this.estimateFeesFor(from, to);
       send = this.totalUtxo(from);
-
-      const weight = this.metric.weightOf(from, to);
-
-      fees = this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
     }
 
     let change: BigAmount = this.zero;
@@ -303,5 +286,19 @@ export class CreateBitcoinTx {
     }
 
     return ValidationResult.OK;
+  }
+
+  private adjustSequence(sequence: number | undefined): number {
+    if (sequence == null) {
+      return DEFAULT_SEQUENCE;
+    }
+
+    return sequence < MAX_SEQUENCE ? sequence + 1 : MAX_SEQUENCE;
+  }
+
+  private estimateFeesFor(inputs: InputUtxo[], outputs: Output[]): BigAmount {
+    const weight = this.metric.weightOf(inputs, outputs);
+
+    return this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
   }
 }

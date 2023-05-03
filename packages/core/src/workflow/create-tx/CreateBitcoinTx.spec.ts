@@ -295,6 +295,26 @@ describe('CreateBitcoinTx', () => {
     expect(create.estimateFees(2000 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.002).toString());
   });
 
+  it('estimate price', () => {
+    const tx = new CreateBitcoinTx(
+      basicEntry,
+      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
+      [
+        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addrReceive' },
+        { txid: '2', vout: 1, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addrChange' },
+      ],
+    );
+
+    tx.metric = defaultMetric;
+    tx.address = 'addrTo';
+    tx.requiredAmount = Satoshi.fromBitcoin(0.08);
+
+    expect(tx.estimateVkbPrice(Satoshi.fromBitcoin(0.0001))).toEqual(100 * 1024);
+    expect(tx.estimateVkbPrice(Satoshi.fromBitcoin(0.00015))).toEqual(150 * 1024);
+    expect(tx.estimateVkbPrice(Satoshi.fromBitcoin(0.0002))).toEqual(200 * 1024);
+    expect(tx.estimateVkbPrice(Satoshi.fromBitcoin(0.002))).toEqual(2000 * 1024);
+  });
+
   it('total available', () => {
     let create = new CreateBitcoinTx(
       basicEntry,
