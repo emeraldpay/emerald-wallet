@@ -1,10 +1,18 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { accounts } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
+
+const useStyles = makeStyles(
+  createStyles({
+    alert: {
+      marginTop: 20,
+    },
+  }),
+);
 
 interface OwnProps {
   seedId: Uuid;
@@ -16,6 +24,8 @@ interface DispatchProps {
 }
 
 const Component: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verifyPassword }) => {
+  const styles = useStyles();
+
   const [password, setPassword] = React.useState('');
 
   const [invalid, setInvalid] = React.useState(false);
@@ -60,7 +70,9 @@ const Component: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verif
       </Grid>
       {invalid && (
         <Grid item xs={12}>
-          <Alert severity="error">Invalid password</Alert>
+          <Alert className={styles.alert} severity="error">
+            Invalid password
+          </Alert>
         </Grid>
       )}
     </Grid>

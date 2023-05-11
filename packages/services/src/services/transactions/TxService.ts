@@ -185,22 +185,18 @@ export class TxService implements IService {
                     log.error(`Error while removing transaction for address ${identifier} from state:`, error),
                   );
               } else {
-
                 let confirmation: PersistentState.TransactionConfirmation | null = null;
+
                 const now = new Date();
 
                 if (tx.block != null) {
                   const { height, timestamp, hash: blockId } = tx.block;
 
                   confirmation = {
-                    block: {
-                      blockId,
-                      height,
-                      timestamp,
-                    },
-                    blockPos: 0, //TODO get transaction index inside the block
+                    block: { blockId, height, timestamp },
+                    blockPos: 0, // TODO Get transaction index inside the block
                     confirmTimestamp: tx.block.timestamp ?? now,
-                  }
+                  };
                 }
 
                 const blockchainCode = blockchainIdToCode(blockchain);
@@ -211,7 +207,7 @@ export class TxService implements IService {
                     .catch((error) => log.error(`Error while set xPub position for address ${identifier}:`, error));
                 }
 
-                let baseTransaction: PersistentState.UnconfirmedTransaction = {
+                const transaction: PersistentState.UnconfirmedTransaction = {
                   blockchain,
                   changes: tx.changes.map<PersistentState.Change>((change) => {
                     const asset =
@@ -232,10 +228,10 @@ export class TxService implements IService {
                   state: tx.mempool ? State.SUBMITTED : State.CONFIRMED,
                   status: tx.failed ? Status.FAILED : Status.OK,
                   txId: tx.txId,
-                }
+                };
 
                 this.persistentState.txhistory
-                  .submit({...baseTransaction, ...confirmation})
+                  .submit({ ...confirmation, ...transaction })
                   .then((merged) => {
                     if (tx.cursor != null && tx.cursor.length > 0) {
                       this.persistentState.txhistory

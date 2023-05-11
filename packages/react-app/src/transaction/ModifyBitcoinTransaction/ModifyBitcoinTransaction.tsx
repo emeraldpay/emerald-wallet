@@ -154,6 +154,10 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
   const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
+    if (tx.state > State.SUBMITTED) {
+      return;
+    }
+
     if (restoredTx != null) {
       if (isHardware) {
         signTransaction(restoredTx.create(), (txId, signed) => {
@@ -306,7 +310,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing && tx.state > State.SUBMITTED}
+                disabled={initializing || tx.state > State.SUBMITTED}
                 label="Create Transaction"
                 onClick={() => setStage(Stages.SIGN)}
               />
@@ -334,7 +338,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                   {!isHardware && (
                     <Button
                       primary
-                      disabled={password.length === 0}
+                      disabled={password.length === 0 || tx.state > State.SUBMITTED}
                       label="Sign Transaction"
                       onClick={onSignTransaction}
                     />
@@ -346,6 +350,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
           {stage === Stages.CONFIRM && entryId != null && signedRawTx != null && signedTxId != null && (
             <Confirm
               blockchain={blockchainCode}
+              disabled={tx.state > State.SUBMITTED}
               entryId={entryId}
               rawTx={signedRawTx}
               onConfirm={() =>

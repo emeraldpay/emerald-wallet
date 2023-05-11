@@ -21,6 +21,7 @@ const useStyles = makeStyles(
 
 interface OwnProps {
   blockchain: BlockchainCode;
+  disabled?: boolean;
   entryId: EntryId;
   rawTx: string;
   onConfirm(): void;
@@ -30,7 +31,14 @@ interface DispatchProps {
   onCancel(): void;
 }
 
-const Confirm: React.FC<OwnProps & DispatchProps> = ({ entryId, blockchain, rawTx, onCancel, onConfirm }) => {
+const Confirm: React.FC<OwnProps & DispatchProps> = ({
+  entryId,
+  blockchain,
+  rawTx,
+  onCancel,
+  onConfirm,
+  disabled = false,
+}) => {
   const styles = useStyles();
 
   const [showRaw, setShowRaw] = React.useState(false);
@@ -58,7 +66,7 @@ const Confirm: React.FC<OwnProps & DispatchProps> = ({ entryId, blockchain, rawT
       <FormRow last>
         <ButtonGroup classes={{ container: styles.buttons }}>
           <Button label="Cancel" onClick={onCancel} />
-          <Button label="Send" primary onClick={onConfirm} />
+          <Button label="Send" primary disabled={disabled} onClick={onConfirm} />
         </ButtonGroup>
       </FormRow>
     </>

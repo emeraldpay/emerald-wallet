@@ -112,7 +112,9 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
   ipcMain.handle(IpcCommands.BROADCAST_TX, (event, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
-    } else if (isBitcoin(blockchain)) {
+    }
+
+    if (isBitcoin(blockchain)) {
       return new Promise((resolve, reject) => {
         apiAccess.blockchainClient
           .nativeCall(blockchainCodeToId(blockchain), [
@@ -122,24 +124,24 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
               payload: [tx],
             },
           ])
-          .onData((resp) => {
-            if (isNativeCallResponse(resp)) {
-              const hash = resp.payload as string;
+          .onData((response) => {
+            if (isNativeCallResponse(response)) {
+              const hash = response.payload as string;
 
               log.info(`Broadcast transaction: ${hash}`);
 
               resolve(hash);
-            } else if (isNativeCallError(resp)) {
-              reject(resp.message);
+            } else if (isNativeCallError(response)) {
+              reject(response.message);
             } else {
               reject('Invalid response from API');
             }
           })
           .onError((err) => reject(err.message));
       });
-    } else {
-      log.error('Invalid blockchain: ' + blockchain);
     }
+
+    log.error(`Invalid blockchain: ${blockchain}`);
   });
 
   ipcMain.handle(IpcCommands.GET_BALANCE, (event, blockchain: BlockchainCode, address: string, tokens: string[]) => {

@@ -154,7 +154,7 @@ const CreateBitcoinTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   }
 
   return (
-    <Page title={'Create Bitcoin Transaction'} leftIcon={<Back onClick={onCancel} />}>
+    <Page title="Create Bitcoin Transaction" leftIcon={<Back onClick={onCancel} />}>
       {content}
     </Page>
   );

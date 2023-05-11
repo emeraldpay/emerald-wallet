@@ -72,14 +72,16 @@ const TransactionsList: React.FC<OwnProps> = ({
   };
 
   React.useEffect(() => {
-    if (transactions.length > initialTxCount.current) {
-      setTxIndex(undefined);
-    }
-
     const { current: list } = listElement;
 
     if (list != null) {
       Array.from({ length: transactions.length }).forEach((item, index) => list.recomputeRowHeights(index));
+    }
+  }, [transactions]);
+
+  React.useEffect(() => {
+    if (transactions.length > initialTxCount.current) {
+      setTxIndex(undefined);
     }
   }, [transactions.length]);
 

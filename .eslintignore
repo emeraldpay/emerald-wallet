@@ -3,6 +3,6 @@
 # Always ignore node_modules.
 **/node_modules/
 
-packages/*/lib
-packages/*/coverage
-packages/desktop/app
+packages/*/coverage/
+packages/*/lib/
+packages/desktop/app/
