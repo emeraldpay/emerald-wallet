@@ -3133,26 +3133,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/e089d955/emeraldpay-api-node-v0.3.2.tgz":
+"@emeraldpay/api-node@npm:^0.3.2":
   version: 0.3.2
-  resolution: "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/e089d955/emeraldpay-api-node-v0.3.2.tgz"
+  resolution: "@emeraldpay/api-node@npm:0.3.2"
   dependencies:
     "@emeraldpay/api": 0.3.2
-    "@grpc/grpc-js": ^1.8.14
-    "@types/google-protobuf": ^3.15.6
-    google-protobuf: ^3.21.2
-    protobufjs: ^7.2.3
-  checksum: 5ee8c5b4348f09543c7aed9003d39778dfb856101b8c07b310312598d0f382d69b1213f1837d2c68d88617f1efe8f53b3fc0604355aee501261a09ac7cca983b
+    "@grpc/grpc-js": ^1.5.1
+    "@types/google-protobuf": ^3.7.2
+    google-protobuf: ^3.10.0
+    protobufjs: ^6.8.8
+  checksum: 4c7685a92bc8a193581e5dcac6bf57ee3f00086bfcd85fb50831d5bcf4d8eea285d85c9719ef5b19a10f345cbace286b0e2da56c1555ea6be076c5142fb29e9a
   languageName: node
   linkType: hard
 
-"@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/e089d955/emeraldpay-api-v0.3.2.tgz":
+"@emeraldpay/api@npm:0.3.2, @emeraldpay/api@npm:^0.3.2":
   version: 0.3.2
-  resolution: "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/e089d955/emeraldpay-api-v0.3.2.tgz"
+  resolution: "@emeraldpay/api@npm:0.3.2"
   dependencies:
-    google-protobuf: ^3.21.2
-    protobufjs: ^7.2.3
-  checksum: b6332834e57bad5fa6c0b774cc9f8d990aa9b8632bda1c79a7bbed94bd8e4a34b5c8f4a26146e951a10bf2829121905f413fc8ed12e519c0e73779bf3931b116
+    google-protobuf: ^3.10.0
+    protobufjs: ^6.8.8
+  checksum: 8c649d04d0a4e0916035988fdef32fb3c860d55b17c10b4af237543c503172e0d22cd0f9d9b18f6848b15bd290a35bbf797bbe733c778d0c676c2aa6f42a72d4
   languageName: node
   linkType: hard
 
@@ -3175,20 +3175,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/350c3905/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz":
-  version: 0.11.0-dev
-  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/350c3905/emeraldpay-emerald-vault-core-v0.11.0-dev.tgz"
-  checksum: 54c97d13324343629be28b2dea618ec2659398c9696b25bcfde94246f61c386b5a61fe13561af68c9123191a07c1393bea8686020f33f0b4aee2ba16af4a7e5f
+"@emeraldpay/emerald-vault-core@npm:0.11.0, @emeraldpay/emerald-vault-core@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@emeraldpay/emerald-vault-core@npm:0.11.0"
+  checksum: f27e75915cb1fd4772643f937dd0af5b499248b1349393a66cee654425f5a05c4b9c2f6a01001c62a6041efa9fa600da6ca2867ec0ac509be5e6928dae3ddde0
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/350c3905/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz":
-  version: 0.11.0-dev
-  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/350c3905/emeraldpay-emerald-vault-native-v0.11.0-dev.tgz"
+"@emeraldpay/emerald-vault-native@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@emeraldpay/emerald-vault-native@npm:0.11.0"
   dependencies:
-    "@emeraldpay/emerald-vault-core": 0.11.0-dev
+    "@emeraldpay/emerald-vault-core": 0.11.0
     "@emeraldpay/neon-frame": 0.1.1
-  checksum: 6398d96cbf020a654bba1a8a35dd7148ffb26ce03d96169e8a47a5b7c3e53db0fc8b468eae8aa65d86af05caf15f6904a4f453d47a89de9f92cdaf968c2a6f18
+  checksum: e1128569b0f4d67789fce9b30944dd6132ecd20b685f2a964024aa2c43f71a2c2e389ea2401105e8f4bc70b271287ecca71b7208d849fa3abfbe9dbf33fb9550
   languageName: node
   linkType: hard
 
@@ -3210,13 +3210,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldwallet/core@^2.9.0-dev, @emeraldwallet/core@workspace:packages/core":
+"@emeraldwallet/core@^2.9.0, @emeraldwallet/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/core@workspace:packages/core"
   dependencies:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": ^0.10.0
+    "@emeraldpay/emerald-vault-core": ^0.11.0
     "@ethereumjs/common": ^3.0.1
     "@ethereumjs/tx": ^4.0.1
     "@types/bn.js": ^4.11.6
@@ -3241,8 +3241,8 @@ __metadata:
     "@babel/preset-react": ^7.18.6
     "@babel/runtime": ^7.19.4
     "@electron/remote": ^2.0.8
-    "@emeraldwallet/electron-app": ^2.9.0-dev
-    "@emeraldwallet/ui": ^2.9.0-dev
+    "@emeraldwallet/electron-app": ^2.9.0
+    "@emeraldwallet/ui": ^2.9.0
     "@kayahr/jest-electron-runner": 4.4.1
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
@@ -3277,15 +3277,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/electron-app@^2.9.0-dev, @emeraldwallet/electron-app@workspace:packages/electron-app":
+"@emeraldwallet/electron-app@^2.9.0, @emeraldwallet/electron-app@workspace:packages/electron-app":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/electron-app@workspace:packages/electron-app"
   dependencies:
-    "@emeraldpay/emerald-vault-core": ^0.10.0
-    "@emeraldpay/emerald-vault-native": ^0.10.0
-    "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/persistent-state": ^2.9.0-dev
-    "@emeraldwallet/services": ^2.9.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.11.0
+    "@emeraldpay/emerald-vault-native": ^0.11.0
+    "@emeraldwallet/core": ^2.9.0
+    "@emeraldwallet/persistent-state": ^2.9.0
+    "@emeraldwallet/services": ^2.9.0
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
     "@types/uuid": ^3.4.10
@@ -3301,13 +3301,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/persistent-state@^2.9.0-dev, @emeraldwallet/persistent-state@workspace:packages/persistent-state":
+"@emeraldwallet/persistent-state@^2.9.0, @emeraldwallet/persistent-state@workspace:packages/persistent-state":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/persistent-state@workspace:packages/persistent-state"
   dependencies:
-    "@emeraldpay/emerald-vault-core": ^0.10.0
+    "@emeraldpay/emerald-vault-core": ^0.11.0
     "@emeraldpay/neon-frame": ^0.1.1
-    "@emeraldwallet/core": ^2.9.0-dev
+    "@emeraldwallet/core": ^2.9.0
     cargo-cp-artifact: ^0.1.6
     jest: ^27.5.1
     jest-runner: ^27.5.1
@@ -3326,10 +3326,10 @@ __metadata:
     "@electron/remote": ^2.0.8
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": ^0.10.0
-    "@emeraldwallet/core": ^2.9.0-dev
-    "@emeraldwallet/store": ^2.9.0-dev
-    "@emeraldwallet/ui": ^2.9.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.11.0
+    "@emeraldwallet/core": ^2.9.0
+    "@emeraldwallet/store": ^2.9.0
+    "@emeraldwallet/ui": ^2.9.0
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
@@ -3390,15 +3390,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/services@^2.9.0-dev, @emeraldwallet/services@workspace:packages/services":
+"@emeraldwallet/services@^2.9.0, @emeraldwallet/services@workspace:packages/services":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/services@workspace:packages/services"
   dependencies:
-    "@emeraldpay/api": ^0.3.1
-    "@emeraldpay/api-node": ^0.3.1
+    "@emeraldpay/api": ^0.3.2
+    "@emeraldpay/api-node": ^0.3.2
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldwallet/core": ^2.9.0-dev
+    "@emeraldwallet/core": ^2.9.0
     "@grpc/grpc-js": ^1.7.3
     "@types/jest": ^27.5.2
     "@types/node": ^18.11.5
@@ -3413,14 +3413,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/store@^2.9.0-dev, @emeraldwallet/store@workspace:packages/store":
+"@emeraldwallet/store@^2.9.0, @emeraldwallet/store@workspace:packages/store":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/store@workspace:packages/store"
   dependencies:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
-    "@emeraldpay/emerald-vault-core": ^0.10.0
-    "@emeraldwallet/core": ^2.9.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.11.0
+    "@emeraldwallet/core": ^2.9.0
     "@types/color-hash": ^1.0.2
     "@types/jest": ^27.5.2
     "@types/lodash": ^4.14.186
@@ -3445,7 +3445,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/ui@^2.9.0-dev, @emeraldwallet/ui@workspace:packages/ui":
+"@emeraldwallet/ui@^2.9.0, @emeraldwallet/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/ui@workspace:packages/ui"
   dependencies:
@@ -3453,7 +3453,7 @@ __metadata:
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/hashicon": 0.5.1
-    "@emeraldwallet/core": ^2.9.0-dev
+    "@emeraldwallet/core": ^2.9.0
     "@material-ui/core": 4.12.4
     "@material-ui/icons": 4.11.3
     "@material-ui/lab": 4.0.0-alpha.61
@@ -3983,6 +3983,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:^1.5.1":
+  version: 1.8.14
+  resolution: "@grpc/grpc-js@npm:1.8.14"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.0
+    "@types/node": ">=12.12.47"
+  checksum: 7b889ae67cde5eb9b4feb92d54e73945d881309b9b879a2dde478fa7850b99835efa7592a8154a0f923851d7a18a177c106f5f52b45061180bb04aef7783c1c9
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:^1.7.3":
   version: 1.7.3
   resolution: "@grpc/grpc-js@npm:1.7.3"
@@ -3990,16 +4000,6 @@ __metadata:
     "@grpc/proto-loader": ^0.7.0
     "@types/node": ">=12.12.47"
   checksum: cb05aae4599f5deac9e0f50ea458b4465c581653501b5c1f3f3a9d6bfc5120c731726914d2d0d3a8244fce60cdf86ebbfc69c9d9f39fc34f0ab0100afd4af3e4
-  languageName: node
-  linkType: hard
-
-"@grpc/grpc-js@npm:^1.8.14":
-  version: 1.8.14
-  resolution: "@grpc/grpc-js@npm:1.8.14"
-  dependencies:
-    "@grpc/proto-loader": ^0.7.0
-    "@types/node": ">=12.12.47"
-  checksum: 7b889ae67cde5eb9b4feb92d54e73945d881309b9b879a2dde478fa7850b99835efa7592a8154a0f923851d7a18a177c106f5f52b45061180bb04aef7783c1c9
   languageName: node
   linkType: hard
 
@@ -6161,7 +6161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google-protobuf@npm:^3.15.6":
+"@types/google-protobuf@npm:^3.7.2":
   version: 3.15.6
   resolution: "@types/google-protobuf@npm:3.15.6"
   checksum: e8f7cd9d263093cd0a72eb10ff0bb8221e28aa8b9f601eddbe19b286932aae96fbc9ccb1f3a744525e7811fa87a6aeefd431858b6e2034f14a2dc68710a86d54
@@ -13708,7 +13708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-protobuf@npm:^3.21.2":
+"google-protobuf@npm:^3.10.0, google-protobuf@npm:^3.21.2":
   version: 3.21.2
   resolution: "google-protobuf@npm:3.21.2"
   checksum: 3caa2e1e2654714cc1a201ac5e5faabcaa48f5fba3d8ff9b64ca66fe19e4e0506b94053f32eddc77bf3a7a47ac1660315c6744185c1e2bb27654fd76fe91b988
@@ -19497,6 +19497,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"protobufjs@npm:^6.8.8":
+  version: 6.11.3
+  resolution: "protobufjs@npm:6.11.3"
+  dependencies:
+    "@protobufjs/aspromise": ^1.1.2
+    "@protobufjs/base64": ^1.1.2
+    "@protobufjs/codegen": ^2.0.4
+    "@protobufjs/eventemitter": ^1.1.0
+    "@protobufjs/fetch": ^1.1.0
+    "@protobufjs/float": ^1.0.2
+    "@protobufjs/inquire": ^1.1.0
+    "@protobufjs/path": ^1.1.2
+    "@protobufjs/pool": ^1.1.0
+    "@protobufjs/utf8": ^1.1.0
+    "@types/long": ^4.0.1
+    "@types/node": ">=13.7.0"
+    long: ^4.0.0
+  bin:
+    pbjs: bin/pbjs
+    pbts: bin/pbts
+  checksum: 4a6ce1964167e4c45c53fd8a312d7646415c777dd31b4ba346719947b88e61654912326101f927da387d6b6473ab52a7ea4f54d6f15d63b31130ce28e2e15070
+  languageName: node
+  linkType: hard
+
 "protobufjs@npm:^7.0.0":
   version: 7.1.2
   resolution: "protobufjs@npm:7.1.2"
@@ -19514,26 +19538,6 @@ __metadata:
     "@types/node": ">=13.7.0"
     long: ^5.0.0
   checksum: ae41669b1b0372fb1d49f506f2d1f2b0fb3dc3cece85987b17bcb544e4cef7c8d27f480486cdec324146ad0a5d22a327166a7ea864a9b3e49cc3c92a5d3f6500
-  languageName: node
-  linkType: hard
-
-"protobufjs@npm:^7.2.3":
-  version: 7.2.3
-  resolution: "protobufjs@npm:7.2.3"
-  dependencies:
-    "@protobufjs/aspromise": ^1.1.2
-    "@protobufjs/base64": ^1.1.2
-    "@protobufjs/codegen": ^2.0.4
-    "@protobufjs/eventemitter": ^1.1.0
-    "@protobufjs/fetch": ^1.1.0
-    "@protobufjs/float": ^1.0.2
-    "@protobufjs/inquire": ^1.1.0
-    "@protobufjs/path": ^1.1.2
-    "@protobufjs/pool": ^1.1.0
-    "@protobufjs/utf8": ^1.1.0
-    "@types/node": ">=13.7.0"
-    long: ^5.0.0
-  checksum: 9afa6de5fced0139a5180c063718508fac3ea734a9f1aceb99712367b15473a83327f91193f16b63540f9112b09a40912f5f0441a9b0d3f3c6a1c7f707d78249
   languageName: node
   linkType: hard
 
