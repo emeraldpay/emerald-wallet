@@ -103,16 +103,11 @@ export interface Change {
 }
 
 export interface UnconfirmedTransaction {
-
   blockchain: number;
-  txId: string;
-  version?: number;
-
   /**
    * Changes and references to the user wallets
    */
   changes: Change[];
-
   /**
    * Application state of the transaction. In general, it's PREPARED->SUBMITTED->CONFIRMED, but have other states
    */
@@ -127,6 +122,8 @@ export interface UnconfirmedTransaction {
    * It may be OK or FAILED. Before the inclusion it's UNKNOWN
    */
   status: Status;
+  txId: string;
+  version?: number;
 }
 
 export interface TransactionConfirmation {
@@ -152,9 +149,8 @@ export type ConfirmedTransaction = UnconfirmedTransaction & TransactionConfirmat
 export type Transaction = UnconfirmedTransaction | ConfirmedTransaction;
 
 export function isConfirmed(tx: Transaction): tx is ConfirmedTransaction {
-  return typeof tx == "object" && Object.keys(tx).indexOf("block") >= 0;
+  return typeof tx === 'object' && Object.keys(tx).indexOf('block') >= 0;
 }
-
 
 /**
  * Criteria to select transactions when queried
@@ -342,7 +338,6 @@ export interface Balance {
    * Timestamp when it was cached. Set automatically when added to the persistent state.
    */
   timestamp?: Date | undefined;
-
   /**
    * Individual components of the balance for the current address.
    * Must contain only _unspent_ transactions and the total amount MUST equal the main `amount` field of the `Balance` object.
@@ -357,9 +352,9 @@ export interface Balance {
  * Bitcoin UTXO details
  */
 export interface Utxo {
+  amount: string;
   txid: string;
   vout: number;
-  amount: string;
 }
 
 /**
@@ -390,14 +385,12 @@ export interface Cache {
    * @param ttl_seconds (optionally) a Time To Live for that value. Note that the cache purges the data only occasionally and data may live longer in the cache
    */
   put(id: string, value: string, ttl_seconds?: number | undefined): Promise<void>;
-
   /**
    * Get known value. Return null if cache has no `value` for the specified `id`
    *
    * @param id id for the data
    */
   get(id: string): Promise<string | null>;
-
   /**
    * Remove a value for the specified `id` from the cache
    *
@@ -416,6 +409,10 @@ export interface PersistentState {
    */
   balances: Balances;
   /**
+   * Generic cache
+   */
+  cache: Cache;
+  /**
    * Manage Transaction History
    */
   txhistory: TxHistory;
@@ -427,9 +424,4 @@ export interface PersistentState {
    * Manage XPub position
    */
   xpubpos: XPubPosition;
-
-  /**
-   * Generic cache
-   */
-  cache: Cache;
 }
