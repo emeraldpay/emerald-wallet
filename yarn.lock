@@ -3648,7 +3648,7 @@ __metadata:
     "@types/qrcode": ^1.5.0
     "@types/qrcode.react": ^1.0.2
     "@types/react-redux": ^7.1.25
-    "@types/react-virtualized": ^9.21.21
+    "@types/react-virtualized": 9.21.20
     "@types/sortablejs": ^1.15.1
     bip39: ^3.1.0
     bitcoin-address-validation: ^2.2.1
@@ -6661,13 +6661,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-virtualized@npm:^9.21.21":
-  version: 9.21.21
-  resolution: "@types/react-virtualized@npm:9.21.21"
+"@types/react-virtualized@npm:9.21.20":
+  version: 9.21.20
+  resolution: "@types/react-virtualized@npm:9.21.20"
   dependencies:
     "@types/prop-types": "*"
-    "@types/react": ^17
-  checksum: 7f360746ae926c93ba07d830a33940ab1598f6966263594896d0dc746d704f9c0e0d1692cf543e925bcca7b007d70d3cc53379a9b1810f60c2d43ee5cfdb591e
+    "@types/react": "*"
+  checksum: 70fd77d9a0fc498b4eb29a195f218fd10f6ca935025813d53d3937e1464580bfbfd3a0c84806530f21cf810c1f6cf1789656052a9714b23de46702b1ac1b73c5
   languageName: node
   linkType: hard
 
@@ -6689,17 +6689,6 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 48b721b41af4b4b6fa0433ddca27aee72bd8969e95c7bcb1fd2e9fda81e0a602dea5f855072f1458996d3e45ceeae0751d7d1f6687e6dd1698a6fc5c67cc7b82
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^17":
-  version: 17.0.59
-  resolution: "@types/react@npm:17.0.59"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: 09dd0052079ec0c06360790985dc23ce116ac861b77e98aa634cb53dcdac400d878a15c6649dfe5797ac60afc2ab65d40c72c21a302deefd22b2d7804f93c37c
   languageName: node
   linkType: hard
 
