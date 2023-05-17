@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import { ILogger } from '@emeraldwallet/core';
-import { providers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { Batch, BatchItem, DefaultBatch, RawBatchResponse } from './Batch';
 
 export interface JsonRpc {
@@ -139,7 +139,7 @@ export class FailingJsonRpc extends AbstractJsonRpc implements JsonRpc {
   }
 }
 
-export class EthersJsonRpc extends providers.JsonRpcProvider {
+export class EthersJsonRpc extends JsonRpcProvider {
   rpc: JsonRpc;
 
   constructor(jsonRpc: JsonRpc) {

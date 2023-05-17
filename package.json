@@ -2,29 +2,33 @@
   "name": "emerald-wallet",
   "private": true,
   "license": "Apache-2.0",
-  "packageManager": "yarn@3.2.4",
+  "packageManager": "yarn@3.5.1",
   "scripts": {
     "build": "yarn workspace @emeraldwallet/desktop run build",
     "build:dist": "yarn build:native && yarn workspace @emeraldwallet/desktop run build:dist",
     "build:native": "yarn workspaces foreach run build:native",
     "clean": "yarn workspaces foreach run clean",
-    "clean:modules": "rimraf node_modules packages/*/node_modules",
+    "clean:modules": "rimraf -g node_modules 'packages/*/node_modules'",
     "test": "yarn workspaces foreach run test",
     "test:coverage": "yarn workspaces foreach run test:coverage"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "@typescript-eslint/parser": "^5.50.0",
-    "eslint": "^8.33.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "eslint": "^8.40.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "neon-cli": "^0.10.1",
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.8"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "resolutions": {
+    "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/fc609973/emeraldpay-api-v0.4.0-dev.tgz",
+    "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/fc609973/emeraldpay-api-node-v0.4.0-dev.tgz"
+  }
 }

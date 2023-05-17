@@ -107,9 +107,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   };
 
   const onSetTo = (value: string | undefined): void => {
-    const validation = validate(value ?? '');
-
-    create.address = validation === false ? '' : validation.address;
+    create.address = value == null || !validate(value) ? '' : value;
   };
 
   React.useEffect(

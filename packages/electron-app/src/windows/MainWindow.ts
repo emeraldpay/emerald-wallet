@@ -4,8 +4,8 @@ import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
 import { IpcCommands } from '@emeraldwallet/core';
 import { BrowserWindow, Menu, ipcMain, shell } from 'electron';
 import { ElectronLog } from 'electron-log';
-import createMainMenu from './MainMenu';
 import { Application } from '../application/Application';
+import createMainMenu from './MainMenu';
 
 export interface MainWindowOptions {
   aboutWndPath: string;
@@ -35,6 +35,8 @@ export function getMainWindow(
     return mainWindow;
   }
 
+  const { isDevelopMode } = options;
+
   const window = new BrowserWindow({
     show: false,
     width: 1200,
@@ -49,7 +51,9 @@ export function getMainWindow(
     },
   });
 
-  const { isDevelopMode } = options;
+  window.loadURL(url.pathToFileURL(options.mainWndPath).toString()).catch(({ message }) => logger.error(message));
+
+  app.setWebContents(window.webContents);
 
   const setupMainMenu = (): void => {
     vault.listWallets().then((wallets) => {
@@ -77,32 +81,20 @@ export function getMainWindow(
     });
   };
 
-  setupMainMenu();
-
   ipcMain.on(IpcCommands.UPDATE_MAIN_MENU, setupMainMenu);
 
-  window
-    .loadURL(
-      url.format({
-        pathname: options.mainWndPath,
-        protocol: 'file:',
-        slashes: true,
-      }),
-    )
-    .catch(({ message }) => logger.error(message));
+  setupMainMenu();
 
-  app.setWebContents(window.webContents);
+  window.once('ready-to-show', () => {
+    if (isDevelopMode) {
+      window.webContents.openDevTools();
+    }
 
-  if (isDevelopMode) {
-    window.webContents.openDevTools();
-  }
+    window?.show();
+  });
 
   window.on('closed', () => {
     mainWindow = null;
-  });
-
-  window.once('ready-to-show', () => {
-    window?.show();
   });
 
   mainWindow = window;

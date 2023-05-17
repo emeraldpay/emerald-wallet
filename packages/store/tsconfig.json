@@ -13,6 +13,7 @@
     "moduleResolution": "Node",
     "outDir": "lib/",
     "rootDir": "src/",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "ES6",
