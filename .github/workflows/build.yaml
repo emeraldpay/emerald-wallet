@@ -28,6 +28,10 @@ jobs:
         with:
           python-version: '3.7'
 
+      - name: Update apt index (Linux)
+        run: sudo apt update
+        if: runner.os == 'Linux'
+
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (Windows)
         uses: google-github-actions/setup-gcloud@v0
@@ -51,8 +55,8 @@ jobs:
         id: commit-data
         run: |
           shortSha=$(git rev-parse --short ${{ github.sha }})
-          echo "::set-output name=short-sha::$shortSha"
-          echo "::set-output name=commit-date::$(git show -s --format=%cs $shortSha)"
+          echo "short-sha=$shortSha" >> $GITHUB_OUTPUT
+          echo "commit-date=$(git show -s --format=%cs $shortSha)" >> $GITHUB_OUTPUT
 
       - name: Write commit data
         run: |
@@ -61,11 +65,21 @@ jobs:
           echo '  "shortSha": "${{ steps.commit-data.outputs.short-sha }}"' >> packages/desktop/commit-data.json
           echo '}' >> packages/desktop/commit-data.json
 
-      - name: Get version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-        with:
-          path: packages/desktop
+      - name: Install jq (Windows)
+        run: choco install jq
+        if: runner.os == 'Windows'
+
+      - name: Install jq (macOS)
+        run: brew install jq
+        if: runner.os == 'macOS'
+
+      - name: Install jq (Linux)
+        run: sudo apt install jq
+        if: runner.os == 'Linux'
+
+      - name: Get package data
+        id: package-data
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $GITHUB_OUTPUT
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -79,45 +93,43 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install system libs
-        run: sudo apt-get install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
+      - name: Install system libs (Linux)
+        run: sudo apt install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
         if: runner.os == 'Linux'
 
-      - name: Install Global JS components
+      - name: Install global packages
         run: npm install -g codecov yarn
 
-      - name: Install JS dependencies
+      - name: Install dependencies
         run: yarn install
 
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: '${{ steps.package-version.outputs.current-version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}'
+          APP_VERSION_GIT_TAG: '${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (Windows)
-        run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-version.outputs.current-version }}/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
       - name: Upload to GCP (non Windows)
-        run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-version.outputs.current-version }}/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/
         if: runner.os != 'Windows'
 
-      - name: Link to published artifact
+      - name: Link to published artifact (Windows)
         if: runner.os == 'Windows'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-version.outputs.current-version }}/EmeraldWallet-win-x64-${{ steps.package-version.outputs.current-version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.exe"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-win-x64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.exe"
 
-      - name: Link to published artifact
+      - name: Link to published artifact (macOS)
         if: runner.os == 'macOS'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-version.outputs.current-version }}/EmeraldWallet-mac-x64-${{ steps.package-version.outputs.current-version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.dmg"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-mac-x64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.dmg"
 
-      - name: Link to published artifact
+      - name: Link to published artifact (Linux)
         if: runner.os == 'Linux'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-version.outputs.current-version }}/EmeraldWallet-linux-amd64-${{ steps.package-version.outputs.current-version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.deb"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-linux-amd64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.deb"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2

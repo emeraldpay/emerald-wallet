@@ -33,19 +33,19 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install system libs
-        run: sudo apt-get install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
+      - name: Install system libs (Linux)
+        run: sudo apt install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
         if: runner.os == 'Linux'
 
         # Needed for Electron tests
-      - name: Setup Display
+      - name: Setup Display (Linux)
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
 
       - name: Install Yarn
         run: npm install -g yarn
 
-      - name: Install JS dependencies
+      - name: Install dependencies
         run: yarn install
 
       - name: Build native
