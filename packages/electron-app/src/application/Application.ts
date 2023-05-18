@@ -1,17 +1,15 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
-import { IpcCommands, Logger } from '@emeraldwallet/core';
+import { IpcCommands, Logger, Versions } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { WebContents, ipcMain } from 'electron';
+import { createServices } from '../createServices';
+import { ElectronLogger } from '../ElectronLogger';
+import { ApiMode } from '../types';
 import { setupApiIpc } from './ipc/application';
 import { setupPersistentStateIpc } from './ipc/persistentState';
 import { setupVaultIpc } from './ipc/vault';
 import { Settings } from './Settings';
-import { createServices } from '../createServices';
-import { ElectronLogger } from '../ElectronLogger';
-import { ApiMode } from '../types';
-
-type Versions = Record<string, unknown>;
 
 Logger.setInstance(new ElectronLogger());
 
@@ -20,12 +18,12 @@ export class Application {
 
   public rpc: ChainRpcConnections;
   public settings: Settings;
-  public versions: Versions | undefined;
+  public versions: Versions;
 
   private services: Services | null | undefined;
   private webContents: WebContents | null | undefined;
 
-  constructor(settings: Settings, versions?: Versions) {
+  constructor(settings: Settings, versions: Versions) {
     this.rpc = new ChainRpcConnections();
 
     this.settings = settings;

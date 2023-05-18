@@ -1,4 +1,4 @@
-import { IpcCommands, Logger, SettingsOptions, TokenData, WalletApi } from '@emeraldwallet/core';
+import { IpcCommands, Logger, SettingsOptions, TokenData, Versions, WalletApi } from '@emeraldwallet/core';
 import {
   BackendApiInvoker,
   RemoteAddressBook,
@@ -18,10 +18,10 @@ import {
 import { RemoteCache } from '@emeraldwallet/store/lib/remote-access/Cache';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
-import { initBalancesState } from './cache/balances';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
+import { initBalancesState } from './cache/balances';
 
 Logger.setInstance(ElectronLogger);
 
@@ -39,18 +39,18 @@ const api: WalletApi = {
 
 export const store = createStore(api, new BackendApiInvoker());
 
-function checkOptionsUpdates(stored: SettingsOptions): void {
+function checkOptionsUpdates(appVersion: string, stored: SettingsOptions): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateOptions(stored).then((options) => store.dispatch(application.actions.setOptions(options) as any));
+  updateOptions(appVersion, stored).then((options) => store.dispatch(application.actions.setOptions(options) as any));
 }
 
-function checkTokensUpdates(stored: TokenData[]): void {
+function checkTokensUpdates(appVersion: string, stored: TokenData[]): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateTokens(stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
+  updateTokens(appVersion, stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
 }
 
-function checkWalletUpdates(): void {
-  checkUpdate().then((versionDetails) => {
+function checkWalletUpdates(appVersion: string): void {
+  checkUpdate(appVersion).then((versionDetails) => {
     if (!versionDetails.isLatest) {
       store.dispatch(
         screen.actions.showNotification(
@@ -162,11 +162,16 @@ function startSync(): void {
 export function startStore(): void {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    store.dispatch(application.actions.readConfig() as any).then(() => {
-      const { options = {}, tokens = [] } = store.getState().application;
+    store.dispatch(application.actions.getVersions() as any).then((versions: Versions) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      store.dispatch(application.actions.readConfig() as any).then(() => {
+        const { options = {}, tokens = [] } = store.getState().application;
 
-      checkOptionsUpdates(options);
-      checkTokensUpdates(tokens);
+        checkOptionsUpdates(versions.appVersion, options);
+        checkTokensUpdates(versions.appVersion, tokens);
+      });
+
+      checkWalletUpdates(versions.appVersion);
     });
 
     store.dispatch(settings.actions.loadSettings());
@@ -178,5 +183,4 @@ export function startStore(): void {
   }
 
   getInitialScreen();
-  checkWalletUpdates();
 }

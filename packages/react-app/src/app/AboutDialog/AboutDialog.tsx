@@ -32,7 +32,7 @@ const useStyles = makeStyles(
 const AboutDialog: React.FC<OwnProps & DispatchProps> = ({ getVersions, onClose, openUrl }) => {
   const styles = useStyles();
 
-  const [versions, setVersions] = React.useState<Versions>({});
+  const [versions, setVersions] = React.useState<Versions | undefined>();
 
   React.useEffect(
     () => {
@@ -57,14 +57,14 @@ const AboutDialog: React.FC<OwnProps & DispatchProps> = ({ getVersions, onClose,
   return (
     <Dialog classes={{ paper: styles.root }} open={true} onClose={onClose}>
       <DialogContent classes={{ root: styles.content }}>
-        <About
-          onWebsiteClick={onButtonClick}
-          onLicenseClick={licenseClick}
-          onHelpClick={helpClick}
-          appVersion={versions.appVersion}
-          gitVersion={versions.gitVersion}
-          osVersion={versions.osVersion}
-        />
+        {versions != null && (
+          <About
+            versions={versions}
+            onWebsiteClick={onButtonClick}
+            onLicenseClick={licenseClick}
+            onHelpClick={helpClick}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
