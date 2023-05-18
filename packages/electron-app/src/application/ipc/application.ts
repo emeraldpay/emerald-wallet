@@ -1,5 +1,4 @@
 import { readFile } from 'fs/promises';
-import * as os from 'os';
 import {
   AddressBalance,
   AssetCode,
@@ -28,15 +27,7 @@ const log = Logger.forCategory('IPC::API');
 export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void {
   ipcMain.handle(IpcCommands.GET_APP_SETTINGS, () => app.settings.toJSON());
 
-  ipcMain.handle(IpcCommands.GET_VERSION, () => ({
-    appVersion: app.versions?.version,
-    gitVersion: app.versions?.gitVersion,
-    osVersion: {
-      arch: os.arch(),
-      platform: os.platform(),
-      release: os.release(),
-    },
-  }));
+  ipcMain.handle(IpcCommands.GET_VERSION, () => app.versions);
 
   ipcMain.handle(IpcCommands.SET_OPTIONS, (event, options: SettingsOptions) => {
     app.settings.setOptions(options);

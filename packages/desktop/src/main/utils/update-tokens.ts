@@ -1,11 +1,10 @@
 import { TokenData } from '@emeraldwallet/core';
 import fetch from 'node-fetch';
 import { tokens as defaults } from '../../../defaults.json';
-import { SemVer as currentVersion } from '../../../gitversion.json';
 
-export default async function (stored: TokenData[]): Promise<TokenData[]> {
+export default async function (appVersion: string, stored: TokenData[]): Promise<TokenData[]> {
   const response = await fetch(
-    `https://updates.emerald.cash/tokens.json?ref_app=desktop-wallet&ref_version=${currentVersion}`,
+    `https://updates.emerald.cash/tokens.json?ref_app=desktop-wallet&ref_version=${appVersion}`,
   );
 
   if (response.status === 200) {

@@ -1,6 +1,7 @@
+import * as os from 'os';
 import { join as joinPath, resolve as resolvePath } from 'path';
 import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
-import { IpcCommands } from '@emeraldwallet/core';
+import { IpcCommands, Versions } from '@emeraldwallet/core';
 import {
   Application,
   MainWindowOptions,
@@ -14,8 +15,8 @@ import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
 import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
+import commitData from '../../commit-data.json';
 import { DevelopmentMode, ProductionMode } from './utils/api-modes';
-import gitVersion from '../../gitversion.json';
 
 const { NODE_ENV } = process.env;
 const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
@@ -55,12 +56,17 @@ app.on('ready', () => {
   logger.info('Settings:', settings.toJSON());
   logger.info('User data:', app.getPath('userData'));
 
-  const parameters = {
-    locale: app.getLocale(),
-    version: app.getVersion(),
-    gitVersion,
-    electronVer: process.versions.electron,
-    chromeVer: process.versions.chrome,
+  const versions: Versions = {
+    commitData,
+    appLocale: app.getLocale(),
+    appVersion: app.getVersion(),
+    chromeVersion: process.versions.chrome,
+    electronVersion: process.versions.electron,
+    osVersion: {
+      arch: os.arch(),
+      platform: os.platform(),
+      release: os.release(),
+    },
   };
 
   const options: MainWindowOptions = {
@@ -71,17 +77,17 @@ app.on('ready', () => {
     logFile: logger.transports.file.getFile().path,
   };
 
-  const application = new Application(settings, parameters);
+  const application = new Application(settings, versions);
 
-  logger.info('Starting Emerald', app.getVersion());
+  logger.info('Starting Emerald', versions.appVersion);
   logger.info('Setup API access');
 
   let apiAccess: EmeraldApiAccess;
 
   if (apiMode.id === DevelopmentMode.id) {
-    apiAccess = new EmeraldApiAccessDev(settings.getId(), parameters);
+    apiAccess = new EmeraldApiAccessDev(settings.getId(), versions);
   } else {
-    apiAccess = new EmeraldApiAccessProd(settings.getId(), parameters);
+    apiAccess = new EmeraldApiAccessProd(settings.getId(), versions);
   }
 
   logger.info('Connect to', apiAccess.address);
@@ -100,7 +106,7 @@ app.on('ready', () => {
 
   logger.info('Setup Server connect');
 
-  const serverConnect = new ServerConnect(parameters.version, parameters.locale, logger, apiAccess.blockchainClient);
+  const serverConnect = new ServerConnect(versions.appVersion, versions.appLocale, logger, apiAccess.blockchainClient);
 
   serverConnect.init(process.versions);
 

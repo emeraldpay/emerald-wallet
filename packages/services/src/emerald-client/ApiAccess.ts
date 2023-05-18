@@ -1,4 +1,3 @@
-import * as os from 'os';
 import { ConnectionStatus } from '@emeraldpay/api';
 import {
   AuthenticationStatus,
@@ -9,7 +8,7 @@ import {
   TransactionClient,
   emeraldCredentials,
 } from '@emeraldpay/api-node';
-import { Logger } from '@emeraldwallet/core';
+import { Logger, Versions } from '@emeraldwallet/core';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
@@ -21,13 +20,6 @@ enum Status {
 }
 
 type StatusListener = (state: Status) => void;
-
-interface AppParams {
-  electronVer: string;
-  chromeVer: string;
-  locale: string;
-  version: string;
-}
 
 interface ConnectionState {
   connectedAt: Date;
@@ -57,15 +49,20 @@ export class EmeraldApiAccess {
   private listeners: StatusListener[] = [];
   private monitoringClient: MonitoringClient;
 
-  constructor(addr: string, id: string, appParams: AppParams) {
+  constructor(addr: string, id: string, versions: Versions) {
     this.address = addr;
 
-    const platform = [os.platform(), os.release(), os.arch(), appParams.locale].join('; ');
+    const platform = [
+      versions.osVersion.platform,
+      versions.osVersion.release,
+      versions.osVersion.arch,
+      versions.appLocale,
+    ].join('; ');
 
     const agent = [
-      `Electron/${appParams.electronVer} (${platform})`,
-      `EmeraldWallet/${appParams.version} (+https://emerald.cash)`,
-      `Chrome/${appParams.chromeVer}`,
+      `EmeraldWallet/${versions.appVersion} (+https://emerald.cash)`,
+      `Electron/${versions.electronVersion} (${platform})`,
+      `Chrome/${versions.chromeVersion}`,
     ];
 
     this.connectionState = {
@@ -201,13 +198,13 @@ export class EmeraldApiAccess {
 }
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
-  constructor(id: string, appParams: AppParams) {
-    super('api2.emeraldpay.dev:443', id, appParams);
+  constructor(id: string, versions: Versions) {
+    super('api2.emeraldpay.dev:443', id, versions);
   }
 }
 
 export class EmeraldApiAccessProd extends EmeraldApiAccess {
-  constructor(id: string, appParams: AppParams) {
-    super('api.emrld.io:443', id, appParams);
+  constructor(id: string, versions: Versions) {
+    super('api.emrld.io:443', id, versions);
   }
 }
