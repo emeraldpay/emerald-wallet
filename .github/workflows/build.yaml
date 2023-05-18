@@ -11,12 +11,44 @@ on:
       - master
 
 jobs:
-  test:
+  commit-data:
+    outputs:
+      commit-date: ${{ steps.commit-data-windows.outputs.commit-date || steps.commit-data-non-windows.outputs.commit-date }}
+      short-sha: ${{ steps.commit-data-windows.outputs.short-sha || steps.commit-data-non-windows.outputs.short-sha }}
+    steps:
+      - name: Get commit data (Windows)
+        id: commit-data-windows
+        run: |
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+        if: runner.os == 'Windows'
+
+      - name: Get commit data (non Windows)
+        id: commit-data-non-windows
+        run: |
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
+  package-data:
+    outputs:
+      version: ${{ steps.package-data-windows.outputs.version || steps.package-data-non-windows.outputs.version }}
+    steps:
+      - name: Get package data (Windows)
+        id: package-data-windows
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $env:GITHUB_OUTPUT
+        if: runner.os == 'Windows'
+
+      - name: Get package data (non Windows)
+        id: package-data-non-windows
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
+  build:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
         os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
+    needs: [commit-data, package-data]
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -27,10 +59,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.7'
-
-      - name: Update apt index (Linux)
-        run: sudo apt update
-        if: runner.os == 'Linux'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (Windows)
@@ -51,36 +79,9 @@ jobs:
           export_default_credentials: true
         if: runner.os != 'Windows'
 
-      - name: Get commit data (Windows)
-        id: commit-data
-        run: |
-          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $env:GITHUB_OUTPUT
-          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $env:GITHUB_OUTPUT
-        if: runner.os == 'Windows'
-
-      - name: Get commit data (non Windows)
-        id: commit-data
-        run: |
-          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> "$GITHUB_OUTPUT"
-          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> "$GITHUB_OUTPUT"
-        if: runner.os != 'Windows'
-
-      - name: Write commit data
-        run: |
-          echo '{' > packages/desktop/commit-data.json
-          echo '  "commitDate": "${{ steps.commit-data.outputs.commit-date }}",' >> packages/desktop/commit-data.json
-          echo '  "shortSha": "${{ steps.commit-data.outputs.short-sha }}"' >> packages/desktop/commit-data.json
-          echo '}' >> packages/desktop/commit-data.json
-
-      - name: Get package data (Windows)
-        id: package-data
-        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $env:GITHUB_OUTPUT
-        if: runner.os == 'Windows'
-
-      - name: Get package data (non Windows)
-        id: package-data
-        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> "$GITHUB_OUTPUT"
-        if: runner.os != 'Windows'
+      - name: Update apt index (Linux)
+        run: sudo apt update
+        if: runner.os == 'Linux'
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -104,33 +105,40 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Write commit data
+        run: |
+          echo '{' > packages/desktop/commit-data.json
+          echo '  "commitDate": "${{ needs.commit-data.outputs.commit-date }}",' >> packages/desktop/commit-data.json
+          echo '  "shortSha": "${{ needs.commit-data.outputs.short-sha }}"' >> packages/desktop/commit-data.json
+          echo '}' >> packages/desktop/commit-data.json
+
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: '${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}'
+          APP_VERSION_GIT_TAG: '${{ needs.package-data.outputs.version }}-${{ needs.commit-data.outputs.commit-date }}-${{ needs.commit-data.outputs.short-sha }}'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (Windows)
-        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ needs.package-data.outputs.version }}/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
       - name: Upload to GCP (non Windows)
-        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ needs.package-data.outputs.version }}/
         if: runner.os != 'Windows'
 
       - name: Link to published artifact (Windows)
         if: runner.os == 'Windows'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-win-x64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.exe"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ needs.package-data.outputs.version }}/EmeraldWallet-win-x64-${{ needs.package-data.outputs.version }}-${{ needs.commit-data.outputs.commit-date }}-${{ needs.commit-data.outputs.short-sha }}.exe"
 
       - name: Link to published artifact (macOS)
         if: runner.os == 'macOS'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-mac-x64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.dmg"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ needs.package-data.outputs.version }}/EmeraldWallet-mac-x64-${{ needs.package-data.outputs.version }}-${{ needs.commit-data.outputs.commit-date }}-${{ needs.commit-data.outputs.short-sha }}.dmg"
 
       - name: Link to published artifact (Linux)
         if: runner.os == 'Linux'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data.outputs.version }}/EmeraldWallet-linux-amd64-${{ steps.package-data.outputs.version }}-${{ steps.commit-data.outputs.commit-date }}-${{ steps.commit-data.outputs.short-sha }}.deb"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ needs.package-data.outputs.version }}/EmeraldWallet-linux-amd64-${{ needs.package-data.outputs.version }}-${{ needs.commit-data.outputs.commit-date }}-${{ needs.commit-data.outputs.short-sha }}.deb"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
