@@ -54,9 +54,8 @@ jobs:
       - name: Get commit data
         id: commit-data
         run: |
-          shortSha=$(git rev-parse --short ${{ github.sha }})
-          echo "short-sha=$shortSha" >> $GITHUB_OUTPUT
-          echo "commit-date=$(git show -s --format=%cs $shortSha)" >> $GITHUB_OUTPUT
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
 
       - name: Write commit data
         run: |
@@ -68,14 +67,6 @@ jobs:
       - name: Install jq (Windows)
         run: choco install jq
         if: runner.os == 'Windows'
-
-      - name: Install jq (macOS)
-        run: brew install jq
-        if: runner.os == 'macOS'
-
-      - name: Install jq (Linux)
-        run: sudo apt install jq
-        if: runner.os == 'Linux'
 
       - name: Get package data
         id: package-data
