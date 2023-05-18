@@ -51,11 +51,19 @@ jobs:
           export_default_credentials: true
         if: runner.os != 'Windows'
 
-      - name: Get commit data
+      - name: Get commit data (Windows)
         id: commit-data
         run: |
-          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $GITHUB_OUTPUT
-          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+        if: runner.os == 'Windows'
+
+      - name: Get commit data (non Windows)
+        id: commit-data
+        run: |
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
 
       - name: Write commit data
         run: |
@@ -64,13 +72,15 @@ jobs:
           echo '  "shortSha": "${{ steps.commit-data.outputs.short-sha }}"' >> packages/desktop/commit-data.json
           echo '}' >> packages/desktop/commit-data.json
 
-      - name: Install jq (Windows)
-        run: choco install jq
+      - name: Get package data (Windows)
+        id: package-data
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $env:GITHUB_OUTPUT
         if: runner.os == 'Windows'
 
-      - name: Get package data
+      - name: Get package data (non Windows)
         id: package-data
-        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $GITHUB_OUTPUT
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
 
       - name: Install Node.js
         uses: actions/setup-node@v3
