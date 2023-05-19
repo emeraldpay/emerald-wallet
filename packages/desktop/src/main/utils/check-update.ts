@@ -28,7 +28,7 @@ export default async function (appVersion: string): Promise<Update> {
 
   return {
     downloadLink: 'https://go.emrld.io/download',
-    isLatest: semver.prerelease(appVersion).includes('dev') || semver.lte(release.version, appVersion),
+    isLatest: semver.prerelease(appVersion)?.includes('dev') === true || semver.lte(release.version, appVersion),
     tag: `v${release.version}`,
   };
 }

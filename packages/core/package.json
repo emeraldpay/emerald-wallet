@@ -15,7 +15,7 @@
   "dependencies": {
     "@emeraldpay/bigamount": "^0.4.1",
     "@emeraldpay/bigamount-crypto": "^0.4.1",
-    "@emeraldpay/emerald-vault-core": "^0.11.0",
+    "@emeraldpay/emerald-vault-core": "^0.11.1",
     "@ethereumjs/common": "^3.1.2",
     "@ethereumjs/tx": "^4.1.2",
     "@ethersproject/abi": "^5.7.0",
