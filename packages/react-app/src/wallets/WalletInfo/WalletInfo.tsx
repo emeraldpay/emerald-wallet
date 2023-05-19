@@ -96,7 +96,10 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
                   ...(isSeedPkRef(entry, entry.key)
                     ? [`HD Path: ${entry.key.hdPath}`]
                     : [`Private Key Id: ${entry.key?.keyId}`, `Private Key Type: ${entry.key?.type}`]),
-                ].join('\n'),
+                  entry.receiveDisabled ? `Shadow Entry: True` : null,
+                ]
+                  .filter((line) => line != null)
+                  .join('\n'),
               )
             : ['# No entries']
           ).join('\n---\n'),
@@ -210,6 +213,14 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
                     <ValueTableCell>{entry.key?.type}</ValueTableCell>
                   </TableRow>
                 </>
+              )}
+              {entry.receiveDisabled && (
+                <TableRow>
+                  <TitleTableCell>Shadow Entry</TitleTableCell>
+                  <ValueTableCell>
+                    <CheckIcon color="secondary" />
+                  </ValueTableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
