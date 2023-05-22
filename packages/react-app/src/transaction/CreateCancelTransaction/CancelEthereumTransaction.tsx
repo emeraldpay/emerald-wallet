@@ -114,6 +114,8 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
 }) => {
   const styles = useStyles();
 
+  const mounted = React.useRef(true);
+
   const [initializing, setInitializing] = React.useState(true);
   const [stage, setStage] = React.useState(Stages.SETUP);
 
@@ -178,10 +180,8 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
   };
 
   React.useEffect(() => {
-    let mounted = true;
-
     (async () => {
-      if (mounted) {
+      if (mounted.current) {
         const { blockchain } = ethTx;
 
         let name = await lookupAddress(blockchain, ethTx.from);
@@ -195,11 +195,13 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
         }
       }
     })();
-
-    return () => {
-      mounted = false;
-    };
   }, [ethTx, lookupAddress]);
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   React.useEffect(
     () => {

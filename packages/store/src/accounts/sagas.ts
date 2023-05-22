@@ -1,4 +1,11 @@
-import { AddEntry, IEmeraldVault, SeedDescription, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import {
+  AddEntry,
+  HDPathAccount,
+  IEmeraldVault,
+  SeedDescription,
+  Wallet,
+  WalletEntry,
+} from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
   Blockchains,
@@ -143,9 +150,13 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  const existingAccount = wallet.reserved?.find(
-    ({ seedId: accountSeedId }) => seedId == null || accountSeedId === seedId,
-  );
+  let existingAccount: HDPathAccount | undefined;
+
+  if (seedId == null) {
+    [existingAccount] = wallet.reserved ?? [];
+  } else {
+    existingAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
+  }
 
   if (existingAccount == null) {
     console.error(`Wallet ${wallet.id} doesn't have HD account`);
