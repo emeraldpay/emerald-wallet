@@ -160,7 +160,7 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
   }
 
   if (existingAccount == null) {
-    console.error(`Wallet ${wallet.id} doesn't have HD account`);
+    console.error(`Wallet ${walletId} doesn't have HD account`);
 
     return;
   }
@@ -210,9 +210,11 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     const tokens = tokenRegistry.byBlockchain(blockchain);
 
     if (blockchain === BlockchainCode.ETC || blockchain === BlockchainCode.ETH) {
+      const shadowBlockchain = blockchain === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH;
+
       const addShadowEntry = {
         ...addEntry,
-        blockchain: blockchainCodeToId(blockchain === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH),
+        blockchain: blockchainCodeToId(shadowBlockchain),
       };
 
       const shadowEntryId = yield call(vault.addEntry, walletId, addShadowEntry);
@@ -226,10 +228,10 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
       if (shadowEntry?.address?.value != null) {
         const { value: shadowAddress } = shadowEntry.address;
 
-        ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, shadowEntryId, [shadowAddress]);
+        ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, shadowBlockchain, shadowEntryId, [shadowAddress]);
 
-        yield put(requestTokensBalances(blockchain, tokens, shadowAddress));
-        yield put(hdAccountCreated(wallet.id, shadowEntry));
+        yield put(requestTokensBalances(shadowBlockchain, tokens, shadowAddress));
+        yield put(hdAccountCreated(walletId, shadowEntry));
       }
     }
 
@@ -238,9 +240,9 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entryAddress]);
 
     yield put(requestTokensBalances(blockchain, tokens, entryAddress));
-    yield put(hdAccountCreated(wallet.id, entry));
+    yield put(hdAccountCreated(walletId, entry));
 
-    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
+    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
   } catch (error) {
     if (error instanceof Error) {
       yield put(screen.actions.showError(error));
