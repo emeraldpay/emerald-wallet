@@ -8,6 +8,7 @@ import {
 } from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
+  BlockchainCode,
   Blockchains,
   IpcCommands,
   PersistentState,
@@ -204,14 +205,41 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
       return;
     }
 
-    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entry.address.value]);
-
     const tokenRegistry = new TokenRegistry(action.tokens);
 
     const tokens = tokenRegistry.byBlockchain(blockchain);
 
-    yield put(requestTokensBalances(blockchain, tokens, entry.address.value));
+    if (blockchain === BlockchainCode.ETC || blockchain === BlockchainCode.ETH) {
+      const addShadowEntry = {
+        ...addEntry,
+        blockchain: blockchainCodeToId(blockchain === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH),
+      };
+
+      const shadowEntryId = yield call(vault.addEntry, walletId, addShadowEntry);
+
+      yield call(vault.setEntryReceiveDisabled, shadowEntryId, true);
+
+      wallet = yield call(vault.getWallet, walletId);
+
+      const shadowEntry = wallet.entries.find(({ id }) => id === shadowEntryId);
+
+      if (shadowEntry?.address?.value != null) {
+        const { value: shadowAddress } = shadowEntry.address;
+
+        ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, shadowEntryId, [shadowAddress]);
+
+        yield put(requestTokensBalances(blockchain, tokens, shadowAddress));
+        yield put(hdAccountCreated(wallet.id, shadowEntry));
+      }
+    }
+
+    const { value: entryAddress } = entry.address;
+
+    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entryAddress]);
+
+    yield put(requestTokensBalances(blockchain, tokens, entryAddress));
     yield put(hdAccountCreated(wallet.id, entry));
+
     yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
   } catch (error) {
     if (error instanceof Error) {

@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import CreateWalletWizard from './CreateWalletWizard';
 import { Result, isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected } from './flow/types';
 
-type NewEntry = AddEntry & { additional: boolean };
+type NewEntry = AddEntry & { shadow: boolean };
 
 type StateProps = {
   blockchains: IBlockchain[];
@@ -39,7 +39,7 @@ function entriesForBlockchains(
   indexes: HDPathIndexes,
 ): NewEntry[] {
   const entries = blockchains.map<NewEntry>((blockchain) => ({
-    additional: false,
+    shadow: false,
     blockchain: blockchainCodeToId(blockchain),
     key: {
       address: addresses[blockchain],
@@ -62,7 +62,7 @@ function entriesForBlockchains(
     if (entry != null) {
       additionalEntries.push({
         ...entry,
-        additional: true,
+        shadow: true,
         blockchain: blockchainCodeToId(blockchain === BlockchainCode.ETC ? BlockchainCode.ETH : BlockchainCode.ETC),
       });
     }
@@ -129,7 +129,7 @@ export default connect(
 
                 entries.push({
                   ...pkEntry,
-                  additional: false,
+                  shadow: false,
                   blockchain: blockchainCodeToId(blockchainCode),
                 });
               } else if (isPkRaw(type)) {
@@ -143,7 +143,7 @@ export default connect(
 
                 entries.push({
                   ...pkEntry,
-                  additional: false,
+                  shadow: false,
                   blockchain: blockchainCodeToId(blockchainCode),
                 });
               }
@@ -156,7 +156,7 @@ export default connect(
                 entries.push({
                   ...pkEntry,
                   blockchain,
-                  additional: true,
+                  shadow: true,
                 });
               }
             } else if (isLedger(type)) {
@@ -171,8 +171,8 @@ export default connect(
               exactEntries: AddEntry[];
               receiveDisabled: Array<{ blockchain: number; address?: string }>;
             }>(
-              (carry, { additional, ...entry }) => {
-                if (additional) {
+              (carry, { shadow, ...entry }) => {
+                if (shadow) {
                   return {
                     exactEntries: [...carry.exactEntries, entry],
                     receiveDisabled: [
