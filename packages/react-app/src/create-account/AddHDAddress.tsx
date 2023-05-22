@@ -80,6 +80,9 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   isGlobalKeySet,
   listAddresses,
 }) => {
+  const listKey = React.useRef<string | undefined>();
+  const mounted = React.useRef(true);
+
   const [stage, setStage] = React.useState(Stage.UNLOCK);
 
   const [password, setPassword] = React.useState<string>();
@@ -152,17 +155,26 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   );
 
   React.useEffect(() => {
-    let mounted = true;
-
     stage === Stage.LIST &&
       (async () => {
-        const entry = entries.find((item) => item.blockchain === selectedBlockchain);
+        const entry = entries
+          .filter((entry) => !entry.receiveDisabled)
+          .find((item) => item.blockchain === selectedBlockchain);
 
         if (entry == null || !isSeedPkRef(entry, entry.key)) {
           return;
         }
 
         const { hdPath: entryHdPath, seedId } = entry.key;
+
+        const key = `${selectedBlockchain}:${seedId}:${counter}`;
+
+        if (key === listKey.current) {
+          return;
+        }
+
+        listKey.current = key;
+
         const baseHdPath = HDPath.parse(entryHdPath);
 
         const hdPaths = Array(10)
@@ -180,7 +192,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
           hdPaths,
         );
 
-        if (mounted) {
+        if (mounted.current) {
           const existed = entries.reduce<number[]>((carry, item) => {
             if (item.blockchain !== selectedBlockchain || !isSeedPkRef(item, item.key)) {
               return carry;
@@ -219,11 +231,13 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
           );
         }
       })();
-
-    return () => {
-      mounted = false;
-    };
   }, [counter, entries, password, stage, listAddresses, selectedBlockchain]);
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <Page
@@ -335,6 +349,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       ) ?? [];
 
     const blockchains = entries
+      .filter((entry) => !entry.receiveDisabled)
       .reduce<number[]>((carry, entry) => (carry.includes(entry.blockchain) ? carry : [...carry, entry.blockchain]), [])
       .map((blockchainId) => Blockchains[blockchainIdToCode(blockchainId)]);
 
