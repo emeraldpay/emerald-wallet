@@ -1,6 +1,20 @@
-import { SeedDescription, SeedReference, Uuid, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import {
+  EntryId,
+  SeedDescription,
+  SeedReference,
+  Uuid,
+  WalletEntry,
+  isEthereumEntry,
+} from '@emeraldpay/emerald-vault-core';
 import { AddSeedEntry, isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
-import { Blockchains, HDPath, IBlockchain, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  Blockchains,
+  HDPath,
+  IBlockchain,
+  blockchainCodeToId,
+  blockchainIdToCode,
+} from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Back, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
@@ -39,19 +53,11 @@ enum Stage {
   LIST = 'list',
 }
 
-type SeedAddress = {
+interface SeedAddress {
   address: string;
   existed: boolean;
   hdPath: string;
   seedId: string;
-};
-
-interface DispatchProps {
-  addEntryToWallet(walletId: Uuid, entry: AddSeedEntry): Promise<string>;
-  checkGlobalKey(password: string): Promise<boolean>;
-  goBack(): void;
-  isGlobalKeySet(): Promise<boolean>;
-  listAddresses(seed: SeedReference, blockchain: number, hdPaths: string[]): Promise<{ [hdPath: string]: string }>;
 }
 
 interface OwnProps {
@@ -64,11 +70,21 @@ interface StateProps {
   seed: SeedDescription | undefined;
 }
 
+interface DispatchProps {
+  addEntryToWallet(walletId: Uuid, entry: AddSeedEntry): Promise<string>;
+  checkGlobalKey(password: string): Promise<boolean>;
+  disableReceiveForEntry(entryId: EntryId, disabled?: boolean): Promise<boolean>;
+  goBack(): void;
+  isGlobalKeySet(): Promise<boolean>;
+  listAddresses(seed: SeedReference, blockchain: number, hdPaths: string[]): Promise<{ [hdPath: string]: string }>;
+  loadWallets(): void;
+}
+
 interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps> = ({
+const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> = ({
   blockchains,
   classes,
   entries,
@@ -76,9 +92,11 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   walletId,
   addEntryToWallet,
   checkGlobalKey,
+  disableReceiveForEntry,
   goBack,
   isGlobalKeySet,
   listAddresses,
+  loadWallets,
 }) => {
   const listKey = React.useRef<string | undefined>();
   const mounted = React.useRef(true);
@@ -136,8 +154,8 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
   }, [entries, password, checkGlobalKey, isGlobalKeySet, listAddresses, selectedBlockchain]);
 
   const onAddAddress = React.useCallback(
-    ({ address, hdPath, seedId }: SeedAddress) => {
-      addEntryToWallet(walletId, {
+    async ({ address, hdPath, seedId }: SeedAddress) => {
+      const addEntry: AddSeedEntry = {
         blockchain: selectedBlockchain,
         type: 'hd-path',
         key: {
@@ -149,9 +167,25 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
             value: seedId,
           },
         },
-      }).then(goBack);
+      };
+
+      await addEntryToWallet(walletId, addEntry);
+
+      const addShadowEntry = {
+        ...addEntry,
+        blockchain: blockchainCodeToId(
+          blockchainIdToCode(selectedBlockchain) === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH,
+        ),
+      };
+
+      const shadowEntryId = await addEntryToWallet(walletId, addShadowEntry);
+
+      await disableReceiveForEntry(shadowEntryId);
+
+      loadWallets();
+      goBack();
     },
-    [password, selectedBlockchain, walletId, addEntryToWallet, goBack],
+    [password, selectedBlockchain, walletId, addEntryToWallet, disableReceiveForEntry, goBack, loadWallets],
   );
 
   React.useEffect(() => {
@@ -368,6 +402,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
+    disableReceiveForEntry(entryId, disabled = true) {
+      return dispatch(accounts.actions.disableReceiveForEntry(entryId, disabled));
+    },
     goBack() {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
     },
@@ -376,6 +413,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     listAddresses(seed, blockchain, hdPaths) {
       return dispatch(accounts.actions.listSeedAddresses(seed, blockchain, hdPaths));
+    },
+    loadWallets() {
+      return dispatch(accounts.actions.loadWalletsAction());
     },
   }),
 )(withStyles(styles)(AddHDAddress));

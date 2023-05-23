@@ -151,24 +151,24 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  let existingAccount: HDPathAccount | undefined;
+  let hdPathAccount: HDPathAccount | undefined;
 
   if (seedId == null) {
-    [existingAccount] = wallet.reserved ?? [];
+    [hdPathAccount] = wallet.reserved ?? [];
   } else {
-    existingAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
+    hdPathAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
   }
 
-  if (existingAccount == null) {
+  if (hdPathAccount == null) {
     console.error(`Wallet ${walletId} doesn't have HD account`);
 
     return;
   }
 
-  const { seedId: existedSeedId } = existingAccount;
+  const { seedId: existedSeedId } = hdPathAccount;
 
   const blockchainId = blockchainCodeToId(blockchain);
-  const hdPath = chain.params.hdPath.forAccount(existingAccount.accountId).toString();
+  const hdPath = chain.params.hdPath.forAccount(hdPathAccount.accountId).toString();
 
   const { [hdPath]: address } = yield call(vault.listSeedAddresses, existedSeedId, blockchainId, [hdPath]);
 
