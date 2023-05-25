@@ -1,4 +1,8 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
+import { SnackbarCloseReason } from '@material-ui/core';
+import { AnyAction } from 'redux';
+import { accounts } from '../index';
+import { IState } from '../types';
 import {
   ActionTypes,
   Dialogs,
@@ -11,8 +15,6 @@ import {
   IShowNotificationAction,
   Pages,
 } from './types';
-import { accounts } from '../index';
-import { IState } from '../types';
 
 const hashRegExp = new RegExp('^(0x)?[a-z0-9A-Z]+$');
 
@@ -67,25 +69,26 @@ export function goBack(): IGoBackAction {
 }
 
 export function showNotification(
-  message: any,
-  notificationType: any,
-  duration: any,
-  actionText: any,
-  actionToDispatchOnActionClick: any,
+  message: string,
+  messageType?: 'info' | 'success' | 'warning' | 'error',
+  duration?: number,
+  buttonText?: string,
+  onButtonClick?: AnyAction,
 ): IShowNotificationAction {
   return {
     type: ActionTypes.NOTIFICATION_SHOW,
-    message,
-    notificationType,
     duration,
-    actionText,
-    actionToDispatchOnActionClick,
+    message,
+    messageType,
+    buttonText,
+    onButtonClick,
   };
 }
 
-export function closeNotification(): ICloseNotificationAction {
+export function closeNotification(reason: SnackbarCloseReason | 'manual'): ICloseNotificationAction {
   return {
     type: ActionTypes.NOTIFICATION_CLOSE,
+    reason,
   };
 }
 
@@ -137,7 +140,7 @@ export function closeError(): IErrorAction {
 
 export function dispatchRpcError(dispatch: any) {
   return () => {
-    dispatch(showNotification('Remote server connection failure', 'warning', 2000, null, null));
+    dispatch(showNotification('Remote server connection failure', 'warning', 2));
   };
 }
 

@@ -3,9 +3,9 @@ import { IdSeedReference, SeedDescription, SeedDetails, Uuid } from '@emeraldpay
 import { IState, accounts, screen, settings } from '@emeraldwallet/store';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { ExportResult, VAULT_FILE_FILTER } from './types';
 import i18n from '../../i18n';
 import SettingsForm from '../SettingsForm';
+import { ExportResult, VAULT_FILE_FILTER } from './types';
 
 export interface MutableState {
   currency: string;
@@ -27,15 +27,13 @@ export interface DispatchProps {
   updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Promise<boolean>;
 }
 
-export default connect<MutableState & StateProps, DispatchProps, {}, IState>(
-  (state) => {
-    return {
-      currency: settings.selectors.fiatCurrency(state) ?? '',
-      hasWallets: state.accounts.wallets.length > 0,
-      language: i18n.language,
-      seeds: accounts.selectors.getSeeds(state),
-    };
-  },
+export default connect<MutableState & StateProps, DispatchProps, unknown, IState>(
+  (state) => ({
+    currency: settings.selectors.fiatCurrency(state) ?? '',
+    hasWallets: state.accounts.wallets.length > 0,
+    language: i18n.language,
+    seeds: accounts.selectors.getSeeds(state),
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     async exportVaultFile() {
@@ -64,7 +62,7 @@ export default connect<MutableState & StateProps, DispatchProps, {}, IState>(
       dispatch(settings.actions.updateSettings({ language: state.language, localeCurrency: state.currency }));
     },
     showNotification(message, type = 'success') {
-      dispatch(screen.actions.showNotification(message, type, 3000, null, null));
+      dispatch(screen.actions.showNotification(message, type));
     },
     updateSeed(seed, details) {
       const result = dispatch(accounts.actions.updateSeed(seed, details));

@@ -1,3 +1,6 @@
+import { SnackbarCloseReason } from '@material-ui/core';
+import { AnyAction } from 'redux';
+
 export const moduleName = 'screen';
 
 export enum ActionTypes {
@@ -47,28 +50,30 @@ export enum Pages {
   WELCOME = 'welcome',
 }
 
-export type ScreenState = Partial<
-  Record<
-    | 'dialog'
-    | 'dialogOptions'
-    | 'error'
-    | 'ignoreOnBack'
-    | 'notificationActionText'
-    | 'notificationActionToDispatchOnActionClick'
-    | 'notificationDuration'
-    | 'notificationMessage'
-    | 'notificationType'
-    | 'restoreData'
-    | 'screen'
-    | 'screenItem',
-    any
-  >
->;
+export type ScreenState = {
+  dialog?: Dialogs | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dialogOptions?: any;
+  error?: Error | null;
+  ignoreOnBack?: boolean;
+  notificationMessage?: string;
+  notificationMessageType?: 'info' | 'success' | 'warning' | 'error';
+  notificationDuration?: number | null;
+  notificationButtonText?: string;
+  notificationOnButtonClick?: AnyAction;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  restoreData?: any;
+  screen?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  screenItem?: any;
+};
 
 export interface IOpenAction {
   type: ActionTypes.OPEN;
   ignore: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   item: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   restore: any;
   screen: string | Pages;
 }
@@ -86,15 +91,16 @@ export interface IDialogAction {
 
 export interface IShowNotificationAction {
   type: ActionTypes.NOTIFICATION_SHOW;
-  message: any;
-  actionToDispatchOnActionClick: any;
-  notificationType: any;
-  duration: any;
-  actionText: any;
+  message: string;
+  messageType?: 'info' | 'success' | 'warning' | 'error';
+  duration?: number | null;
+  buttonText?: string;
+  onButtonClick?: AnyAction;
 }
 
 export interface ICloseNotificationAction {
   type: ActionTypes.NOTIFICATION_CLOSE;
+  reason: SnackbarCloseReason | 'manual';
 }
 
 export interface IGoBackAction {
@@ -103,7 +109,7 @@ export interface IGoBackAction {
 
 export interface IOpenLinkAction {
   type: ActionTypes.OPEN_LINK;
-  linkUrl: any;
+  linkUrl: string;
 }
 
 export interface IGoHomeAction {

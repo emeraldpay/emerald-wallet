@@ -1,9 +1,41 @@
+import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import NotificationBar from '../../src/components/common/NotificationBar';
+import Notification from '../../src/components/common/Notification';
 
-storiesOf('NotificationBar', module)
-  .add('default', () => (<NotificationBar notificationMessage='Default notification message' open={true}/>))
-  .add('success', () => (<NotificationBar notificationType='success' notificationMessage='Success notification message' open={true}/>))
-  .add('warning', () => (<NotificationBar notificationType='warning' notificationMessage='Warning notification message' open={true}/>))
-  .add('error', () => (<NotificationBar notificationType='error' notificationMessage='Error notification message' open={true}/>));
+storiesOf('Notification', module)
+  .add('default', () => (
+    <Notification
+      notificationMessage="Default notification message"
+      open={true}
+      onButtonClick={action('action')}
+      onClose={action('close')}
+    />
+  ))
+  .add('success', () => (
+    <Notification
+      notificationMessage="Success notification message"
+      notificationMessageType="success"
+      open={true}
+      onButtonClick={action('action')}
+      onClose={action('close')}
+    />
+  ))
+  .add('warning', () => (
+    <Notification
+      notificationMessage="Warning notification message"
+      notificationMessageType="warning"
+      open={true}
+      onButtonClick={action('action')}
+      onClose={action('close')}
+    />
+  ))
+  .add('error', () => (
+    <Notification
+      notificationMessage="Error notification message"
+      notificationMessageType="error"
+      open={true}
+      onButtonClick={action('action')}
+      onClose={action('close')}
+    />
+  ));

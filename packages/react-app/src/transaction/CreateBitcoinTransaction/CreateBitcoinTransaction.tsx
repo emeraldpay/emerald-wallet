@@ -36,7 +36,7 @@ interface OwnProps {
 
 interface StateProps {
   blockchain: BlockchainCode;
-  defaultFee: DefaultFee<number>;
+  defaultFee: DefaultFee<number> | undefined;
   entry: BitcoinEntry;
   feeTtl: number;
   seedId: Uuid;
@@ -46,7 +46,11 @@ interface StateProps {
 interface DispatchProps {
   onBroadcast(data: BroadcastData): void;
   onCancel?(): void;
-  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee<number>, feeTtl: number): () => Promise<FeePrices<number>>;
+  getFees(
+    blockchain: BlockchainCode,
+    defaultFee: DefaultFee<number> | undefined,
+    feeTtl: number,
+  ): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
@@ -209,9 +213,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         if (avgMiddle === 0) {
           const defaults = {
-            avgLast: defaultFee.min,
-            avgMiddle: defaultFee.max,
-            avgTail5: defaultFee.std,
+            avgLast: defaultFee?.min ?? '0',
+            avgMiddle: defaultFee?.max ?? '0',
+            avgTail5: defaultFee?.std ?? '0',
           };
 
           const cachedFee = await dispatch(application.actions.cacheGet(`fee.${blockchain}`));

@@ -5,7 +5,7 @@ import WalletSettingsDialog from '../../../wallets/WalletSettingsDialog';
 import AboutDialog from '../../AboutDialog';
 
 interface StateProps {
-  dialog?: screen.Dialogs;
+  dialog?: screen.Dialogs | null;
   dialogOptions?: unknown;
 }
 

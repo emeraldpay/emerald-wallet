@@ -64,15 +64,7 @@ function* addContact(
     yield put(loadAddressBook(blockchainIdToCode(blockchain)));
     yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
   } catch (exception) {
-    yield put(
-      screen.actions.showNotification(
-        'Cannot save contact! Check address format and try again',
-        'error',
-        3000,
-        null,
-        null,
-      ),
-    );
+    yield put(screen.actions.showNotification('Cannot save contact! Check address format and try again', 'error'));
   }
 }
 

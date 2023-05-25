@@ -22,7 +22,11 @@ export { default as ImportPk, ImportPkType } from './components/accounts/ImportP
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { default as Logo } from './components/common/Logo';
 export { default as NewMnemonic } from './components/accounts/NewMnemonic';
-export { default as NotificationBar } from './components/common/NotificationBar';
+export {
+  default as Notification,
+  OwnProps as NotificationOwnProps,
+  DispatchProps as NotificationDispatchProps,
+} from './components/common/Notification';
 export { default as Pager } from './components/common/Pager';
 export { default as PasswordInput } from './components/common/PasswordInput';
 export { Table } from './components/common/Table';
