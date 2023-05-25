@@ -207,8 +207,6 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
     const tokenRegistry = new TokenRegistry(action.tokens);
 
-    const tokens = tokenRegistry.byBlockchain(blockchain);
-
     if (blockchain === BlockchainCode.ETC || blockchain === BlockchainCode.ETH) {
       const shadowBlockchain = blockchain === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH;
 
@@ -230,6 +228,8 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
         ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, shadowBlockchain, shadowEntryId, [shadowAddress]);
 
+        const tokens = tokenRegistry.byBlockchain(shadowBlockchain);
+
         yield put(requestTokensBalances(shadowBlockchain, tokens, shadowAddress));
         yield put(hdAccountCreated(walletId, shadowEntry));
       }
@@ -238,6 +238,8 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     const { value: entryAddress } = entry.address;
 
     ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entryAddress]);
+
+    const tokens = tokenRegistry.byBlockchain(blockchain);
 
     yield put(requestTokensBalances(blockchain, tokens, entryAddress));
     yield put(hdAccountCreated(walletId, entry));
