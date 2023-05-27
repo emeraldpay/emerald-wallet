@@ -50,6 +50,7 @@ module.exports = {
     mainFields: ['browser', 'module', 'main'],
     modules: [path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, '../../node_modules')],
   },
+  ignoreWarnings: [/Failed to parse source map/],
   plugins: [
     new CopyPlugin({
       patterns: [

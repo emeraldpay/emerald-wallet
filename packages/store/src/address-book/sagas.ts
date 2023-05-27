@@ -3,6 +3,7 @@ import { AddressBookItem } from '@emeraldpay/emerald-vault-core/lib/types';
 import { PersistentState, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeEvery } from 'redux-saga/effects';
+import * as screen from '../screen';
 import { loadAddressBook, setAddressBook } from './actions';
 import {
   ActionTypes,
@@ -12,7 +13,6 @@ import {
   LoadContactsAction,
   LoadLegacyContactsAction,
 } from './types';
-import * as screen from '../screen';
 
 /**
  * FIXME Remove in future release
@@ -63,7 +63,7 @@ function* addContact(
 
     yield put(loadAddressBook(blockchainIdToCode(blockchain)));
     yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
-  } catch ({ message }) {
+  } catch (exception) {
     yield put(
       screen.actions.showNotification(
         'Cannot save contact! Check address format and try again',

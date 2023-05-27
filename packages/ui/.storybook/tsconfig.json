@@ -5,6 +5,7 @@
     "jsx": "react",
     "module": "commonjs",
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": false,
     "target": "ES6",
