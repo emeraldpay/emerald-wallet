@@ -108,8 +108,6 @@ app.on('ready', () => {
 
   const serverConnect = new ServerConnect(versions.appVersion, versions.appLocale, logger, apiAccess.blockchainClient);
 
-  serverConnect.init(process.versions);
-
   logger.info('Creating RPC connections to blockchains');
 
   const rpcConnections = serverConnect.connectTo(apiMode.chains);
