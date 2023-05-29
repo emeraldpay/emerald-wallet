@@ -4363,7 +4363,6 @@ __metadata:
   version: 29.4.3
   resolution: "@jest/source-map@npm:29.4.3"
   dependencies:
-
     "@jridgewell/trace-mapping": ^0.3.15
     callsites: ^3.0.0
     graceful-fs: ^4.2.9
