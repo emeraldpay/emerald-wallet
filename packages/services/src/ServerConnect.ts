@@ -1,4 +1,3 @@
-import * as os from 'os';
 import { BlockchainClient } from '@emeraldpay/api-node';
 import { BlockchainCode, ILogger, isEthereum } from '@emeraldwallet/core';
 import ChainRpcConnections from './ChainRpcConnections';
@@ -10,26 +9,14 @@ import GrpcTransport from './transports/GrpcTransport';
 class ServerConnect {
   public appVersion: string;
   public blockchainClient: BlockchainClient;
-  public headers: Record<string, string>;
   public locale: string;
   public log: ILogger;
 
   constructor(appVersion: string, locale: string, log: ILogger, blockchainClient: BlockchainClient) {
     this.appVersion = appVersion;
     this.blockchainClient = blockchainClient;
-    this.headers = { 'User-Agent': `EmeraldWallet/${appVersion}` };
     this.locale = locale;
     this.log = log;
-  }
-
-  init(versions: NodeJS.ProcessVersions): void {
-    const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
-
-    this.headers['User-Agent'] = [
-      `EmeraldWallet/${this.appVersion} (+https://emerald.cash)`,
-      `Electron/${versions.electron} (${details})`,
-      `Chrome/${versions.chrome}`,
-    ].join(' ');
   }
 
   connectEthChain(blockchain: BlockchainCode): EthRpc {
@@ -52,10 +39,6 @@ class ServerConnect {
     });
 
     return connections;
-  }
-
-  getUserAgent(): string {
-    return this.headers['User-Agent'];
   }
 }
 
