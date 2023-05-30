@@ -49,8 +49,8 @@ export class EmeraldApiAccess {
   private listeners: StatusListener[] = [];
   private monitoringClient: MonitoringClient;
 
-  constructor(addr: string, id: string, versions: Versions) {
-    this.address = addr;
+  constructor(address: string, id: string, versions: Versions) {
+    this.address = address;
 
     const platform = [
       versions.osVersion.platform,
@@ -74,12 +74,14 @@ export class EmeraldApiAccess {
       transactionConnected: false,
     };
 
-    this.credentials = emeraldCredentials(addr, agent, id);
+    this.credentials = emeraldCredentials(address, agent, id);
 
-    this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials(), agent);
-    this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials(), agent);
-    this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials(), agent);
-    this.transactionClient = new TransactionClient(addr, this.credentials.getChannelCredentials(), agent);
+    const channelCredentials = this.credentials.getChannelCredentials();
+
+    this.blockchainClient = new BlockchainClient(address, channelCredentials, agent);
+    this.monitoringClient = new MonitoringClient(address, channelCredentials, agent);
+    this.pricesClient = new MarketClient(address, channelCredentials, agent);
+    this.transactionClient = new TransactionClient(address, channelCredentials, agent);
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
