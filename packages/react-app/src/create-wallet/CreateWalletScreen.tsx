@@ -99,131 +99,135 @@ export default connect(
       },
       onCreate: (value: Result) => {
         return new Promise((resolve, reject) => {
-          const { addresses, blockchains, indexes, seed, type, seedAccount: account } = value;
+          const { addresses, blockchains, seed, type, seedAccount: account, indexes = {} } = value;
 
-          const entries: NewEntry[] = [];
+          if (addresses == null) {
+            reject(new Error('Cannot create wallet without addresses'));
+          } else {
+            const entries: NewEntry[] = [];
 
-          if (isSeedSelected(type) || isSeedCreate(type)) {
-            if (account != null && seed?.type === 'id' && seed?.password != null) {
-              entriesForBlockchains(seed, account, blockchains, addresses ?? {}, indexes ?? {}).forEach((entry) =>
-                entries.push(entry),
-              );
+            if (isSeedSelected(type) || isSeedCreate(type)) {
+              if (account != null && seed?.type === 'id' && seed?.password != null) {
+                entriesForBlockchains(seed, account, blockchains, addresses, indexes).forEach((entry) =>
+                  entries.push(entry),
+                );
+              }
+            } else if (isPk(type)) {
+              const [blockchainCode] = blockchains;
+
+              let pkEntry: Omit<AddJsonEntry, 'blockchain'> | Omit<AddRawPkEntry, 'blockchain'> | undefined;
+
+              if (isPkJson(type)) {
+                const { json, jsonPassword, password } = type;
+
+                pkEntry = {
+                  jsonPassword: jsonPassword,
+                  key: json,
+                  password: password,
+                  type: 'ethereum-json',
+                };
+
+                entries.push({
+                  ...pkEntry,
+                  additional: false,
+                  blockchain: blockchainCodeToId(blockchainCode),
+                });
+              } else if (isPkRaw(type)) {
+                const { password, pk } = type;
+
+                pkEntry = {
+                  key: pk,
+                  password: password,
+                  type: 'raw-pk-hex',
+                };
+
+                entries.push({
+                  ...pkEntry,
+                  additional: false,
+                  blockchain: blockchainCodeToId(blockchainCode),
+                });
+              }
+
+              if (pkEntry != null && (blockchainCode === BlockchainCode.ETC || blockchainCode === BlockchainCode.ETH)) {
+                const blockchain = blockchainCodeToId(
+                  blockchainCode === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH,
+                );
+
+                entries.push({
+                  ...pkEntry,
+                  blockchain,
+                  additional: true,
+                });
+              }
+            } else if (isLedger(type)) {
+              if (account != null) {
+                entriesForBlockchains({ type: 'ledger' }, account, blockchains, addresses, indexes).forEach((entry) =>
+                  entries.push(entry),
+                );
+              }
             }
-          } else if (isPk(type)) {
-            const [blockchainCode] = blockchains;
 
-            let pkEntry: Omit<AddJsonEntry, 'blockchain'> | Omit<AddRawPkEntry, 'blockchain'> | undefined;
+            const { exactEntries, receiveDisabled } = entries.reduce<{
+              exactEntries: AddEntry[];
+              receiveDisabled: Array<{ blockchain: number; address?: string }>;
+            }>(
+              (carry, { additional, ...entry }) => {
+                if (additional) {
+                  return {
+                    exactEntries: [...carry.exactEntries, entry],
+                    receiveDisabled: [
+                      ...carry.receiveDisabled,
+                      {
+                        blockchain: entry.blockchain,
+                        address: entry.type === 'hd-path' ? entry.key.address : undefined,
+                      },
+                    ],
+                  };
+                }
 
-            if (isPkJson(type)) {
-              const { json, jsonPassword, password } = type;
-
-              pkEntry = {
-                jsonPassword: jsonPassword,
-                key: json,
-                password: password,
-                type: 'ethereum-json',
-              };
-
-              entries.push({
-                ...pkEntry,
-                additional: false,
-                blockchain: blockchainCodeToId(blockchainCode),
-              });
-            } else if (isPkRaw(type)) {
-              const { password, pk } = type;
-
-              pkEntry = {
-                key: pk,
-                password: password,
-                type: 'raw-pk-hex',
-              };
-
-              entries.push({
-                ...pkEntry,
-                additional: false,
-                blockchain: blockchainCodeToId(blockchainCode),
-              });
-            }
-
-            if (pkEntry != null && (blockchainCode === BlockchainCode.ETC || blockchainCode === BlockchainCode.ETH)) {
-              const blockchain = blockchainCodeToId(
-                blockchainCode === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH,
-              );
-
-              entries.push({
-                ...pkEntry,
-                blockchain,
-                additional: true,
-              });
-            }
-          } else if (isLedger(type)) {
-            if (account != null) {
-              entriesForBlockchains({ type: 'ledger' }, account, blockchains, addresses ?? {}, indexes ?? {}).forEach(
-                (entry) => entries.push(entry),
-              );
-            }
-          }
-
-          const { exactEntries, receiveDisabled } = entries.reduce<{
-            exactEntries: AddEntry[];
-            receiveDisabled: Array<{ blockchain: number; address?: string }>;
-          }>(
-            (carry, { additional, ...entry }) => {
-              if (additional) {
                 return {
                   exactEntries: [...carry.exactEntries, entry],
-                  receiveDisabled: [
-                    ...carry.receiveDisabled,
-                    {
-                      blockchain: entry.blockchain,
-                      address: entry.type === 'hd-path' ? entry.key.address : undefined,
-                    },
-                  ],
+                  receiveDisabled: carry.receiveDisabled,
                 };
-              }
+              },
+              {
+                exactEntries: [],
+                receiveDisabled: [],
+              },
+            );
 
-              return {
-                exactEntries: [...carry.exactEntries, entry],
-                receiveDisabled: carry.receiveDisabled,
-              };
-            },
-            {
-              exactEntries: [],
-              receiveDisabled: [],
-            },
-          );
+            dispatch(
+              accounts.actions.createWallet({ label: value.options.label }, exactEntries, (wallet, error) => {
+                if (error || wallet == null) {
+                  reject(error);
+                } else {
+                  wallet.entries.forEach((entry) => {
+                    const disabled =
+                      receiveDisabled.find(({ address, blockchain }) => {
+                        if (blockchain === entry.blockchain) {
+                          const { value: entryAddress } = entry.address ?? {};
 
-          dispatch(
-            accounts.actions.createWallet({ label: value.options.label }, exactEntries, (wallet, error) => {
-              if (error || wallet == null) {
-                reject(error);
-              } else {
-                wallet.entries.forEach((entry) => {
-                  const disabled =
-                    receiveDisabled.find(({ address, blockchain }) => {
-                      if (blockchain === entry.blockchain) {
-                        const { value: entryAddress } = entry.address ?? {};
+                          return address == null || entryAddress == null ? true : address === entryAddress;
+                        }
 
-                        return address == null || entryAddress == null ? true : address === entryAddress;
-                      }
+                        return false;
+                      }) != null;
 
-                      return false;
-                    }) != null;
+                    if (disabled) {
+                      dispatch(accounts.actions.disableReceiveForEntry(entry.id));
+                    }
+                  });
 
-                  if (disabled) {
-                    dispatch(accounts.actions.disableReceiveForEntry(entry.id));
-                  }
-                });
+                  dispatch(accounts.actions.loadSeedsAction());
+                  dispatch(accounts.actions.loadWalletsAction());
 
-                dispatch(accounts.actions.loadSeedsAction());
-                dispatch(accounts.actions.loadWalletsAction());
+                  resolve(wallet.id);
+                }
+              }),
+            );
 
-                resolve(wallet.id);
-              }
-            }),
-          );
-
-          dispatch(hdpathPreview.actions.clean());
+            dispatch(hdpathPreview.actions.clean());
+          }
         });
       },
       onError: screen.actions.catchError(dispatch),
