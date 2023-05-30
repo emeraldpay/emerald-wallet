@@ -101,7 +101,7 @@ export default connect(
         return new Promise((resolve, reject) => {
           const { addresses, blockchains, seed, type, seedAccount: account, indexes = {} } = value;
 
-          if (addresses == null) {
+          if (addresses == null || Object.keys(addresses).length === 0) {
             reject(new Error('Cannot create wallet without addresses'));
           } else {
             const entries: NewEntry[] = [];

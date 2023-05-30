@@ -12,6 +12,9 @@ import { ipcRenderer } from 'electron';
 import { Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { accounts } from '../index';
+import * as screen from '../screen';
+import { requestTokensBalances } from '../tokens/actions';
 import {
   fetchErc20BalancesAction,
   hdAccountCreated,
@@ -28,9 +31,6 @@ import {
   ISubWalletBalance,
   IWalletImportedAction,
 } from './types';
-import { accounts } from '../index';
-import * as screen from '../screen';
-import { requestTokensBalances } from '../tokens/actions';
 
 function subscribeAccountBalance(entries: WalletEntry[]): void {
   entries.forEach((entry) => {
@@ -43,7 +43,7 @@ function subscribeAccountBalance(entries: WalletEntry[]): void {
         ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchainCode, entry.id, xpub.xpub),
       );
     } else {
-      console.log('Invalid entry', entry);
+      console.warn('Invalid entry', entry);
     }
   });
 }
@@ -131,58 +131,76 @@ function* afterAccountImported(vault: IEmeraldVault, action: IWalletImportedActi
  * Create new single-address type of account, with PK from the current seed associated with the wallet
  */
 function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIterator {
-  const { walletId, blockchain, seedPassword } = action;
+  const { walletId, blockchain, seedId, seedPassword } = action;
 
   const chain = Blockchains[blockchain];
 
   if (chain == null) {
+    console.error(`Incorrect blockchain provided ${blockchain}`);
+
     return;
   }
 
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  const existingHDAccount = (wallet.reserved || []).find((curr) => {
-    return !(action.seedId && action.seedId != curr.seedId);
-  });
+  const existingAccount = wallet.reserved?.find(
+    ({ seedId: accountSeedId }) => seedId == null || accountSeedId === seedId,
+  );
 
-  if (existingHDAccount == null) {
-    console.warn(`Wallet ${wallet.id} doesn't have hd account`);
+  if (existingAccount == null) {
+    console.error(`Wallet ${wallet.id} doesn't have HD account`);
+
+    return;
+  }
+
+  const { seedId: existedSeedId } = existingAccount;
+
+  const blockchainId = blockchainCodeToId(blockchain);
+  const hdPath = chain.params.hdPath.forAccount(existingAccount.accountId).toString();
+
+  const { [hdPath]: address } = yield call(vault.listSeedAddresses, existedSeedId, blockchainId, [hdPath]);
+
+  if (address == null) {
+    console.error(`Cannot find address for seed ${existedSeedId}`);
 
     return;
   }
 
   try {
-    const entry: AddEntry = {
+    const addEntry: AddEntry = {
       type: 'hd-path',
-      blockchain: blockchainCodeToId(blockchain),
+      blockchain: blockchainId,
       key: {
-        hdPath: chain.params.hdPath.forAccount(existingHDAccount.accountId).toString(),
+        address,
+        hdPath: hdPath,
         seed: {
           type: 'id',
           password: seedPassword,
-          value: existingHDAccount.seedId,
+          value: existedSeedId,
         },
       },
     };
 
-    const accountId = yield call(vault.addEntry, walletId, entry);
+    const entryId = yield call(vault.addEntry, walletId, addEntry);
 
     wallet = yield call(vault.getWallet, walletId);
 
-    const account = wallet.entries.find((entry) => entry.id === accountId);
+    const entry = wallet.entries.find(({ id }) => id === entryId);
 
-    if (account?.address?.value == null) {
+    if (entry?.address?.value == null) {
+      console.error(`Entry doesn't contain address`);
+
       return;
     }
 
-    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, account.id, [account.address.value]);
+    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entry.address.value]);
 
     const tokenRegistry = new TokenRegistry(action.tokens);
 
     const tokens = tokenRegistry.byBlockchain(blockchain);
 
-    yield put(requestTokensBalances(blockchain, tokens, account.address.value));
-    yield put(hdAccountCreated(wallet.id, account));
+    yield put(requestTokensBalances(blockchain, tokens, entry.address.value));
+    yield put(hdAccountCreated(wallet.id, entry));
     yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
   } catch (error) {
     if (error instanceof Error) {
