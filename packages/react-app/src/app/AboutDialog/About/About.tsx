@@ -4,7 +4,8 @@ import { StyleRulesCallback, Theme, WithStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-interface OwnProps extends Versions {
+interface OwnProps {
+  versions: Versions;
   onHelpClick(): void;
   onLicenseClick(): void;
   onWebsiteClick(): void;
@@ -58,15 +59,7 @@ class About extends React.Component<Props> {
   static year = new Date().getFullYear();
 
   render(): React.ReactNode {
-    const {
-      classes,
-      appVersion,
-      gitVersion = {},
-      osVersion = {},
-      onWebsiteClick,
-      onHelpClick,
-      onLicenseClick,
-    } = this.props;
+    const { classes, versions, onWebsiteClick, onHelpClick, onLicenseClick } = this.props;
 
     return (
       <div className={classes.container}>
@@ -74,13 +67,11 @@ class About extends React.Component<Props> {
           <Logo height="350px" width="350px" />
         </div>
         <h2 className={classes.appName}>Emerald Wallet</h2>
-        <div className={classes.appVersion}>{appVersion}</div>
+        <div className={classes.appVersion}>{versions.appVersion}</div>
         <div className={classes.gitVersion}>
-          Full Version: {gitVersion.FullSemVer}
+          Build: {versions.commitData.shortSha} ({versions.commitData.commitDate})
           <br />
-          Build: {gitVersion.ShortSha} {gitVersion.CommitDate}
-          <br />
-          OS: {osVersion.platform} {osVersion.arch} {osVersion.release}
+          OS: {versions.osVersion.platform} {versions.osVersion.arch} {versions.osVersion.release}
           <br />
         </div>
         <div className={classes.info}>

@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import * as semver from 'semver';
-import { SemVer as currentVersion } from '../../../gitversion.json';
 
 type Release = {
   releases: {
@@ -16,9 +15,9 @@ type Update = {
   tag: string;
 };
 
-export default async function (): Promise<Update> {
+export default async function (appVersion: string): Promise<Update> {
   const response = await fetch(
-    `https://updates.emerald.cash/latest.json?ref_app=desktop-wallet&ref_version=${currentVersion}`,
+    `https://updates.emerald.cash/latest.json?ref_app=desktop-wallet&ref_version=${appVersion}`,
   );
 
   const latest = await response.json();
@@ -29,7 +28,7 @@ export default async function (): Promise<Update> {
 
   return {
     downloadLink: 'https://go.emrld.io/download',
-    isLatest: semver.prerelease(currentVersion).includes('dev') || semver.lte(release.version, currentVersion),
+    isLatest: semver.prerelease(appVersion)?.includes('dev') === true || semver.lte(release.version, appVersion),
     tag: `v${release.version}`,
   };
 }

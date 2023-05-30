@@ -108,7 +108,7 @@ function updateAccountDetails(
   update: Updater<AccountDetails>,
 ): IAccountsState {
   return produce(state, (draft) => {
-    const index = state.details.findIndex((detail) => detail.address === address);
+    const index = state.details.findIndex((detail) => detail.address === address && detail.entryId === entryId);
 
     if (index === -1) {
       draft.details.push(update({ address, entryId }));

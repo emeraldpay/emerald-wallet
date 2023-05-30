@@ -11,7 +11,7 @@ on:
       - master
 
 jobs:
-  test:
+  build:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
@@ -47,31 +47,9 @@ jobs:
           export_default_credentials: true
         if: runner.os != 'Windows'
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.15
-        with:
-          versionSpec: '5.x'
-
-        # step id used as reference for output values
-      - name: Use GitVersion
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.15
-
-      - name: Show Version
-        run: |
-          echo "${{ steps.gitversion.outputs.FullSemVer }} (${{ steps.gitversion.outputs.ShortSha }})"
-
-      - name: Setup App Version
-        run: |
-          echo '{' > packages/desktop/gitversion.json
-          echo '"CommitDate":"${{ steps.gitversion.outputs.CommitDate }}",' >> packages/desktop/gitversion.json
-          echo '"FullSemVer":"${{ steps.gitversion.outputs.FullSemVer }}",' >> packages/desktop/gitversion.json
-          echo '"SemVer":"${{ steps.gitversion.outputs.SemVer }}",' >> packages/desktop/gitversion.json
-          echo '"ShortSha":"${{ steps.gitversion.outputs.ShortSha }}"' >> packages/desktop/gitversion.json
-          echo '}' >> packages/desktop/gitversion.json
-
-      - name: Show App Version
-        run: cat packages/desktop/gitversion.json
+      - name: Update apt index (Linux)
+        run: sudo apt update
+        if: runner.os == 'Linux'
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -85,45 +63,90 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install system libs
-        run: sudo apt-get install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
+      - name: Install system libs (Linux)
+        run: sudo apt install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
         if: runner.os == 'Linux'
 
-      - name: Install Global JS components
+      - name: Install global packages
         run: npm install -g codecov yarn
 
-      - name: Install JS dependencies
+      - name: Install dependencies
         run: yarn install
 
-      - name: Build
+      - name: Get commit data (Windows)
+        id: commit-data-windows
+        run: |
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> $env:GITHUB_OUTPUT
+        if: runner.os == 'Windows'
+
+      - name: Get commit data (non Windows)
+        id: commit-data-non-windows
+        run: |
+          echo "commit-date=$(git show -s --format=%cs ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+          echo "short-sha=$(git rev-parse --short ${{ github.sha }})" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
+
+      - name: Write commit data (Windows)
+        run: |
+          echo '{' > packages/desktop/commit-data.json
+          echo '  "commitDate": "${{ steps.commit-data-windows.outputs.commit-date }}",' >> packages/desktop/commit-data.json
+          echo '  "shortSha": "${{ steps.commit-data-windows.outputs.short-sha }}"' >> packages/desktop/commit-data.json
+          echo '}' >> packages/desktop/commit-data.json
+        if: runner.os == 'Windows'
+
+      - name: Write commit data (non Windows)
+        run: |
+          echo '{' > packages/desktop/commit-data.json
+          echo '  "commitDate": "${{ steps.commit-data-non-windows.outputs.commit-date }}",' >> packages/desktop/commit-data.json
+          echo '  "shortSha": "${{ steps.commit-data-non-windows.outputs.short-sha }}"' >> packages/desktop/commit-data.json
+          echo '}' >> packages/desktop/commit-data.json
+        if: runner.os != 'Windows'
+
+      - name: Get package data (Windows)
+        id: package-data-windows
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> $env:GITHUB_OUTPUT
+        if: runner.os == 'Windows'
+
+      - name: Get package data (non Windows)
+        id: package-data-non-windows
+        run: echo "version=$(jq -r '.version' packages/desktop/package.json)" >> "$GITHUB_OUTPUT"
+        if: runner.os != 'Windows'
+
+      - name: Build (Windows)
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: '${{ steps.gitversion.outputs.MajorMinorPatch }}-${{ steps.gitversion.outputs.CommitDate }}-${{ steps.gitversion.outputs.ShortSha }}'
+          APP_VERSION_GIT_TAG: '${{ steps.package-data-windows.outputs.version }}-${{ steps.commit-data-windows.outputs.commit-date }}-${{ steps.commit-data-windows.outputs.short-sha }}'
+        if: runner.os == 'Windows'
+
+      - name: Build (non Windows)
+        run: yarn build:dist
+        env:
+          APP_VERSION_GIT_TAG: '${{ steps.package-data-non-windows.outputs.version }}-${{ steps.commit-data-non-windows.outputs.commit-date }}-${{ steps.commit-data-non-windows.outputs.short-sha }}'
+        if: runner.os != 'Windows'
 
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (Windows)
-        run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}.x/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-windows.outputs.version }}/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
       - name: Upload to GCP (non Windows)
-        run: |
-          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}.x/
+        run: gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-non-windows.outputs.version }}/
         if: runner.os != 'Windows'
 
-      - name: Link to published artifact
+      - name: Link to published artifact (Windows)
         if: runner.os == 'Windows'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}.x/EmeraldWallet-win-x64-${{ steps.gitversion.outputs.MajorMinorPatch }}-${{ steps.gitversion.outputs.CommitDate }}-${{ steps.gitversion.outputs.ShortSha }}.exe"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-windows.outputs.version }}/EmeraldWallet-win-x64-${{ steps.package-data-windows.outputs.version }}-${{ steps.commit-data-windows.outputs.commit-date }}-${{ steps.commit-data-windows.outputs.short-sha }}.exe"
 
-      - name: Link to published artifact
+      - name: Link to published artifact (macOS)
         if: runner.os == 'macOS'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}.x/EmeraldWallet-mac-x64-${{ steps.gitversion.outputs.MajorMinorPatch }}-${{ steps.gitversion.outputs.CommitDate }}-${{ steps.gitversion.outputs.ShortSha }}.dmg"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-non-windows.outputs.version }}/EmeraldWallet-mac-x64-${{ steps.package-data-non-windows.outputs.version }}-${{ steps.commit-data-non-windows.outputs.commit-date }}-${{ steps.commit-data-non-windows.outputs.short-sha }}.dmg"
 
-      - name: Link to published artifact
+      - name: Link to published artifact (Linux)
         if: runner.os == 'Linux'
-        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}.x/EmeraldWallet-linux-amd64-${{ steps.gitversion.outputs.MajorMinorPatch }}-${{ steps.gitversion.outputs.CommitDate }}-${{ steps.gitversion.outputs.ShortSha }}.deb"
+        run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-non-windows.outputs.version }}/EmeraldWallet-linux-amd64-${{ steps.package-data-non-windows.outputs.version }}-${{ steps.commit-data-non-windows.outputs.commit-date }}-${{ steps.commit-data-non-windows.outputs.short-sha }}.deb"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
