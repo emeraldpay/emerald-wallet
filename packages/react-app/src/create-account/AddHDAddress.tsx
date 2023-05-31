@@ -16,7 +16,7 @@ import {
   blockchainIdToCode,
 } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Back, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
+import { Address, Back, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
   Button,
   Grid,
@@ -28,28 +28,34 @@ import {
   TextField,
   Typography,
   createStyles,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../ledger/WaitLedger';
 
-const styles = createStyles({
-  blockchains: {
-    flex: 1,
-    marginRight: 20,
-  },
-  tableCellAction: {
-    minWidth: 60,
-    textAlign: 'right',
-  },
-  tableCellHdPath: {
-    minWidth: 140,
-  },
-});
+const useStyles = makeStyles(
+  createStyles({
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
+    },
+    tableCellAction: {
+      display: 'flex',
+      justifyContent: 'end',
+      minWidth: 60,
+    },
+    tableCellHdPath: {
+      minWidth: 140,
+    },
+  }),
+);
 
 enum Stage {
   UNLOCK = 'unlock',
+  OPTIONS = 'options',
   LIST = 'list',
 }
 
@@ -80,13 +86,8 @@ interface DispatchProps {
   loadWallets(): void;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
-const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> = ({
+const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
   blockchains,
-  classes,
   entries,
   seed,
   walletId,
@@ -98,9 +99,12 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
   listAddresses,
   loadWallets,
 }) => {
+  const styles = useStyles();
+
   const listKey = React.useRef<string | undefined>();
   const mounted = React.useRef(true);
 
+  const [loading, setLoading] = React.useState(false);
   const [stage, setStage] = React.useState(Stage.UNLOCK);
 
   const [password, setPassword] = React.useState<string>();
@@ -113,7 +117,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
   const [counter, setCounter] = React.useState(0);
   const [seedAddresses, setSeedAddresses] = React.useState<SeedAddress[]>([]);
 
-  const onSeedUnlock = React.useCallback(async () => {
+  const onSeedUnlock = async (): Promise<void> => {
     setPasswordError(undefined);
 
     const hasGlobalKey = await isGlobalKeySet();
@@ -122,7 +126,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
       const correctPassword = await checkGlobalKey(password ?? '');
 
       if (correctPassword) {
-        setStage(Stage.LIST);
+        setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST);
       } else {
         setPasswordError('Incorrect password');
       }
@@ -146,47 +150,44 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
       );
 
       if ((addresses[entryHdPath]?.length ?? 0) > 0) {
-        setStage(Stage.LIST);
+        setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST);
       } else {
         setPasswordError('Incorrect password');
       }
     }
-  }, [entries, password, checkGlobalKey, isGlobalKeySet, listAddresses, selectedBlockchain]);
+  };
 
-  const onAddAddress = React.useCallback(
-    async ({ address, hdPath, seedId }: SeedAddress) => {
-      const addEntry: AddSeedEntry = {
-        blockchain: selectedBlockchain,
-        type: 'hd-path',
-        key: {
-          address,
-          hdPath,
-          seed: {
-            password,
-            type: 'id',
-            value: seedId,
-          },
+  const onAddAddress = async ({ address, hdPath, seedId }: SeedAddress): Promise<void> => {
+    const addEntry: AddSeedEntry = {
+      blockchain: selectedBlockchain,
+      type: 'hd-path',
+      key: {
+        address,
+        hdPath,
+        seed: {
+          password,
+          type: 'id',
+          value: seedId,
         },
-      };
+      },
+    };
 
-      await addEntryToWallet(walletId, addEntry);
+    await addEntryToWallet(walletId, addEntry);
 
-      const addShadowEntry = {
-        ...addEntry,
-        blockchain: blockchainCodeToId(
-          blockchainIdToCode(selectedBlockchain) === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH,
-        ),
-      };
+    const addShadowEntry = {
+      ...addEntry,
+      blockchain: blockchainCodeToId(
+        blockchainIdToCode(selectedBlockchain) === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH,
+      ),
+    };
 
-      const shadowEntryId = await addEntryToWallet(walletId, addShadowEntry);
+    const shadowEntryId = await addEntryToWallet(walletId, addShadowEntry);
 
-      await disableReceiveForEntry(shadowEntryId);
+    await disableReceiveForEntry(shadowEntryId);
 
-      loadWallets();
-      goBack();
-    },
-    [password, selectedBlockchain, walletId, addEntryToWallet, disableReceiveForEntry, goBack, loadWallets],
-  );
+    loadWallets();
+    goBack();
+  };
 
   React.useEffect(() => {
     stage === Stage.LIST &&
@@ -208,6 +209,8 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
         }
 
         listKey.current = key;
+
+        setLoading(true);
 
         const baseHdPath = HDPath.parse(entryHdPath);
 
@@ -263,6 +266,8 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
                 };
               }),
           );
+
+          setLoading(false);
         }
       })();
   }, [counter, entries, password, stage, listAddresses, selectedBlockchain]);
@@ -276,49 +281,33 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
   return (
     <Page
       footer={
-        stage === Stage.UNLOCK ? undefined : (
+        stage === Stage.LIST ? (
           <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item classes={{ root: classes.blockchains }}>
-              <FormRow style={{ paddingBottom: 0 }}>
-                <FormLabel>Blockchain</FormLabel>
-                <TextField
-                  fullWidth={true}
-                  select={true}
-                  value={selectedBlockchain}
-                  onChange={({ target: { value } }) => setSelectedBlockchain(parseInt(value, 10))}
-                >
-                  {blockchains.map((blockchain) => (
-                    <MenuItem key={blockchain.params.code} value={blockchainCodeToId(blockchain.params.code)}>
-                      {blockchain.getTitle()}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </FormRow>
-            </Grid>
+            <Grid item />
             <Grid item>
               <ButtonGroup>
                 <Button
                   color="primary"
-                  disabled={counter === 0}
+                  disabled={loading || counter === 0}
                   variant="outlined"
                   onClick={() => setCounter(counter - 1)}
                 >
                   Back
                 </Button>
-                <Button color="primary" variant="outlined" onClick={() => setCounter(counter + 1)}>
+                <Button color="primary" disabled={loading} variant="outlined" onClick={() => setCounter(counter + 1)}>
                   Next
                 </Button>
               </ButtonGroup>
             </Grid>
           </Grid>
-        )
+        ) : undefined
       }
       title="Additional Addresses"
       leftIcon={<Back onClick={goBack} />}
     >
       {stage === Stage.UNLOCK &&
         (seed?.type === 'ledger' ? (
-          <WaitLedger fullSize onConnected={() => setStage(Stage.LIST)} />
+          <WaitLedger fullSize onConnected={() => setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST)} />
         ) : (
           <>
             <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>
@@ -334,37 +323,79 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps & StylesProps
             </Grid>
           </>
         ))}
+      {stage === Stage.OPTIONS && (
+        <>
+          <FormRow>
+            <FormLabel>Blockchain</FormLabel>
+            <TextField
+              fullWidth={true}
+              select={true}
+              value={selectedBlockchain}
+              onChange={({ target: { value } }) => setSelectedBlockchain(parseInt(value, 10))}
+            >
+              {blockchains.map((blockchain) => (
+                <MenuItem key={blockchain.params.code} value={blockchainCodeToId(blockchain.params.code)}>
+                  {blockchain.getTitle()}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FormRow>
+          <FormRow last>
+            <ButtonGroup classes={{ container: styles.buttons }}>
+              <Button color="primary" variant="contained" onClick={() => setStage(Stage.LIST)}>
+                Next
+              </Button>
+            </ButtonGroup>
+          </FormRow>
+        </>
+      )}
       {stage === Stage.LIST && (
         <>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={classes.tableCellHdPath}>HD Path</TableCell>
+                <TableCell className={styles.tableCellHdPath}>HD Path</TableCell>
                 <TableCell>Address</TableCell>
-                <TableCell className={classes.tableCellAction}>Action</TableCell>
+                <TableCell className={styles.tableCellAction}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {seedAddresses.map((seedAddress) => {
-                const { address, existed, hdPath } = seedAddress;
+              {loading || seedAddresses.length === 0
+                ? Array.from({ length: 10 }).map((item, index) => (
+                    <TableRow key={`skeleton-row-${index}`}>
+                      <TableCell className={styles.tableCellHdPath}>
+                        <Skeleton variant="text" width={120} height={12} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width={410} height={12} />
+                      </TableCell>
+                      <TableCell className={styles.tableCellAction}>
+                        <Skeleton variant="rect" width={64} height={40} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : seedAddresses.map((seedAddress) => {
+                    const { address, existed, hdPath } = seedAddress;
 
-                return (
-                  <TableRow key={hdPath}>
-                    <TableCell className={classes.tableCellHdPath}>{hdPath}</TableCell>
-                    <TableCell>{address}</TableCell>
-                    <TableCell className={classes.tableCellAction}>
-                      <Button
-                        color="primary"
-                        disabled={existed}
-                        variant="contained"
-                        onClick={() => onAddAddress(seedAddress)}
-                      >
-                        Add
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                    return (
+                      <TableRow key={hdPath}>
+                        <TableCell className={styles.tableCellHdPath}>{hdPath}</TableCell>
+                        <TableCell>
+                          <Address address={address} />
+                        </TableCell>
+                        <TableCell className={styles.tableCellAction}>
+                          <Button
+                            color="primary"
+                            disabled={existed}
+                            variant="contained"
+                            onClick={() => onAddAddress(seedAddress)}
+                          >
+                            Add
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
             </TableBody>
           </Table>
         </>
@@ -418,4 +449,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.loadWalletsAction());
     },
   }),
-)(withStyles(styles)(AddHDAddress));
+)(AddHDAddress);
