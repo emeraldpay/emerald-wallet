@@ -100,6 +100,8 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 }) => {
   const styles = useStyles();
 
+  const mounted = React.useRef(true);
+
   const availableBlockchains = React.useMemo(
     () => accepted.map((accept) => accept.blockchain).filter(distinct),
     [accepted],
@@ -147,8 +149,6 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   React.useEffect(() => {
-    let mounted = true;
-
     const accepts = accepted.filter((item) => item.blockchain === currentBlockchain && item.token === currentToken);
 
     Promise.all(
@@ -162,7 +162,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
         return accept.addresses;
       }),
     ).then((addresses) => {
-      if (mounted) {
+      if (mounted.current) {
         const uniqueAddresses = addresses
           .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
           .filter(distinct);
@@ -171,11 +171,13 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
         setCurrentAddress(uniqueAddresses[0]);
       }
     });
-
-    return () => {
-      mounted = false;
-    };
   }, [accepted, currentBlockchain, currentToken, getXPubPositionalAddress]);
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   let qrCodeValue = currentAddress;
 

@@ -121,6 +121,8 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
 }) => {
   const styles = useStyles();
 
+  const mounted = React.useRef(true);
+
   const [initializing, setInitializing] = React.useState(true);
   const [stage, setStage] = React.useState(Stages.SETUP);
 
@@ -197,10 +199,8 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   };
 
   React.useEffect(() => {
-    let mounted = true;
-
     (async () => {
-      if (mounted) {
+      if (mounted.current) {
         const { blockchain } = ethTx;
 
         let name = await lookupAddress(blockchain, ethTx.from);
@@ -214,18 +214,12 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
         }
       }
     })();
-
-    return () => {
-      mounted = false;
-    };
   }, [ethTx, lookupAddress]);
 
   React.useEffect(
     () => {
-      let mounted = true;
-
       (async () => {
-        if (mounted) {
+        if (mounted.current) {
           const { blockchain } = ethTx;
 
           const topFee = await getTopFee(blockchain);
@@ -255,7 +249,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
       })();
 
       return () => {
-        mounted = false;
+        mounted.current = false;
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -51,21 +51,23 @@ const CreateCancelTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 }) => {
   const styles = useStyles();
 
+  const mounted = React.useRef(true);
+
   const [blockchainTx, setBlockchainTx] = React.useState<BitcoinRawTransaction | EthereumTransaction | null>(null);
 
   React.useEffect(() => {
-    let mounted = true;
-
     (isEthereum(blockchainIdToCode(storedTx.blockchain)) ? getEthTx : getBtcTx)(storedTx).then((value) => {
-      if (mounted) {
+      if (mounted.current) {
         setBlockchainTx(value);
       }
     });
-
-    return () => {
-      mounted = false;
-    };
   }, [storedTx, getBtcTx, getEthTx]);
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <Page title="Revert Transaction" leftIcon={<Back onClick={goBack} />}>
