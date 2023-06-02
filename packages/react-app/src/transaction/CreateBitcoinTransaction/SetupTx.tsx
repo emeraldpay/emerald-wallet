@@ -107,7 +107,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   };
 
   const onSetTo = (value: string | undefined): void => {
-    create.address = value == null || !validate(value) ? '' : value;
+    create.toAddress = value == null || !validate(value) ? '' : value;
   };
 
   React.useEffect(
@@ -132,7 +132,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   return (
     <>
       <FormRow>
-        <ToField blockchain={blockchainIdToCode(entry.blockchain)} to={create.address} onChange={onSetTo} />
+        <ToField blockchain={blockchainIdToCode(entry.blockchain)} to={create.toAddress} onChange={onSetTo} />
       </FormRow>
       <FormRow>
         <AmountField

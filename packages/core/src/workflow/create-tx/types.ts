@@ -2,6 +2,7 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode } from '../../blockchains';
 
 export enum ValidationResult {
+  INSUFFICIENT_FEE_PRICE,
   INSUFFICIENT_FUNDS,
   INSUFFICIENT_TOKEN_FUNDS,
   NO_AMOUNT,

@@ -78,17 +78,19 @@ const CreateBitcoinTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   React.useEffect(
     () => {
       if (isBitcoinEntry(entry)) {
-        Promise.all(entry.xpub.map(({ role, xpub }) => getXPubPositionalAddress(entry.id, xpub, role))).then(
-          (addresses) => {
-            try {
-              const txBuilder = new workflow.CreateBitcoinTx(entry, addresses, utxo);
+        Promise.all(
+          entry.xpub
+            .filter(({ role }) => role === 'change')
+            .map(({ role, xpub }) => getXPubPositionalAddress(entry.id, xpub, role)),
+        ).then(([{ address }]) => {
+          try {
+            const txBuilder = new workflow.CreateBitcoinTx(entry, address, utxo);
 
-              setTxBuilder(txBuilder);
-            } catch (exception) {
-              // Nothing
-            }
-          },
-        );
+            setTxBuilder(txBuilder);
+          } catch (exception) {
+            // Nothing
+          }
+        });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

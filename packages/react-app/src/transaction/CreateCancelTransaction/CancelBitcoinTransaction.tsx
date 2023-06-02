@@ -31,14 +31,10 @@ const CancelBitcoinTransaction: React.FC<OwnProps> = ({ entryId, isHardware, raw
     <ModifyBitcoinTransaction
       entryId={entryId}
       rawTx={rawTx}
+      isCancel={true}
       isHardware={isHardware}
       tx={tx}
       goBack={goBack}
-      prepareTx={(tx) => {
-        tx.address = tx.changeAddress;
-
-        return tx;
-      }}
       renderNotice={(tx, unsignedTx) => {
         const blockchainCode = blockchainIdToCode(tx.blockchain);
 

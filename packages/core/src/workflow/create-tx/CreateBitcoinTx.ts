@@ -1,5 +1,5 @@
 import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
-import { BitcoinEntry, CurrentAddress, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
+import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, InputUtxo, amountDecoder, amountFactory, blockchainIdToCode } from '../../blockchains';
 import { TxTarget, ValidationResult } from './types';
 
@@ -12,38 +12,58 @@ const MAX_SEQUENCE = 0xffffffff as const;
  */
 const DEFAULT_VKB_FEE = 1024 as const;
 
-export interface BitcoinTxDetails<T extends BigAmount> {
-  change?: T;
+export interface BitcoinTxDetails {
+  amount?: BigAmount;
+  change?: BigAmount;
   from: InputUtxo[];
   target: TxTarget;
-  to: {
-    address?: string;
-    amount?: T;
-  };
+  to?: string;
 }
 
-export interface Output {
+export interface BitcoinTxOutput {
   address: string;
   amount: number;
   entryId?: string;
 }
 
-export interface TxMetric {
+export interface BitcoinTxMetric {
   /**
    * @see https://en.bitcoin.it/wiki/Weight_units
    */
-  weightOf(inputs: InputUtxo[], outputs: Output[]): number;
+  weightOf(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): number;
 }
 
-/**
- * @see https://en.bitcoin.it/wiki/Weight_units
- */
-export function convertWUToVB(wu: number): number {
-  return wu / 4;
+interface CommonBitcoinTx {
+  readonly changeAddress: string;
+  readonly entryId: EntryId;
+  readonly tx: BitcoinTxDetails;
+  vkbPrice: BigAmount;
+  metric: BitcoinTxMetric;
+  create(): UnsignedBitcoinTx;
+  estimateFees(price: number): BigAmount;
+  estimateVkbPrice(price: BigAmount): number;
+  rebalance(): boolean;
+  totalUtxo(utxo: InputUtxo[]): BigAmount;
+  validate(): ValidationResult;
 }
 
-class AverageTxMetric implements TxMetric {
-  weightOf(inputs: InputUtxo[], outputs: Output[]): number {
+abstract class AbstractBitcoinTx {
+  abstract get change(): BigAmount;
+  abstract get fees(): BigAmount;
+  abstract set feePrice(price: number);
+  abstract get outputs(): BitcoinTxOutput[];
+  abstract set requiredAmount(value: BigAmount);
+  abstract set target(target: TxTarget);
+  abstract set toAddress(address: string | undefined);
+  abstract get totalAvailable(): BigAmount;
+  abstract get totalToSpend(): BigAmount;
+  abstract get transaction(): BitcoinTxDetails;
+}
+
+export type BitcoinTx = CommonBitcoinTx & AbstractBitcoinTx;
+
+class AverageTxMetric implements BitcoinTxMetric {
+  weightOf(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): number {
     /**
      * TODO
      *   Incorrect for many scenarios, based on numbers from https://en.bitcoin.it/wiki/Weight_units "Detailed Example"
@@ -55,34 +75,36 @@ class AverageTxMetric implements TxMetric {
   }
 }
 
-export class CreateBitcoinTx {
-  public metric: TxMetric = new AverageTxMetric();
-  public vkbPrice: BigAmount;
+/**
+ * @see https://en.bitcoin.it/wiki/Weight_units
+ */
+export function convertWUToVB(wu: number): number {
+  return wu / 4;
+}
 
+export class CreateBitcoinTx implements BitcoinTx {
   readonly changeAddress: string;
+  readonly entryId: EntryId;
+  readonly tx: BitcoinTxDetails;
+
+  public metric: BitcoinTxMetric = new AverageTxMetric();
+  public vkbPrice: BigAmount;
 
   private readonly amountDecoder: (value: string) => BigAmount;
   private readonly amountFactory: CreateAmount<BigAmount>;
   private readonly amountUnits: Units;
   private readonly blockchain: BlockchainCode;
-  private readonly source: BitcoinEntry;
-  private readonly tx: BitcoinTxDetails<BigAmount>;
   private readonly utxo: InputUtxo[];
   private readonly zero: BigAmount;
 
-  constructor(source: BitcoinEntry, addresses: CurrentAddress[], utxo: InputUtxo[]) {
-    this.source = source;
+  constructor(entry: BitcoinEntry, changeAddress: string, utxo: InputUtxo[]) {
+    this.changeAddress = changeAddress;
+    this.entryId = entry.id;
     this.utxo = utxo;
 
-    this.blockchain = blockchainIdToCode(source.blockchain);
+    this.tx = { from: [], target: TxTarget.MANUAL };
 
-    const changeAddress = addresses.find((item) => item.role == 'change')?.address;
-
-    if (changeAddress == null) {
-      throw new Error('No change address found');
-    }
-
-    this.changeAddress = changeAddress;
+    this.blockchain = blockchainIdToCode(entry.blockchain);
 
     this.amountDecoder = amountDecoder(this.blockchain);
     this.amountFactory = amountFactory(this.blockchain);
@@ -91,39 +113,29 @@ export class CreateBitcoinTx {
     this.amountUnits = this.zero.units;
 
     this.vkbPrice = this.amountFactory(DEFAULT_VKB_FEE);
-
-    this.tx = {
-      from: [],
-      target: TxTarget.MANUAL,
-      to: {},
-    };
-  }
-
-  set address(address: string | undefined) {
-    this.tx.to.address = address;
-    this.rebalance();
   }
 
   get change(): BigAmount {
     return this.tx.change ?? this.zero;
   }
 
-  set feePrice(price: number) {
-    this.vkbPrice = this.amountFactory(price);
-    this.rebalance();
-  }
-
   get fees(): BigAmount {
     return this.totalToSpend.minus(this.change).minus(this.requiredAmount).max(this.zero);
   }
 
-  get outputs(): Output[] {
-    const result: Output[] = [];
+  set feePrice(price: number) {
+    this.vkbPrice = this.amountFactory(price);
 
-    if (this.tx.to.address != null && this.tx.to.amount != null) {
+    this.rebalance();
+  }
+
+  get outputs(): BitcoinTxOutput[] {
+    const result: BitcoinTxOutput[] = [];
+
+    if (this.tx.amount != null && this.tx.to != null) {
       result.push({
-        address: this.tx.to.address,
-        amount: this.tx.to.amount.number.toNumber(),
+        address: this.tx.to,
+        amount: this.tx.amount.number.toNumber(),
       });
     }
 
@@ -131,7 +143,7 @@ export class CreateBitcoinTx {
       result.push({
         address: this.changeAddress,
         amount: this.change.number.toNumber(),
-        entryId: this.source.id,
+        entryId: this.entryId,
       });
     }
 
@@ -139,17 +151,25 @@ export class CreateBitcoinTx {
   }
 
   get requiredAmount(): BigAmount {
-    return this.tx.to.amount ?? this.zero;
+    return this.tx.amount ?? this.zero;
   }
 
   set requiredAmount(value: BigAmount) {
     this.tx.target = TxTarget.MANUAL;
-    this.tx.to.amount = value;
+    this.tx.amount = value;
+
     this.rebalance();
   }
 
   set target(target: TxTarget) {
     this.tx.target = target;
+
+    this.rebalance();
+  }
+
+  set toAddress(address: string | undefined) {
+    this.tx.to = address;
+
     this.rebalance();
   }
 
@@ -163,7 +183,7 @@ export class CreateBitcoinTx {
     return this.totalUtxo(this.tx.from);
   }
 
-  get transaction(): BitcoinTxDetails<BigAmount> {
+  get transaction(): BitcoinTxDetails {
     return { ...this.tx };
   }
 
@@ -175,7 +195,7 @@ export class CreateBitcoinTx {
         txid,
         vout,
         amount: this.amountDecoder(value).number.toNumber(),
-        entryId: this.source.id,
+        entryId: this.entryId,
         sequence: this.adjustSequence(sequence),
       })),
       outputs: this.outputs,
@@ -200,9 +220,9 @@ export class CreateBitcoinTx {
 
     let from: InputUtxo[] = [];
 
-    let { amount } = this.tx.to;
+    let { amount } = this.tx;
 
-    const { address } = this.tx.to;
+    const { to: address } = this.tx;
 
     const to = address == null ? [] : [{ address, amount: 0 }];
 
@@ -237,7 +257,7 @@ export class CreateBitcoinTx {
         // sending more that receive + fees ==> keep change
         const changeWeight = this.metric.weightOf(from, [
           ...to,
-          { address: this.changeAddress, amount: 0, entryId: this.source.id },
+          { address: this.changeAddress, amount: 0, entryId: this.entryId },
         ]);
         const changeFees = this.vkbPrice.multiply(convertWUToVB(changeWeight)).divide(1024);
 
@@ -251,7 +271,7 @@ export class CreateBitcoinTx {
     } else {
       amount = send.minus(fees);
 
-      this.tx.to.amount = amount;
+      this.tx.amount = amount;
     }
 
     this.tx.from = from;
@@ -260,14 +280,14 @@ export class CreateBitcoinTx {
     return send.isGreaterOrEqualTo(amount);
   }
 
-  totalUtxo(current: InputUtxo[]): BigAmount {
-    return current
+  totalUtxo(utxo: InputUtxo[]): BigAmount {
+    return utxo
       .map((item) => this.amountDecoder(item.value))
       .reduce((carry, balance) => carry.plus(balance), this.zero);
   }
 
   validate(): ValidationResult {
-    if (this.tx.to.amount == null || this.tx.to.amount.isZero()) {
+    if (this.tx.amount == null || this.tx.amount.isZero()) {
       this.tx.from = [];
 
       return ValidationResult.NO_AMOUNT;
@@ -277,11 +297,11 @@ export class CreateBitcoinTx {
       return ValidationResult.NO_FROM;
     }
 
-    if ((this.tx.to.address?.length ?? 0) === 0) {
+    if ((this.tx.to?.length ?? 0) === 0) {
       return ValidationResult.NO_TO;
     }
 
-    if (this.totalToSpend.isLessThan(this.tx.to.amount)) {
+    if (this.totalToSpend.isLessThan(this.tx.amount)) {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
 
@@ -296,7 +316,7 @@ export class CreateBitcoinTx {
     return sequence < MAX_SEQUENCE ? sequence + 1 : MAX_SEQUENCE;
   }
 
-  private estimateFeesFor(inputs: InputUtxo[], outputs: Output[]): BigAmount {
+  private estimateFeesFor(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): BigAmount {
     const weight = this.metric.weightOf(inputs, outputs);
 
     return this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
