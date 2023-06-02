@@ -8,6 +8,7 @@ import {
 } from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
+  BlockchainCode,
   Blockchains,
   IpcCommands,
   PersistentState,
@@ -150,24 +151,24 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  let existingAccount: HDPathAccount | undefined;
+  let hdPathAccount: HDPathAccount | undefined;
 
   if (seedId == null) {
-    [existingAccount] = wallet.reserved ?? [];
+    [hdPathAccount] = wallet.reserved ?? [];
   } else {
-    existingAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
+    hdPathAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
   }
 
-  if (existingAccount == null) {
-    console.error(`Wallet ${wallet.id} doesn't have HD account`);
+  if (hdPathAccount == null) {
+    console.error(`Wallet ${walletId} doesn't have HD account`);
 
     return;
   }
 
-  const { seedId: existedSeedId } = existingAccount;
+  const { seedId: existedSeedId } = hdPathAccount;
 
   const blockchainId = blockchainCodeToId(blockchain);
-  const hdPath = chain.params.hdPath.forAccount(existingAccount.accountId).toString();
+  const hdPath = chain.params.hdPath.forAccount(hdPathAccount.accountId).toString();
 
   const { [hdPath]: address } = yield call(vault.listSeedAddresses, existedSeedId, blockchainId, [hdPath]);
 
@@ -204,15 +205,44 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
       return;
     }
 
-    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entry.address.value]);
-
     const tokenRegistry = new TokenRegistry(action.tokens);
 
     const tokens = tokenRegistry.byBlockchain(blockchain);
 
-    yield put(requestTokensBalances(blockchain, tokens, entry.address.value));
-    yield put(hdAccountCreated(wallet.id, entry));
-    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
+    if (blockchain === BlockchainCode.ETC || blockchain === BlockchainCode.ETH) {
+      const shadowBlockchain = blockchain === BlockchainCode.ETH ? BlockchainCode.ETC : BlockchainCode.ETH;
+
+      const addShadowEntry = {
+        ...addEntry,
+        blockchain: blockchainCodeToId(shadowBlockchain),
+      };
+
+      const shadowEntryId = yield call(vault.addEntry, walletId, addShadowEntry);
+
+      yield call(vault.setEntryReceiveDisabled, shadowEntryId, true);
+
+      wallet = yield call(vault.getWallet, walletId);
+
+      const shadowEntry = wallet.entries.find(({ id }) => id === shadowEntryId);
+
+      if (shadowEntry?.address?.value != null) {
+        const { value: shadowAddress } = shadowEntry.address;
+
+        ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, shadowBlockchain, shadowEntryId, [shadowAddress]);
+
+        yield put(requestTokensBalances(shadowBlockchain, tokens, shadowAddress));
+        yield put(hdAccountCreated(walletId, shadowEntry));
+      }
+    }
+
+    const { value: entryAddress } = entry.address;
+
+    ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entry.id, [entryAddress]);
+
+    yield put(requestTokensBalances(blockchain, tokens, entryAddress));
+    yield put(hdAccountCreated(walletId, entry));
+
+    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
   } catch (error) {
     if (error instanceof Error) {
       yield put(screen.actions.showError(error));

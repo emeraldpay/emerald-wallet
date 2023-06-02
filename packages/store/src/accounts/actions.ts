@@ -352,9 +352,8 @@ export function changeGlobalKey(oldPassword: string, newPassword: string): Dispa
   return (dispatch, getState, extra) => extra.api.vault.changeGlobalKey(oldPassword, newPassword);
 }
 
-export function addEntryToWallet(walletId: Uuid, entry: AddEntry): Dispatched<ILoadWalletsAction> {
-  return (dispatch, getState, extra) =>
-    extra.api.vault.addEntry(walletId, entry).then(() => dispatch(loadWalletsAction()));
+export function addEntryToWallet(walletId: Uuid, entry: AddEntry): Dispatched<string> {
+  return (dispatch, getState, extra) => extra.api.vault.addEntry(walletId, entry);
 }
 
 export function listSeedAddresses(
