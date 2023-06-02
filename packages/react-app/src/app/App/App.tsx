@@ -10,7 +10,7 @@ import i18n from '../../i18n';
 import { ErrorBoundary } from '../ErrorBoundary';
 import ConnectionStatus from '../layout/ConnectionStatus';
 import Header from '../layout/Header';
-import NotificationBar from '../layout/NotificationBar';
+import Notification from '../layout/Notification';
 import Dialog from '../screen/Dialog';
 import Screen from '../screen/Screen';
 
@@ -53,10 +53,10 @@ const App: React.FC<OwnProps> = ({ store, terms }) => {
               <div className={styles.screen}>
                 <Screen termsVersion={terms} />
               </div>
-              <ErrorDialog />
-              <NotificationBar />
-              <Dialog />
               <ConnectionStatus />
+              <ErrorDialog />
+              <Dialog />
+              <Notification />
             </div>
           </ErrorBoundary>
         </ThemeProvider>

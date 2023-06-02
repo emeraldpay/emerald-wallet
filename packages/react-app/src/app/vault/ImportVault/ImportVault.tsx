@@ -179,7 +179,7 @@ export default connect<unknown, DispatchProps>(
       dispatch(accounts.actions.loadWalletsAction());
     },
     showNotification(message, type = 'success') {
-      dispatch(screen.actions.showNotification(message, type, 3000, null, null));
+      dispatch(screen.actions.showNotification(message, type));
     },
   }),
 )(withStyles(styles)(ImportVault));

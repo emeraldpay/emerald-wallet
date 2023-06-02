@@ -115,7 +115,6 @@ export function signTransaction(
   transaction: EthereumTransaction,
   password: string | undefined,
 ): Dispatched<SignData | undefined> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch, getState, extra) => {
     const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
       signTx(entryId, tx, extra.api.vault, password)
@@ -428,16 +427,16 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPric
 
       const defaults = {
         avgLast: {
-          max: defaultFee.min,
-          priority: defaultFee.priority_min ?? '0',
+          max: defaultFee?.min ?? '0',
+          priority: defaultFee?.priority_min ?? '0',
         },
         avgMiddle: {
-          max: defaultFee.max,
-          priority: defaultFee.priority_max ?? '0',
+          max: defaultFee?.max ?? '0',
+          priority: defaultFee?.priority_max ?? '0',
         },
         avgTail5: {
-          max: defaultFee.std,
-          priority: defaultFee.priority_std ?? '0',
+          max: defaultFee?.std ?? '0',
+          priority: defaultFee?.priority_std ?? '0',
         },
       };
 
@@ -490,8 +489,8 @@ export function getTopFee(blockchain: BlockchainCode): Dispatched<GasPrices> {
     const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
 
     const defaults: GasPrices = {
-      max: defaultFee.max,
-      priority: defaultFee.priority_max ?? '0',
+      max: defaultFee?.max ?? '0',
+      priority: defaultFee?.priority_max ?? '0',
     };
 
     if (avgTop == null) {

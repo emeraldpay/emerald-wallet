@@ -1,11 +1,11 @@
-import { ScreenState } from './types';
 import { IState } from '../types';
+import { ScreenState } from './types';
 
-export function getCurrentDialog(state: IState): ScreenState {
+export function getCurrentDialog(state: IState): Pick<ScreenState, 'dialog' | 'dialogOptions'> {
   return { dialog: state.screen.dialog, dialogOptions: state.screen.dialogOptions };
 }
 
-export function getCurrentScreen(state: IState): ScreenState {
+export function getCurrentScreen(state: IState): Pick<ScreenState, 'screen' | 'screenItem' | 'restoreData'> {
   return {
     screen: state.screen.screen,
     screenItem: state.screen.screenItem,
@@ -17,12 +17,29 @@ export function getError(state: IState): Error | null | undefined {
   return state.screen.error;
 }
 
-export function getNotification(state: IState): ScreenState {
+export function getNotification(
+  state: IState,
+): Pick<
+  ScreenState,
+  | 'notificationMessage'
+  | 'notificationMessageType'
+  | 'notificationDuration'
+  | 'notificationButtonText'
+  | 'notificationOnButtonClick'
+> {
+  const {
+    notificationMessage,
+    notificationMessageType,
+    notificationDuration,
+    notificationButtonText,
+    notificationOnButtonClick,
+  } = state.screen;
+
   return {
-    notificationMessage: state.screen.notificationMessage,
-    notificationDuration: state.screen.notificationDuration,
-    notificationType: state.screen.notificationType,
-    notificationActionText: state.screen.notificationActionText,
-    notificationActionToDispatchOnActionClick: state.screen.notificationActionToDispatchOnActionClick,
+    notificationMessage,
+    notificationMessageType,
+    notificationDuration,
+    notificationButtonText,
+    notificationOnButtonClick,
   };
 }

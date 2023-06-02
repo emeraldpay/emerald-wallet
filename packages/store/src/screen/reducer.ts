@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import {
   ActionTypes,
+  ICloseNotificationAction,
   IDialogAction,
   IErrorAction,
   IOpenAction,
@@ -36,19 +37,25 @@ function goBack(state: ScreenState): ScreenState {
   return prev ?? state;
 }
 
-function onNotificationOpen(state: ScreenState, action: IShowNotificationAction): ScreenState {
+function onNotificationOpen(
+  state: ScreenState,
+  { message, messageType, buttonText, onButtonClick, duration = 3 }: IShowNotificationAction,
+): ScreenState {
   return {
     ...state,
-    notificationActionText: action.actionText,
-    notificationActionToDispatchOnActionClick: action.actionToDispatchOnActionClick,
-    notificationDuration: action.duration,
-    notificationMessage: action.message,
-    notificationType: action.notificationType,
+    notificationMessage: message,
+    notificationMessageType: messageType,
+    notificationDuration: duration,
+    notificationButtonText: buttonText,
+    notificationOnButtonClick: onButtonClick,
   };
 }
 
-function onNotificationClose(state: ScreenState): ScreenState {
-  return { ...state, notificationMessage: null, notificationDuration: null };
+function onNotificationClose(state: ScreenState, { reason }: ICloseNotificationAction): ScreenState {
+  return {
+    ...state,
+    notificationDuration: reason === 'clickaway' ? state.notificationDuration : null,
+  };
 }
 
 function onOpen(state: ScreenState, action: IOpenAction): ScreenState {
@@ -86,7 +93,7 @@ export function reducer(state = INITIAL_STATE, action: ScreenAction): ScreenStat
     case ActionTypes.NOTIFICATION_SHOW:
       return onNotificationOpen(state, action);
     case ActionTypes.NOTIFICATION_CLOSE:
-      return onNotificationClose(state);
+      return onNotificationClose(state, action);
     case ActionTypes.OPEN:
       return onOpen(state, action);
     case ActionTypes.OPEN_LINK:

@@ -56,7 +56,7 @@ function checkWalletUpdates(appVersion: string): void {
         screen.actions.showNotification(
           `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
           'info',
-          20 * 1000,
+          20,
           'Update',
           screen.actions.openLink(versionDetails.downloadLink),
         ),
