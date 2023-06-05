@@ -29,7 +29,7 @@ export class CreateBitcoinCancelTx extends CreateBitcoinTx {
   }
 
   validate(): ValidationResult {
-    if (this.originalFeePrice != null && this.originalFeePrice > this.feePrice) {
+    if (this.originalFeePrice != null && this.originalFeePrice >= this.feePrice) {
       return ValidationResult.INSUFFICIENT_FEE_PRICE;
     }
 
