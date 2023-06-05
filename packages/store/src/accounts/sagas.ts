@@ -151,34 +151,49 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
 
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  let existingAccount: HDPathAccount | undefined;
+  if (wallet == null) {
+    console.error(`Wallet ${walletId} not found`);
 
-  if (seedId == null) {
-    [existingAccount] = wallet.reserved ?? [];
-  } else {
-    existingAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
+    return;
   }
 
-  if (existingAccount == null) {
+  let hdPathAccount: HDPathAccount | undefined;
+
+  if (seedId == null) {
+    [hdPathAccount] = wallet.reserved ?? [];
+  } else {
+    hdPathAccount = wallet.reserved?.find(({ seedId: accountSeedId }) => accountSeedId === seedId);
+  }
+
+  if (hdPathAccount == null) {
     console.error(`Wallet ${walletId} doesn't have HD account`);
 
     return;
   }
 
-  const { seedId: existedSeedId } = existingAccount;
+  const { seedId: existedSeedId } = hdPathAccount;
 
   const blockchainId = blockchainCodeToId(blockchain);
-  const hdPath = chain.params.hdPath.forAccount(existingAccount.accountId).toString();
-
-  const { [hdPath]: address } = yield call(vault.listSeedAddresses, existedSeedId, blockchainId, [hdPath]);
-
-  if (address == null) {
-    console.error(`Cannot find address for seed ${existedSeedId}`);
-
-    return;
-  }
+  const hdPath = chain.params.hdPath.forAccount(hdPathAccount.accountId).toString();
 
   try {
+    const { [hdPath]: address } = yield call(
+      vault.listSeedAddresses,
+      {
+        type: 'id',
+        password: seedPassword,
+        value: existedSeedId,
+      },
+      blockchainId,
+      [hdPath],
+    );
+
+    if (address == null) {
+      console.error(`Cannot find address for seed ${existedSeedId}`);
+
+      return;
+    }
+
     const addEntry: AddEntry = {
       type: 'hd-path',
       blockchain: blockchainId,
