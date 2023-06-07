@@ -76,10 +76,10 @@ export class EmeraldApiAccess {
 
     this.credentials = emeraldCredentials(addr, agent, id);
 
-    this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
-    this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
-    this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
-    this.transactionClient = new TransactionClient(addr, this.credentials.getChannelCredentials());
+    this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials(), agent);
+    this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials(), agent);
+    this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials(), agent);
+    this.transactionClient = new TransactionClient(addr, this.credentials.getChannelCredentials(), agent);
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
