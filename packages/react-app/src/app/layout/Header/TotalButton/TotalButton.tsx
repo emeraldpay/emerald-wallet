@@ -47,7 +47,7 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalan
 
   return loading ? null : (
     <>
-      {totalBalance != null && fiatCurrency != null && (
+      {totalBalance != null && fiatCurrency != null && totalBalance.isPositive() && (
         <Button
           classes={styles}
           disabled={false}
