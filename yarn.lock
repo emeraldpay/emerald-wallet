@@ -3434,25 +3434,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/ed41b9b8/emeraldpay-api-node-v0.4.0-dev.tgz":
+"@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/0acb8ba4/emeraldpay-api-node-v0.4.0-dev.tgz":
   version: 0.4.0-dev
-  resolution: "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/ed41b9b8/emeraldpay-api-node-v0.4.0-dev.tgz"
+  resolution: "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/0acb8ba4/emeraldpay-api-node-v0.4.0-dev.tgz"
   dependencies:
     "@emeraldpay/api": 0.4.0-dev
     "@grpc/grpc-js": ^1.8.14
     google-protobuf: ^3.21.2
     protobufjs: ^7.2.3
-  checksum: 627b6c24878b9c3dd12b135c200f53b33db2b4b86f51af3c2e0b9bb80d5f59459b2f3bcab203dc1375a0e9654c2ad31e34950e45238e2692bb25f308449277af
+  checksum: 4e439600dc9795a446f369f8c4198fddc3f413f74c99c7bcde9963b6a281ea57b3e7a4dd545229cf3ffdbdab92d3c0d92fd7fcd1074c42ea4e906d433e3549a9
   languageName: node
   linkType: hard
 
-"@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/ed41b9b8/emeraldpay-api-v0.4.0-dev.tgz":
+"@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/0acb8ba4/emeraldpay-api-v0.4.0-dev.tgz":
   version: 0.4.0-dev
-  resolution: "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/ed41b9b8/emeraldpay-api-v0.4.0-dev.tgz"
+  resolution: "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/0acb8ba4/emeraldpay-api-v0.4.0-dev.tgz"
   dependencies:
     google-protobuf: ^3.21.2
     protobufjs: ^7.2.3
-  checksum: 78dba3dec9f844ae975506666a26352c0ddda730ca01eea0b7cfe699e51e1e5fd8632d6169eea14da435f6b29c3d553456b006f88a5fc847437a726793f78928
+  checksum: 2e68fe521741e88ca860d9b0cbefc503cd5787abf9e9184dd85cb9c5067625e7a4840d42507fc4285710bc62e6002da9bbe1421cf2ef062cc4ac9e0af5a14bce
   languageName: node
   linkType: hard
 
