@@ -3,19 +3,16 @@ import { AssignmentTurnedIn as AssignedIcon } from '@material-ui/icons';
 import * as React from 'react';
 
 interface OwnProps {
-  id: string;
+  walletId: string;
 }
 
-/**
- * Final screen for a wallet creation. Provides info and a button to go to the newly created wallet.
- */
-const Finish: React.FC<OwnProps> = ({ id }) => (
+const Created: React.FC<OwnProps> = ({ walletId }) => (
   <Grid container>
     <Grid item xs={10}>
       <Typography variant="h4">
         <AssignedIcon /> Wallet created
       </Typography>
-      <Typography variant="subtitle2">Wallet ID: {id}</Typography>
+      <Typography variant="subtitle2">Wallet ID: {walletId}</Typography>
       <Typography variant="body1">
         The wallet is successfully created. Now you can use it to receive and send cryptocurrency.
       </Typography>
@@ -23,4 +20,4 @@ const Finish: React.FC<OwnProps> = ({ id }) => (
   </Grid>
 );
 
-export default Finish;
+export default Created;

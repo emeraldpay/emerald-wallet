@@ -1,7 +1,7 @@
 import { TextField, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { Options } from './flow/types';
+import { Options } from '../flow/types';
 
 const useStyles = makeStyles(
   createStyles({

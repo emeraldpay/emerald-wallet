@@ -5,7 +5,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import * as React from 'react';
-import { KeySourceType, KeysSource } from './flow/types';
+import { KeySourceType, KeysSource } from '../flow/types';
 
 type OwnProps = {
   seeds: vault.SeedDescription[];
