@@ -139,7 +139,7 @@ function* afterAccountImported(vault: IEmeraldVault, action: IWalletImportedActi
  * Create new single-address type of account, with PK from the current seed associated with the wallet
  */
 function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIterator {
-  const { walletId, blockchain, seedId, seedPassword } = action;
+  const { walletId, blockchain, seedId } = action;
 
   const chain = Blockchains[blockchain];
 
@@ -150,6 +150,12 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
   }
 
   let wallet: Wallet = yield select(findWallet, walletId);
+
+  if (wallet == null) {
+    console.error(`Wallet ${walletId} not found`);
+
+    return;
+  }
 
   let hdPathAccount: HDPathAccount | undefined;
 
@@ -165,17 +171,31 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     return;
   }
 
-  const { seedId: existedSeedId } = hdPathAccount;
+  const { seedId: accountSeedId } = hdPathAccount;
 
   const blockchainId = blockchainCodeToId(blockchain);
   const hdPath = chain.params.hdPath.forAccount(hdPathAccount.accountId).toString();
 
-  const { [hdPath]: address } = yield call(vault.listSeedAddresses, existedSeedId, blockchainId, [hdPath]);
+  const seeds: SeedDescription[] = yield call(vault.listSeeds);
 
-  if (address == null) {
-    console.error(`Cannot find address for seed ${existedSeedId}`);
+  const accountSeedType = seeds.find(({ id }) => id === accountSeedId)?.type;
 
-    return;
+  let address: string | undefined;
+
+  if (accountSeedType === 'ledger') {
+    try {
+      ({ [hdPath]: address } = yield call(vault.listSeedAddresses, accountSeedId, blockchainId, [hdPath]));
+
+      if (address == null) {
+        console.error(`Cannot find address for seed ${accountSeedId}`);
+
+        return;
+      }
+    } catch (exception) {
+      console.error(`Error while getting address for seed ${accountSeedId}:`, exception);
+
+      return;
+    }
   }
 
   try {
@@ -187,8 +207,8 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
         hdPath: hdPath,
         seed: {
           type: 'id',
-          password: seedPassword,
-          value: existedSeedId,
+          password: action.seedPassword,
+          value: accountSeedId,
         },
       },
     };
