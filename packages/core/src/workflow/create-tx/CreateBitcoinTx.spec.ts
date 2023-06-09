@@ -1,7 +1,7 @@
 import { SATOSHIS, Satoshi } from '@emeraldpay/bigamount-crypto';
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { InputUtxo } from '../../blockchains';
-import { CreateBitcoinTx, Output, TxMetric, convertWUToVB } from './CreateBitcoinTx';
+import { BitcoinTxMetric, BitcoinTxOutput, CreateBitcoinTx, convertWUToVB } from './CreateBitcoinTx';
 import { TxTarget, ValidationResult } from './types';
 
 const basicEntry: BitcoinEntry = {
@@ -24,7 +24,7 @@ const restoreEntry: BitcoinEntry = {
   xpub: [],
 };
 
-class TestMetric implements TxMetric {
+class TestMetric implements BitcoinTxMetric {
   readonly inputWeight: number;
   readonly outputWeight: number;
 
@@ -37,7 +37,7 @@ class TestMetric implements TxMetric {
     return inputs * this.inputWeight + outputs * this.outputWeight;
   }
 
-  weightOf(inputs: InputUtxo[], outputs: Output[]): number {
+  weightOf(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): number {
     return this.weight(inputs.length, outputs.length);
   }
 
@@ -53,17 +53,13 @@ class TestMetric implements TxMetric {
 const defaultMetric = new TestMetric(120, 80);
 
 describe('CreateBitcoinTx', () => {
-  const defaultBitcoin = new CreateBitcoinTx(
-    basicEntry,
-    [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-    [],
-  );
+  const defaultBitcoin = new CreateBitcoinTx(basicEntry, 'addrchange', []);
 
   defaultBitcoin.metric = defaultMetric;
   defaultBitcoin.feePrice = 100;
 
   it('create', () => {
-    const act = new CreateBitcoinTx(basicEntry, [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }], []);
+    const act = new CreateBitcoinTx(basicEntry, 'addrchange', []);
 
     expect(act).toBeDefined();
     expect(act.totalToSpend).toBeDefined();
@@ -71,19 +67,23 @@ describe('CreateBitcoinTx', () => {
     expect(act.validate()).not.toBe(ValidationResult.OK);
   });
 
-  it('total zero for empty utxo', () => {
-    expect(defaultBitcoin.totalUtxo([]).toString()).toBe(Satoshi.ZERO.toString());
-  });
+  it('total zero for empty utxo', () => expect(defaultBitcoin.totalUtxo([]).toString()).toBe(Satoshi.ZERO.toString()));
 
-  it('total for single utxo', () => {
+  it('total for single utxo', () =>
     expect(
       defaultBitcoin
-        .totalUtxo([{ txid: '', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'ADDR' }])
+        .totalUtxo([
+          {
+            address: 'ADDR',
+            txid: '',
+            value: Satoshi.fromBitcoin(0.5).encode(),
+            vout: 0,
+          },
+        ])
         .toString(),
-    ).toBe(Satoshi.fromBitcoin(0.5).toString());
-  });
+    ).toBe(Satoshi.fromBitcoin(0.5).toString()));
 
-  it('total for few utxo', () => {
+  it('total for few utxo', () =>
     expect(
       defaultBitcoin
         .totalUtxo([
@@ -92,201 +92,183 @@ describe('CreateBitcoinTx', () => {
           { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
         ])
         .toString(),
-    ).toBe(Satoshi.fromBitcoin(0.5 + 0.61 + 0.756).toString());
-  });
+    ).toBe(Satoshi.fromBitcoin(0.5 + 0.61 + 0.756).toString()));
 
   it('rebalance when have enough', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'ADDR' },
-        { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
-      ],
-    );
-    create.metric = defaultMetric;
-    create.requiredAmount = Satoshi.fromBitcoin(0.97);
-    create.address = 'AAA';
-    create.feePrice = 100 * 1024;
+    const create = new CreateBitcoinTx(basicEntry, 'addrchange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'ADDR' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'ADDR' },
+      { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
+    ]);
 
-    const ok = create.rebalance();
-    expect(ok).toBeTruthy();
+    create.metric = defaultMetric;
+
+    create.toAddress = 'AAA';
+    create.feePrice = 100 * 1024;
+    create.requiredAmount = Satoshi.fromBitcoin(0.97);
+
+    const rebalanced = create.rebalance();
+
+    expect(rebalanced).toBeTruthy();
 
     expect(create.transaction.from.length).toBe(2);
     expect(create.transaction.from[0].txid).toBe('1');
     expect(create.transaction.from[1].txid).toBe('2');
 
-    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.5 + 0.61).toString());
-
     // sending + change
     expect(create.outputs.length).toBe(2);
 
-    expect(create.fees.number.toNumber())
-      // 100 sat per wu
-      // ((2 * 120) + (2 * 80)) * 100 / 4
-      .toBe(10000);
+    // 100 sat per wu, ((2 * 120) + (2 * 80)) * 100 / 4
+    expect(create.fees.number.toNumber()).toBe(10000);
+
     expect(create.fees.getNumberByUnit(SATOSHIS.top).toNumber()).toBe(
       defaultMetric.fees(2, create.outputs.length, create),
     );
 
-    expect(create.change.toString())
-      // 40000 / 10^8 = 0.0004
-      .toBe(Satoshi.fromBitcoin(0.5 + 0.61 - 0.97 - 0.0001).toString());
+    // 40000 / 10^8 = 0.0004
+    expect(create.change.toString()).toBe(Satoshi.fromBitcoin(0.5 + 0.61 - 0.97 - 0.0001).toString());
+    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.5 + 0.61).toString());
 
     expect(create.validate()).toBe(ValidationResult.OK);
   });
 
   it('rebalance when less that enough', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'ADDR' },
-        { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
-      ],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'addr2' },
+      { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'addr3' },
+    ]);
+
+    create.toAddress = 'addrTo';
     create.requiredAmount = Satoshi.fromBitcoin(2);
-    create.address = 'AAA';
+
     const ok = create.rebalance();
+
     expect(ok).toBeFalsy();
+
     expect(create.transaction.from.length).toBe(3);
     expect(create.transaction.from[0].txid).toBe('1');
     expect(create.transaction.from[1].txid).toBe('2');
     expect(create.transaction.from[2].txid).toBe('3');
-    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.5 + 0.61 + 0.756).toString());
+
     expect(create.change.toString()).toBe(Satoshi.ZERO.toString());
+    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.5 + 0.61 + 0.756).toString());
+
     expect(create.validate()).toBe(ValidationResult.INSUFFICIENT_FUNDS);
   });
 
   it('rebalance when no change', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'ADDR' },
-        { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'ADDR' },
-        { txid: '4', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'ADDR' },
-      ],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr2' },
+      { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr3' },
+      { txid: '4', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr4' },
+    ]);
+
     create.metric = defaultMetric;
-    create.requiredAmount = Satoshi.fromBitcoin(0.02 - 0.00008);
+
+    create.toAddress = 'addrTo';
     create.feePrice = 65 * 1024;
-    create.address = 'AAA';
+    create.requiredAmount = Satoshi.fromBitcoin(0.02 - 0.00008);
 
     const ok = create.rebalance();
 
     expect(ok).toBeTruthy();
+
     expect(create.transaction.from.length).toBe(4);
-    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.02).toString());
     expect(create.change.toString()).toBe(Satoshi.ZERO.toString());
+    expect(create.totalToSpend.toString()).toBe(Satoshi.fromBitcoin(0.02).toString());
 
     expect(create.outputs.length).toBe(1);
-    expect(create.outputs[0].address).toBe('AAA');
+    expect(create.outputs[0].address).toBe('addrTo');
     expect(create.outputs[0].amount).toBe(1992000);
 
-    expect(create.fees.toString())
-      // ((4 * 120) + (1 * 80)) * 65 / 4 == 9100 (or 0.000091)
-      // but it doesn't have enough change, only 0.00008
-      .toBe(Satoshi.fromBitcoin(0.00008).toString());
+    // ((4 * 120) + (1 * 80)) * 65 / 4 == 9100 (or 0.000091), but it doesn't have enough change, only 0.00008
+    expect(create.fees.toString()).toBe(Satoshi.fromBitcoin(0.00008).toString());
 
     expect(create.validate()).toBe(ValidationResult.OK);
   });
 
   it('rebalance with send all target', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
+
     create.metric = defaultMetric;
-    create.address = 'AAA';
+
     create.feePrice = 100 * 1024;
+    create.toAddress = 'addrTo';
     create.target = TxTarget.SEND_ALL;
 
     const ok = create.rebalance();
 
     expect(ok).toBeTruthy();
+
     expect(create.requiredAmount.number.toNumber()).toEqual(9992000);
   });
 
   it('simple fee', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
-    create.metric = defaultMetric;
-    create.requiredAmount = Satoshi.fromBitcoin(0.08);
-    create.address = 'AAA';
-    create.feePrice = 100 * 1024;
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
 
-    expect(create.fees.toString())
-      // ((2 * 120) + (2 * 80)) * 100 / 4== 10000
-      .toBe(Satoshi.fromBitcoin(0.0001).toString());
+    create.metric = defaultMetric;
+
+    create.feePrice = 100 * 1024;
+    create.requiredAmount = Satoshi.fromBitcoin(0.08);
+    create.toAddress = 'addrTo';
+
+    // ((2 * 120) + (2 * 80)) * 100 / 4== 10000
+    expect(create.fees.toString()).toBe(Satoshi.fromBitcoin(0.0001).toString());
   });
 
   it('fee when not enough', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
+
     create.metric = defaultMetric;
+
     create.requiredAmount = Satoshi.fromBitcoin(2);
-    create.address = 'AAA';
+    create.toAddress = 'addrTo';
 
     expect(create.fees.toString()).toBe(Satoshi.ZERO.toString());
   });
 
   it('update fee', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
-    create.metric = defaultMetric;
-    create.requiredAmount = Satoshi.fromBitcoin(0.08);
-    create.address = 'AAA';
-    create.feePrice = 100 * 1024;
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
 
-    expect(create.fees.toString())
-      // ((2 * 120) + (2 * 80)) * 100 / 4
-      .toBe(Satoshi.fromBitcoin(0.0001).toString());
+    create.metric = defaultMetric;
+
+    create.feePrice = 100 * 1024;
+    create.requiredAmount = Satoshi.fromBitcoin(0.08);
+    create.toAddress = 'addrTo';
+
+    // ((2 * 120) + (2 * 80)) * 100 / 4
+    expect(create.fees.toString()).toBe(Satoshi.fromBitcoin(0.0001).toString());
 
     create.feePrice = 150 * 1024;
 
-    expect(create.fees.toString())
-      // ((2 * 120) + (2 * 80)) * 150 / 4
-      .toBe(Satoshi.fromBitcoin(0.00015).toString());
+    // ((2 * 120) + (2 * 80)) * 150 / 4
+    expect(create.fees.toString()).toBe(Satoshi.fromBitcoin(0.00015).toString());
   });
 
   it('estimate fees', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
+
     create.metric = defaultMetric;
+
     create.requiredAmount = Satoshi.fromBitcoin(0.08);
-    create.address = 'AAA';
+    create.toAddress = 'addrTo';
 
     // ((2 * 120) + (2 * 80)) * 100 * 1024 / 4 == 10000
     expect(create.estimateFees(100 * 1024).toString()).toBe(Satoshi.fromBitcoin(0.0001).toString());
@@ -296,17 +278,13 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('estimate price', () => {
-    const tx = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addrReceive' },
-        { txid: '2', vout: 1, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addrChange' },
-      ],
-    );
+    const tx = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 1, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
 
     tx.metric = defaultMetric;
-    tx.address = 'addrTo';
+    tx.toAddress = 'addrTo';
     tx.requiredAmount = Satoshi.fromBitcoin(0.08);
 
     expect(tx.estimateVkbPrice(Satoshi.fromBitcoin(0.0001))).toEqual(100 * 1024);
@@ -316,54 +294,44 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('total available', () => {
-    let create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [{ txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' }],
-    );
+    let create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+    ]);
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.05).toString());
 
-    create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-      ],
-    );
+    create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
+    ]);
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.1).toString());
 
-    create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
-        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.06).encode(), address: 'ADDR' },
-        { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.07).encode(), address: 'ADDR' },
-      ],
-    );
+    create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
+      { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.06).encode(), address: 'addr2' },
+      { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.07).encode(), address: 'addr3' },
+    ]);
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.18).toString());
   });
 
   it('creates unsigned', () => {
-    const create = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
-      [{ txid: '1', vout: 0, value: new Satoshi(112233).encode(), address: 'ADDR' }],
-    );
+    const create = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: new Satoshi(112233).encode(), address: 'addr1' },
+    ]);
+
     create.metric = defaultMetric;
-    create.requiredAmount = new Satoshi(80000);
-    create.address = '2to';
+
     create.feePrice = 100 * 1024;
+    create.requiredAmount = new Satoshi(80000);
+    create.toAddress = 'addrTo';
 
     const unsigned = create.create();
 
     expect(unsigned.inputs.length).toBe(1);
     expect(unsigned.inputs[0]).toEqual({
-      address: 'ADDR',
+      address: 'addr1',
       amount: 112233,
       sequence: 4294967280,
       txid: '1',
@@ -376,39 +344,29 @@ describe('CreateBitcoinTx', () => {
 
     expect(unsigned.outputs.length).toBe(2);
     expect(unsigned.outputs[0]).toEqual({
-      address: '2to',
+      address: 'addrTo',
       amount: 80000,
     });
     expect(unsigned.outputs[1]).toEqual({
-      address: 'addrchange',
+      address: 'addrChange',
       amount: 112233 - 80000 - 7000,
       entryId: 'f76416d7-3510-4d80-85df-52e7222e56df-1',
     });
   });
 
   it('creates restored', () => {
-    const tx = new CreateBitcoinTx(
-      restoreEntry,
-      [
-        {
-          address: 'tb1q8grga8c48wa4dsevt0v0gcl6378rfljj6vrz0u',
-          hdPath: "m/84'/1'/0'/1/1",
-          role: 'change',
-        },
-      ],
-      [
-        {
-          address: 'tb1qjg445dvh6krr6gtmuh4eqgua372vxaf4q07nv9',
-          txid: 'fd53023c4a9627c26c5d930f3149890b2eecf4261f409bd1a340454b7dede244',
-          value: '1210185/SAT',
-          vout: 0,
-        },
-      ],
-    );
+    const tx = new CreateBitcoinTx(restoreEntry, 'tb1q8grga8c48wa4dsevt0v0gcl6378rfljj6vrz0u', [
+      {
+        address: 'tb1qjg445dvh6krr6gtmuh4eqgua372vxaf4q07nv9',
+        txid: 'fd53023c4a9627c26c5d930f3149890b2eecf4261f409bd1a340454b7dede244',
+        value: '1210185/SAT',
+        vout: 0,
+      },
+    ]);
 
-    tx.address = 'tb1q2h3wgjasuprzrmcljkpkcyeh69un3r0tzf9nnn';
-    tx.requiredAmount = new Satoshi(1000);
     tx.feePrice = 1067;
+    tx.toAddress = 'tb1q2h3wgjasuprzrmcljkpkcyeh69un3r0tzf9nnn';
+    tx.requiredAmount = new Satoshi(1000);
 
     const unsigned = tx.create();
 
@@ -418,15 +376,13 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with zero fee', () => {
-    const tx = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
-      [{ txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' }],
-    );
+    const tx = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+    ]);
 
-    tx.address = 'addrTo';
-    tx.requiredAmount = new Satoshi(1000);
     tx.feePrice = 0;
+    tx.toAddress = 'addrTo';
+    tx.requiredAmount = new Satoshi(1000);
 
     const unsigned = tx.create();
 
@@ -436,16 +392,12 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with enough inputs for fee', () => {
-    const tx = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
-        { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
-      ],
-    );
+    const tx = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+      { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
+    ]);
 
-    tx.address = 'addrTo';
+    tx.toAddress = 'addrTo';
     tx.requiredAmount = new Satoshi(1000);
     tx.feePrice = 1024;
 
@@ -457,16 +409,12 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with inputs amount equals required amount and zero fee', () => {
-    const tx = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
-        { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
-      ],
-    );
+    const tx = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+      { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
+    ]);
 
-    tx.address = 'addrTo';
+    tx.toAddress = 'addrTo';
     tx.requiredAmount = new Satoshi(2000);
     tx.feePrice = 1024;
 
@@ -478,16 +426,12 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates cancel transaction', () => {
-    const tx = new CreateBitcoinTx(
-      basicEntry,
-      [{ address: 'addrChange', hdPath: "m/84'", role: 'change' }],
-      [
-        { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addrReceive' },
-        { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addrChange' },
-      ],
-    );
+    const tx = new CreateBitcoinTx(basicEntry, 'addrChange', [
+      { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+      { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
+    ]);
 
-    tx.address = 'addrTo';
+    tx.toAddress = 'addrTo';
     tx.requiredAmount = new Satoshi(1000);
     tx.feePrice = 1024;
 
@@ -498,7 +442,7 @@ describe('CreateBitcoinTx', () => {
 
     expect(original.outputs).toEqual(expect.arrayContaining([expect.objectContaining({ address: 'addrTo' })]));
 
-    tx.address = 'addrChange';
+    tx.toAddress = 'addrChange';
     tx.feePrice = 1536;
 
     const cancel = tx.create();

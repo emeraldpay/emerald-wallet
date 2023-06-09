@@ -6,6 +6,7 @@ import {
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
+import { ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import { BroadcastData, GasPrices, SignHandler, StoredTransaction, accounts, transaction } from '@emeraldwallet/store';
 import { Address, Balance, Button, ButtonGroup, FormLabel, FormRow, PasswordInput } from '@emeraldwallet/ui';
 import {
@@ -81,11 +82,11 @@ enum Stages {
 
 interface OwnProps {
   entryId: EntryId | undefined;
+  isCancel?: boolean;
   isHardware: boolean;
   rawTx: BitcoinRawTransaction;
   tx: StoredTransaction;
   goBack(): void;
-  prepareTx?(tx: workflow.CreateBitcoinTx): workflow.CreateBitcoinTx;
   renderNotice(tx: StoredTransaction, unsignedTx: UnsignedBitcoinTx): React.ReactNode;
 }
 
@@ -93,7 +94,7 @@ interface DispatchProps {
   broadcastTransaction(data: BroadcastData): void;
   checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode): Promise<GasPrices<number>>;
-  restoreBtcTx(): Promise<workflow.CreateBitcoinTx>;
+  restoreBtcTx(cancel: boolean): Promise<workflow.BitcoinTx>;
   signTransaction(unsigned: UnsignedBitcoinTx, handler: SignHandler, password?: string): void;
 }
 
@@ -105,17 +106,17 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
   checkGlobalKey,
   getTopFee,
   goBack,
-  prepareTx,
   renderNotice,
   restoreBtcTx,
   signTransaction,
+  isCancel = false,
 }) => {
   const styles = useStyles();
 
   const [initializing, setInitializing] = React.useState(true);
   const [stage, setStage] = React.useState(Stages.SETUP);
 
-  const [restoredTx, setRestoredTx] = React.useState<workflow.CreateBitcoinTx>();
+  const [restoredTx, setRestoredTx] = React.useState<workflow.BitcoinTx>();
 
   const [useStdFee, setUseStdFee] = React.useState(true);
 
@@ -193,7 +194,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
     () => {
       let mounted = true;
 
-      Promise.all([restoreBtcTx(), getTopFee(blockchainCode)])
+      Promise.all([restoreBtcTx(isCancel), getTopFee(blockchainCode)])
         .then(([btcTx, { max: currentMaxFee }]) => {
           if (mounted) {
             const { vkbPrice } = btcTx;
@@ -212,7 +213,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
 
             btcTx.feePrice = minimalFee;
 
-            setRestoredTx(prepareTx?.(btcTx) ?? btcTx);
+            setRestoredTx(btcTx);
 
             setInitializing(false);
           }
@@ -310,7 +311,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing || tx.state > State.SUBMITTED}
+                disabled={initializing || restoredTx?.validate() !== ValidationResult.OK || tx.state > State.SUBMITTED}
                 label="Create Transaction"
                 onClick={() => setStage(Stages.SIGN)}
               />
@@ -384,8 +385,8 @@ export default connect<unknown, DispatchProps, OwnProps>(
     getTopFee(blockchain) {
       return dispatch(transaction.actions.getTopFee(blockchain));
     },
-    restoreBtcTx() {
-      return dispatch(transaction.actions.restoreBtcTx(rawTx, tx));
+    restoreBtcTx(cancel) {
+      return dispatch(transaction.actions.restoreBtcTx(rawTx, tx, cancel));
     },
     signTransaction(unsigned, handler, password) {
       if (entryId == null) {

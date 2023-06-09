@@ -87,18 +87,7 @@ storiesOf('CreateTx Ethereum', module)
 
 const bitcoinTx = new workflow.CreateBitcoinTx(
   wallet3.entries[1] as BitcoinEntry,
-  [
-    {
-      address: 'bc1qvnvpqr9d6k4cvz9yy842zr73kcmqcshl8gvgn6',
-      hdPath: "m/84'/0'/3'/0/3",
-      role: 'change',
-    },
-    {
-      address: 'bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4',
-      hdPath: "m/84'/0'/3'/0/2",
-      role: 'receive',
-    },
-  ],
+  'bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4',
   [
     {
       txid: '75be7ffb8726bc193f20c2225cdac3b014de9bbc92f1d3c45e2595ad147d0fc2',
@@ -115,7 +104,7 @@ const bitcoinTx = new workflow.CreateBitcoinTx(
   ],
 );
 bitcoinTx.requiredAmount = Satoshi.fromBitcoin(1.2);
-bitcoinTx.address = 'bc1q5c4g4njf4g7a2ugu0tq5rjjdg3j0yexus7x3f4';
+bitcoinTx.toAddress = 'bc1q5c4g4njf4g7a2ugu0tq5rjjdg3j0yexus7x3f4';
 
 storiesOf('CreateTx Bitcoin', module)
   .addDecorator(
