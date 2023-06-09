@@ -3,10 +3,11 @@ import {
   BackendApi,
   Blockchains,
   Coin,
-  CoinTicker,
   amountFactory,
   blockchainCodeToId,
+  getCoinAsset,
   isBitcoin,
+  isEthereumCoinTicker,
 } from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from '@redux-saga/core/effects';
 import { Action } from 'redux';
@@ -27,7 +28,7 @@ function* loadAddresses(
     hdPaths.push(baseHdPath.asAccount().toString());
   }
 
-  let addresses: { [p: string]: string } = {};
+  let addresses: { [hdPath: string]: string } = {};
 
   try {
     addresses = yield call(vault.listSeedAddresses, seed, blockchainCodeToId(blockchain), hdPaths);
@@ -38,8 +39,8 @@ function* loadAddresses(
   // Saga doesn't support thunk action, so we make conversion to unknown type and then to Action type
   yield put(actions.setAddresses(seed, blockchain, addresses) as unknown as Action);
 
-  for (const [hdpath, address] of Object.entries(addresses)) {
-    yield put(actions.loadBalances(seed, blockchain, hdpath, address, assets));
+  for (const [hdPath, address] of Object.entries(addresses)) {
+    yield put(actions.loadBalances(seed, blockchain, hdPath, address, assets));
   }
 }
 
@@ -53,7 +54,7 @@ function* loadBalances(
     backendApi.getBalance,
     blockchain,
     address,
-    assets.map((asset) => (asset === CoinTicker.ETH ? Coin.ETHER : asset)),
+    assets.map((asset) => (isEthereumCoinTicker(asset) ? Coin.ETHER : asset)),
   );
 
   for (const asset of Object.keys(balances)) {
@@ -63,7 +64,7 @@ function* loadBalances(
         blockchain,
         hdpath,
         address,
-        asset === Coin.ETHER ? CoinTicker.ETH : asset,
+        getCoinAsset(asset, blockchain),
         amountReader(balances[asset]).encode(),
       ),
     );
