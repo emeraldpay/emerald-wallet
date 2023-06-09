@@ -16,9 +16,8 @@ import {
   blockchainIdToCode,
 } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Address, Back, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
+import { Address, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Table } from '@emeraldwallet/ui';
 import {
-  Button,
   Grid,
   MenuItem,
   TableBody,
@@ -287,16 +286,19 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
             <Grid item>
               <ButtonGroup>
                 <Button
-                  color="primary"
+                  primary
                   disabled={loading || counter === 0}
+                  label="Back"
                   variant="outlined"
                   onClick={() => setCounter(counter - 1)}
-                >
-                  Back
-                </Button>
-                <Button color="primary" disabled={loading} variant="outlined" onClick={() => setCounter(counter + 1)}>
-                  Next
-                </Button>
+                />
+                <Button
+                  primary
+                  disabled={loading}
+                  label="Next"
+                  variant="outlined"
+                  onClick={() => setCounter(counter + 1)}
+                />
               </ButtonGroup>
             </Grid>
           </Grid>
@@ -305,24 +307,30 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
       title="Additional Addresses"
       leftIcon={<Back onClick={goBack} />}
     >
-      {stage === Stage.UNLOCK &&
-        (seed?.type === 'ledger' ? (
-          <WaitLedger fullSize onConnected={() => setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST)} />
-        ) : (
-          <>
-            <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>
-            <Grid container alignItems="center" spacing={1}>
-              <Grid item xs={10}>
-                <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
-              </Grid>
-              <Grid item xs={2}>
-                <Button color="primary" variant="contained" onClick={onSeedUnlock}>
-                  Unlock
-                </Button>
-              </Grid>
-            </Grid>
-          </>
-        ))}
+      {stage === Stage.UNLOCK && (
+        <>
+          {seed?.type === 'ledger' ? (
+            <WaitLedger fullSize onConnected={() => setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST)} />
+          ) : (
+            <>
+              <FormRow>
+                <FormLabel />
+                <Typography>Enter password to unlock seed {seed?.label ?? seed?.id}</Typography>
+              </FormRow>
+              <FormRow>
+                <FormLabel>Password</FormLabel>
+                <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSeedUnlock} />
+              </FormRow>
+            </>
+          )}
+          <FormRow last>
+            <ButtonGroup classes={{ container: styles.buttons }}>
+              <Button label="Cancel" onClick={goBack} />
+              {seed?.type !== 'ledger' && <Button primary label="Unlock" onClick={onSeedUnlock} />}
+            </ButtonGroup>
+          </FormRow>
+        </>
+      )}
       {stage === Stage.OPTIONS && (
         <>
           <FormRow>
@@ -342,9 +350,8 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
           </FormRow>
           <FormRow last>
             <ButtonGroup classes={{ container: styles.buttons }}>
-              <Button color="primary" variant="contained" onClick={() => setStage(Stage.LIST)}>
-                Next
-              </Button>
+              <Button label="Cancel" onClick={goBack} />
+              <Button primary label="Next" onClick={() => setStage(Stage.LIST)} />
             </ButtonGroup>
           </FormRow>
         </>
@@ -384,14 +391,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
                           <Address address={address} />
                         </TableCell>
                         <TableCell className={styles.tableCellAction}>
-                          <Button
-                            color="primary"
-                            disabled={existed}
-                            variant="contained"
-                            onClick={() => onAddAddress(seedAddress)}
-                          >
-                            Add
-                          </Button>
+                          <Button primary disabled={existed} label="Add" onClick={() => onAddAddress(seedAddress)} />
                         </TableCell>
                       </TableRow>
                     );

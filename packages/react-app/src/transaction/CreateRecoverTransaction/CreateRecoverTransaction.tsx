@@ -35,6 +35,7 @@ import {
   Slider,
   Switch,
   TextField,
+  Typography,
   createStyles,
   makeStyles,
 } from '@material-ui/core';
@@ -490,15 +491,18 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       )}
       {stage === Stages.SIGN && (
         <>
-          <div>
-            Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
-          </div>
+          <FormRow>
+            <FormLabel />
+            <Typography>
+              Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
+            </Typography>
+          </FormRow>
           {isHardware ? (
             <WaitLedger fullSize blockchain={transaction.blockchain} onConnected={() => onSignTransaction()} />
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} />
+              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
             </FormRow>
           )}
           <FormRow last>

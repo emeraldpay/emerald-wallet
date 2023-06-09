@@ -4,8 +4,8 @@ import { Button, ButtonGroup, FormLabel, FormRow, PasswordInput } from '@emerald
 import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import SelectCoins from './SelectCoins';
 import WaitLedger from '../ledger/WaitLedger';
+import SelectCoins from './SelectCoins';
 
 enum Stages {
   SELECT = 0,
@@ -84,7 +84,7 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
               </FormRow>
               <FormRow last>
                 <FormLabel>Seed password</FormLabel>
-                <PasswordInput minLength={1} password={password} onChange={handlePasswordChange} />
+                <PasswordInput initialValue={password} minLength={1} onChange={handlePasswordChange} />
               </FormRow>
             </>
           ))}

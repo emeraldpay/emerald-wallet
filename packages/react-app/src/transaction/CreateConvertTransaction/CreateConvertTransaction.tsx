@@ -21,6 +21,7 @@ import {
   FormHelperText,
   Slider,
   Switch,
+  Typography,
   createStyles,
   makeStyles,
 } from '@material-ui/core';
@@ -64,9 +65,6 @@ const useStyles = makeStyles(
     },
     gasPriceValueLabel: {
       fontSize: '0.7em',
-    },
-    message: {
-      marginBottom: 20,
     },
     buttons: {
       display: 'flex',
@@ -580,15 +578,18 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       )}
       {stage === Stages.SIGN && (
         <>
-          <div className={styles.message}>
-            Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
-          </div>
+          <FormRow>
+            <FormLabel />
+            <Typography>
+              Convert {formatAmount(currentTx.amount, 6)} with fee {formatAmount(currentTx.getFees(), 6)}
+            </Typography>
+          </FormRow>
           {isHardware ? (
             <WaitLedger fullSize blockchain={currentTx.blockchain} onConnected={() => onSignTransaction()} />
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} />
+              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
             </FormRow>
           )}
           <FormRow last>

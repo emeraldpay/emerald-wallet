@@ -391,21 +391,23 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
               </FormRow>
               <FormRow>
                 <FormLabel>Password</FormLabel>
-                <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
-              </FormRow>
-              <FormRow last>
-                <ButtonGroup classes={{ container: styles.buttons }}>
-                  <Button label="Cancel" onClick={goBack} />
-                  <Button
-                    disabled={password?.length === 0}
-                    label="Sign Message"
-                    primary={true}
-                    onClick={onSignMessage}
-                  />
-                </ButtonGroup>
+                <PasswordInput
+                  error={passwordError}
+                  minLength={1}
+                  onChange={setPassword}
+                  onPressEnter={onSignMessage}
+                />
               </FormRow>
             </>
           )}
+          <FormRow last>
+            <ButtonGroup classes={{ container: styles.buttons }}>
+              <Button label="Cancel" onClick={goBack} />
+              {seed?.type !== 'ledger' && (
+                <Button disabled={password?.length === 0} label="Sign Message" primary={true} onClick={onSignMessage} />
+              )}
+            </ButtonGroup>
+          </FormRow>
         </>
       )}
     </Page>

@@ -1,77 +1,58 @@
-import {Input} from '../Input';
-import {ViewVisible as EyeIcon} from '../../../icons';
 import IconButton from '@material-ui/core/IconButton';
 import * as React from 'react';
-import {createStyles} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {WithDefaults} from "@emeraldwallet/core";
+import { ViewVisible as EyeIcon } from '../../../icons';
+import { Input } from '../Input';
 
-const useStyles = makeStyles(
-  createStyles({})
-);
-
-// Component properties
 interface OwnProps {
-  password?: string;
-  minLength?: number;
-  onChange?: (password: string) => void;
-  error?: string;
   disabled?: boolean;
+  error?: string;
+  initialValue?: string;
+  minLength?: number;
   showPlaceholder?: boolean;
+  onChange?(password: string): void;
+  onPressEnter?(): void;
 }
 
-const defaults: Partial<OwnProps> = {
-  password: "",
-  minLength: 8,
-  showPlaceholder: true,
-}
-
-/**
- *
- */
-const PasswordInput = ((props: OwnProps) => {
-  const styles = useStyles();
-  props = WithDefaults(props, defaults);
-  const {minLength, showPlaceholder} = props;
-  const {error, password} = props;
+const PasswordInput: React.FC<OwnProps> = ({
+  disabled,
+  error,
+  initialValue,
+  onChange,
+  onPressEnter,
+  minLength = 8,
+  showPlaceholder = true,
+}) => {
+  const [password, setPassword] = React.useState(initialValue);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [current, setCurrent] = React.useState(password);
 
-  const iconStyle = {
-    color: showPassword ? 'green' : ''
+  const onPasswordChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+    setPassword(value);
+
+    onChange(value.length < minLength ? '' : value);
   };
 
-  const EyeIconButton = (
-    <IconButton tabIndex={-1} style={iconStyle} onClick={() => setShowPassword(!showPassword)}>
-      <EyeIcon/>
+  const showPasswordIcon = (
+    <IconButton
+      style={{ color: showPassword ? 'green' : undefined }}
+      tabIndex={-1}
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      <EyeIcon />
     </IconButton>
   );
 
-  const tooShort = password && (password.length < minLength);
-  const placeHolderStr = showPlaceholder ? `At least ${minLength} characters` : '';
-  const errorText = (tooShort && `Password must be minimum ${minLength} characters.`) || error;
-
-  const onChange = (e) => {
-    const value: string = e.target.value || "";
-    setCurrent(value);
-    if (value.length >= minLength) {
-      props.onChange(value);
-    } else {
-      props.onChange("");
-    }
-  }
-
   return (
     <Input
-      disabled={props.disabled}
-      value={current}
-      errorText={errorText}
-      rightIcon={EyeIconButton}
-      onChange={onChange}
-      placeholder={placeHolderStr}
+      disabled={disabled}
+      errorText={initialValue?.length < minLength ? `Password must be minimum ${minLength} characters` : error}
+      placeholder={showPlaceholder ? `At least ${minLength} characters` : undefined}
+      rightIcon={showPasswordIcon}
       type={showPassword ? 'text' : 'password'}
+      value={password}
+      onChange={onPasswordChange}
+      onPressEnter={onPressEnter}
     />
   );
-})
+};
 
 export default PasswordInput;

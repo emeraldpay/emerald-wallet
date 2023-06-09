@@ -4,7 +4,7 @@ import { ChangeType } from '@emeraldwallet/core/lib/persistentState';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { zeroAmountFor } from '@emeraldwallet/store/lib/accounts/selectors';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import ModifyBitcoinTransaction from '../ModifyBitcoinTransaction';
 
@@ -44,10 +44,10 @@ const SpeedUpBitcoinTransaction: React.FC<OwnProps> = ({ entryId, isHardware, ra
         return (
           <FormRow>
             <FormLabel />
-            <div>
+            <Typography>
               Accelerating transaction <span className={styles.hash}>{tx.txId}</span> with an extra{' '}
               {formatAmount(amountFactory(blockchainCode)(unsignedTx.fee).minus(oldFee))} fee for faster processing.
-            </div>
+            </Typography>
           </FormRow>
         );
       }}
