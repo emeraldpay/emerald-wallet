@@ -639,7 +639,8 @@ function extractUtxo(
 export function restoreBtcTx(
   rawTx: BitcoinRawTransaction,
   tx: StoredTransaction,
-): Dispatched<workflow.CreateBitcoinTx> {
+  cancel = false,
+): Dispatched<workflow.BitcoinTx> {
   return async (dispatch, getState, extra) => {
     const entries = getBtcTxEntries(getState(), tx);
 
@@ -679,7 +680,7 @@ export function restoreBtcTx(
       roleIndexes.map(({ index, role }) => extra.api.vault.listEntryAddresses(entry.id, role, 0, index)),
     );
 
-    let addresses = entryAddresses
+    const addresses = entryAddresses
       .flat()
       .filter(
         ({ address }) => rawTx.vout.find(({ scriptPubKey: { address: txAddress } }) => address === txAddress) != null,
@@ -700,12 +701,24 @@ export function restoreBtcTx(
       throw new Error('Currently supported only single receiver address');
     }
 
-    if (addresses.length === 0) {
-      const nextEntryAddresses = await Promise.all(
-        roleIndexes.map(({ index, role }) => extra.api.vault.listEntryAddresses(entry.id, role, index, 1)),
+    let changeAddress: string | undefined;
+
+    if (addresses.length > 0) {
+      changeAddress = addresses.find(({ role }) => role === 'change')?.address;
+    }
+
+    if (changeAddress == null) {
+      const nextChangeAddresses = await Promise.all(
+        roleIndexes
+          .filter(({ role }) => role === 'change')
+          .map(({ index, role }) => extra.api.vault.listEntryAddresses(entry.id, role, index, 1)),
       );
 
-      addresses = nextEntryAddresses.flat();
+      [{ address: changeAddress }] = nextChangeAddresses.flat();
+    }
+
+    if (changeAddress == null) {
+      throw new Error('Cannot found change address');
     }
 
     const [
@@ -715,7 +728,9 @@ export function restoreBtcTx(
       },
     ] = outputs;
 
-    const restoredTx = new workflow.CreateBitcoinTx(entry, addresses, txUtxo.concat(restUtxo));
+    const TxClass = cancel ? workflow.CreateBitcoinCancelTx : workflow.CreateBitcoinTx;
+
+    const restoredTx = new TxClass(entry, changeAddress, txUtxo.concat(restUtxo));
 
     const decoder = amountDecoder(blockchainCode);
     const zeroAmount = zeroAmountFor(blockchainCode);
@@ -726,7 +741,7 @@ export function restoreBtcTx(
     const inputAmount = txUtxo.reduce((carry, { value }) => carry.plus(decoder(value)), zeroAmount);
     const outputAmount = rawTx.vout.reduce((carry, { value }) => carry.plus(fromBitcoin(value)), zeroAmount);
 
-    restoredTx.address = address;
+    restoredTx.toAddress = address;
     restoredTx.requiredAmount = fromBitcoin(amount);
     restoredTx.feePrice = restoredTx.estimateVkbPrice(inputAmount.minus(outputAmount));
 
