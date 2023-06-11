@@ -25,9 +25,8 @@ interface ConnectionState {
   connectedAt: Date;
   authenticated: boolean;
   blockchainConnected: boolean;
-  diagConnected: boolean;
-  pricesConnected: boolean;
-  transactionConnected: boolean;
+  marketConnected: boolean;
+  monitoringConnected: boolean;
 }
 
 const PERIOD_OK = 20000;
@@ -39,7 +38,7 @@ const log = Logger.forCategory('ApiAccess');
 export class EmeraldApiAccess {
   public readonly address: string;
   public readonly blockchainClient: BlockchainClient;
-  public readonly pricesClient: MarketClient;
+  public readonly marketClient: MarketClient;
   public readonly transactionClient: TransactionClient;
 
   private readonly credentials: CredentialsContext;
@@ -59,7 +58,7 @@ export class EmeraldApiAccess {
       versions.appLocale,
     ].join('; ');
 
-    const agent = [
+    const agents = [
       `EmeraldWallet/${versions.appVersion} (+https://emerald.cash)`,
       `Electron/${versions.electronVersion} (${platform})`,
       `Chrome/${versions.chromeVersion}`,
@@ -69,21 +68,20 @@ export class EmeraldApiAccess {
       connectedAt: new Date(),
       authenticated: false,
       blockchainConnected: false,
-      diagConnected: false,
-      pricesConnected: false,
-      transactionConnected: false,
+      marketConnected: false,
+      monitoringConnected: false,
     };
 
-    this.credentials = emeraldCredentials(address, agent, id);
+    this.credentials = emeraldCredentials(address, agents, id);
 
     const channelCredentials = this.credentials.getChannelCredentials();
 
-    this.blockchainClient = new BlockchainClient(address, channelCredentials, agent);
-    this.monitoringClient = new MonitoringClient(address, channelCredentials, agent);
-    this.pricesClient = new MarketClient(address, channelCredentials, agent);
-    this.transactionClient = new TransactionClient(address, channelCredentials, agent);
+    this.blockchainClient = new BlockchainClient(address, channelCredentials, agents);
+    this.marketClient = new MarketClient(address, channelCredentials, agents);
+    this.monitoringClient = new MonitoringClient(address, channelCredentials, agents);
+    this.transactionClient = new TransactionClient(address, channelCredentials, agents);
 
-    this.credentials.setListener((status: AuthenticationStatus) => {
+    this.credentials.setListener((status) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
       this.verifyConnection();
     });
@@ -93,18 +91,13 @@ export class EmeraldApiAccess {
       this.verifyConnection();
     });
 
-    this.pricesClient.setConnectionListener((status) => {
-      this.connectionState.pricesConnected = status === ConnectionStatus.CONNECTED;
+    this.marketClient.setConnectionListener((status) => {
+      this.connectionState.marketConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
 
     this.monitoringClient.setConnectionListener((status) => {
-      this.connectionState.diagConnected = status === ConnectionStatus.CONNECTED;
-      this.verifyConnection();
-    });
-
-    this.transactionClient.setConnectionListener((status) => {
-      this.connectionState.transactionConnected = status === ConnectionStatus.CONNECTED;
+      this.connectionState.monitoringConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
 
@@ -121,7 +114,7 @@ export class EmeraldApiAccess {
   }
 
   public newPricesListener(): PriceListener {
-    return new PriceListener(this.pricesClient);
+    return new PriceListener(this.marketClient);
   }
 
   public statusListener(listener: StatusListener): void {
@@ -136,8 +129,8 @@ export class EmeraldApiAccess {
     this.listeners.forEach((listener) => {
       try {
         listener(status);
-      } catch (e) {
-        log.error('Failed to notify listener', e);
+      } catch (exception) {
+        log.error('Failed to notify listener', exception);
       }
     });
   }
@@ -152,7 +145,7 @@ export class EmeraldApiAccess {
     const status = this.connectionState;
 
     const connected =
-      status.authenticated && status.blockchainConnected && status.pricesConnected && status.diagConnected;
+      status.authenticated && status.blockchainConnected && status.marketConnected && status.monitoringConnected;
 
     if (!connected) {
       this.verifyOffline();

@@ -89,7 +89,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
         const appTitle = Blockchains[blockchain].getTitle();
 
         return (
-          <Skeleton variant="text" width={380} height={20} className={styles.addressSkeleton}>
+          <Skeleton className={styles.addressSkeleton} height={20} width={380} variant="text">
             Open {appTitle} App on Ledger
           </Skeleton>
         );
@@ -102,8 +102,8 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
   const renderBalance = React.useCallback(
     (item: IAddressState) => {
-      if (item.balance == null || item.balance.length == 0) {
-        return <Skeleton variant="text" width={80} height={12} className={styles.balanceSkeleton} />;
+      if (item.balance == null || item.balance.length === 0) {
+        return <Skeleton className={styles.balanceSkeleton} height={12} width={80} variant="text" />;
       }
 
       const amountReader = amountDecoder<BigAmount>(item.blockchain);
