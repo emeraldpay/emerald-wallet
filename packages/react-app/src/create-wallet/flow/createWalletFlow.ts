@@ -5,11 +5,11 @@ import { ImportPkType } from '@emeraldwallet/ui';
 import {
   KeySourceType,
   KeysSource,
+  Options,
   Result,
   SeedCreate,
   StepDescription,
   StepDetails,
-  Options,
   defaultResult,
   isLedger,
   isLedgerStart,
@@ -22,6 +22,7 @@ import {
 
 export enum STEP_CODE {
   CREATED = 'created',
+  CREATING = 'creating',
   KEY_SOURCE = 'keySource',
   LEDGER_OPEN = 'ledgerOpen',
   LOCK_SEED = 'lockSeed',
@@ -35,29 +36,25 @@ export enum STEP_CODE {
 }
 
 const STEPS: { [key in STEP_CODE]: StepDescription } = {
+  created: {
+    code: STEP_CODE.CREATED,
+    title: 'Wallet Created',
+  },
+  creating: {
+    code: STEP_CODE.CREATING,
+    title: 'Creating Wallet',
+  },
   keySource: {
     code: STEP_CODE.KEY_SOURCE,
     title: 'Choose Key Source',
   },
-  options: {
-    code: STEP_CODE.OPTIONS,
-    title: 'Wallet Options',
+  ledgerOpen: {
+    code: STEP_CODE.LEDGER_OPEN,
+    title: 'Connect to Ledger',
   },
-  selectCoins: {
-    code: STEP_CODE.SELECT_BLOCKCHAIN,
-    title: 'Select Blockchains',
-  },
-  unlockSeed: {
-    code: STEP_CODE.UNLOCK_SEED,
-    title: 'Unlock Seed',
-  },
-  selectAccount: {
-    code: STEP_CODE.SELECT_HD_ACCOUNT,
-    title: 'Select HD Account',
-  },
-  created: {
-    code: STEP_CODE.CREATED,
-    title: 'Wallet Created',
+  lockSeed: {
+    code: STEP_CODE.LOCK_SEED,
+    title: 'Save Secret Phrase',
   },
   mnemonicGenerate: {
     code: STEP_CODE.MNEMONIC_GENERATE,
@@ -67,17 +64,25 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
     code: STEP_CODE.MNEMONIC_IMPORT,
     title: 'Import Secret Phrase',
   },
-  lockSeed: {
-    code: STEP_CODE.LOCK_SEED,
-    title: 'Save Secret Phrase',
+  options: {
+    code: STEP_CODE.OPTIONS,
+    title: 'Wallet Options',
   },
   pkImport: {
     code: STEP_CODE.PK_IMPORT,
     title: 'Import Private Key',
   },
-  ledgerOpen: {
-    code: STEP_CODE.LEDGER_OPEN,
-    title: 'Connect to Ledger',
+  selectAccount: {
+    code: STEP_CODE.SELECT_HD_ACCOUNT,
+    title: 'Select HD Account',
+  },
+  selectCoins: {
+    code: STEP_CODE.SELECT_BLOCKCHAIN,
+    title: 'Select Blockchains',
+  },
+  unlockSeed: {
+    code: STEP_CODE.UNLOCK_SEED,
+    title: 'Unlock Seed',
   },
 };
 
@@ -135,6 +140,7 @@ export class CreateWalletFlow {
       result.push(STEPS[STEP_CODE.SELECT_HD_ACCOUNT]);
     }
 
+    result.push(STEPS[STEP_CODE.CREATING]);
     result.push(STEPS[STEP_CODE.CREATED]);
 
     return result;
@@ -232,16 +238,18 @@ export class CreateWalletFlow {
       } else if (isPk(this.result.type)) {
         this.onCreate(this.result);
 
-        copy.step = STEP_CODE.CREATED;
+        copy.step = STEP_CODE.CREATING;
       } else if (isLedger(this.result.type)) {
         copy.step = STEP_CODE.SELECT_HD_ACCOUNT;
       }
     } else if (this.step == STEP_CODE.SELECT_HD_ACCOUNT) {
       this.onCreate(this.result);
 
-      copy.step = STEP_CODE.CREATED;
+      copy.step = STEP_CODE.CREATING;
     } else if (this.step == STEP_CODE.PK_IMPORT) {
       copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
+    } else if (this.step === STEP_CODE.CREATING) {
+      copy.step = STEP_CODE.CREATED;
     }
 
     return copy;
@@ -265,6 +273,14 @@ export class CreateWalletFlow {
 
     copy.result = { ...copy.result, type };
     copy.step = STEP_CODE.OPTIONS;
+
+    return copy;
+  }
+
+  applyReset(): CreateWalletFlow {
+    const copy = this.copy();
+
+    copy.step = STEP_CODE.KEY_SOURCE;
 
     return copy;
   }
@@ -389,6 +405,14 @@ export class CreateWalletFlow {
     };
 
     copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
+
+    return copy;
+  }
+
+  applyCreated(): CreateWalletFlow {
+    const copy = this.copy();
+
+    copy.step = STEP_CODE.CREATED;
 
     return copy;
   }

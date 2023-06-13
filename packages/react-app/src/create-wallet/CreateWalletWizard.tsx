@@ -17,16 +17,17 @@ import {
 import * as bip39 from 'bip39';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Finish from './Finish';
-import { CreateWalletFlow, STEP_CODE } from './flow/createWalletFlow';
-import { Result, isPk, isPkRaw } from './flow/types';
-import SaveMnemonic from './SaveMnemonic';
-import SelectKeySource from './SelectKeySource';
-import WalletOptions from './WalletOptions';
 import SelectCoins from '../create-account/SelectCoins';
 import SelectHDPath from '../create-account/SelectHDPath';
 import UnlockSeed from '../create-account/UnlockSeed';
 import WaitLedger from '../ledger/WaitLedger';
+import { CreateWalletFlow, STEP_CODE } from './flow/createWalletFlow';
+import { Result, isPk, isPkRaw } from './flow/types';
+import Created from './steps/Created';
+import Creating from './steps/Creating';
+import SaveMnemonic from './steps/SaveMnemonic';
+import SelectKeySource from './steps/SelectKeySource';
+import WalletOptions from './steps/WalletOptions';
 
 const useStyles = makeStyles(
   createStyles({
@@ -96,25 +97,33 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
 
   const prevAddresses = React.useRef<HDPathAddresses>({});
 
-  const [walletId, setWalletId] = React.useState('');
+  const [walletId, setWalletId] = React.useState<string | undefined>();
 
   const [step, setStep] = React.useState(
     new CreateWalletFlow((result) =>
       onCreate(result)
-        .then((id) => setWalletId(id))
+        .then((id) => {
+          setWalletId(id);
+
+          applyWithState(step.applyCreated)();
+        })
         .catch(onError),
     ),
   );
 
-  const onReset = React.useCallback(() => {
+  const onReset = (): void => {
     setStep(
       new CreateWalletFlow((result) =>
         onCreate(result)
-          .then((id) => setWalletId(id))
+          .then((id) => {
+            setWalletId(id);
+
+            applyWithState(step.applyReset)();
+          })
           .catch(onError),
       ),
     );
-  }, [onCreate, onError]);
+  };
 
   React.useEffect(() => {
     const { current: oldAddresses } = prevAddresses;
@@ -216,29 +225,46 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
         onChange={applyWithState(step.applyAccount)}
       />
     );
+  } else if (page.code === STEP_CODE.CREATING) {
+    activeStepPage = <Creating />;
   } else if (page.code === STEP_CODE.CREATED) {
-    activeStepPage = <Finish id={walletId} />;
+    if (walletId == null) {
+      throw new Error('Invalid state: wallet id is undefined');
+    }
+
+    activeStepPage = <Created walletId={walletId} />;
   }
 
   const stepper = (
     <Stepper activeStep={page.index} alternativeLabel={true}>
-      {step.getSteps().map((it) => (
-        <Step key={it.code}>
-          <StepLabel>{it.title}</StepLabel>
+      {step.getSteps().map((item) => (
+        <Step key={item.code}>
+          <StepLabel>{item.title}</StepLabel>
         </Step>
       ))}
     </Stepper>
   );
 
-  let controls;
+  let controls: React.ReactNode;
 
-  if (walletId) {
-    controls = <Button primary label="Open Wallet" onClick={() => onOpen(walletId)} />;
+  if (page.code === STEP_CODE.CREATING || page.code === STEP_CODE.CREATED) {
+    controls = (
+      <Button
+        primary
+        disabled={walletId == null}
+        label="Open Wallet"
+        onClick={() => {
+          if (walletId != null) {
+            onOpen(walletId);
+          }
+        }}
+      />
+    );
   } else {
     controls = (
       <ButtonGroup>
         {(hasWallets || page.code !== STEP_CODE.KEY_SOURCE) && (
-          <Button disabled={page.code === STEP_CODE.CREATED} label="Cancel" onClick={hasWallets ? onCancel : onReset} />
+          <Button label="Cancel" onClick={hasWallets ? onCancel : onReset} />
         )}
         <Button primary disabled={!step.canGoNext()} label="Next" onClick={() => applyWithState(step.applyNext)()} />
       </ButtonGroup>
