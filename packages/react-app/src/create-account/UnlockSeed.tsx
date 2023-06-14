@@ -55,10 +55,10 @@ const Component: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verif
           <Grid container alignItems="center" spacing={1}>
             <Grid item xs>
               <PasswordInput
-                showPlaceholder={false}
-                minLength={1}
                 disabled={verifying}
-                password={password}
+                initialValue={password}
+                minLength={1}
+                showPlaceholder={false}
                 onChange={setPassword}
               />
             </Grid>

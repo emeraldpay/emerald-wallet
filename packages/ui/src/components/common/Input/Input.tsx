@@ -34,6 +34,7 @@ interface OwnProps {
   type?: string;
   value?: string | number;
   onChange?(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
+  onPressEnter?(): void;
 }
 
 export const Input: React.FC<OwnProps> = ({
@@ -51,6 +52,7 @@ export const Input: React.FC<OwnProps> = ({
   type,
   value,
   onChange,
+  onPressEnter,
 }) => {
   let props: TextFieldProps = { InputProps: {} };
 
@@ -85,6 +87,11 @@ export const Input: React.FC<OwnProps> = ({
       type={type}
       value={value ?? ''}
       onChange={onChange}
+      onKeyDown={({ key }) => {
+        if (onPressEnter != null && key === 'Enter') {
+          onPressEnter();
+        }
+      }}
     />
   );
 };

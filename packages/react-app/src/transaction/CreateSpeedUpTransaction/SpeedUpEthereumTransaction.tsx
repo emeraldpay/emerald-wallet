@@ -27,6 +27,7 @@ import {
   FormHelperText,
   Slider,
   Switch,
+  Typography,
   createStyles,
   makeStyles,
 } from '@material-ui/core';
@@ -69,9 +70,6 @@ const useStyles = makeStyles(
       display: 'flex',
       flex: 1,
       flexDirection: 'column',
-    },
-    message: {
-      marginBottom: 20,
     },
     buttons: {
       display: 'flex',
@@ -398,13 +396,16 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
       )}
       {stage === Stages.SIGN && (
         <>
-          <div className={styles.message}>Speed up transaction {ethTx.hash}</div>
+          <FormRow>
+            <FormLabel />
+            <Typography>Speed up transaction {ethTx.hash}</Typography>
+          </FormRow>
           {isHardware ? (
             <WaitLedger fullSize blockchain={ethTx.blockchain} onConnected={() => onSignTransaction} />
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} />
+              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
             </FormRow>
           )}
           <FormRow last>

@@ -3,7 +3,7 @@ import { BitcoinRawTransaction, amountFactory, blockchainIdToCode, formatAmount 
 import { StoredTransaction } from '@emeraldwallet/store';
 import { zeroAmountFor } from '@emeraldwallet/store/lib/accounts/selectors';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import ModifyBitcoinTransaction from '../ModifyBitcoinTransaction';
 
@@ -48,10 +48,10 @@ const CancelBitcoinTransaction: React.FC<OwnProps> = ({ entryId, isHardware, raw
         return (
           <FormRow>
             <FormLabel />
-            <div>
+            <Typography>
               Reverting transaction <span className={styles.hash}>{tx.txId}</span> and returning back{' '}
               {formatAmount(amount)}. With {formatAmount(factory(unsignedTx.fee))} fee applied for reversal.
-            </div>
+            </Typography>
           </FormRow>
         );
       }}

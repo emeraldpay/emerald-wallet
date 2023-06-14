@@ -63,9 +63,6 @@ const useStyles = makeStyles(
     inputField: {
       flexGrow: 5,
     },
-    notice: {
-      marginBottom: 20,
-    },
     buttons: {
       display: 'flex',
       justifyContent: 'end',
@@ -323,13 +320,13 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
         <>
           {stage === Stages.SIGN && (
             <>
-              <div className={styles.notice}>{renderNotice(tx, restoredTx.create())}</div>
+              {renderNotice(tx, restoredTx.create())}
               {isHardware ? (
                 <WaitLedger fullSize blockchain={blockchainCode} onConnected={() => onSignTransaction()} />
               ) : (
                 <FormRow>
                   <FormLabel>Password</FormLabel>
-                  <PasswordInput error={passwordError} onChange={setPassword} />
+                  <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
                 </FormRow>
               )}
               <FormRow last>

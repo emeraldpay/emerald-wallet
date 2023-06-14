@@ -11,7 +11,6 @@ export { default as ChainSelector } from './components/common/ChainSelector';
 export { default as ConfirmedPasswordInput } from './components/common/PasswordInput/ConfirmedPasswordInput';
 export { default as ConnectionStatus, ConnectionStateProps } from './components/layout/ConnectionStatus';
 export { default as ErrorDialog } from './components/common/ErrorDialog';
-export { default as ExportPaperWallet } from './components/accounts/ExportPaperWallet';
 export { default as FormAccordion } from './components/common/Form/FormAccordion';
 export { default as FormLabel } from './components/common/Form/FormLabel';
 export { default as FormRow } from './components/common/Form/FormRow';
