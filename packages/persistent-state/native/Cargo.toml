@@ -1,6 +1,6 @@
 [package]
 name = "persistent-state"
-version = "2.9.3"
+version = "2.9.4"
 license = "Apache-2.0"
 edition = "2021"
 exclude = ["index.node"]
