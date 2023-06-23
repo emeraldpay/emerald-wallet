@@ -1,19 +1,23 @@
 import ILogger from './ILogger';
 
 export default class DefaultLogger implements ILogger {
-  public debug (...params: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  debug(...params: any[]): void {
     console.debug(params[0], params.slice(1));
   }
 
-  public error (...params: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error(...params: any[]): void {
     console.error(params);
   }
 
-  public warn (...params: any[]) {
-    console.warn(params);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  info(...params: any[]): void {
+    console.info(params[0], params.slice(1));
   }
 
-  public info (...params: any[]) {
-    console.info(params[0], params.slice(1));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  warn(...params: any[]): void {
+    console.warn(params);
   }
 }
