@@ -5,30 +5,31 @@ import ILogger from './ILogger';
 export default class Logger implements ILogger {
   public static instance: ILogger = new DefaultLogger();
 
-  public static forCategory (category: string): ILogger {
+  public static forCategory(category: string): ILogger {
     return new CategoryLogger(() => Logger.instance, category);
   }
 
-  public static setInstance (logger: ILogger) {
-    if (!logger) {
-      throw new Error('Invalid argument: logger can not be empty');
-    }
+  static setInstance(logger: ILogger): void {
     Logger.instance = logger;
   }
 
-  public debug (...params: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  debug(...params: any[]): void {
     Logger.instance.debug(params);
   }
 
-  public warn (...params: any[]) {
-    Logger.instance.warn(params);
-  }
-
-  public error (...params: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error(...params: any[]): void {
     Logger.instance.error(params);
   }
 
-  public info (...params: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  info(...params: any[]): void {
     Logger.instance.info(params);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  warn(...params: any[]): void {
+    Logger.instance.warn(params);
   }
 }

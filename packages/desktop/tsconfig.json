@@ -11,8 +11,8 @@
     "**/*.spec.tsx"
   ],
   "include": [
-    "src/main/**/*.ts",
-    "src/main/**/*.tsx"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "references": [
     {
