@@ -35,29 +35,33 @@ const ethereumTx = new workflow.CreateEthereumTx({
   type: EthereumTransactionType.EIP1559,
 });
 
+const tokenRegistry = new TokenRegistry([]);
+
 storiesOf('CreateTx Ethereum', module)
   .addDecorator(providerForStore(api, backend, [...setRates]))
   .addDecorator(withTheme)
-  .add('Create ETC', () => (
-    <CreateTx
-      chain={BlockchainCode.Goerli}
-      eip1559={false}
-      initializing={false}
-      highGasPrice={{ max: 0, priority: 0 }}
-      lowGasPrice={{ max: 0, priority: 0 }}
-      stdGasPrice={{ max: 0, priority: 0 }}
-      token="ETC"
-      tokenRegistry={new TokenRegistry([])} // TODO
-      tokenSymbols={['ETC']}
-      tx={ethereumTx}
-      txFeeToken="ETH"
-      getBalance={() => new Wei(0)}
-      getTokenBalance={() => new Wei(0)}
-      onChangeAmount={action('onChangeAmount')}
-      onChangeTo={action('onChangeTo')}
-      onChangeUseEip1559={action('onChangeUseEip1559')}
-    />
-  ))
+  .add('Create ETC', () => {
+    return (
+      <CreateTx
+        chain={BlockchainCode.Goerli}
+        eip1559={false}
+        initializing={false}
+        highGasPrice={{ max: 0, priority: 0 }}
+        lowGasPrice={{ max: 0, priority: 0 }}
+        stdGasPrice={{ max: 0, priority: 0 }}
+        token="ETC"
+        tokenRegistry={tokenRegistry}
+        tokenSymbols={['ETC']}
+        tx={ethereumTx}
+        txFeeToken="ETH"
+        getBalance={() => new Wei(0)}
+        getTokenBalance={() => new Wei(0)}
+        onChangeAmount={action('onChangeAmount')}
+        onChangeTo={action('onChangeTo')}
+        onChangeUseEip1559={action('onChangeUseEip1559')}
+      />
+    );
+  })
   .add('Create EIP-1559', () => (
     <CreateTx
       chain={BlockchainCode.Goerli}
@@ -67,7 +71,7 @@ storiesOf('CreateTx Ethereum', module)
       lowGasPrice={{ max: '10000000000', priority: '1000000000' }}
       stdGasPrice={{ max: '20000000000', priority: '2000000000' }}
       token="ETC"
-      tokenRegistry={new TokenRegistry([])} // TODO
+      tokenRegistry={tokenRegistry}
       tokenSymbols={['ETC']}
       tx={ethereumTx}
       txFeeToken="ETH"

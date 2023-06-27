@@ -8,7 +8,6 @@ export interface BackendApi {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<any>;
   estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number>;
-  getBalance(blockchain: BlockchainCode, address: string, tokens: string[]): Promise<Record<string, string>>;
   getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null>;
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null>;
   getEthTx(blockchain: BlockchainCode, hash: string): Promise<EthereumRawTransaction | null>;

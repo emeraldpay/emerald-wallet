@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
-import { IBalanceValue } from '@emeraldwallet/store';
+import { BalanceValue } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import { WalletReference } from '../../src';
@@ -33,16 +33,19 @@ const wallet2: Wallet = {
   createdAt: new Date(1581081606000),
 };
 
-const balance1: IBalanceValue = {
+const balance1: BalanceValue = {
   balance: Wei.ZERO,
+  blockchain: BlockchainCode.ETH,
 };
 
-const balance2: IBalanceValue = {
+const balance2: BalanceValue = {
   balance: new Wei(10.25),
+  blockchain: BlockchainCode.ETH,
 };
 
-const balance3: IBalanceValue = {
+const balance3: BalanceValue = {
   balance: tokenRegistry.bySymbol(BlockchainCode.ETH, 'dai').getAmount(1045),
+  blockchain: BlockchainCode.ETH,
 };
 
 storiesOf('Wallet', module)

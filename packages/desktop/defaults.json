@@ -24,15 +24,17 @@
       "symbol": "WETH",
       "decimals": 18,
       "type": "ERC20",
+      "pinned": true,
       "wrapped": true
     },
     {
-      "name": "Dai Stablecoin",
+      "name": "Tether USD",
       "blockchain": 100,
-      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "symbol": "DAI",
-      "decimals": 18,
+      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "symbol": "USDT",
+      "decimals": 6,
       "type": "ERC20",
+      "pinned": true,
       "stablecoin": true
     },
     {
@@ -42,15 +44,17 @@
       "symbol": "USDC",
       "decimals": 6,
       "type": "ERC20",
+      "pinned": true,
       "stablecoin": true
     },
     {
-      "name": "Tether USD",
+      "name": "Dai Stablecoin",
       "blockchain": 100,
-      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      "symbol": "USDT",
-      "decimals": 6,
+      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "symbol": "DAI",
+      "decimals": 18,
       "type": "ERC20",
+      "pinned": true,
       "stablecoin": true
     },
     {
@@ -60,6 +64,7 @@
       "symbol": "WETC",
       "decimals": 18,
       "type": "ERC20",
+      "pinned": true,
       "wrapped": true
     },
     {
@@ -69,6 +74,7 @@
       "symbol": "WETG",
       "decimals": 18,
       "type": "ERC20",
+      "pinned": true,
       "wrapped": true
     },
     {
@@ -78,6 +84,7 @@
       "symbol": "WEENUS",
       "decimals": 18,
       "type": "ERC20",
+      "pinned": true,
       "stablecoin": true
     }
   ]

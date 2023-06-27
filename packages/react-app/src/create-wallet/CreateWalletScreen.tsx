@@ -68,7 +68,7 @@ function entriesForBlockchains(
     }
   });
 
-  return entries.concat(additionalEntries);
+  return [...entries, ...additionalEntries];
 }
 
 /**

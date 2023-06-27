@@ -36,17 +36,17 @@ const PERIOD_PING = PERIOD_OK - 1500;
 const log = Logger.forCategory('ApiAccess');
 
 export class EmeraldApiAccess {
-  public readonly address: string;
-  public readonly blockchainClient: BlockchainClient;
-  public readonly marketClient: MarketClient;
-  public readonly transactionClient: TransactionClient;
-
-  private readonly credentials: CredentialsContext;
-  private readonly connectionState: ConnectionState;
+  readonly address: string;
+  readonly blockchainClient: BlockchainClient;
+  readonly marketClient: MarketClient;
+  readonly transactionClient: TransactionClient;
 
   private currentState?: Status = undefined;
   private listeners: StatusListener[] = [];
-  private monitoringClient: MonitoringClient;
+
+  private readonly credentials: CredentialsContext;
+  private readonly connectionState: ConnectionState;
+  private readonly monitoringClient: MonitoringClient;
 
   constructor(address: string, id: string, versions: Versions) {
     this.address = address;
@@ -105,19 +105,26 @@ export class EmeraldApiAccess {
     this.ping();
   }
 
-  public newAddressListener(): AddressListener {
+  close(): void {
+    this.blockchainClient.channel.close();
+    this.marketClient.channel.close();
+    this.monitoringClient.channel.close();
+    this.transactionClient.channel.close();
+  }
+
+  newAddressListener(): AddressListener {
     return new AddressListener(this.blockchainClient);
   }
 
-  public newChainListener(): ChainListener {
+  newChainListener(): ChainListener {
     return new ChainListener(this.blockchainClient);
   }
 
-  public newPricesListener(): PriceListener {
+  newPricesListener(): PriceListener {
     return new PriceListener(this.marketClient);
   }
 
-  public statusListener(listener: StatusListener): void {
+  statusListener(listener: StatusListener): void {
     this.listeners.push(listener);
 
     if (this.currentState != null) {
@@ -125,7 +132,7 @@ export class EmeraldApiAccess {
     }
   }
 
-  public notifyListener(status: Status): void {
+  notifyListener(status: Status): void {
     this.listeners.forEach((listener) => {
       try {
         listener(status);
@@ -138,7 +145,7 @@ export class EmeraldApiAccess {
   protected periodicCheck(): void {
     this.verifyOffline();
 
-    setTimeout(this.periodicCheck.bind(this), 3000);
+    setTimeout(this.periodicCheck.bind(this), 3 * 1000);
   }
 
   protected verifyConnection(): void {

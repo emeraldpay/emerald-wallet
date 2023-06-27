@@ -1,12 +1,12 @@
 import { BlockchainClient } from '@emeraldpay/api-node';
 import { BlockchainCode, ILogger, isEthereum } from '@emeraldwallet/core';
-import ChainRpcConnections from './ChainRpcConnections';
+import { ChainRpcConnections } from './ChainRpcConnections';
 import EthRpc from './ethrpc';
 import { DefaultJsonRpc } from './jsonrpc';
 import { EthersJsonRpc } from './jsonrpc/JsonRpc';
 import GrpcTransport from './transports/GrpcTransport';
 
-class ServerConnect {
+export class ServerConnect {
   public appVersion: string;
   public blockchainClient: BlockchainClient;
   public locale: string;
@@ -41,5 +41,3 @@ class ServerConnect {
     return connections;
   }
 }
-
-export default ServerConnect;

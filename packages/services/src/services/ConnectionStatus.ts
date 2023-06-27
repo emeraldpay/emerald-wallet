@@ -1,15 +1,19 @@
 import { IpcCommands } from '@emeraldwallet/core';
-import { IpcMain, WebContents } from 'electron';
-import { IService } from './Services';
+import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '..';
+import { IService } from './Services';
 
 export class ConnectionStatus implements IService {
-  public id: string;
+  readonly id: string;
 
   private apiAccess: EmeraldApiAccess;
   private webContents?: WebContents;
 
-  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess) {
+  constructor(
+    ipcMain: Electron.CrossProcessExports.IpcMain,
+    apiAccess: EmeraldApiAccess,
+    webContents: Electron.CrossProcessExports.WebContents,
+  ) {
     this.id = 'ConnectionStatusService';
 
     this.apiAccess = apiAccess;

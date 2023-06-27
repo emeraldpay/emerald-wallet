@@ -33,8 +33,6 @@ import ImportVault from '../../vault/ImportVault';
 import PasswordMigration from '../../vault/PasswordMigration';
 import SetupVault from '../../vault/SetupVault';
 
-const log = Logger.forCategory('Screen');
-
 interface OwnProps {
   termsVersion: string;
 }
@@ -46,6 +44,8 @@ interface StateProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   restoreData?: any;
 }
+
+const log = Logger.forCategory('Screen');
 
 const Screen: React.FC<OwnProps & StateProps> = (props) => {
   log.info('Show screen: ', props.screen);

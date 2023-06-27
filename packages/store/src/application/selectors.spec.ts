@@ -5,7 +5,7 @@ import { moduleName } from './types';
 
 describe('selectors', () => {
   const appState = {
-    [moduleName]: INITIAL_STATE
+    [moduleName]: INITIAL_STATE,
   } as IState;
 
   it('should work', () => {

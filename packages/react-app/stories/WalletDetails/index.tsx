@@ -27,23 +27,23 @@ const setBalances = [
   }),
   tokens.actions.setTokenBalance(
     BlockchainCode.ETH,
+    '0x9d8e3fed246384e726b5962577503b916fb246d7',
+    '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     {
       decimals: 18,
       symbol: 'DAI',
-      tokenId: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       unitsValue: '450000000000000000000',
     },
-    '0x9d8e3fed246384e726b5962577503b916fb246d7',
   ),
   tokens.actions.setTokenBalance(
     BlockchainCode.ETH,
+    '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    '0x9d8e3fed246384e726b5962577503b916fb246d7',
     {
       decimals: 6,
       symbol: 'USDT',
-      tokenId: '0xdac17f958d2ee523a2206206994597c13d831ec7',
       unitsValue: '500000000000',
     },
-    '0x9d8e3fed246384e726b5962577503b916fb246d7',
   ),
 ];
 

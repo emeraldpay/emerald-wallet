@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
-import { TokenBalance, TokensState, moduleName } from './types';
 import { IState } from '../types';
+import { TokensState, moduleName } from './types';
 
 export function selectBalances(state: IState, blockchain: BlockchainCode, address: string): BigAmount[] | undefined {
   const balancesByBlockchains = state[moduleName] as TokensState;
@@ -13,11 +13,11 @@ export function selectBalances(state: IState, blockchain: BlockchainCode, addres
       const { [address]: addressBalance } = blockchainBalances;
 
       if (addressBalance != null) {
-        const values: TokenBalance[] = Object.values(addressBalance);
-
         const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-        return values.map((token) => tokenRegistry.bySymbol(blockchain, token.symbol).getAmount(token.unitsValue));
+        return tokenRegistry
+          .byAddresses(blockchain, Object.keys(addressBalance))
+          .map((token) => token.getAmount(addressBalance[token.address].unitsValue));
       }
     }
   }
@@ -29,7 +29,7 @@ export function selectBalance(
   state: IState,
   blockchain: BlockchainCode,
   address: string,
-  tokenAddress: string,
+  contractAddress: string,
 ): BigAmount | undefined {
   const balancesByBlockchains = state[moduleName] as TokensState;
 
@@ -40,12 +40,14 @@ export function selectBalance(
       const { [address]: addressBalance } = blockchainBalances;
 
       if (addressBalance != null) {
-        const { [tokenAddress]: token } = addressBalance;
+        const { [contractAddress]: tokenBalance } = addressBalance;
 
-        if (token != null) {
+        if (tokenBalance != null) {
           const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-          return tokenRegistry.bySymbol(blockchain, token.symbol).getAmount(token.unitsValue);
+          if (tokenRegistry.hasAddress(blockchain, contractAddress)) {
+            return tokenRegistry.byAddress(blockchain, contractAddress).getAmount(tokenBalance.unitsValue);
+          }
         }
       }
     }

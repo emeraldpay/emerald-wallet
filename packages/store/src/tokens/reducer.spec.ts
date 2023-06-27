@@ -6,30 +6,25 @@ import { TokenBalance } from './types';
 describe('tokens reducer', () => {
   it('should update token balance for address', () => {
     const address = '0x9999';
-    const balance1: TokenBalance = {
+
+    const balance: TokenBalance = {
       decimals: 8,
       symbol: 'DAI',
-      tokenId: '0x66666',
       unitsValue: '888',
     };
 
-    let state = reducer(undefined, setTokenBalance(BlockchainCode.ETH, balance1, address));
+    let state = reducer(undefined, setTokenBalance(BlockchainCode.ETH, address, '0x66666', balance));
 
-    expect(state[BlockchainCode.ETH]?.[address]?.[balance1.tokenId].unitsValue).toEqual(balance1.unitsValue);
+    expect(state[BlockchainCode.ETH]?.[address]?.['0x66666'].unitsValue).toEqual(balance.unitsValue);
 
-    balance1.unitsValue = '777';
+    balance.unitsValue = '777';
 
-    state = reducer(state, setTokenBalance(BlockchainCode.ETH, balance1, address));
+    state = reducer(state, setTokenBalance(BlockchainCode.ETH, address, '0x66666', balance));
 
-    expect(state[BlockchainCode.ETH]?.[address]?.[balance1.tokenId].unitsValue).toEqual('777');
+    expect(state[BlockchainCode.ETH]?.[address]?.['0x66666'].unitsValue).toEqual('777');
 
-    const balance2: TokenBalance = {
-      ...balance1,
-      tokenId: '0x88888',
-    };
+    state = reducer(state, setTokenBalance(BlockchainCode.ETH, address, '0x88888', balance));
 
-    state = reducer(state, setTokenBalance(BlockchainCode.ETH, balance2, address));
-
-    expect(state[BlockchainCode.ETH]?.[address]?.[balance2.tokenId].unitsValue).toEqual('777');
+    expect(state[BlockchainCode.ETH]?.[address]?.['0x88888'].unitsValue).toEqual('777');
   });
 });

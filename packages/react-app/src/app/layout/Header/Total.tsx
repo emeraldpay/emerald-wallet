@@ -11,7 +11,7 @@ export default connect<StateProps, unknown, unknown, IState>((state) => {
   const summary = accounts.selectors.withFiatConversion(state, assets);
 
   const fiatCurrencies: FiatCurrencies[] = summary.map((value: BalanceValueConverted) => ({
-    fiatAmount: value.converted?.balance,
+    fiatAmount: value.converted,
     fiatRate: value.rate,
     token: value.source.balance.units.top.code,
     total: value.source.balance,
@@ -20,6 +20,6 @@ export default connect<StateProps, unknown, unknown, IState>((state) => {
   return {
     fiatCurrencies,
     loading: state.accounts.loading,
-    totalBalance: total?.balance,
+    totalBalance: total,
   };
 })(TotalButton);

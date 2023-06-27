@@ -8,6 +8,7 @@ import {
   EmeraldApiAccess,
   PricesService,
   Services,
+  TokenService,
   TxService,
 } from '@emeraldwallet/services';
 import { IpcMain, WebContents } from 'electron';
@@ -24,7 +25,7 @@ class Reconnect {
 
   untilReconnect(): void {
     if (this.previousStatus === 'DISCONNECTED') {
-      setTimeout(this.untilReconnect.bind(this), 5000);
+      setTimeout(this.untilReconnect.bind(this), 5 * 1000);
     }
 
     this.services.reconnect();
@@ -55,17 +56,30 @@ export function createServices(
 ): Services {
   const services = new Services();
 
-  services.add(new BalanceListener(ipcMain, persistentState, webContents, apiAccess));
-  services.add(new ConnectionStatus(ipcMain, webContents, apiAccess));
-  services.add(new TxService(apiAccess, persistentState, vault, ipcMain, webContents, settings));
+  const pricesService = new PricesService(ipcMain, apiAccess, persistentState, webContents);
+
+  services.add(pricesService);
+
+  const balanceListener = new BalanceListener(
+    ipcMain,
+    apiAccess,
+    settings,
+    pricesService,
+    persistentState,
+    webContents,
+  );
+
+  services.add(balanceListener);
+  services.add(new TokenService(ipcMain, apiAccess, settings, balanceListener));
+  services.add(new TxService(ipcMain, apiAccess, settings, persistentState, vault, webContents));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;
 
-    services.add(new BlockchainStatusService(blockchain, webContents, apiAccess));
+    services.add(new BlockchainStatusService(blockchain, apiAccess, webContents));
   }
 
-  services.add(new PricesService(apiAccess, ipcMain, persistentState, webContents, apiMode.assets));
+  services.add(new ConnectionStatus(ipcMain, apiAccess, webContents));
 
   const reconnect = new Reconnect(services);
 

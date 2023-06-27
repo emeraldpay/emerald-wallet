@@ -10,25 +10,39 @@ type Release = {
 };
 
 type Update = {
-  downloadLink: string;
-  isLatest: boolean;
-  tag: string;
+  latest: boolean;
+  link: string;
+  version: string;
 };
 
+const { NODE_ENV } = process.env;
+
+const HOST: Readonly<string> =
+  NODE_ENV === 'development' || NODE_ENV === 'verifying' ? 'cdn.emeraldpay.dev' : 'updates.emerald.cash';
+
 export default async function (appVersion: string): Promise<Update> {
-  const response = await fetch(
-    `https://updates.emerald.cash/latest.json?ref_app=desktop-wallet&ref_version=${appVersion}`,
-  );
+  let latest = true;
+  let version = appVersion;
 
-  const latest = await response.json();
+  if (semver.prerelease(appVersion)?.includes('dev') !== true) {
+    const response = await fetch(`https://${HOST}/latest.json?ref_app=desktop-wallet&ref_version=${appVersion}`);
 
-  const {
-    releases: { 'emerald-wallet': release },
-  } = latest as Release;
+    if (response.status === 200) {
+      const release = await response.json();
+
+      ({
+        releases: {
+          'emerald-wallet': { version },
+        },
+      } = release as Release);
+
+      latest = semver.lte(version, appVersion);
+    }
+  }
 
   return {
-    downloadLink: 'https://go.emrld.io/download',
-    isLatest: semver.prerelease(appVersion)?.includes('dev') === true || semver.lte(release.version, appVersion),
-    tag: `v${release.version}`,
+    latest,
+    version,
+    link: 'https://go.emrld.io/download',
   };
 }

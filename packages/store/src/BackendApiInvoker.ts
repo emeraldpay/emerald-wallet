@@ -27,10 +27,6 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_TX, blockchain, tx);
   }
 
-  getBalance(blockchain: BlockchainCode, address: string, tokens: string[]): Promise<Record<string, string>> {
-    return ipcRenderer.invoke(IpcCommands.GET_BALANCE, blockchain, address, tokens);
-  }
-
   getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null> {
     return ipcRenderer.invoke(IpcCommands.GET_BTC_TX, blockchain, hash);
   }

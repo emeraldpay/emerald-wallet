@@ -11,9 +11,9 @@ import { startStore, store } from './store';
 
 Logger.setInstance(ElectronLogger);
 
-const logger = Logger.forCategory('Init');
+const log = Logger.forCategory('Init');
 
-window.addEventListener('unhandledrejection ', (error) => logger.error('Uncaught promise rejection:', error));
+window.addEventListener('unhandledrejection ', (error) => log.error('Uncaught promise rejection:', error));
 
 declare global {
   interface Window {
@@ -25,7 +25,7 @@ declare global {
 }
 
 function start(): void {
-  logger.info('Starting Emerald Wallet...');
+  log.info('Starting Emerald Wallet...');
 
   document.body.style.backgroundColor = Theme.palette.background.default;
 

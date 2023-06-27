@@ -1,8 +1,6 @@
 import { Logger } from '@emeraldwallet/core';
 import { WebContents } from 'electron';
 
-const log = Logger.forCategory('Services');
-
 export interface IService {
   readonly id: string;
   setWebContents(webContents: WebContents): void;
@@ -10,6 +8,8 @@ export interface IService {
   stop(): void;
   reconnect(): void;
 }
+
+const log = Logger.forCategory('Services');
 
 export class Services {
   private services: Map<string, IService> = new Map();

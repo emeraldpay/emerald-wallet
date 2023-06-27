@@ -1,7 +1,7 @@
 import { BackendApi, WalletApi } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { Action, AnyAction, Dispatch } from 'redux';
-import { IAccountsState, moduleName as accountsModule } from './accounts/types';
+import { AccountsState, moduleName as accountsModule } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
 import { AddressBookState, moduleName as addressBookModule } from './address-book/types';
 import { ApplicationState, moduleName as applicationModule } from './application/types';
@@ -16,7 +16,7 @@ import { HistoryState } from './txhistory/types';
 export { BroadcastData, SignData } from './transaction/types';
 
 export interface IState {
-  [accountsModule]: IAccountsState;
+  [accountsModule]: AccountsState;
   [addressBookModule]: AddressBookState;
   [applicationModule]: ApplicationState;
   [blockchainsModule]: BlockchainsState;

@@ -1,5 +1,6 @@
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
+import { BalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
 import { Balance, HashIcon } from '@emeraldwallet/ui';
 import { Button, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -74,8 +75,8 @@ interface OwnProps {
 }
 
 interface StateProps {
-  assets: IBalanceValue[];
-  total: IBalanceValue | undefined;
+  assets: BalanceValue[];
+  total: BigAmount | undefined;
   walletIcon?: string | null;
 }
 
@@ -127,7 +128,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 <Typography className={styles.title}>{wallet.name}</Typography>
               </Grid>
               <Grid item className={styles.titleLine} xs={4}>
-                {total != null && <Balance classes={{ coin: styles.totalBalance }} balance={total.balance} />}
+                {total?.isPositive() && <Balance classes={{ coin: styles.totalBalance }} balance={total} />}
               </Grid>
               <Grid item xs={12}>
                 {assets.map((asset) => (
@@ -156,8 +157,8 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { wallet }) => {
-    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet);
-    const total: IBalanceValue | undefined = accounts.selectors.fiatTotalBalance(state, assets);
+    const assets = accounts.selectors.getWalletBalances(state, wallet);
+    const total = accounts.selectors.fiatTotalBalance(state, assets);
 
     return { assets, total, walletIcon: state.accounts.icons[wallet.id] };
   },

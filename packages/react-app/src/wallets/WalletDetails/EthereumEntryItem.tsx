@@ -138,7 +138,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
         <Typography>{blockchain.getTitle()}</Typography>
       </div>
       <div className={styles.balances}>
-        <AccountBalance key="main" classes={classes} balance={balance} />
+        <AccountBalance key="main" classes={classes} balance={balance} blockchain={blockchainCode} />
         {tokensBalances.map((token) => {
           const { code } = token.units.top;
 
@@ -147,8 +147,11 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
               key={'token-' + token.units.top.code}
               classes={classes}
               balance={token}
+              blockchain={blockchainCode}
               onConvert={
-                tokenRegistry.bySymbol(blockchainCode, code).isWrapped() ? () => gotoConvert(entry, code) : undefined
+                tokenRegistry.hasSymbol(blockchainCode, code) && tokenRegistry.bySymbol(blockchainCode, code).wrapped
+                  ? () => gotoConvert(entry, code)
+                  : undefined
               }
             />
           );

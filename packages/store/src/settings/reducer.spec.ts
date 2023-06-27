@@ -1,19 +1,22 @@
 import { CurrencyCode } from '@emeraldwallet/core';
+import { INITIAL_STATE as APPLICATION_STATE } from '../application/reducer';
+import { IState } from '../types';
 import { setRates } from './actions';
-import settingsReducers from './reducer';
+import reducer from './reducer';
 import { fiatCurrency, fiatRate } from './selectors';
-import { ActionTypes } from './types';
+import { ActionTypes, SettingsState } from './types';
 
-const asGlobal = (settingsState: any): any => ({ settings: settingsState });
+const withGlobalState = (settings: SettingsState): IState =>
+  ({ application: APPLICATION_STATE, settings } as unknown as IState);
 
 describe('settingsReducers', () => {
   it('should reset fiat rates after locale currency change', () => {
-    let state = settingsReducers(undefined, {
+    let state = reducer(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: CurrencyCode.EUR,
     });
 
-    state = settingsReducers(
+    state = reducer(
       state,
       setRates({
         ETC: '5',
@@ -21,25 +24,25 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate(asGlobal(state), 'ETC')).toEqual(5);
-    expect(fiatRate(asGlobal(state), 'ETH')).toEqual(10);
+    expect(fiatRate(withGlobalState(state), 'ETC')).toEqual(5);
+    expect(fiatRate(withGlobalState(state), 'ETH')).toEqual(10);
 
-    state = settingsReducers(state, {
+    state = reducer(state, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: CurrencyCode.RUB,
     });
 
-    expect(fiatRate(asGlobal(state), 'ETC')).toBeUndefined();
-    expect(fiatRate(asGlobal(state), 'ETH')).toBeUndefined();
+    expect(fiatRate(withGlobalState(state), 'ETC')).toBeUndefined();
+    expect(fiatRate(withGlobalState(state), 'ETH')).toBeUndefined();
   });
 
   it('EXCHANGE_RATES should update locale currency rate', () => {
-    let state = settingsReducers(undefined, {
+    let state = reducer(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: 'EUR',
     });
 
-    state = settingsReducers(
+    state = reducer(
       state,
       setRates({
         ETC: '5',
@@ -47,16 +50,16 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate(asGlobal(state), 'ETC')).toEqual(5);
-    expect(fiatRate(asGlobal(state), 'ETH')).toEqual(10);
+    expect(fiatRate(withGlobalState(state), 'ETC')).toEqual(5);
+    expect(fiatRate(withGlobalState(state), 'ETH')).toEqual(10);
   });
 
   it('should store locale currency in uppercase', () => {
-    const state = settingsReducers(undefined, {
+    const state = reducer(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: 'eur',
     });
 
-    expect(fiatCurrency(asGlobal(state))).toEqual('EUR');
+    expect(fiatCurrency(withGlobalState(state))).toEqual('EUR');
   });
 });

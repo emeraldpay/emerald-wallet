@@ -86,7 +86,7 @@ describe('TxDetailsView', () => {
       mount(
         <ThemeProvider theme={Theme}>
           <Provider store={createStore()}>
-            <TxDetails tx={ethereumTx} />
+            <TxDetails entryId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" tx={ethereumTx} />
           </Provider>
         </ThemeProvider>,
       ),
@@ -98,7 +98,7 @@ describe('TxDetailsView', () => {
       mount(
         <ThemeProvider theme={Theme}>
           <Provider store={createStore()}>
-            <TxDetails tx={bitcoinTx} />
+            <TxDetails entryId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" tx={bitcoinTx} />
           </Provider>
         </ThemeProvider>,
       ),

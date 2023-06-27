@@ -647,7 +647,7 @@ export default connect(
           balance = accounts.selectors.getBalance(state, entry.id, zero);
         }
 
-        const rate = settings.selectors.fiatRate(state, token);
+        const rate = settings.selectors.fiatRate(state, token, blockchainCode);
 
         if (rate == null) {
           return null;

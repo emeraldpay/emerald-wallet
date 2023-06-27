@@ -1,8 +1,7 @@
-import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
-import { AddressBookItem } from '@emeraldpay/emerald-vault-core/lib/types';
+import { AddressBookItem, IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { PersistentState, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { SagaIterator } from 'redux-saga';
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { all, call, put, takeEvery } from 'redux-saga/effects';
 import * as screen from '../screen';
 import { loadAddressBook, setAddressBook } from './actions';
 import {
@@ -91,9 +90,11 @@ function* deleteContact(
 }
 
 export function* root(addressBook: PersistentState.Addressbook, vault: IEmeraldVault): SagaIterator {
-  yield takeEvery(ActionTypes.LOAD_LEGACY, loadLegacyContacts, addressBook, vault);
-  yield takeEvery(ActionTypes.LOAD, loadContacts, addressBook);
-  yield takeEvery(ActionTypes.ADD_CONTACT, addContact, addressBook);
-  yield takeEvery(ActionTypes.EDIT_CONTACT, editContact, addressBook);
-  yield takeEvery(ActionTypes.DELETE_CONTACT, deleteContact, addressBook);
+  yield all([
+    takeEvery(ActionTypes.LOAD_LEGACY, loadLegacyContacts, addressBook, vault),
+    takeEvery(ActionTypes.LOAD, loadContacts, addressBook),
+    takeEvery(ActionTypes.ADD_CONTACT, addContact, addressBook),
+    takeEvery(ActionTypes.EDIT_CONTACT, editContact, addressBook),
+    takeEvery(ActionTypes.DELETE_CONTACT, deleteContact, addressBook),
+  ]);
 }
