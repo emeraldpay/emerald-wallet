@@ -30,25 +30,24 @@ import { ipcRenderer } from 'electron';
 import { dispatchRpcError } from '../screen/actions';
 import { Dispatched } from '../types';
 import {
+  AccountBalance,
   ActionTypes,
-  IBalanceUpdate,
-  ICreateHdEntry,
-  ICreateWalletAction,
-  IFetchErc20BalancesAction,
-  IHdAccountCreated,
-  ILoadSeedsAction,
-  ILoadWalletsAction,
-  INextAddress,
-  ISetBalanceAction,
-  ISetLoadingAction,
-  ISetSeedsAction,
-  ISubWalletBalance,
-  IUpdateWalletAction,
-  IWalletCreatedAction,
-  IWalletImportedAction,
-  IWalletsLoaded,
+  CreateHdEntryAction,
+  CreateWalletAction,
+  HdAccountCreatedAction,
   InitAccountStateAction,
+  LoadSeedsAction,
+  LoadWalletsAction,
+  NextAddressAction,
+  SetBalanceAction,
+  SetLoadingAction,
+  SetSeedsAction,
   SetWalletIconsAction,
+  SubscribeWalletBalance,
+  UpdateWalletAction,
+  WalletCreatedAction,
+  WalletImportedAction,
+  WalletsLoadedAction,
 } from './types';
 
 export function initState(
@@ -62,40 +61,27 @@ export function initState(
   };
 }
 
-export function setBalanceAction(balance: IBalanceUpdate): ISetBalanceAction {
+export function setBalanceAction(balance: AccountBalance): SetBalanceAction {
   return {
     type: ActionTypes.SET_BALANCE,
     payload: balance,
   };
 }
 
-export function setLoadingAction(loading: boolean): ISetLoadingAction {
+export function setLoadingAction(loading: boolean): SetLoadingAction {
   return {
     type: ActionTypes.LOADING,
     payload: loading,
   };
 }
 
-export function fetchErc20BalancesAction(): Dispatched<void, IFetchErc20BalancesAction> {
-  return (dispatch, getState) => {
-    const {
-      application: { tokens },
-    } = getState();
-
-    dispatch({
-      type: ActionTypes.FETCH_ERC20_BALANCES,
-      tokens,
-    });
-  };
-}
-
-export function loadWalletsAction(): ILoadWalletsAction {
+export function loadWalletsAction(): LoadWalletsAction {
   return {
     type: ActionTypes.LOAD_WALLETS,
   };
 }
 
-export function hdAccountCreated(walletId: string, account: WalletEntry): IHdAccountCreated {
+export function hdAccountCreated(walletId: string, account: WalletEntry): HdAccountCreatedAction {
   return {
     type: ActionTypes.HD_ACCOUNT_CREATED,
     payload: {
@@ -105,18 +91,14 @@ export function hdAccountCreated(walletId: string, account: WalletEntry): IHdAcc
   };
 }
 
-export function setWalletsAction(wallets: Wallet[]): IWalletsLoaded {
+export function setWalletsAction(wallets: Wallet[]): WalletsLoadedAction {
   return {
     type: ActionTypes.SET_LIST,
     payload: wallets,
   };
 }
 
-export function loadAccountBalance(entryId: EntryId, blockchain: BlockchainCode, address: string): void {
-  ipcRenderer.send(IpcCommands.BALANCE_SUBSCRIBE, blockchain, entryId, [address]);
-}
-
-export function createNewWalletAction(walletName: string, password: string, mnemonic: string): ICreateWalletAction {
+export function createNewWalletAction(walletName: string, password: string, mnemonic: string): CreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
     payload: {
@@ -127,7 +109,7 @@ export function createNewWalletAction(walletName: string, password: string, mnem
   };
 }
 
-export function importSeedWalletAction(mnemonic: string, password: string): ICreateWalletAction {
+export function importSeedWalletAction(mnemonic: string, password: string): CreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
     payload: {
@@ -137,7 +119,7 @@ export function importSeedWalletAction(mnemonic: string, password: string): ICre
   };
 }
 
-export function walletCreatedAction(wallet: Wallet): IWalletCreatedAction {
+export function walletCreatedAction(wallet: Wallet): WalletCreatedAction {
   ipcRenderer.send(IpcCommands.UPDATE_MAIN_MENU);
 
   return {
@@ -146,7 +128,7 @@ export function walletCreatedAction(wallet: Wallet): IWalletCreatedAction {
   };
 }
 
-export function accountImportedAction(walletId: string): Dispatched<void, IWalletImportedAction> {
+export function accountImportedAction(walletId: string): Dispatched<void, WalletImportedAction> {
   return (dispatch, getState) => {
     const {
       application: { tokens },
@@ -166,19 +148,12 @@ export function createHdAccountAction(
   walletId: string,
   blockchain: BlockchainCode,
   seedPassword: string,
-): Dispatched<void, ICreateHdEntry> {
-  return (dispatch, getState) => {
-    const {
-      application: { tokens },
-    } = getState();
-
-    dispatch({
-      type: ActionTypes.CREATE_HD_ACCOUNT,
-      blockchain,
-      seedPassword,
-      tokens,
-      walletId,
-    });
+): CreateHdEntryAction {
+  return {
+    type: ActionTypes.CREATE_HD_ACCOUNT,
+    blockchain,
+    seedPassword,
+    walletId,
   };
 }
 
@@ -191,7 +166,7 @@ export function createWallet(
   options: CreateWalletOptions,
   entries: AddEntry[],
   handler: (wallet?: Wallet, err?: Error) => void,
-): Dispatched<void, IWalletCreatedAction> {
+): Dispatched<void, WalletCreatedAction> {
   return async (dispatch, getState, { api: { vault } }) => {
     try {
       const walletId = await vault.addWallet(options.label);
@@ -229,7 +204,7 @@ export function exportKeyFile(accountId: EntryId, password: string): Dispatched<
   return (dispatch, getState, extra) => extra.api.vault.exportJsonPk(accountId, password);
 }
 
-export function updateWallet(walletId: Uuid, name: string): Dispatched<void, IUpdateWalletAction> {
+export function updateWallet(walletId: Uuid, name: string): Dispatched<void, UpdateWalletAction> {
   return async (dispatch, getState, extra) => {
     const result = await extra.api.vault.setWalletLabel(walletId, name);
 
@@ -276,13 +251,13 @@ export function generateMnemonic(handler?: (value: string) => void): Dispatched 
   };
 }
 
-export function loadSeedsAction(): ILoadSeedsAction {
+export function loadSeedsAction(): LoadSeedsAction {
   return {
     type: ActionTypes.LOAD_SEEDS,
   };
 }
 
-export function setSeedsAction(seeds: SeedDescription[]): ISetSeedsAction {
+export function setSeedsAction(seeds: SeedDescription[]): SetSeedsAction {
   return {
     type: ActionTypes.SET_SEEDS,
     payload: seeds,
@@ -295,7 +270,7 @@ export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): D
   };
 }
 
-export function subscribeWalletBalance(walletId: Uuid): ISubWalletBalance {
+export function subscribeWalletBalance(walletId: Uuid): SubscribeWalletBalance {
   return {
     type: ActionTypes.SUBSCRIBE_WALLET_BALANCE,
     walletId,
@@ -320,7 +295,7 @@ export function unlockSeed(seedId: Uuid, password: string, handler: (valid: bool
   };
 }
 
-export function nextAddress(entryId: EntryId, role: AddressRole): INextAddress {
+export function nextAddress(entryId: EntryId, role: AddressRole): NextAddressAction {
   return {
     type: ActionTypes.NEXT_ADDRESS,
     entryId,

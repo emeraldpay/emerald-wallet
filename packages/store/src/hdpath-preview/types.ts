@@ -58,7 +58,6 @@ export function isEqualSeed(first: SeedReference, second: SeedReference): boolea
 
 export enum ActionTypes {
   LOAD_ADDRESSES = 'HDPREVIEW/LOAD_ADDRESSES',
-  LOAD_BALANCES = 'HDPREVIEW/LOAD_BALANCES',
   SET_ADDRESS = 'HDPREVIEW/SET_ADDRESS',
   SET_BALANCE = 'HDPREVIEW/SET_BALANCE',
   CLEAN = 'HDPREVIEW/CLEAN',
@@ -69,18 +68,8 @@ export enum ActionTypes {
 export interface ILoadAddresses {
   type: ActionTypes.LOAD_ADDRESSES;
   account: number;
-  assets: string[];
   blockchain: BlockchainCode;
   index?: number;
-  seed: SeedReference;
-}
-
-export interface ILoadBalances {
-  type: ActionTypes.LOAD_BALANCES;
-  address: string;
-  assets: string[];
-  blockchain: BlockchainCode;
-  hdpath: string;
   seed: SeedReference;
 }
 
@@ -118,14 +107,7 @@ export interface IInit {
   blockchains: BlockchainCode[];
 }
 
-export type IHDPreviewAction =
-  | ILoadAddresses
-  | ILoadBalances
-  | ISetAddress
-  | ISetBalance
-  | IClean
-  | IDisplayAccount
-  | IInit;
+export type IHDPreviewAction = ILoadAddresses | ISetAddress | ISetBalance | IClean | IDisplayAccount | IInit;
 
 export type HDPathAddresses = Partial<Record<BlockchainCode, string>>;
 export type HDPathIndexes = { [blockchain: string]: number | undefined };

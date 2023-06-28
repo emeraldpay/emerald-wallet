@@ -19,6 +19,7 @@ import commitData from '../../commit-data.json';
 import { DevelopmentMode, ProductionMode } from './utils/api-modes';
 
 const { NODE_ENV } = process.env;
+
 const isDevelopMode = NODE_ENV === 'debugging' || NODE_ENV === 'development';
 const isVerifyMode = NODE_ENV === 'verifying';
 

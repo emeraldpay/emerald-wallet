@@ -23,7 +23,7 @@ type EntryIdentifier = { entryId: string; blockchain: number; identifier: string
 const log = Logger.forCategory('TxService');
 
 export class TxService implements IService {
-  public readonly id: string;
+  readonly id: string;
 
   private apiAccess: EmeraldApiAccess;
   private ipcMain: IpcMain;
@@ -32,19 +32,19 @@ export class TxService implements IService {
   private tokens: TokenData[];
   private tokenRegistry: TokenRegistry;
   private vault: IEmeraldVault;
-  private webContents?: WebContents;
+  private webContents: WebContents;
 
   private subscribers: Map<string, Publisher<ApiTransaction.AddressTxResponse>> = new Map();
 
   private readonly restartTimeout = 5;
 
   constructor(
+    ipcMain: Electron.CrossProcessExports.IpcMain,
     apiAccess: EmeraldApiAccess,
+    settings: SettingsManager,
     persistentState: PersistentStateManager,
     vault: IEmeraldVault,
-    ipcMain: IpcMain,
-    webContents: WebContents,
-    settings: SettingsManager,
+    webContents: Electron.CrossProcessExports.WebContents,
   ) {
     this.id = 'TransactionHistoryListener';
 
@@ -60,7 +60,7 @@ export class TxService implements IService {
 
     ipcMain.handle(IpcCommands.TXS_SET_TOKENS, (event, tokens) => {
       this.tokens = tokens;
-      this.tokenRegistry = new TokenRegistry(this.tokens);
+      this.tokenRegistry = new TokenRegistry(tokens);
 
       this.stop();
       this.start();
@@ -111,7 +111,7 @@ export class TxService implements IService {
           if (resetCursors) {
             this.persistentState.txhistory
               .setCursor(identifier, '')
-              .catch((error) => log.error(`Error while set empty cursor for address ${identifier}:`, error));
+              .catch((error) => log.error(`Error while set empty cursor for ${identifier}:`, error));
           }
         });
 
@@ -121,7 +121,7 @@ export class TxService implements IService {
             Promise.all(
               transactions.map(({ blockchain: txBlockchain, txId }) =>
                 this.persistentState.txhistory.remove(txBlockchain, txId).then(() =>
-                  this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+                  this.webContents.send(IpcCommands.STORE_DISPATCH, {
                     type: 'WALLET/HISTORY/REMOVE_STORED_TX',
                     txId,
                   }),
@@ -157,9 +157,7 @@ export class TxService implements IService {
     this.persistentState.txhistory
       .getCursor(identifier)
       .then((cursor) => {
-        log.info(
-          `Subscribing for address ${identifier} with ${cursor == null ? 'empty cursor' : `cursor ${cursor}`}...`,
-        );
+        log.info(`Subscribing for ${identifier} with ${cursor == null ? 'empty cursor' : `cursor ${cursor}`}...`);
 
         this.subscribers.set(
           identifier,
@@ -170,20 +168,18 @@ export class TxService implements IService {
               cursor: cursor ?? undefined,
             })
             .onData((tx) => {
-              log.info(`Receive transaction ${tx.txId} for address ${identifier}...`);
+              log.info(`Receive transaction ${tx.txId} for ${identifier}...`);
 
               if (tx.removed) {
                 this.persistentState.txhistory
                   .remove(blockchain, tx.txId)
                   .then(() =>
-                    this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+                    this.webContents.send(IpcCommands.STORE_DISPATCH, {
                       type: 'WALLET/HISTORY/REMOVE_STORED_TX',
                       txId: tx.txId,
                     }),
                   )
-                  .catch((error) =>
-                    log.error(`Error while removing transaction for address ${identifier} from state:`, error),
-                  );
+                  .catch((error) => log.error(`Error while removing transaction for ${identifier} from state:`, error));
               } else {
                 let confirmation: PersistentState.TransactionConfirmation | null = null;
 
@@ -204,16 +200,19 @@ export class TxService implements IService {
                 if (tx.xpubIndex != null) {
                   this.persistentState.xpubpos
                     .setCurrentAddressAt(identifier, tx.xpubIndex)
-                    .catch((error) => log.error(`Error while set xPub position for address ${identifier}:`, error));
+                    .catch((error) => log.error(`Error while set xPub position for ${identifier}:`, error));
                 }
 
                 const transaction: PersistentState.UnconfirmedTransaction = {
                   blockchain,
                   changes: tx.changes.map<PersistentState.Change>((change) => {
-                    const asset =
-                      (change.contractAddress == null
-                        ? Blockchains[blockchainCode].params.coinTicker
-                        : this.tokenRegistry?.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+                    let asset = 'UNKNOWN';
+
+                    if (change.contractAddress == null) {
+                      asset = Blockchains[blockchainCode].params.coinTicker;
+                    } else if (this.tokenRegistry.hasAddress(blockchainCode, change.contractAddress)) {
+                      asset = this.tokenRegistry.byAddress(blockchainCode, change.contractAddress).symbol;
+                    }
 
                     return {
                       asset,
@@ -236,9 +235,7 @@ export class TxService implements IService {
                     if (tx.cursor != null && tx.cursor.length > 0) {
                       this.persistentState.txhistory
                         .setCursor(identifier, tx.cursor)
-                        .catch((error) =>
-                          log.error(`Error while set cursor ${tx.cursor} for address ${identifier}:`, error),
-                        );
+                        .catch((error) => log.error(`Error while set cursor ${tx.cursor} for ${identifier}:`, error));
                     }
 
                     const walletId = EntryIdOp.of(entryId).extractWalletId();
@@ -246,7 +243,7 @@ export class TxService implements IService {
                     this.persistentState.txmeta
                       .get(blockchainIdToCode(merged.blockchain), merged.txId)
                       .then((meta) =>
-                        this.webContents?.send(IpcCommands.STORE_DISPATCH, {
+                        this.webContents.send(IpcCommands.STORE_DISPATCH, {
                           meta,
                           walletId,
                           type: 'WALLET/HISTORY/UPDATE_STORED_TX',
@@ -254,19 +251,15 @@ export class TxService implements IService {
                           transaction: merged,
                         }),
                       )
-                      .catch((error) =>
-                        log.error(`Error while getting transaction meta for address ${identifier}:`, error),
-                      );
+                      .catch((error) => log.error(`Error while getting transaction meta for ${identifier}:`, error));
                   })
-                  .catch((error) =>
-                    log.error(`Error while submitting transaction data for address ${identifier}:`, error),
-                  );
+                  .catch((error) => log.error(`Error while submitting transaction data for ${identifier}:`, error));
               }
             })
-            .onError((error) => log.error(`Error while subscribing for address ${identifier}:`, error))
+            .onError((error) => log.error(`Error while subscribing for ${identifier}:`, error))
             .finally(() => {
               log.info(
-                `Subscription to transactions for address ${identifier} is closed,`,
+                `Subscription to transactions for ${identifier} is closed,`,
                 `restart after ${this.restartTimeout} seconds...`,
               );
 
@@ -274,6 +267,6 @@ export class TxService implements IService {
             }),
         );
       })
-      .catch((error) => log.error(`Error while getting history cursor for address ${identifier}:`, error));
+      .catch((error) => log.error(`Error while getting history cursor for ${identifier}:`, error));
   }
 }

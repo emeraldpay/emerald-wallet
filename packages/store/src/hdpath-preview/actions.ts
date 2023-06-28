@@ -1,5 +1,7 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
+import { accounts } from '../index';
+import { Dispatched } from '../types';
 import {
   ActionTypes,
   HDPathIndexes,
@@ -7,51 +9,22 @@ import {
   IDisplayAccount,
   IInit,
   ILoadAddresses,
-  ILoadBalances,
   ISetAddress,
   ISetBalance,
 } from './types';
-import { accounts } from '../index';
-import { Dispatched } from '../types';
 
 export function loadAddresses(
   seed: SeedReference,
   blockchain: BlockchainCode,
   account: number,
   index?: number,
-): Dispatched<void, ILoadAddresses> {
-  return (dispatch, getState) => {
-    const { coinTicker } = Blockchains[blockchain].params;
-
-    const tokenRegistry = new TokenRegistry(getState().application.tokens);
-
-    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
-
-    dispatch({
-      account,
-      blockchain,
-      index,
-      seed,
-      type: ActionTypes.LOAD_ADDRESSES,
-      assets: [coinTicker, ...tokens],
-    });
-  };
-}
-
-export function loadBalances(
-  seed: SeedReference,
-  blockchain: BlockchainCode,
-  hdpath: string,
-  address: string,
-  assets: string[],
-): ILoadBalances {
+): ILoadAddresses {
   return {
-    address,
-    assets,
+    type: ActionTypes.LOAD_ADDRESSES,
+    account,
     blockchain,
-    hdpath,
+    index,
     seed,
-    type: ActionTypes.LOAD_BALANCES,
   };
 }
 

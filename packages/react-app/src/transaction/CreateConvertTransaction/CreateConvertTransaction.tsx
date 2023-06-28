@@ -259,17 +259,20 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     }
 
     const blockchainCode = blockchainIdToCode(entry.blockchain);
-    const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
 
-    if (isHardware) {
-      await signTransaction(entry.id, tx, tokenData);
-    } else {
-      const correctPassword = await checkGlobalKey(password);
+    if (tokenRegistry.hasSymbol(blockchainCode, token)) {
+      const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
 
-      if (correctPassword) {
-        await signTransaction(entry.id, tx, tokenData, password);
+      if (isHardware) {
+        await signTransaction(entry.id, tx, tokenData);
       } else {
-        setPasswordError('Incorrect password');
+        const correctPassword = await checkGlobalKey(password);
+
+        if (correctPassword) {
+          await signTransaction(entry.id, tx, tokenData, password);
+        } else {
+          setPasswordError('Incorrect password');
+        }
       }
     }
   };
@@ -667,9 +670,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         let tokenData: Token | null = null;
 
-        try {
+        if (tokenRegistry.hasSymbol(blockchain, token)) {
           tokenData = tokenRegistry.bySymbol(blockchain, token);
-        } catch (exception) {
+        } else {
           return [formatAmount(balance)];
         }
 

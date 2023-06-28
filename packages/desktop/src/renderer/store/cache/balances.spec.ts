@@ -1,7 +1,7 @@
 import { IEmeraldVault, Wallet } from '@emeraldpay/emerald-vault-core';
 import { BackendApi, PersistentState, TokenData, WalletApi } from '@emeraldwallet/core';
 import { accounts, application, createStore, triggers } from '@emeraldwallet/store';
-import { Unsubscribe } from 'redux';
+import { Action, Unsubscribe } from 'redux';
 import { initBalancesState } from './balances';
 
 interface ApiMock {
@@ -11,7 +11,7 @@ interface ApiMock {
 
 jest.mock('electron', () => ({
   ipcRenderer: {
-    invoke: jest.fn(),
+    invoke: jest.fn(async () => Promise.resolve()),
     send: jest.fn(),
   },
 }));
@@ -52,7 +52,7 @@ const apiMock: ApiMock = {
         {
           address: '0x0',
           amount: '1000000',
-          asset: 'USDT',
+          asset: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
           blockchain: 100,
         },
       ]);
@@ -115,17 +115,10 @@ const apiMock: ApiMock = {
   },
 };
 
-const backendApiMock: Partial<BackendApi> = {
-  getBalance() {
-    return Promise.resolve({});
-  },
-};
-
 describe('balances cache', () => {
-  const store = createStore(apiMock as WalletApi, backendApiMock as BackendApi);
+  const store = createStore(apiMock as WalletApi, {} as BackendApi);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  store.dispatch(application.actions.setTokens(tokens) as any);
+  store.dispatch(application.actions.setTokens(tokens, true) as unknown as Action);
 
   let unsubscribe: Unsubscribe | undefined;
 

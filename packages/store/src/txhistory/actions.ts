@@ -1,5 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, PersistentState, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
+import { Dispatched } from '../types';
 import {
   ActionTypes,
   LastTxIdAction,
@@ -8,11 +9,10 @@ import {
   StoredTransaction,
   UpdateStoredTxAction,
 } from './types';
-import { Dispatched } from '../types';
 
 export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void, LoadStoredTxsAction> {
   return async (dispatch, getState, extra) => {
-    const { history } = getState();
+    const { application, history } = getState();
 
     if (walletId === history.walletId && (initial || history.cursor === null)) {
       return;
@@ -33,7 +33,7 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
       page.items.map(async (tx) => {
         const meta = await extra.api.txMeta.get(blockchainIdToCode(tx.blockchain), tx.txId);
 
-        const tokenRegistry = new TokenRegistry(getState().application.tokens);
+        const tokenRegistry = new TokenRegistry(application.tokens);
 
         return new StoredTransaction(tokenRegistry, tx, meta);
       }),

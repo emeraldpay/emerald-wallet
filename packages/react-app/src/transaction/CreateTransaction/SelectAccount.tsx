@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount/lib/amount';
 import { Uuid, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode } from '@emeraldwallet/core';
-import { IBalanceValue, IState, accounts, screen, tokens } from '@emeraldwallet/store';
+import { BalanceValue, IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { Back, CoinAvatar, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, Grid, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +32,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-  assets: IBalanceValue[];
+  assets: BalanceValue[];
   balances: AccountBalance[];
   wallet?: Wallet;
   walletIcon?: string | null;
@@ -68,25 +68,29 @@ const SelectAccount: React.FC<DispatchProps & OwnProps & StateProps> = ({
           <WalletReference assets={assets} walletIcon={walletIcon} wallet={wallet} />
         </Grid>
         <Grid item className={styles.accountsList} xs={12}>
-          {balances.map((item) => (
-            <Grid container key={`acc-balance-${item.entry.id}`} className={styles.accountLine}>
-              <Grid item xs={2} />
-              <Grid item xs={1}>
-                <CoinAvatar blockchain={blockchainIdToCode(item.entry.blockchain)} />
+          {balances.map((item) => {
+            const blockchain = blockchainIdToCode(item.entry.blockchain);
+
+            return (
+              <Grid container key={`acc-balance-${item.entry.id}`} className={styles.accountLine}>
+                <Grid item xs={2} />
+                <Grid item xs={1}>
+                  <CoinAvatar blockchain={blockchain} />
+                </Grid>
+                <Grid item xs={6}>
+                  <AccountBalance balance={item.balance} blockchain={blockchain} />
+                  {item.tokens.map((token) => (
+                    <AccountBalance key={`token-${token.units.top.code}`} balance={token} blockchain={blockchain} />
+                  ))}
+                </Grid>
+                <Grid item xs={1}>
+                  <Button disabled={!acceptAccount(item)} onClick={() => onSelected(item.entry)}>
+                    Send
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <AccountBalance balance={item.balance} />
-                {item.tokens.map((token) => (
-                  <AccountBalance key={`token-${token.units.top.code}`} balance={token} />
-                ))}
-              </Grid>
-              <Grid item xs={1}>
-                <Button disabled={!acceptAccount(item)} onClick={() => onSelected(item.entry)}>
-                  Send
-                </Button>
-              </Grid>
-            </Grid>
-          ))}
+            );
+          })}
         </Grid>
       </Grid>
     </Page>
@@ -97,7 +101,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
 
-    let assets: IBalanceValue[] = [];
+    let assets: BalanceValue[] = [];
 
     if (wallet != null) {
       assets = accounts.selectors.getWalletBalances(state, wallet);

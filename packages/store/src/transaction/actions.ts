@@ -45,9 +45,9 @@ import { DEFAULT_FEE, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, 
 import { WrappedError } from '../WrappedError';
 import { BroadcastData, SignData } from './types';
 
-const log = Logger.forCategory('Store::Transaction');
-
 const { Direction, ChangeType, State, Status } = PersistentState;
+
+const log = Logger.forCategory('Store::Transaction');
 
 function withNonce(tx: EthereumTransaction): (nonce: number) => Promise<EthereumTransaction> {
   return (nonce) => new Promise((resolve) => resolve({ ...tx, nonce: quantitiesToHex(nonce) }));
@@ -668,7 +668,7 @@ export function restoreBtcTx(
     const { restUtxo, txUtxo } = extractUtxo(balances.flat(), rawTx.vin, factory);
 
     if (rawTx.vin.length !== txUtxo.length) {
-      throw new Error('Cannot found all inputs in utxo');
+      throw new Error("Can't found all inputs in utxo");
     }
 
     const [entry] = entries;
@@ -691,7 +691,7 @@ export function restoreBtcTx(
     );
 
     if (outputs.length === 0) {
-      throw new Error('Cannot found receiver address');
+      throw new Error("Can't found receiver address");
     }
 
     /**
@@ -718,7 +718,7 @@ export function restoreBtcTx(
     }
 
     if (changeAddress == null) {
-      throw new Error('Cannot found change address');
+      throw new Error("Can't found change address");
     }
 
     const [
@@ -730,7 +730,7 @@ export function restoreBtcTx(
 
     const TxClass = cancel ? workflow.CreateBitcoinCancelTx : workflow.CreateBitcoinTx;
 
-    const restoredTx = new TxClass(entry, changeAddress, txUtxo.concat(restUtxo));
+    const restoredTx = new TxClass(entry, changeAddress, [...txUtxo, ...restUtxo]);
 
     const decoder = amountDecoder(blockchainCode);
     const zeroAmount = zeroAmountFor(blockchainCode);

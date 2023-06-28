@@ -4,48 +4,11 @@ import { BlockchainCode, InputUtxo, PersistentState, TokenData } from '@emeraldw
 
 export const moduleName = 'accounts';
 
-export interface IBalanceValue {
-  balance: BigAmount;
-}
-
-/**
- * Balance in original "face" value, and converted to a common currency
- */
-export interface BalanceValueConverted {
-  converted?: IBalanceValue;
-  rate: number;
-  source: IBalanceValue;
-}
-
-export interface AccountDetails {
-  address: string;
-  balance?: string;
-  entryId: EntryId;
-  txcount?: number;
-  utxo?: InputUtxo[];
-}
-
-export interface IAccountsState {
-  details: AccountDetails[];
-  icons: Record<string, string | null>;
-  loading: boolean;
-  seeds: SeedDescription[];
-  wallets: Wallet[];
-}
-
-export interface IBalanceUpdate {
-  address: string;
-  entryId: EntryId;
-  balance: string;
-  utxo?: InputUtxo[];
-}
-
 export enum ActionTypes {
   ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED',
   CREATE_HD_ACCOUNT = 'ACCOUNT/CREATE_HD_ACCOUNT',
   CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
   CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
-  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED',
   INIT_STATE = 'ACCOUNT/INIT_STATE',
@@ -66,62 +29,52 @@ export enum ActionTypes {
   WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
 }
 
-export interface InitAccountStateAction {
-  type: ActionTypes.INIT_STATE;
-  balances: PersistentState.Balance[];
-  entriesByAddress: Record<string, WalletEntry[]>;
+export interface BalanceValue {
+  balance: BigAmount;
+  blockchain: BlockchainCode;
 }
 
-export interface ILoadWalletsAction {
-  type: ActionTypes.LOAD_WALLETS;
+/**
+ * Balance in original "face" value, and converted to a common currency
+ */
+export interface BalanceValueConverted {
+  converted?: BigAmount;
+  rate: number;
+  source: BalanceValue;
 }
 
-export interface IFetchErc20BalancesAction {
-  type: ActionTypes.FETCH_ERC20_BALANCES;
-  tokens: TokenData[];
+export interface AccountBalance {
+  address: string;
+  entryId: EntryId;
+  balance: string;
+  utxo?: InputUtxo[];
 }
 
-export interface IFetchHdPathsAction {
-  type: ActionTypes.FETCH_HD_PATHS;
+export interface AccountDetails {
+  address: string;
+  balance?: string;
+  entryId: EntryId;
+  txcount?: number;
+  utxo?: InputUtxo[];
 }
 
-export interface IUpdateWalletAction {
-  type: ActionTypes.WALLET_UPDATED;
-  payload: {
-    name: string;
-    walletId: Uuid;
-  };
+export interface AccountsState {
+  details: AccountDetails[];
+  icons: Record<string, string | null>;
+  loading: boolean;
+  seeds: SeedDescription[];
+  wallets: Wallet[];
 }
 
-export interface IWalletsLoaded {
-  type: ActionTypes.SET_LIST;
-  payload: Wallet[];
+export interface CreateHdEntryAction {
+  type: ActionTypes.CREATE_HD_ACCOUNT;
+  blockchain: BlockchainCode;
+  seedId?: Uuid;
+  seedPassword: string;
+  walletId: Uuid;
 }
 
-export interface ISetBalanceAction {
-  type: ActionTypes.SET_BALANCE;
-  payload: IBalanceUpdate;
-}
-
-export interface ISetLoadingAction {
-  type: ActionTypes.LOADING;
-  payload: boolean;
-}
-
-export interface IWalletCreatedAction {
-  type: ActionTypes.CREATE_WALLET_SUCCESS;
-  wallet: Wallet;
-}
-
-export interface IWalletImportedAction {
-  type: ActionTypes.ACCOUNT_IMPORTED;
-  payload: {
-    tokens: TokenData[];
-    walletId: string;
-  };
-}
-
-export interface ICreateWalletAction {
+export interface CreateWalletAction {
   type: ActionTypes.CREATE_WALLET;
   payload: {
     mnemonic: string;
@@ -130,14 +83,11 @@ export interface ICreateWalletAction {
   };
 }
 
-export interface ISetTxCountAction {
-  type: ActionTypes.SET_TXCOUNT;
-  address: string;
-  entryId: EntryId;
-  value: number;
+export interface FetchHdPathsAction {
+  type: ActionTypes.FETCH_HD_PATHS;
 }
 
-export interface IHdAccountCreated {
+export interface HdAccountCreatedAction {
   type: ActionTypes.HD_ACCOUNT_CREATED;
   payload: {
     account: WalletEntry;
@@ -145,13 +95,24 @@ export interface IHdAccountCreated {
   };
 }
 
-export interface ILoadSeedsAction {
+export interface InitAccountStateAction {
+  type: ActionTypes.INIT_STATE;
+  balances: PersistentState.Balance[];
+  entriesByAddress: Record<string, WalletEntry[]>;
+}
+
+export interface LoadSeedsAction {
   type: ActionTypes.LOAD_SEEDS;
 }
 
-export interface ISetSeedsAction {
-  type: ActionTypes.SET_SEEDS;
-  payload: SeedDescription[];
+export interface LoadWalletsAction {
+  type: ActionTypes.LOAD_WALLETS;
+}
+
+export interface NextAddressAction {
+  type: ActionTypes.NEXT_ADDRESS;
+  entryId: EntryId;
+  addressRole: AddressRole;
 }
 
 /**
@@ -167,24 +128,26 @@ export interface PendingBalanceAction {
   value: string;
 }
 
-export interface ICreateHdEntry {
-  type: ActionTypes.CREATE_HD_ACCOUNT;
-  blockchain: BlockchainCode;
-  seedId?: Uuid;
-  seedPassword: string;
-  tokens: TokenData[];
-  walletId: Uuid;
+export interface SetBalanceAction {
+  type: ActionTypes.SET_BALANCE;
+  payload: AccountBalance;
 }
 
-export interface ISubWalletBalance {
-  type: ActionTypes.SUBSCRIBE_WALLET_BALANCE;
-  walletId: Uuid;
+export interface SetLoadingAction {
+  type: ActionTypes.LOADING;
+  payload: boolean;
 }
 
-export interface INextAddress {
-  type: ActionTypes.NEXT_ADDRESS;
+export interface SetSeedsAction {
+  type: ActionTypes.SET_SEEDS;
+  payload: SeedDescription[];
+}
+
+export interface SetTxCountAction {
+  type: ActionTypes.SET_TXCOUNT;
+  address: string;
   entryId: EntryId;
-  addressRole: AddressRole;
+  value: number;
 }
 
 export interface SetWalletIconsAction {
@@ -192,21 +155,54 @@ export interface SetWalletIconsAction {
   icons: Record<string, string | null>;
 }
 
+export interface SubscribeWalletBalance {
+  type: ActionTypes.SUBSCRIBE_WALLET_BALANCE;
+  walletId: Uuid;
+}
+
+export interface UpdateWalletAction {
+  type: ActionTypes.WALLET_UPDATED;
+  payload: {
+    name: string;
+    walletId: Uuid;
+  };
+}
+
+export interface WalletCreatedAction {
+  type: ActionTypes.CREATE_WALLET_SUCCESS;
+  wallet: Wallet;
+}
+
+export interface WalletImportedAction {
+  type: ActionTypes.ACCOUNT_IMPORTED;
+  payload: {
+    tokens: TokenData[];
+    walletId: string;
+  };
+}
+
+export interface WalletsLoadedAction {
+  type: ActionTypes.SET_LIST;
+  payload: Wallet[];
+}
+
 export type AccountsAction =
+  | CreateHdEntryAction
+  | CreateWalletAction
+  | FetchHdPathsAction
+  | HdAccountCreatedAction
   | InitAccountStateAction
-  | ILoadWalletsAction
-  | IFetchHdPathsAction
-  | IUpdateWalletAction
-  | IWalletsLoaded
-  | ISetBalanceAction
-  | ISetLoadingAction
-  | IWalletCreatedAction
-  | ICreateWalletAction
-  | ISetTxCountAction
-  | IHdAccountCreated
-  | ILoadSeedsAction
-  | ISetSeedsAction
+  | LoadSeedsAction
+  | LoadWalletsAction
+  | NextAddressAction
   | PendingBalanceAction
-  | ISubWalletBalance
-  | INextAddress
-  | SetWalletIconsAction;
+  | SetBalanceAction
+  | SetLoadingAction
+  | SetSeedsAction
+  | SetTxCountAction
+  | SetWalletIconsAction
+  | SubscribeWalletBalance
+  | UpdateWalletAction
+  | WalletCreatedAction
+  | WalletImportedAction
+  | WalletsLoadedAction;

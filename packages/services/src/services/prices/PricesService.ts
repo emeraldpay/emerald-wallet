@@ -1,31 +1,32 @@
-import { AnyCurrency } from '@emeraldpay/api';
-import { IpcCommands, Logger } from '@emeraldwallet/core';
+import { AnyCurrency, isErc20Asset } from '@emeraldpay/api';
+import { BlockchainCode, EthereumAddress, IpcCommands, Logger, blockchainCodeToId } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
-import { IpcMain, WebContents } from 'electron';
+import { WebContents } from 'electron';
 import { EmeraldApiAccess, PriceListener } from '../..';
 import { IService } from '../Services';
 
 const log = Logger.forCategory('PriceService');
 
-class PricesService implements IService {
-  public readonly id: string;
+export class PricesService implements IService {
+  readonly id: string;
 
   private from: AnyCurrency[] = [];
   private to: AnyCurrency | null = null;
 
-  private handler: NodeJS.Timeout | null = null;
   private listener: PriceListener | null = null;
+
+  private repeater: NodeJS.Timeout | null = null;
+  private timeout: NodeJS.Timeout | null = null;
 
   private apiAccess: EmeraldApiAccess;
   private persistentState: PersistentStateManager;
   private webContents?: WebContents;
 
   constructor(
+    ipcMain: Electron.CrossProcessExports.IpcMain,
     apiAccess: EmeraldApiAccess,
-    ipcMain: IpcMain,
     persistentState: PersistentStateManager,
-    webContents: WebContents,
-    defaultFrom: string[],
+    webContents: Electron.CrossProcessExports.WebContents,
   ) {
     this.id = 'PricesService';
 
@@ -33,17 +34,8 @@ class PricesService implements IService {
     this.persistentState = persistentState;
     this.webContents = webContents;
 
-    ipcMain.handle(IpcCommands.PRICES_SET_ASSETS, (event, from: string[]) => {
-      log.info('Set prices sources:', from.join(', '));
-
-      this.from = [...defaultFrom, ...from] as AnyCurrency[];
-
-      this.stop();
-      this.start();
-    });
-
-    ipcMain.handle(IpcCommands.PRICES_SET_CURRENCY, (event, to: string) => {
-      log.info('Set prices target:', to);
+    ipcMain.handle(IpcCommands.PRICES_SET_TO, (event, to: string) => {
+      log.info(`Set target to ${to}`);
 
       this.to = to.toUpperCase() as AnyCurrency;
 
@@ -53,50 +45,88 @@ class PricesService implements IService {
   }
 
   start(): void {
-    this.stop();
-
     this.listener = this.apiAccess.newPricesListener();
 
-    this.fetch();
+    //
+    this.timeout = setTimeout(this.fetch.bind(this), 2 * 1000);
   }
 
   stop(): void {
-    if (this.handler != null) {
-      clearTimeout(this.handler);
+    this.listener = null;
 
-      this.handler = null;
+    if (this.repeater != null) {
+      clearTimeout(this.repeater);
     }
 
-    if (this.listener != null) {
-      log.info('Closing prices listener');
-
-      this.listener = null;
+    if (this.timeout != null) {
+      clearTimeout(this.timeout);
     }
   }
 
   reconnect(): void {
-    // Timer based, so doesn't matter
+    // Timer based
   }
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
   }
 
+  addFrom(from: string, blockchain?: BlockchainCode): void {
+    let currency: AnyCurrency | undefined;
+
+    if (EthereumAddress.isValid(from)) {
+      if (blockchain != null) {
+        const blockchainId = blockchainCodeToId(blockchain);
+
+        const asset = this.from.find((asset) =>
+          isErc20Asset(asset) ? asset.blockchain === blockchainId && asset.contractAddress === from : false,
+        );
+
+        if (asset == null) {
+          log.info(`Add base ${from} on ${blockchain} blockchain`);
+
+          currency = {
+            blockchain: blockchainId,
+            contractAddress: from,
+          };
+        }
+      }
+    } else {
+      const coin = from.toUpperCase() as AnyCurrency;
+
+      if (!this.from.includes(coin)) {
+        log.info(`Add base ${coin}`);
+
+        currency = coin;
+      }
+    }
+
+    if (currency != null) {
+      this.from = [...this.from, currency];
+
+      this.stop();
+      this.start();
+    }
+  }
+
   private fetch(): void {
     if (this.from.length > 0 && this.to != null) {
-      log.info(`Request for prices from ${this.from.join(', ')} to ${this.to}`);
+      const from = this.from
+        .map((item) => (isErc20Asset(item) ? `${item.contractAddress} on ${item.blockchain} blockchain` : item))
+        .join(', ');
+      const to = isErc20Asset(this.to) ? this.to.contractAddress : this.to;
+
+      log.info(`Request for prices from ${from} to ${to}`);
 
       this.listener?.request(this.from, this.to, (rates) =>
         this.persistentState.cache
           .put('rates', JSON.stringify(rates))
           .then(() =>
-            this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/EXCHANGE_RATES', payload: { rates } }),
+            this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/SET_RATES', payload: { rates } }),
           ),
       );
     }
 
-    this.handler = setTimeout(this.fetch.bind(this), 60000);
+    this.repeater = setTimeout(this.fetch.bind(this), 60 * 1000);
   }
 }
-
-export default PricesService;

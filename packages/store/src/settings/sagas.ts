@@ -1,12 +1,12 @@
 import { IpcCommands } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as screen from '../screen';
 import { ActionTypes, UpdateSettingsAction } from './types';
 
 function* loadSettings(): SagaIterator {
-  if (localStorage) {
+  if (localStorage != null) {
     let localeCurrency = localStorage.getItem('localeCurrency');
 
     if (localeCurrency == null) {
@@ -18,7 +18,7 @@ function* loadSettings(): SagaIterator {
       currency: localeCurrency,
     });
 
-    yield call(ipcRenderer.invoke, IpcCommands.PRICES_SET_CURRENCY, localeCurrency);
+    yield call(ipcRenderer.invoke, IpcCommands.PRICES_SET_TO, localeCurrency);
   }
 }
 
@@ -32,10 +32,9 @@ function* updateSettings(action: UpdateSettingsAction): SagaIterator {
 
   yield put(screen.actions.showNotification('Settings has been saved', 'success'));
 
-  yield call(ipcRenderer.invoke, IpcCommands.PRICES_SET_CURRENCY, settings.localeCurrency);
+  yield call(ipcRenderer.invoke, IpcCommands.PRICES_SET_TO, settings.localeCurrency);
 }
 
 export function* root(): SagaIterator {
-  yield takeEvery(ActionTypes.LOAD_SETTINGS, loadSettings);
-  yield takeLatest(ActionTypes.UPDATE, updateSettings);
+  yield all([takeEvery(ActionTypes.LOAD_SETTINGS, loadSettings), takeLatest(ActionTypes.UPDATE, updateSettings)]);
 }

@@ -1,7 +1,7 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import EthRpc from './ethrpc';
 
-export default class ChainRpcConnections {
+export class ChainRpcConnections {
   private connections: Map<string, EthRpc> = new Map();
 
   add(code: string, connection: EthRpc): void {

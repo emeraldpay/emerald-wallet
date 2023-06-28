@@ -73,7 +73,7 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalan
         >
           <List>
             {fiatCurrencies.map(({ fiatAmount, token, total }) => {
-              if (fiatAmount == null) {
+              if (fiatAmount == null || fiatAmount.isZero()) {
                 return null;
               }
 

@@ -10,7 +10,7 @@ import {
   blockchainCodeToId,
   workflow,
 } from '@emeraldwallet/core';
-import { ActionTypes, IWalletsLoaded } from '../accounts/types';
+import { ActionTypes, WalletsLoadedAction } from '../accounts/types';
 import { createStore } from '../create-store';
 import { StoredTransaction } from '../txhistory/types';
 import { restoreBtcTx } from './actions';
@@ -29,7 +29,7 @@ const changeXPub =
   'vpub5b2pFUoFBwGLT1jwWQ69V2hCi7nhLTy67k1NkfSxhEfYknh1uSLF' +
   'o6v4oXeBv7PuoxVAFKyjrai2zdcSG82venvnSwmsUhFXET6Mhb4wUqN';
 
-const setWalletListAction: IWalletsLoaded = {
+const setWalletListAction: WalletsLoadedAction = {
   type: ActionTypes.SET_LIST,
   payload: [
     {

@@ -10,6 +10,7 @@ export interface TokenData {
   decimals: number;
   icon?: string;
   name: string;
+  pinned?: boolean;
   stablecoin?: boolean;
   symbol: string;
   type: (typeof TOKEN_TYPES)[number];
@@ -26,34 +27,43 @@ export function isToken(value: unknown): value is TokenData {
 }
 
 export class Token implements TokenData {
-  address: string;
-  blockchain: number;
-  decimals: number;
-  icon?: string;
-  name: string;
-  stablecoin?: boolean;
-  symbol: string;
-  type: (typeof TOKEN_TYPES)[number];
-  wrapped?: boolean;
+  private readonly _pinned?: boolean;
+  private readonly _stablecoin?: boolean;
+  private readonly _wrapped?: boolean;
+
+  readonly address: string;
+  readonly blockchain: number;
+  readonly decimals: number;
+  readonly icon: string | undefined;
+  readonly name: string;
+  readonly symbol: string;
+  readonly type: (typeof TOKEN_TYPES)[number];
 
   constructor(token: TokenData) {
-    this.address = token.address;
+    this._pinned = token.pinned;
+    this._stablecoin = token.stablecoin;
+    this._wrapped = token.wrapped;
+
     this.blockchain = token.blockchain;
     this.decimals = token.decimals;
     this.icon = token.icon;
     this.name = token.name;
-    this.stablecoin = token.stablecoin;
-    this.symbol = token.symbol;
     this.type = token.type;
-    this.wrapped = token.wrapped;
+
+    this.address = token.address.toLowerCase();
+    this.symbol = token.symbol.toUpperCase();
   }
 
-  isStablecoin(): boolean {
-    return this.stablecoin ?? false;
+  get pinned(): boolean {
+    return this._pinned ?? false;
   }
 
-  isWrapped(): boolean {
-    return this.wrapped ?? false;
+  get stablecoin(): boolean {
+    return this._stablecoin ?? false;
+  }
+
+  get wrapped(): boolean {
+    return this._wrapped ?? false;
   }
 
   getUnits(): Units {
@@ -125,6 +135,24 @@ export class TokenRegistry {
     return instance;
   }
 
+  byAddresses(blockchain: BlockchainCode, addresses: string[]): Token[] {
+    const instances = this.instances.get(blockchain);
+
+    if (instances == null) {
+      throw new Error(`Can't find tokens by blockchain ${blockchain} for addresses ${addresses.join(', ')}`);
+    }
+
+    const tokenAddresses = addresses.map((address) => address.toLowerCase());
+
+    return [...instances.values()].reduce<Token[]>((carry, token) => {
+      if (tokenAddresses.includes(token.address)) {
+        return [...carry, token];
+      }
+
+      return carry;
+    }, []);
+  }
+
   bySymbol(blockchain: BlockchainCode, symbol: string): Token {
     const directory = this.directory.get(blockchain);
 
@@ -141,6 +169,16 @@ export class TokenRegistry {
     const [address] = addresses.values();
 
     return this.byAddress(blockchain, address);
+  }
+
+  hasAddress(blockchain: BlockchainCode, address: string): boolean {
+    const instances = this.instances.get(blockchain);
+
+    if (instances == null) {
+      return false;
+    }
+
+    return instances.has(address.toLowerCase());
   }
 
   hasSymbol(blockchain: BlockchainCode, symbol: string): boolean {
@@ -161,7 +199,7 @@ export class TokenRegistry {
     }
 
     return [...instances.values()].reduce<Token[]>((carry, token) => {
-      if (token.isStablecoin()) {
+      if (token.stablecoin) {
         return [...carry, token];
       }
 

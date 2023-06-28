@@ -1,7 +1,7 @@
 import { WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { Coin, PersistentState, WalletApi } from '@emeraldwallet/core';
+import { EthereumAddress, PersistentState, WalletApi } from '@emeraldwallet/core';
 import { IState, accounts, tokens } from '@emeraldwallet/store';
-import { Store } from 'redux';
+import { Action, Store } from 'redux';
 
 type Balances = {
   coinBalances: PersistentState.Balance[];
@@ -48,11 +48,11 @@ export function initBalancesState(api: WalletApi, store: Store<IState>): void {
       .flat()
       .reduce<Balances>(
         (carry, balance) => {
-          if (balance.asset in Coin) {
-            return { ...carry, coinBalances: [...carry.coinBalances, balance] };
+          if (EthereumAddress.isValid(balance.asset)) {
+            return { ...carry, tokenBalances: [...carry.tokenBalances, balance] };
           }
 
-          return { ...carry, tokenBalances: [...carry.tokenBalances, balance] };
+          return { ...carry, coinBalances: [...carry.coinBalances, balance] };
         },
         { coinBalances: [], tokenBalances: [] },
       );
@@ -68,7 +68,6 @@ export function initBalancesState(api: WalletApi, store: Store<IState>): void {
     );
 
     store.dispatch(accounts.actions.initState(coinBalances, entryByAddress));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    store.dispatch(tokens.actions.initState(tokenBalances) as any);
+    store.dispatch(tokens.actions.initState(tokenBalances) as unknown as Action);
   });
 }

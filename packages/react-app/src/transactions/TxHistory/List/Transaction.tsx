@@ -17,23 +17,23 @@ import ProgressPie from './ProgressPie';
 
 const { Direction, State, Status } = PersistentState;
 
-const Confirmations: Readonly<Record<BlockchainCode, number>> = {
+const CONFIRMATIONS: Record<BlockchainCode, number> = {
   [BlockchainCode.Unknown]: 1,
   [BlockchainCode.BTC]: 3,
   [BlockchainCode.TestBTC]: 3,
   [BlockchainCode.ETH]: 12,
   [BlockchainCode.Goerli]: 12,
   [BlockchainCode.ETC]: 48,
-};
+} as const;
 
-const Confirmed: Readonly<Record<BlockchainCode, number>> = {
+const CONFIRMED: Record<BlockchainCode, number> = {
   [BlockchainCode.Unknown]: 1,
   [BlockchainCode.BTC]: 6 * 24,
   [BlockchainCode.TestBTC]: 6 * 24,
   [BlockchainCode.ETH]: 4 * 60 * 24,
   [BlockchainCode.Goerli]: 4 * 60 * 24,
   [BlockchainCode.ETC]: 4 * 60 * 24,
-};
+} as const;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -172,7 +172,7 @@ interface StateProps {
   entryId: EntryId | undefined;
   walletIcons: Record<string, string | null>;
   getFiatValue(amount: BigAmount): CurrencyAmount;
-  getHeight(blockchain: BlockchainCode): number;
+  getHeight(): number;
   getWallet(entryId: EntryId): Wallet | undefined;
 }
 
@@ -215,16 +215,16 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
       return 0;
     }
 
-    const height = getHeight(blockchainCode);
+    const height = getHeight();
 
     if (height > 0) {
       return height - tx.block.height;
     }
 
     return 0;
-  }, [blockchainCode, tx.block, getHeight]);
+  }, [tx.block, getHeight]);
 
-  const confirmed = React.useMemo(() => confirmations >= Confirmed[blockchainCode], [blockchainCode, confirmations]);
+  const confirmed = React.useMemo(() => confirmations >= CONFIRMED[blockchainCode], [blockchainCode, confirmations]);
 
   const sinceTime = React.useMemo(
     () =>
@@ -272,7 +272,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   return (
     <div className={styles.container} style={style}>
       <div className={styles.progress}>
-        <ProgressPie progress={Math.min(100, (100 / Confirmations[blockchainCode]) * confirmations)}>
+        <ProgressPie progress={Math.min(100, (100 / CONFIRMATIONS[blockchainCode]) * confirmations)}>
           <CoinAvatar blockchain={blockchainCode} className={classNames(styles.progressStatus, statusClass)} />
         </ProgressPie>
       </div>
@@ -379,6 +379,8 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { tx, walletId }) => {
+    const blockchainCode = blockchainIdToCode(tx.blockchain);
+
     return {
       entryId: tx.changes
         .map(({ wallet }) => wallet)
@@ -388,13 +390,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       getFiatValue(amount) {
         const { top: topUnit } = amount.units;
 
-        const rate = settings.selectors.fiatRate(state, topUnit.code) ?? 0;
+        const rate = settings.selectors.fiatRate(state, topUnit.code, blockchainCode) ?? 0;
         const value = amount.getNumberByUnit(topUnit).multipliedBy(rate);
 
         return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);
       },
-      getHeight(blockchain) {
-        return blockchains.selectors.getHeight(state, blockchain);
+      getHeight() {
+        return blockchains.selectors.getHeight(state, blockchainCode);
       },
       getWallet(entryId) {
         return accounts.selectors.findWalletByEntryId(state, entryId);

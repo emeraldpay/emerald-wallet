@@ -23,19 +23,21 @@ export enum IpcCommands {
   XPUB_LAST_INDEX = 'xpub-last-index',
   /** @deprecated */
   BROADCAST_TX = 'broadcast-tx',
-  /** @deprecated */
-  GET_BALANCE = 'get-balance',
 
   // Balance service
+  BALANCE_SET_TOKENS = 'balance-set-tokens',
   BALANCE_SUBSCRIBE = 'balance-subscribe',
 
   // Prices service
-  PRICES_SET_ASSETS = 'prices-set-assets',
-  PRICES_SET_CURRENCY = 'prices-set-currency',
+  PRICES_SET_TO = 'prices-set-to',
 
   // Transactions service
   TXS_SET_TOKENS = 'txs-set-tokens',
   TXS_SUBSCRIBE = 'txs-subscribe',
+
+  // Tokens service
+  TOKENS_SET_TOKENS = 'tokens-set-tokens',
+  TOKENS_SUBSCRIBE_ADDRESS = 'tokens-subscribe-address',
 
   // Account
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',

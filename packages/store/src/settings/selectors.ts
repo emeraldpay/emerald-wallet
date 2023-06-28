@@ -1,34 +1,45 @@
-import { BlockchainCode, Blockchains, CurrencyCode } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, CurrencyCode, TokenRegistry } from '@emeraldwallet/core';
 import { createSelector } from 'reselect';
-import { Mode } from './types';
 import { IState } from '../types';
+import { Mode } from './types';
 
-export const fiatCurrency = (state: IState): CurrencyCode => state.settings.localeCurrency;
+export function fiatCurrency(state: IState): CurrencyCode {
+  return state.settings.localeCurrency;
+}
 
-export const fiatRate = (state: IState, token: string): number | undefined => {
+export function fiatRate(state: IState, asset: string, blockchain?: BlockchainCode): number | undefined {
   const { rates } = state.settings;
 
   if (rates == null) {
     return undefined;
   }
 
-  let code = token.toUpperCase();
+  const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-  if (code === 'TBTC') {
-    code = 'TESTBTC';
+  let key = asset.toUpperCase();
+
+  if (blockchain != null && tokenRegistry.hasSymbol(blockchain, asset)) {
+    const token = tokenRegistry.bySymbol(blockchain, asset);
+
+    key = `${blockchain}:${token.address}`;
   }
 
-  const rate = rates[code];
+  const rate = rates[key];
 
   if (rate == null) {
     return undefined;
   }
 
   return parseFloat(rate);
-};
+}
 
-export const getChains = (state: IState): BlockchainCode[] => state.settings.mode.chains;
-export const getMode = (state: IState): Mode => state.settings.mode;
+export function getChains(state: IState): BlockchainCode[] {
+  return state.settings.mode.chains;
+}
+
+export function getMode(state: IState): Mode {
+  return state.settings.mode;
+}
 
 export const currentChains = createSelector([getChains], (chains) =>
   chains.map((chain) => Blockchains[chain.toLowerCase()]),

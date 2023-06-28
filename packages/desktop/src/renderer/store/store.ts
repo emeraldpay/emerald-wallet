@@ -3,6 +3,7 @@ import {
   BackendApiInvoker,
   RemoteAddressBook,
   RemoteBalances,
+  RemoteCache,
   RemoteTxHistory,
   RemoteTxMeta,
   RemoteVault,
@@ -15,9 +16,9 @@ import {
   settings,
   triggers,
 } from '@emeraldwallet/store';
-import { RemoteCache } from '@emeraldwallet/store/lib/remote-access/Cache';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
+import { Action } from 'redux';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
@@ -25,7 +26,7 @@ import { initBalancesState } from './cache/balances';
 
 Logger.setInstance(ElectronLogger);
 
-const logger = Logger.forCategory('Store');
+const log = Logger.forCategory('Store');
 
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
@@ -45,20 +46,22 @@ function checkOptionsUpdates(appVersion: string, stored: SettingsOptions): void 
 }
 
 function checkTokensUpdates(appVersion: string, stored: TokenData[]): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateTokens(appVersion, stored).then((tokens) => store.dispatch(application.actions.setTokens(tokens) as any));
+  updateTokens(appVersion, stored).then(({ changed, tokens }) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    store.dispatch(application.actions.setTokens(tokens, changed) as any),
+  );
 }
 
 function checkWalletUpdates(appVersion: string): void {
-  checkUpdate(appVersion).then((versionDetails) => {
-    if (!versionDetails.isLatest) {
+  checkUpdate(appVersion).then(({ latest, link, version }) => {
+    if (!latest) {
       store.dispatch(
         screen.actions.showNotification(
-          `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
+          `A new version of Emerald Wallet is available (${version}).`,
           'info',
           20,
           'Update',
-          screen.actions.openLink(versionDetails.downloadLink),
+          screen.actions.openLink(link),
         ),
       );
     }
@@ -66,10 +69,10 @@ function checkWalletUpdates(appVersion: string): void {
 }
 
 function listenElectron(): void {
-  logger.debug('Running launcher listener for Redux');
+  log.debug('Running launcher listener for Redux');
 
   ipcRenderer.on(IpcCommands.STORE_DISPATCH, (event, action) => {
-    logger.debug(`Got action from IPC: ${JSON.stringify(action)}`);
+    log.debug(`Got action from IPC: ${JSON.stringify(action)}`);
 
     store.dispatch(action);
 
@@ -101,8 +104,7 @@ function getInitialScreen(): void {
           if (oddPasswordItems.length > 0) {
             store.dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
           } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            store.dispatch(screen.actions.gotoWalletsScreen() as any);
+            store.dispatch(screen.actions.gotoWalletsScreen() as unknown as Action);
           }
         }),
       ),
@@ -111,12 +113,12 @@ function getInitialScreen(): void {
 }
 
 function startSync(): void {
-  logger.info('Start synchronization');
+  log.info('Start synchronization');
 
   triggers.onceModeSet(store).then(() => {
     const blockchains = settings.selectors.currentChains(store.getState());
 
-    logger.info(`Configured to use blockchains: ${blockchains.map((chain) => chain.params.code).join(', ')}`);
+    log.info(`Configured to use blockchains: ${blockchains.map((chain) => chain.params.code).join(', ')}`);
 
     store.dispatch(accounts.actions.loadSeedsAction());
     store.dispatch(accounts.actions.loadWalletsAction());
@@ -138,14 +140,14 @@ function startSync(): void {
       );
     });
 
-    const loadChains = blockchains.map(async (blockchain) => {
-      await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
-      await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
+    const loadChains = blockchains.map(async ({ params: { code: blockchain } }) => {
+      await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain));
+      await store.dispatch(addressBook.actions.loadAddressBook(blockchain));
     });
 
-    Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
+    Promise.all(loadChains).catch((exception) => log.error('Failed to load chains', exception));
 
-    logger.info('Initial synchronization finished');
+    log.info('Initial synchronization finished');
 
     store.dispatch(application.actions.connecting(false));
   });
@@ -179,7 +181,7 @@ export function startStore(): void {
     listenElectron();
     startSync();
   } catch (exception) {
-    logger.error(exception);
+    log.error(exception);
   }
 
   getInitialScreen();

@@ -1,5 +1,5 @@
 import { INITIAL_STATE, reducer } from './reducer';
-import { ActionTypes, IAccountsState } from './types';
+import { AccountsState, ActionTypes } from './types';
 
 describe('accounts reducer', () => {
   it('handles Actions.LOADING', () => {
@@ -13,7 +13,7 @@ describe('accounts reducer', () => {
 
   it('SET_LIST should store addresses correctly', () => {
     // do
-    let state: IAccountsState = reducer(undefined, {
+    let state: AccountsState = reducer(undefined, {
       type: ActionTypes.SET_LIST,
       payload: [
         {
@@ -44,7 +44,7 @@ describe('accounts reducer', () => {
   });
 
   it('ADD_ACCOUNT should add only non existent account', () => {
-    let state: IAccountsState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
+    let state: AccountsState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
 
     expect(state.wallets.length).toEqual(0);
 
@@ -89,7 +89,7 @@ describe('accounts reducer', () => {
   });
 
   it('SET_BALANCE updates utxo', () => {
-    const state: IAccountsState = reducer(undefined, {
+    const state: AccountsState = reducer(undefined, {
       type: ActionTypes.SET_BALANCE,
       payload: {
         address: '0x0',

@@ -42,20 +42,22 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
       tokenRegistry,
     } = this.props;
 
-    const chain = Blockchains[blockchain];
-    const decoded = EthereumTx.fromRaw(signed, chain.params.chainId);
+    const { chainId, code, coinTicker } = Blockchains[blockchain].params;
+    const decoded = EthereumTx.fromRaw(signed, chainId);
     const data = decoded.getData();
 
-    let coinSymbol: string = chain.params.coinTicker;
+    let coinSymbol: string = coinTicker;
 
     let txTo: string | null = null;
     let txValue: string | null = null;
 
+    const address = decoded.getRecipientAddress().toString();
+
     if (data.length > 0) {
       const decodedData = decodeData(data);
 
-      if (decodedData.inputs.length > 1) {
-        const tokenData = tokenRegistry.byAddress(chain.params.code, decoded.getRecipientAddress().toString());
+      if (decodedData.inputs.length > 1 && tokenRegistry.hasAddress(code, address)) {
+        const tokenData = tokenRegistry.byAddress(code, address);
         const tokenUnit = tokenData.getUnits().top;
 
         coinSymbol = tokenUnit.code;
@@ -67,7 +69,7 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
       }
     }
 
-    const wei = new Wei(toNumber(decoded.getValue()));
+    const amount = new Wei(toNumber(decoded.getValue()));
 
     return (
       <Page title={<ChainTitle blockchain={blockchain} title="Publish Transaction" />}>
@@ -79,13 +81,13 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
           <>
             <FormRow>
               <FormLabel>To</FormLabel>
-              <Account identity={true} address={decoded.getRecipientAddress().toString()} />
+              <Account identity={true} address={address} />
             </FormRow>
             <FormRow>
               <FormLabel>Amount</FormLabel>
               <Typography>
                 <span data-testid="amount">
-                  {wei.toEther()} {coinSymbol}
+                  {amount.toEther()} {coinSymbol}
                 </span>
               </Typography>
             </FormRow>
@@ -118,8 +120,8 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
         </FormRow>
         <FormRow last>
           <ButtonGroup classes={{ container: classes.buttons }}>
-            <Button label={'Cancel'} onClick={this.handleCancelClick} />
-            <Button label={'Send'} primary={true} onClick={this.handleSendClick} />
+            <Button label="Cancel" onClick={this.handleCancelClick} />
+            <Button primary label="Send" onClick={this.handleSendClick} />
           </ButtonGroup>
         </FormRow>
       </Page>

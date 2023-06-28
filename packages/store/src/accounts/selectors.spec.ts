@@ -1,11 +1,11 @@
 import { Satoshi, Wei, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { AddressSingle } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, CurrencyAmount } from '@emeraldwallet/core';
-import { aggregateByAsset, allAsArray, allBalances, balanceByChain, withFiatConversion } from './selectors';
-import { moduleName } from './types';
 import { application } from '../index';
 import { SettingsState } from '../settings/types';
 import { IState } from '../types';
+import { aggregateByAsset, allAsArray, allBalances, balanceByChain, withFiatConversion } from './selectors';
+import { moduleName } from './types';
 
 const getAddress: () => AddressSingle = (() => {
   let index = 0;
@@ -221,10 +221,10 @@ describe('selectTotalBalance', () => {
     expect(prices.length).toBe(3);
 
     // ETH = (1.2 + 1.1 + 3) * 256
-    expect(prices[0].converted?.balance.toString()).toBe(CurrencyAmount.create(1356.8, 'USD').toString());
+    expect(prices[0].converted?.toString()).toBe(CurrencyAmount.create(1356.8, 'USD').toString());
     // ETC = 52 * 4.56
-    expect(prices[1].converted?.balance.toString()).toBe(CurrencyAmount.create(237.12, 'USD').toString());
+    expect(prices[1].converted?.toString()).toBe(CurrencyAmount.create(237.12, 'USD').toString());
     // BTC = (0.5) * 12300
-    expect(prices[2].converted?.balance.toString()).toBe(CurrencyAmount.create(6150, 'USD').toString());
+    expect(prices[2].converted?.toString()).toBe(CurrencyAmount.create(6150, 'USD').toString());
   });
 });

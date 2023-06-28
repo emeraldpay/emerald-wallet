@@ -1,12 +1,5 @@
 import { readFile } from 'fs/promises';
-import {
-  AddressBalance,
-  AssetCode,
-  Blockchain,
-  EstimationMode,
-  isNativeCallError,
-  isNativeCallResponse,
-} from '@emeraldpay/api';
+import { EstimationMode, isNativeCallError, isNativeCallResponse } from '@emeraldpay/api';
 import {
   BlockchainCode,
   EthereumBasicTransaction,
@@ -64,7 +57,7 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
         }
       } catch (exception) {
         if (exception instanceof Error) {
-          log.error('Cannot estimate fee:', exception.message);
+          log.error("Can't estimate fee:", exception.message);
         }
       }
 
@@ -135,33 +128,6 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
     log.error(`Invalid blockchain: ${blockchain}`);
   });
 
-  ipcMain.handle(IpcCommands.GET_BALANCE, (event, blockchain: BlockchainCode, address: string, tokens: string[]) => {
-    const addressListener = apiAccess.newAddressListener();
-
-    const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
-      let asset = token as AssetCode;
-
-      if (asset.toLowerCase() === 'testbtc') {
-        // It's always BTC for bitcoin networks, TESTBTC is our internal code
-        asset = 'BTC';
-      }
-
-      return addressListener.getBalance(blockchain, address, asset);
-    });
-
-    return Promise.all(calls)
-      .then((balances: AddressBalance[][]) =>
-        balances.flat().reduce((carry, { asset: { code, blockchain }, balance }) => {
-          if (code === 'BTC' && blockchain === Blockchain.TESTNET_BITCOIN) {
-            code = 'TESTBTC';
-          }
-
-          return { ...carry, [code]: balance };
-        }, {}),
-      )
-      .catch((error) => console.warn('Failed to get balances', error));
-  });
-
   ipcMain.handle(IpcCommands.LOOKUP_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
     app.rpc.chain(blockchain).ethers.lookupAddress(address),
   );
@@ -180,17 +146,19 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
     }
   });
 
-  ipcMain.handle(IpcCommands.GET_BTC_TX, (event, blockchain: BlockchainCode, hash: string) => {
-    return new Promise((resolve) => {
-      apiAccess.blockchainClient
-        .nativeCall(blockchainCodeToId(blockchain), [{ id: 0, method: 'getrawtransaction', payload: [hash, true] }])
-        .onData((response) => {
-          if (isNativeCallResponse(response)) {
-            resolve(response.payload);
-          }
+  ipcMain.handle(
+    IpcCommands.GET_BTC_TX,
+    (event, blockchain: BlockchainCode, hash: string) =>
+      new Promise((resolve) => {
+        apiAccess.blockchainClient
+          .nativeCall(blockchainCodeToId(blockchain), [{ id: 0, method: 'getrawtransaction', payload: [hash, true] }])
+          .onData((response) => {
+            if (isNativeCallResponse(response)) {
+              resolve(response.payload);
+            }
 
-          resolve(null);
-        });
-    });
-  });
+            resolve(null);
+          });
+      }),
+  );
 }

@@ -4,45 +4,47 @@ import { ActionTypes, InitTokenStateAction, SetTokenBalanceAction, TokensAction,
 
 export const INITIAL_STATE: TokensState = {};
 
-function onInitState(state: TokensState, action: InitTokenStateAction): TokensState {
-  const tokenRegistry = new TokenRegistry(action.tokens);
+function onInitState(state: TokensState, { payload: { balances, tokens } }: InitTokenStateAction): TokensState {
+  const tokenRegistry = new TokenRegistry(tokens);
 
-  return produce(state, (draft) => {
-    action.balances.forEach(({ address, amount, asset, blockchain }) => {
+  return produce(state, (draft) =>
+    balances.forEach(({ address, amount, asset, blockchain }) => {
       const blockchainCode = blockchainIdToCode(blockchain);
-      const token = tokenRegistry.bySymbol(blockchainCode, asset);
 
-      const { [blockchainCode]: blockchainBalance = {} } = state;
-      const { [address]: addressBalances = {} } = blockchainBalance;
-      const { [token.address]: addressTokenBalance } = addressBalances;
+      if (tokenRegistry.hasAddress(blockchainCode, asset)) {
+        const token = tokenRegistry.byAddress(blockchainCode, asset);
 
-      if (addressTokenBalance == null) {
-        draft[blockchainCode] = {
-          ...draft[blockchainCode],
-          [address]: {
-            ...draft[blockchainCode]?.[address],
-            [token.address]: {
-              decimals: token.decimals,
-              symbol: token.symbol,
-              tokenId: token.address,
-              unitsValue: amount,
+        const { [blockchainCode]: blockchainBalance = {} } = state;
+        const { [address]: addressBalances = {} } = blockchainBalance;
+        const { [token.address]: addressTokenBalance } = addressBalances;
+
+        if (addressTokenBalance == null) {
+          draft[blockchainCode] = {
+            ...draft[blockchainCode],
+            [address]: {
+              ...draft[blockchainCode]?.[address],
+              [token.address]: {
+                decimals: token.decimals,
+                symbol: token.symbol,
+                unitsValue: amount,
+              },
             },
-          },
-        };
+          };
+        }
       }
-    });
-  });
+    }),
+  );
 }
 
 function onSetTokenBalance(state: TokensState, action: SetTokenBalanceAction): TokensState {
-  const { blockchain, address, balance } = action.payload;
+  const { address, blockchain, balance, contractAddress } = action.payload;
 
   return produce(state, (draft) => {
     draft[blockchain] = {
       ...draft[blockchain],
       [address]: {
         ...draft[blockchain]?.[address],
-        [balance.tokenId]: { ...balance },
+        [contractAddress.toLowerCase()]: { ...balance },
       },
     };
   });

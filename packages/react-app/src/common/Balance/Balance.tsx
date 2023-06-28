@@ -1,13 +1,15 @@
 import { BigAmount } from '@emeraldpay/bigamount';
+import { BlockchainCode } from '@emeraldwallet/core';
 import { IState, settings } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
 import { connect } from 'react-redux';
 
 interface OwnProps {
   balance: BigAmount;
+  blockchain: BlockchainCode;
 }
 
-export default connect<unknown, unknown, OwnProps, IState>((state, { balance }) => {
+export default connect<unknown, unknown, OwnProps, IState>((state, { balance, blockchain }) => {
   if (!BigAmount.is(balance)) {
     throw new Error(`Not a balance instance: ${typeof balance} = ${balance}`);
   }
@@ -18,7 +20,7 @@ export default connect<unknown, unknown, OwnProps, IState>((state, { balance }) 
     console.warn('No units', balance);
   }
 
-  const fiatRate = settings.selectors.fiatRate(state, balance.units.top.code);
+  const fiatRate = settings.selectors.fiatRate(state, balance.units.top.code, blockchain);
 
   return {
     fiatCurrency,

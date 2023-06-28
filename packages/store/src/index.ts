@@ -44,7 +44,7 @@ export {
   SignHandler,
 } from './types';
 
-export { IBalanceValue, BalanceValueConverted } from './accounts/types';
+export { BalanceValue, BalanceValueConverted } from './accounts/types';
 
 export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
 
@@ -57,6 +57,7 @@ export { createStore } from './create-store';
 
 export { RemoteAddressBook } from './remote-access/AddressBook';
 export { RemoteBalances } from './remote-access/Balances';
+export { RemoteCache } from './remote-access/Cache';
 export { RemoteTxHistory } from './remote-access/TxHistory';
 export { RemoteTxMeta } from './remote-access/TxMeta';
 export { RemoteVault } from './remote-access/Vault';

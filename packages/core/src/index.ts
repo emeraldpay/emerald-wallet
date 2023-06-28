@@ -6,9 +6,8 @@ import * as workflow from './workflow';
 export { blockchains, config, workflow, utils };
 
 export {
-  InputUtxo,
-  BlockchainCode,
   Blockchains,
+  BlockchainCode,
   Coin,
   CoinCode,
   CoinTicker,
@@ -17,6 +16,7 @@ export {
   HDPath,
   IBlockchain,
   InputDataDecoder,
+  InputUtxo,
   Token,
   TokenData,
   TokenDirectory,

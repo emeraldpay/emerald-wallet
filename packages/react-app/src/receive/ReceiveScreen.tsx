@@ -8,7 +8,7 @@ import {
   isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
-import { IBalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
+import { BalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
 import { Address, Back, ButtonGroup, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,7 +62,7 @@ interface OwnProps {
 
 interface StateProps {
   accepted: Accept[];
-  assets: IBalanceValue[];
+  assets: BalanceValue[];
   tokenRegistry: TokenRegistry;
   wallet?: Wallet;
   walletIcon?: string | null;
@@ -181,15 +181,11 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   let qrCodeValue = currentAddress;
 
-  if (currentToken != null) {
-    try {
-      const tokenData = tokenRegistry.bySymbol(currentBlockchain, currentToken);
+  if (currentToken != null && tokenRegistry.hasSymbol(currentBlockchain, currentToken)) {
+    const tokenData = tokenRegistry.bySymbol(currentBlockchain, currentToken);
 
-      //TODO there is no standards for that, check later
-      qrCodeValue = `${qrCodeValue}?erc20=${tokenData.symbol}`;
-    } catch (exception) {
-      // Nothing
-    }
+    // TODO There is no standards for that, check later
+    qrCodeValue = `${qrCodeValue}?erc20=${tokenData.symbol}`;
   }
 
   const qrCode = useQRCode(qrCodeValue ?? '');
@@ -288,7 +284,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
-    const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
+    const assets: BalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 

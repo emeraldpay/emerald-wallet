@@ -1,10 +1,13 @@
-import { AnyCurrency, GetRatesRequest } from '@emeraldpay/api';
+import { AnyCurrency, GetRatesRequest, isErc20Asset } from '@emeraldpay/api';
 import { MarketClient } from '@emeraldpay/api-node';
+import { Logger } from '@emeraldwallet/core';
 
 export type PriceHandler = (prices: { [key: string]: string }) => void;
 
+const log = Logger.forCategory('PricesListener');
+
 export class PriceListener {
-  public client: MarketClient;
+  readonly client: MarketClient;
 
   constructor(client: MarketClient) {
     this.client = client;
@@ -18,14 +21,14 @@ export class PriceListener {
       .then((response) => {
         const result: { [key: string]: string } = {};
 
-        response.forEach((item) => {
-          if (item.target === to && from.indexOf(item.base) >= 0) {
-            result[item.base] = item.rate;
-          }
+        response.forEach(({ base, rate }) => {
+          const key = isErc20Asset(base) ? `${base.blockchain}:${base.contractAddress}` : base;
+
+          result[key] = rate;
         });
 
         handler(result);
       })
-      .catch((error) => console.error('Error getting prices', error));
+      .catch((error) => log.error('Error getting prices', error));
   }
 }

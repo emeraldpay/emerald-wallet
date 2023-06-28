@@ -1,13 +1,11 @@
 import { IpcCommands, Logger, SettingsOptions, TokenData, Versions } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
-import { setAssets } from '../settings/actions';
-import { SetAssetsAction } from '../settings/types';
 import { Dispatched } from '../types';
+import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
 
 const log = Logger.forCategory('Store::Application');
 
-export function agreeOnTerms(version?: string): Dispatched<void> {
+export function agreeOnTerms(version?: string): Dispatched {
   return async (dispatch) => {
     await ipcRenderer.invoke(IpcCommands.SET_TERMS, version);
 
@@ -29,7 +27,7 @@ export function getVersions(): Dispatched<Versions> {
   return () => ipcRenderer.invoke(IpcCommands.GET_VERSION);
 }
 
-export function readConfig(): Dispatched<void> {
+export function readConfig(): Dispatched {
   return async (dispatch) => {
     const config = await ipcRenderer.invoke(IpcCommands.GET_APP_SETTINGS);
 
@@ -53,22 +51,17 @@ export function setOptions(options: SettingsOptions): Dispatched<void, OptionsAc
   };
 }
 
-export function setTokens(tokens: TokenData[]): Dispatched<void, SetAssetsAction | TokensAction> {
+export function setTokens(tokens: TokenData[], changed: boolean): Dispatched<void, TokensAction> {
   return async (dispatch) => {
+    if (changed) {
+      await ipcRenderer.invoke(IpcCommands.BALANCE_SET_TOKENS, tokens);
+      await ipcRenderer.invoke(IpcCommands.TOKENS_SET_TOKENS, tokens);
+      await ipcRenderer.invoke(IpcCommands.TXS_SET_TOKENS, tokens);
+    }
+
     await ipcRenderer.invoke(IpcCommands.SET_TOKENS, tokens);
-    await ipcRenderer.invoke(IpcCommands.TXS_SET_TOKENS, tokens);
 
-    await ipcRenderer.invoke(
-      IpcCommands.PRICES_SET_ASSETS,
-      tokens.map((token) => token.symbol),
-    );
-
-    dispatch(setAssets(tokens.map(({ symbol }) => symbol)));
-
-    dispatch({
-      type: ActionTypes.TOKENS,
-      payload: tokens,
-    });
+    dispatch({ type: ActionTypes.TOKENS, payload: tokens });
   };
 }
 
