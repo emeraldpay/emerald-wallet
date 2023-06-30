@@ -1,6 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount/lib/amount';
 import { Uuid, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { blockchainIdToCode } from '@emeraldwallet/core';
+import { TokenAmount, blockchainIdToCode } from '@emeraldwallet/core';
 import { BalanceValue, IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { Back, CoinAvatar, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, Grid, Typography, createStyles } from '@material-ui/core';
@@ -78,10 +78,12 @@ const SelectAccount: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   <CoinAvatar blockchain={blockchain} />
                 </Grid>
                 <Grid item xs={6}>
-                  <AccountBalance balance={item.balance} blockchain={blockchain} />
-                  {item.tokens.map((token) => (
-                    <AccountBalance key={`token-${token.units.top.code}`} balance={token} blockchain={blockchain} />
-                  ))}
+                  <AccountBalance balance={item.balance} />
+                  {item.tokens
+                    .filter((balance): balance is TokenAmount => TokenAmount.is(balance))
+                    .map((balance) => (
+                      <AccountBalance key={`token-${balance.token.address}`} balance={balance} />
+                    ))}
                 </Grid>
                 <Grid item xs={1}>
                   <Button disabled={!acceptAccount(item)} onClick={() => onSelected(item.entry)}>

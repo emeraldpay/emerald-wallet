@@ -35,6 +35,8 @@ const ethereumTx = new workflow.CreateEthereumTx({
   type: EthereumTransactionType.EIP1559,
 });
 
+const assets = [{ symbol: 'ETC' }];
+
 const tokenRegistry = new TokenRegistry([]);
 
 storiesOf('CreateTx Ethereum', module)
@@ -43,17 +45,17 @@ storiesOf('CreateTx Ethereum', module)
   .add('Create ETC', () => {
     return (
       <CreateTx
+        asset="ETC"
+        assets={assets}
         chain={BlockchainCode.Goerli}
         eip1559={false}
-        initializing={false}
         highGasPrice={{ max: 0, priority: 0 }}
+        initializing={false}
         lowGasPrice={{ max: 0, priority: 0 }}
         stdGasPrice={{ max: 0, priority: 0 }}
-        token="ETC"
         tokenRegistry={tokenRegistry}
-        tokenSymbols={['ETC']}
         tx={ethereumTx}
-        txFeeToken="ETH"
+        txFeeToken="ETC"
         getBalance={() => new Wei(0)}
         getTokenBalance={() => new Wei(0)}
         onChangeAmount={action('onChangeAmount')}
@@ -64,17 +66,17 @@ storiesOf('CreateTx Ethereum', module)
   })
   .add('Create EIP-1559', () => (
     <CreateTx
+      asset="ETC"
+      assets={assets}
       chain={BlockchainCode.Goerli}
       eip1559={true}
-      initializing={false}
       highGasPrice={{ max: '30000000000', priority: '3000000000' }}
+      initializing={false}
       lowGasPrice={{ max: '10000000000', priority: '1000000000' }}
       stdGasPrice={{ max: '20000000000', priority: '2000000000' }}
-      token="ETC"
       tokenRegistry={tokenRegistry}
-      tokenSymbols={['ETC']}
       tx={ethereumTx}
-      txFeeToken="ETH"
+      txFeeToken="ETC"
       getBalance={() => new Wei(0)}
       getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}

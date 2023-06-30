@@ -1,13 +1,12 @@
+import { Wei, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { CurrencyCode } from '@emeraldwallet/core';
-import { INITIAL_STATE as APPLICATION_STATE } from '../application/reducer';
 import { IState } from '../types';
 import { setRates } from './actions';
 import reducer from './reducer';
 import { fiatCurrency, fiatRate } from './selectors';
 import { ActionTypes, SettingsState } from './types';
 
-const withGlobalState = (settings: SettingsState): IState =>
-  ({ application: APPLICATION_STATE, settings } as unknown as IState);
+const withGlobalState = (settings: SettingsState): IState => ({ settings } as unknown as IState);
 
 describe('settingsReducers', () => {
   it('should reset fiat rates after locale currency change', () => {
@@ -24,16 +23,16 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate(withGlobalState(state), 'ETC')).toEqual(5);
-    expect(fiatRate(withGlobalState(state), 'ETH')).toEqual(10);
+    expect(fiatRate(withGlobalState(state), WeiEtc.fromEther(1))).toEqual(5);
+    expect(fiatRate(withGlobalState(state), Wei.fromEther(1))).toEqual(10);
 
     state = reducer(state, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: CurrencyCode.RUB,
     });
 
-    expect(fiatRate(withGlobalState(state), 'ETC')).toBeUndefined();
-    expect(fiatRate(withGlobalState(state), 'ETH')).toBeUndefined();
+    expect(fiatRate(withGlobalState(state), WeiEtc.fromEther(1))).toBeUndefined();
+    expect(fiatRate(withGlobalState(state), Wei.fromEther(1))).toBeUndefined();
   });
 
   it('EXCHANGE_RATES should update locale currency rate', () => {
@@ -50,8 +49,8 @@ describe('settingsReducers', () => {
       }),
     );
 
-    expect(fiatRate(withGlobalState(state), 'ETC')).toEqual(5);
-    expect(fiatRate(withGlobalState(state), 'ETH')).toEqual(10);
+    expect(fiatRate(withGlobalState(state), WeiEtc.fromEther(1))).toEqual(5);
+    expect(fiatRate(withGlobalState(state), Wei.fromEther(1))).toEqual(10);
   });
 
   it('should store locale currency in uppercase', () => {

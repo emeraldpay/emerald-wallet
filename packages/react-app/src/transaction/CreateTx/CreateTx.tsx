@@ -1,6 +1,6 @@
 import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup, FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
 import {
@@ -17,8 +17,9 @@ import {
 import * as React from 'react';
 import AmountField from './AmountField';
 import FromField from './FromField';
+import SelectAsset from './SelectAsset';
+import { CommonAsset } from './SelectAsset/SelectAsset';
 import ToField from './ToField';
-import TokenField from './TokenField';
 
 const { ValidationResult } = workflow;
 
@@ -63,29 +64,28 @@ const styles = createStyles({
 });
 
 export interface Props extends WithStyles<typeof styles> {
+  asset: string;
+  assets: CommonAsset[];
   chain: BlockchainCode;
-  currency?: string;
   eip1559: boolean;
-  fiatBalance?: string | null;
+  fiatBalance?: BigAmount;
   initializing: boolean;
   highGasPrice: GasPrices;
   lowGasPrice: GasPrices;
   ownAddresses?: string[];
   stdGasPrice: GasPrices;
-  token: string;
   tokenRegistry: TokenRegistry;
-  tokenSymbols: string[];
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   txFeeToken: string;
   getBalance(address: string): WeiAny;
   getBalancesByAddress?(address: string): string[];
   getTokenBalance(token: string, address?: string): BigAmount;
   onCancel?(): void;
-  onChangeAmount?(amount: BigAmount): void;
+  onChangeAmount(amount: BigAmount): void;
+  onChangeAsset?(tokenSymbol: string): void;
   onChangeFrom?(from: string): void;
   onChangeGasLimit?(value: string): void;
   onChangeTo(to: string): void;
-  onChangeToken?(tokenSymbol: string): void;
   onChangeUseEip1559(value: boolean, max: number, priority: number): void;
   onMaxClicked?(): void;
   onSetMaxGasPrice?(value: number, unit: Unit): void;
@@ -137,15 +137,15 @@ class CreateTx extends React.Component<Props, State> {
     }
   }
 
-  public getBalanceByToken = (token: string): BigAmount => {
+  public getAssetBalance = (asset: string): BigAmount => {
     const { tx, getBalance, getTokenBalance } = this.props;
 
     if (tx.from == null) {
       return amountFactory(tx.blockchain)(0);
     }
 
-    if (this.props.tokenRegistry.hasSymbol(tx.blockchain, token.toUpperCase())) {
-      return getTokenBalance(token, tx.from);
+    if (EthereumAddress.isValid(asset)) {
+      return getTokenBalance(asset, tx.from);
     }
 
     return getBalance(tx.from);
@@ -153,24 +153,23 @@ class CreateTx extends React.Component<Props, State> {
 
   public render(): React.ReactElement {
     const {
+      asset,
+      assets,
       chain,
       classes,
-      currency,
       fiatBalance,
       initializing,
       highGasPrice,
       lowGasPrice,
       ownAddresses,
       stdGasPrice,
-      token,
-      tokenSymbols,
       tx,
       getBalancesByAddress,
       onCancel,
       onChangeAmount,
+      onChangeAsset,
       onChangeFrom,
       onChangeTo,
-      onChangeToken,
       onChangeUseEip1559,
       onMaxClicked,
       onSetMaxGasPrice,
@@ -212,14 +211,13 @@ class CreateTx extends React.Component<Props, State> {
           />
         </FormRow>
         <FormRow>
-          <TokenField
+          <SelectAsset
+            asset={asset}
+            assets={assets}
             balance={tx.getTotalBalance()}
             fiatBalance={fiatBalance}
-            fiatCurrency={currency}
-            selectedToken={token}
-            tokenSymbols={tokenSymbols}
-            getBalanceByToken={this.getBalanceByToken}
-            onChangeToken={onChangeToken}
+            getAssetBalance={this.getAssetBalance}
+            onChangeAsset={onChangeAsset}
           />
         </FormRow>
         <FormRow>
@@ -230,12 +228,7 @@ class CreateTx extends React.Component<Props, State> {
             amount={tx.getAmount()}
             maxDisabled={initializing}
             units={tx.getAmount().units}
-            onChangeAmount={
-              onChangeAmount ||
-              ((): void => {
-                /* Do nothing */
-              })
-            }
+            onChangeAmount={onChangeAmount}
             onMaxClicked={onMaxClicked}
           />
         </FormRow>

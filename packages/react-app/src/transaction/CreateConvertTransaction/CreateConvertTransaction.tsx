@@ -80,8 +80,8 @@ enum Stages {
 }
 
 interface OwnProps {
+  contractAddress: string;
   entry: WalletEntry;
-  token: string;
 }
 
 interface StateProps {
@@ -89,11 +89,11 @@ interface StateProps {
   blockchain: BlockchainCode;
   eip1559: boolean;
   isHardware: boolean;
-  tokenRegistry: TokenRegistry;
+  token: Token;
   getBalance(address?: string): BigAmount;
   getBalancesByAddress(address: string, token: string): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
-  getTokenBalanceByAddress(token: string, address?: string): BigAmount;
+  getTokenBalanceByAddress(address?: string): BigAmount;
 }
 
 interface DispatchProps {
@@ -109,11 +109,11 @@ const minimalUnit = new Unit(9, '', undefined);
 const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   addresses,
   blockchain,
+  contractAddress,
   eip1559,
   entry: { address },
-  isHardware,
   token,
-  tokenRegistry,
+  isHardware,
   checkGlobalKey,
   estimateGas,
   getBalance,
@@ -135,10 +135,10 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [convertTx, setConvertTx] = React.useState(() => {
     const tx = new workflow.CreateErc20WrappedTx({
       blockchain,
+      token,
       address: address?.value,
-      token: tokenRegistry.bySymbol(blockchain, token),
       totalBalance: getBalance(address?.value),
-      totalTokenBalance: getTokenBalanceByAddress(token, address?.value),
+      totalTokenBalance: getTokenBalanceByAddress(address?.value),
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
     });
 
@@ -172,14 +172,13 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const oldAmount = React.useRef(convertTx.amount);
 
   const onChangeConvertable = (event: React.MouseEvent<HTMLElement>, value: string): void => {
-    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
     const converting = value ?? convertable;
 
-    tx.amount =
-      converting === coinTicker
-        ? amountFactory(blockchain)(tx.amount.number)
-        : tokenRegistry.bySymbol(blockchain, converting).getAmount(tx.amount.number);
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+
+    const { number: amount } = tx.amount;
+
+    tx.amount = converting === coinTicker ? amountFactory(blockchain)(amount) : token.getAmount(amount);
     tx.target = workflow.TxTarget.MANUAL;
     tx.rebalance();
 
@@ -192,7 +191,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
     tx.address = address;
     tx.totalBalance = getBalance(address);
-    tx.totalTokenBalance = getTokenBalanceByAddress(token, address);
+    tx.totalTokenBalance = getTokenBalanceByAddress(address);
     tx.rebalance();
 
     setConvertTx(tx.dump());
@@ -258,21 +257,15 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       return;
     }
 
-    const blockchainCode = blockchainIdToCode(entry.blockchain);
+    if (isHardware) {
+      await signTransaction(entry.id, tx, token);
+    } else {
+      const correctPassword = await checkGlobalKey(password);
 
-    if (tokenRegistry.hasSymbol(blockchainCode, token)) {
-      const tokenData = tokenRegistry.bySymbol(blockchainCode, token);
-
-      if (isHardware) {
-        await signTransaction(entry.id, tx, tokenData);
+      if (correctPassword) {
+        await signTransaction(entry.id, tx, token, password);
       } else {
-        const correctPassword = await checkGlobalKey(password);
-
-        if (correctPassword) {
-          await signTransaction(entry.id, tx, tokenData, password);
-        } else {
-          setPasswordError('Incorrect password');
-        }
+        setPasswordError('Incorrect password');
       }
     }
   };
@@ -373,7 +366,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
         })();
       }
     }
-  }, [blockchain, convertable, convertTx, token, tokenRegistry, estimateGas]);
+  }, [blockchain, contractAddress, convertable, convertTx, estimateGas]);
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
@@ -395,10 +388,10 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             <FormLabel />
             <ToggleButtonGroup exclusive={true} value={convertable} onChange={onChangeConvertable}>
               <ToggleButton disabled={initializing} value={coinTicker}>
-                Ether to {token}
+                Ether to {token.symbol}
               </ToggleButton>
-              <ToggleButton disabled={initializing} value={token}>
-                {token} to Ether
+              <ToggleButton disabled={initializing} value={token.symbol}>
+                {token.symbol} to Ether
               </ToggleButton>
             </ToggleButtonGroup>
           </FormRow>
@@ -408,7 +401,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               disabled={initializing}
               selectedAccount={convertTx.address}
               onChangeAccount={onChangeAddress}
-              getBalancesByAddress={(address) => getBalancesByAddress(address, token)}
+              getBalancesByAddress={(address) => getBalancesByAddress(address, contractAddress)}
             />
           </FormRow>
           <FormRow>
@@ -611,8 +604,13 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, { entry }) => {
+  (state, { contractAddress, entry }) => {
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
+
     const blockchain = blockchainIdToCode(entry.blockchain);
+
+    const token = tokenRegistry.byAddress(blockchain, contractAddress);
+
     const factory = amountFactory(blockchain);
     const zero = factory(0);
 
@@ -628,8 +626,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     }
 
-    const tokenRegistry = new TokenRegistry(state.application.tokens);
-
     const uniqueAddresses =
       accounts.selectors
         .findWalletByEntryId(state, entry.id)
@@ -643,7 +639,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       blockchain,
       isHardware,
-      tokenRegistry,
+      token,
       addresses: [...uniqueAddresses],
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
@@ -659,43 +655,31 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         return accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
       },
-      getBalancesByAddress(address, token) {
+      getBalancesByAddress(address) {
         const entryByAddress = accounts.selectors.findAccountByAddress(state, address, blockchain);
 
         if (entryByAddress == null || !isEthereumEntry(entryByAddress)) {
           return [];
         }
 
+        const tokenZero = token.getAmount(0);
+
         const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
-
-        let tokenData: Token | null = null;
-
-        if (tokenRegistry.hasSymbol(blockchain, token)) {
-          tokenData = tokenRegistry.bySymbol(blockchain, token);
-        } else {
-          return [formatAmount(balance)];
-        }
-
-        const zeroAmount = tokenData.getAmount(0);
-
-        const tokensBalance =
-          tokens.selectors.selectBalance(state, blockchain, address, tokenData.address) ?? zeroAmount;
+        const tokensBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address) ?? tokenZero;
 
         return [balance, tokensBalance].map(formatAmount);
       },
       getEntryByAddress(address) {
         return accounts.selectors.findAccountByAddress(state, address, blockchain);
       },
-      getTokenBalanceByAddress(token, address) {
-        const tokenData = tokenRegistry.bySymbol(blockchain, token);
-
-        const zero = tokenData.getAmount(0);
+      getTokenBalanceByAddress(address) {
+        const zero = token.getAmount(0);
 
         if (address == null) {
           return zero;
         }
 
-        const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, tokenData.address);
+        const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address);
 
         return tokenBalance ?? zero;
       },

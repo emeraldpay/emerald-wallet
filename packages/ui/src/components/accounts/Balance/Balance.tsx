@@ -9,6 +9,7 @@ import * as React from 'react';
 export interface OwnProps {
   balance?: BigAmount;
   classes?: Partial<ClassNameMap<'root' | 'coin' | 'coinBalance' | 'coinSymbol'>>;
+  decimals?: number;
   onConvert?(): void;
 }
 
@@ -29,7 +30,7 @@ const useStyles = makeStyles(
   }),
 );
 
-const Balance: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => {
+const Balance: React.FC<OwnProps> = ({ balance, classes = {}, decimals = 3, onConvert }) => {
   const styles = useStyles();
 
   const formatBalance = React.useCallback((balance: BigAmount) => {
@@ -40,7 +41,7 @@ const Balance: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => {
       whenFalse.useOptimalUnit(undefined, units, 3);
     };
 
-    const coinFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).number(3, true).build();
+    const coinFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).number(decimals, true).build();
     const unitFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).unitCode().build();
 
     return [coinFormatter.format(balance), unitFormatter.format(balance)];

@@ -218,7 +218,7 @@ export function balanceByChain<T extends BigAmount>(state: IState, blockchain: B
 export function fiatTotalBalance(state: IState, assets: BalanceValue[]): BigAmount | undefined {
   const converted = assets
     .map((asset) => {
-      const rate = settings.selectors.fiatRate(state, asset.balance.units.top.code, asset.blockchain);
+      const rate = settings.selectors.fiatRate(state, asset.balance);
 
       if (rate == null) {
         return null;
@@ -394,7 +394,7 @@ export function withFiatConversion(state: IState, assets: BalanceValue[]): Balan
         ({
           converted: fiatTotalBalance(state, [asset]),
           source: asset,
-          rate: settings.selectors.fiatRate(state, asset.balance.units.top.code, asset.blockchain),
+          rate: settings.selectors.fiatRate(state, asset.balance),
         } as BalanceValueConverted),
     )
     .filter(({ converted, rate }) => converted != null && rate != null);

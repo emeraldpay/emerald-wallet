@@ -211,7 +211,7 @@ export class TxService implements IService {
                     if (change.contractAddress == null) {
                       asset = Blockchains[blockchainCode].params.coinTicker;
                     } else if (this.tokenRegistry.hasAddress(blockchainCode, change.contractAddress)) {
-                      asset = this.tokenRegistry.byAddress(blockchainCode, change.contractAddress).symbol;
+                      asset = change.contractAddress;
                     }
 
                     return {

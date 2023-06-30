@@ -1,4 +1,3 @@
-// tslint:disable-next-line:no-submodule-imports
 import '@testing-library/jest-dom/extend-expect';
 import { WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { Theme } from '@emeraldwallet/ui';
@@ -6,34 +5,24 @@ import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { TokenField } from './TokenField';
+import SelectAsset, { SelectAsset as SelectAssetBase } from './SelectAsset';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reduceClasses = <T,>(prev: T, curr: any): T => ({ ...prev, [curr]: curr });
-const classes = Object.keys({ container: {} }).reduce(reduceClasses, {});
+describe('SelectAsset', () => {
+  const assets = [{ symbol: 'ETC' }];
 
-describe('TokenField', () => {
   it('renders without crash', () => {
     const wrapper = shallow(
-      <TokenField
-        classes={classes}
-        selectedToken="ETC"
-        tokenSymbols={['ETC']}
-        getBalanceByToken={() => new WeiEtc(1350000)}
-      />,
+      <ThemeProvider theme={Theme}>
+        <SelectAsset asset="ETC" assets={assets} getAssetBalance={() => new WeiEtc(1350000)} />,
+      </ThemeProvider>,
     );
 
     expect(wrapper).toBeDefined();
   });
 
   it('should not crash without onChange handler', () => {
-    const wrapper = shallow<TokenField>(
-      <TokenField
-        classes={classes}
-        selectedToken="ETC"
-        tokenSymbols={['ETC']}
-        getBalanceByToken={() => new WeiEtc(350000)}
-      />,
+    const wrapper = shallow<SelectAssetBase>(
+      <SelectAssetBase asset="ETC" assets={assets} classes={{}} getAssetBalance={() => new WeiEtc(350000)} />,
     );
 
     wrapper.instance().onChangeToken({ target: { value: 'ETC' } } as React.ChangeEvent<HTMLInputElement>);
@@ -42,12 +31,11 @@ describe('TokenField', () => {
   it('should render total balance', async () => {
     const component = render(
       <ThemeProvider theme={Theme}>
-        <TokenField
-          classes={classes}
+        <SelectAsset
+          asset="ETC"
+          assets={assets}
           balance={new WeiEtc(350000)}
-          selectedToken="ETC"
-          tokenSymbols={[]}
-          getBalanceByToken={() => new WeiEtc(350000)}
+          getAssetBalance={() => new WeiEtc(350000)}
         />
         ,
       </ThemeProvider>,

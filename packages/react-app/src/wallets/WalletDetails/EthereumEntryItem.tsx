@@ -1,7 +1,14 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  Blockchains,
+  TokenAmount,
+  TokenRegistry,
+  blockchainIdToCode,
+  formatAmount,
+} from '@emeraldwallet/core';
 import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { Button, Typography, createStyles } from '@material-ui/core';
@@ -74,7 +81,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  gotoConvert(entry: WalletEntry, token: string): void;
+  gotoConvert(entry: WalletEntry, contractAddress: string): void;
   gotoRecover(entry: WalletEntry): void;
 }
 
@@ -138,24 +145,26 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
         <Typography>{blockchain.getTitle()}</Typography>
       </div>
       <div className={styles.balances}>
-        <AccountBalance key="main" classes={classes} balance={balance} blockchain={blockchainCode} />
-        {tokensBalances.map((token) => {
-          const { code } = token.units.top;
+        <AccountBalance classes={classes} balance={balance} />
+        {tokensBalances
+          .filter((balance): balance is TokenAmount => TokenAmount.is(balance))
+          .map((balance) => {
+            const { address } = balance.token;
 
-          return (
-            <AccountBalance
-              key={'token-' + token.units.top.code}
-              classes={classes}
-              balance={token}
-              blockchain={blockchainCode}
-              onConvert={
-                tokenRegistry.hasSymbol(blockchainCode, code) && tokenRegistry.bySymbol(blockchainCode, code).wrapped
-                  ? () => gotoConvert(entry, code)
-                  : undefined
+            let onConvert: (() => void) | undefined;
+
+            if (tokenRegistry.hasAddress(blockchainCode, address)) {
+              const token = tokenRegistry.byAddress(blockchainCode, address);
+
+              if (token.wrapped) {
+                onConvert = () => gotoConvert(entry, address);
               }
-            />
-          );
-        })}
+            }
+
+            return (
+              <AccountBalance key={'balance-' + address} classes={classes} balance={balance} onConvert={onConvert} />
+            );
+          })}
       </div>
     </div>
   );
@@ -205,8 +214,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>) => ({
-    gotoConvert(entry, token) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, token }, null, true));
+    gotoConvert(entry, contractAddress) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, contractAddress }, null, true));
     },
     gotoRecover(entry) {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));

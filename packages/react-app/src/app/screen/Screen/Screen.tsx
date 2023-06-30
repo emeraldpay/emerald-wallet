@@ -47,10 +47,10 @@ interface StateProps {
 
 const log = Logger.forCategory('Screen');
 
-const Screen: React.FC<OwnProps & StateProps> = (props) => {
-  log.info('Show screen: ', props.screen);
+const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, termsVersion, screen: currentScreen }) => {
+  log.info(`Show screen: ${currentScreen}`);
 
-  switch (props.screen) {
+  switch (currentScreen) {
     case null:
       return (
         <div>
@@ -61,29 +61,29 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.ADD_ADDRESS:
       return <AddContact />;
     case screen.Pages.ADD_HD_ADDRESS:
-      return <AddHDAddress walletId={props.screenItem} />;
+      return <AddHDAddress walletId={screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
     case screen.Pages.BROADCAST_TX:
-      return <BroadcastTx data={props.screenItem} />;
+      return <BroadcastTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
-      return <SelectAccount walletId={props.screenItem} />;
+      return <SelectAccount walletId={screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
-      return <CreateConvertTransaction entry={props.screenItem.entry} token={props.screenItem.token} />;
+      return <CreateConvertTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_BITCOIN:
-      return <CreateBitcoinTransaction source={props.screenItem} />;
+      return <CreateBitcoinTransaction source={screenItem} />;
     case screen.Pages.CREATE_TX_CANCEL:
-      return <CreateCancelTransaction entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
+      return <CreateCancelTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
-      return <CreateTransaction sourceEntry={props.screenItem} />;
+      return <CreateTransaction sourceEntry={screenItem} />;
     case screen.Pages.CREATE_TX_SPEED_UP:
-      return <CreateSpeedUpTransaction entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
+      return <CreateSpeedUpTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:
-      return <CreateRecoverTransaction entry={props.screenItem} />;
+      return <CreateRecoverTransaction entry={screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
     case screen.Pages.EDIT_ADDRESS:
-      return <EditContact contact={props.screenItem} />;
+      return <EditContact contact={screenItem} />;
     case screen.Pages.GLOBAL_KEY:
       return <GlobalKey />;
     case screen.Pages.IMPORT_VAULT:
@@ -93,27 +93,27 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.PASSWORD_MIGRATION:
       return <PasswordMigration />;
     case screen.Pages.RECEIVE:
-      return <ReceiveScreen walletId={props.screenItem} />;
+      return <ReceiveScreen walletId={screenItem} />;
     case screen.Pages.SETTINGS:
       return <Settings />;
     case screen.Pages.SETUP_BLOCKCHAINS:
-      return <SetupBlockchains walletId={props.screenItem} />;
+      return <SetupBlockchains walletId={screenItem} />;
     case screen.Pages.SETUP_VAULT:
       return <SetupVault />;
     case screen.Pages.SIGN_MESSAGE:
-      return <SignMessage walletId={props.screenItem} />;
+      return <SignMessage walletId={screenItem} />;
     case screen.Pages.SHOW_MESSAGE:
-      return <ShowMessage {...props.screenItem} />;
+      return <ShowMessage {...screenItem} />;
     case screen.Pages.TX_DETAILS:
-      return <TxDetails entryId={props.screenItem.entryId} tx={props.screenItem.tx} />;
+      return <TxDetails {...screenItem} />;
     case screen.Pages.WALLET:
-      return <WalletDetails initialTab={props.restoreData?.tab} walletId={props.screenItem} />;
+      return <WalletDetails initialTab={restoreData?.tab} walletId={screenItem} />;
     case screen.Pages.WALLET_INFO:
-      return <WalletInfo walletId={props.screenItem} />;
+      return <WalletInfo walletId={screenItem} />;
     case screen.Pages.WELCOME:
-      return <Welcome currentTermsVersion={props.termsVersion} />;
+      return <Welcome currentTermsVersion={termsVersion} />;
     default:
-      return <div>Unknown screen: {props.screen}</div>;
+      return <div>Unknown screen: {currentScreen}</div>;
   }
 };
 

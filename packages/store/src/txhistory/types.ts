@@ -1,20 +1,28 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { PersistentState, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  PersistentState,
+  TokenData,
+  TokenRegistry,
+  amountFactory,
+  blockchainIdToCode,
+} from '@emeraldwallet/core';
 
 export class StoredTransactionChange implements PersistentState.Change {
   amount: string;
-  address?: string;
-  asset: string;
-  direction: PersistentState.Direction;
-  hdPath?: string;
-  type: PersistentState.ChangeType;
-  wallet?: EntryId;
 
-  private readonly blockchain: number;
+  readonly address?: string;
+  readonly asset: string;
+  readonly direction: PersistentState.Direction;
+  readonly hdPath?: string;
+  readonly type: PersistentState.ChangeType;
+  readonly wallet?: EntryId;
+
+  private readonly blockchain: BlockchainCode;
   private readonly tokenRegistry: TokenRegistry;
 
-  constructor(tokenRegistry: TokenRegistry, blockchain: number, change: PersistentState.Change) {
+  constructor(change: PersistentState.Change, blockchain: BlockchainCode, tokenRegistry: TokenRegistry) {
     this.amount = change.amount;
     this.address = change.address;
     this.asset = change.asset;
@@ -28,13 +36,11 @@ export class StoredTransactionChange implements PersistentState.Change {
   }
 
   get amountValue(): BigAmount {
-    const blockchain = blockchainIdToCode(this.blockchain);
-
-    if (this.tokenRegistry.hasSymbol(blockchain, this.asset)) {
-      return this.tokenRegistry.bySymbol(blockchain, this.asset).getAmount(this.amount);
+    if (this.tokenRegistry.hasAddress(this.blockchain, this.asset)) {
+      return this.tokenRegistry.byAddress(this.blockchain, this.asset).getAmount(this.amount);
     }
 
-    return amountFactory(blockchain)(this.amount);
+    return amountFactory(this.blockchain)(this.amount);
   }
 
   set amountValue(amount: BigAmount) {
@@ -43,21 +49,20 @@ export class StoredTransactionChange implements PersistentState.Change {
 }
 
 export class StoredTransaction implements Omit<PersistentState.Transaction, 'changes'> {
-  block?: PersistentState.BlockRef | null;
-  blockchain: number;
-  confirmTimestamp?: Date | null;
-  sinceTimestamp: Date;
-  state: PersistentState.State;
-  status: PersistentState.Status;
-  txId: string;
-  version?: number;
-
-  meta: PersistentState.TxMetaItem | null;
-
-  changes: StoredTransactionChange[];
+  readonly block?: PersistentState.BlockRef | null;
+  readonly blockchain: number;
+  readonly changes: StoredTransactionChange[];
+  readonly confirmTimestamp?: Date | null;
+  readonly meta: PersistentState.TxMetaItem | null;
+  readonly sinceTimestamp: Date;
+  readonly state: PersistentState.State;
+  readonly status: PersistentState.Status;
+  readonly txId: string;
+  readonly version?: number;
 
   constructor(tokenRegistry: TokenRegistry, tx: PersistentState.Transaction, meta: PersistentState.TxMetaItem | null) {
     this.blockchain = tx.blockchain;
+    this.meta = meta;
     this.sinceTimestamp = tx.sinceTimestamp;
     this.state = tx.state;
     this.status = tx.status;
@@ -69,11 +74,11 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
       this.confirmTimestamp = tx.confirmTimestamp;
     }
 
-    this.meta = meta;
+    const blockchain = blockchainIdToCode(tx.blockchain);
 
     this.changes = tx.changes
       .filter((change) => change.asset !== 'UNKNOWN')
-      .map((change) => new StoredTransactionChange(tokenRegistry, tx.blockchain, change))
+      .map((change) => new StoredTransactionChange(change, blockchain, tokenRegistry))
       .filter((change) => change.amountValue.isPositive())
       .sort((first, second) => {
         if (first.direction === second.direction) {

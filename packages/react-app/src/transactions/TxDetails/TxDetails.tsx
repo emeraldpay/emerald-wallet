@@ -169,7 +169,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
                         <Address address={change.address ?? 'Unknown address'} disableCopy={change.address == null} />
                         {name != null && <Address address={name} />}
                       </div>
-                      <Balance balance={change.amountValue} />
+                      <Balance balance={change.amountValue} decimals={6} />
                     </>
                   </FormRow>
                 );
