@@ -10,6 +10,8 @@ import { createTestStore } from '../../_tests';
 import CreateTx from './CreateTx';
 
 describe('CreateTx', () => {
+  const assets = [{ symbol: 'ETH' }];
+
   const tokenRegistry = new TokenRegistry([]);
 
   it('it renders without crash', () => {
@@ -25,19 +27,20 @@ describe('CreateTx', () => {
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <CreateTx
+            asset="ETH"
+            assets={assets}
             chain={BlockchainCode.ETH}
             eip1559={false}
             highGasPrice={{ max: 0, priority: 0 }}
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
             initializing={false}
-            token="ETH"
             tokenRegistry={tokenRegistry}
-            tokenSymbols={[]}
             tx={tx}
             txFeeToken="ETH"
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
+            onChangeAmount={() => undefined}
             onChangeTo={() => undefined}
             onChangeUseEip1559={() => undefined}
           />
@@ -50,19 +53,20 @@ describe('CreateTx', () => {
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <CreateTx
+            asset="ETH"
+            assets={assets}
             chain={BlockchainCode.ETH}
             eip1559={false}
             highGasPrice={{ max: 0, priority: 0 }}
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
             initializing={false}
-            token="ETH"
             tokenRegistry={tokenRegistry}
-            tokenSymbols={[]}
             tx={tx}
             txFeeToken="ETH"
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
+            onChangeAmount={() => undefined}
             onChangeTo={() => undefined}
             onChangeUseEip1559={() => undefined}
           />

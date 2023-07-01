@@ -1,47 +1,50 @@
 import { FormatterBuilder, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { DisplayTx } from './DisplayTx';
 import { CreateERC20Tx } from '..';
+import { TokenRegistry } from '../../blockchains';
+import { DisplayTx } from './DisplayTx';
 
 const formatter = new FormatterBuilder().useTopUnit().number(6, true).build();
 
 export class DisplayErc20Tx implements DisplayTx {
-  public tx: CreateERC20Tx;
+  tokenRegistry: TokenRegistry;
+  transaction: CreateERC20Tx;
 
-  constructor(tx: CreateERC20Tx) {
-    this.tx = tx;
+  constructor(transaction: CreateERC20Tx, tokenRegistry: TokenRegistry) {
+    this.tokenRegistry = tokenRegistry;
+    this.transaction = transaction;
   }
 
-  public amount(): string {
-    return formatter.format(this.tx.amount);
+  amount(): string {
+    return formatter.format(this.transaction.amount);
   }
 
-  public amountUnit(): string {
-    return this.tx.tokenSymbol;
+  amountUnit(): string {
+    return this.tokenRegistry.byAddress(this.transaction.blockchain, this.transaction.asset).symbol;
   }
 
-  public fee(): string {
-    return this.tx.gas.toString(10);
+  fee(): string {
+    return this.transaction.gas.toString(10);
   }
 
-  public feeUnit(): string {
+  feeUnit(): string {
     return 'Gas';
   }
 
-  public feeCost(): string {
-    return formatter.format(this.tx.getFees());
+  feeCost(): string {
+    return formatter.format(this.transaction.getFees());
   }
 
-  public feeCostUnit(): string {
+  feeCostUnit(): string {
     const { code } = this.topUnit();
 
     return code;
   }
 
-  public topUnit(): Unit {
-    const { tx } = this;
+  topUnit(): Unit {
+    const { transaction } = this;
 
-    const gasPrice = tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO;
+    const gasPrice = transaction.maxGasPrice ?? transaction.gasPrice ?? Wei.ZERO;
 
     return gasPrice.units.top;
   }

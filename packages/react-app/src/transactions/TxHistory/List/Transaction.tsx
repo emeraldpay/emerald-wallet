@@ -343,7 +343,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           .map((change, index) => (
             <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
               <div className={styles.changeItemCoin}>
-                {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue)}
+                {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue, 6)}
               </div>
               <div className={styles.changeItemAmount}>
                 {change.wallet.id === walletId ? (
@@ -388,10 +388,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         .find((entryId) => EntryIdOp.of(entryId).extractWalletId() === walletId),
       walletIcons: state.accounts.icons,
       getFiatValue(amount) {
-        const { top: topUnit } = amount.units;
-
-        const rate = settings.selectors.fiatRate(state, topUnit.code, blockchainCode) ?? 0;
-        const value = amount.getNumberByUnit(topUnit).multipliedBy(rate);
+        const rate = settings.selectors.fiatRate(state, amount) ?? 0;
+        const value = amount.getNumberByUnit(amount.units.top).multipliedBy(rate);
 
         return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);
       },

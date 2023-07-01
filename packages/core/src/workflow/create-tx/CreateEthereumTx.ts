@@ -1,9 +1,9 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 import { DisplayEtherTx, DisplayTx } from '..';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
 import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
+import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 
 export interface TxDetails {
   amount: WeiAny;
@@ -46,6 +46,7 @@ function toPlainDetails(tx: TxDetails): TxDetailsPlain {
   return {
     amount: tx.amount.encode(),
     amountDecimals: 18,
+    asset: tx.amount.units.top.code,
     blockchain: tx.blockchain,
     from: tx.from,
     gas: tx.gas,
@@ -54,7 +55,6 @@ function toPlainDetails(tx: TxDetails): TxDetailsPlain {
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    tokenSymbol: tx.amount.units.top.code,
     totalEtherBalance: tx.totalBalance?.encode(),
     type: `0x${tx.type.toString(16)}`,
   };
@@ -121,6 +121,10 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     this.amount = amount;
   }
 
+  public getAsset(): string {
+    return this.amount.units.top.code;
+  }
+
   public getChange(): WeiAny | null {
     if (this.totalBalance == null) {
       return null;
@@ -133,10 +137,6 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
-  }
-
-  public getTokenSymbol(): string {
-    return 'ETH';
   }
 
   public getTotal(): WeiAny {

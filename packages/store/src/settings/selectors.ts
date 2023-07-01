@@ -1,4 +1,5 @@
-import { BlockchainCode, Blockchains, CurrencyCode, TokenRegistry } from '@emeraldwallet/core';
+import { BigAmount } from '@emeraldpay/bigamount';
+import { BlockchainCode, Blockchains, CurrencyCode, TokenAmount } from '@emeraldwallet/core';
 import { createSelector } from 'reselect';
 import { IState } from '../types';
 import { Mode } from './types';
@@ -7,21 +8,19 @@ export function fiatCurrency(state: IState): CurrencyCode {
   return state.settings.localeCurrency;
 }
 
-export function fiatRate(state: IState, asset: string, blockchain?: BlockchainCode): number | undefined {
+export function fiatRate(state: IState, balance: BigAmount): number | undefined {
   const { rates } = state.settings;
 
   if (rates == null) {
     return undefined;
   }
 
-  const tokenRegistry = new TokenRegistry(state.application.tokens);
+  let key = balance.units.top.code.toUpperCase();
 
-  let key = asset.toUpperCase();
+  if (TokenAmount.is(balance)) {
+    const { address, blockchain } = balance.token;
 
-  if (blockchain != null && tokenRegistry.hasSymbol(blockchain, asset)) {
-    const token = tokenRegistry.bySymbol(blockchain, asset);
-
-    key = `${blockchain}:${token.address}`;
+    key = `${blockchain}:${address}`;
   }
 
   const rate = rates[key];

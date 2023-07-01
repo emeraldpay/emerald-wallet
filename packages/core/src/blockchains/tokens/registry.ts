@@ -1,4 +1,4 @@
-import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
+import { BigAmount, NumberAmount, Unit, Units } from '@emeraldpay/bigamount';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode, blockchainIdToCode } from '../blockchains';
 
@@ -24,6 +24,20 @@ export function isToken(value: unknown): value is TokenData {
     'type' in value &&
     typeof (value as { [key: string]: unknown }).type in TOKEN_TYPES
   );
+}
+
+export class TokenAmount extends BigAmount {
+  readonly token: TokenData;
+
+  constructor(value: NumberAmount | BigAmount, units: Units, token: TokenData) {
+    super(value, units);
+
+    this.token = token;
+  }
+
+  static is(value: unknown): value is TokenAmount {
+    return BigAmount.is(value) && 'token' in value && value.token != null && typeof value.token === 'object';
+  }
 }
 
 export class Token implements TokenData {
@@ -72,8 +86,8 @@ export class Token implements TokenData {
     return new Units([new Unit(decimals, name, symbol)]);
   }
 
-  getAmount(amount: BigNumber | string | number): BigAmount {
-    return new BigAmount(amount, this.getUnits());
+  getAmount(amount: BigNumber | string | number): TokenAmount {
+    return new TokenAmount(amount, this.getUnits(), this);
   }
 
   toPlain(): TokenData {
@@ -81,30 +95,18 @@ export class Token implements TokenData {
   }
 }
 
-type TokenAddresses = Set<string>;
-type AddressesBySymbol = Map<string, TokenAddresses>;
-
-type TokenByAddress = Map<string, Token>;
-
-export type TokenDirectory = Map<BlockchainCode, AddressesBySymbol>;
-export type TokenInstances = Map<BlockchainCode, TokenByAddress>;
+export type TokenInstances = Map<BlockchainCode, Map<string, Token>>;
 
 export class TokenRegistry {
-  private readonly directory: TokenDirectory = new Map();
   private readonly instances: TokenInstances = new Map();
 
   constructor(tokens: TokenData[]) {
     tokens.forEach((token) => {
       const blockchain = blockchainIdToCode(token.blockchain);
-
-      const directory: AddressesBySymbol = this.directory.get(blockchain) ?? new Map();
-      const addresses: TokenAddresses = directory.get(token.symbol) ?? new Set();
-
-      const instances: TokenByAddress = this.instances.get(blockchain) ?? new Map();
+      const instances = this.instances.get(blockchain) ?? new Map();
 
       const address = token.address.toLowerCase();
 
-      this.directory.set(blockchain, directory.set(token.symbol.toUpperCase(), addresses.add(address)));
       this.instances.set(blockchain, instances.set(address, new Token(token)));
     });
   }
@@ -153,24 +155,6 @@ export class TokenRegistry {
     }, []);
   }
 
-  bySymbol(blockchain: BlockchainCode, symbol: string): Token {
-    const directory = this.directory.get(blockchain);
-
-    if (directory == null) {
-      throw new Error(`Can't find tokens by blockchain ${blockchain} for symbol ${symbol}`);
-    }
-
-    const addresses = directory.get(symbol.toUpperCase());
-
-    if (addresses == null) {
-      throw new Error(`Can't find tokens by symbol ${symbol} in ${blockchain} blockchain`);
-    }
-
-    const [address] = addresses.values();
-
-    return this.byAddress(blockchain, address);
-  }
-
   hasAddress(blockchain: BlockchainCode, address: string): boolean {
     const instances = this.instances.get(blockchain);
 
@@ -179,16 +163,6 @@ export class TokenRegistry {
     }
 
     return instances.has(address.toLowerCase());
-  }
-
-  hasSymbol(blockchain: BlockchainCode, symbol: string): boolean {
-    const directory = this.directory.get(blockchain);
-
-    if (directory == null) {
-      return false;
-    }
-
-    return directory.has(symbol.toUpperCase());
   }
 
   getStablecoins(blockchain: BlockchainCode): Token[] {
@@ -200,6 +174,22 @@ export class TokenRegistry {
 
     return [...instances.values()].reduce<Token[]>((carry, token) => {
       if (token.stablecoin) {
+        return [...carry, token];
+      }
+
+      return carry;
+    }, []);
+  }
+
+  getPinned(blockchain: BlockchainCode): Token[] {
+    const instances = this.instances.get(blockchain);
+
+    if (instances == null) {
+      return [];
+    }
+
+    return [...instances.values()].reduce<Token[]>((carry, token) => {
+      if (token.pinned) {
         return [...carry, token];
       }
 

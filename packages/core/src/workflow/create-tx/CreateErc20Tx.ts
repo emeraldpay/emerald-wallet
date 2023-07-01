@@ -1,10 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 import { DisplayErc20Tx, DisplayTx } from '..';
 import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../../blockchains';
 import { Contract } from '../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
+import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 
 export enum TransferType {
   STANDARD,
@@ -13,6 +13,7 @@ export enum TransferType {
 
 export interface ERC20TxDetails {
   amount: BigAmount;
+  asset: string;
   blockchain: BlockchainCode;
   from?: string;
   gas: number;
@@ -21,14 +22,13 @@ export interface ERC20TxDetails {
   priorityGasPrice?: WeiAny;
   target: TxTarget;
   to?: string;
-  tokenSymbol: string;
   totalBalance?: WeiAny;
   totalTokenBalance?: BigAmount;
   transferType: TransferType;
   type: EthereumTransactionType;
 }
 
-const TxDefaults: Omit<ERC20TxDetails, 'amount' | 'blockchain' | 'tokenSymbol' | 'type'> = {
+const TxDefaults: Omit<ERC20TxDetails, 'amount' | 'asset' | 'blockchain' | 'type'> = {
   from: undefined,
   gas: DEFAULT_GAS_LIMIT_ERC20,
   target: TxTarget.MANUAL,
@@ -45,12 +45,13 @@ export function transferFromNumber(value?: number): TransferType {
 }
 
 function fromPlainDetails(tokenRegistry: TokenRegistry, plain: TxDetailsPlain): ERC20TxDetails {
-  const units = tokenRegistry.bySymbol(plain.blockchain, plain.tokenSymbol).getUnits();
+  const units = tokenRegistry.byAddress(plain.blockchain, plain.asset).getUnits();
 
   const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
 
   return {
     amount: BigAmount.decode(plain.amount, units),
+    asset: plain.asset,
     blockchain: plain.blockchain,
     from: plain.from,
     gas: plain.gas,
@@ -59,7 +60,6 @@ function fromPlainDetails(tokenRegistry: TokenRegistry, plain: TxDetailsPlain): 
     priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    tokenSymbol: plain.tokenSymbol,
     totalBalance: plain.totalEtherBalance == null ? undefined : decoder(plain.totalEtherBalance),
     totalTokenBalance: plain.totalTokenBalance == null ? undefined : BigAmount.decode(plain.totalTokenBalance, units),
     transferType: transferFromNumber(plain.transferType),
@@ -71,6 +71,7 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
   return {
     amount: tx.amount.encode(),
     amountDecimals: -1,
+    asset: tx.asset,
     blockchain: tx.blockchain,
     from: tx.from,
     gas: tx.gas,
@@ -79,7 +80,6 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    tokenSymbol: tx.amount.units.top.code,
     totalEtherBalance: tx.totalBalance?.encode(),
     totalTokenBalance: tx.totalTokenBalance?.encode(),
     transferType: tx.transferType.valueOf(),
@@ -90,6 +90,7 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
 export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public amount: BigAmount;
   public blockchain: BlockchainCode;
+  public asset: string;
   public from?: string;
   public gas: number;
   public gasPrice?: WeiAny;
@@ -97,13 +98,13 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public priorityGasPrice?: WeiAny;
   public target: TxTarget;
   public to?: string;
-  public tokenSymbol: string;
   public totalBalance?: WeiAny;
   public totalTokenBalance?: BigAmount;
   public transferType: TransferType;
   public type: EthereumTransactionType;
 
   private readonly token: Token;
+  private readonly tokenRegistry: TokenRegistry;
   private readonly zeroAmount: WeiAny;
   private readonly zeroTokenAmount: BigAmount;
 
@@ -120,28 +121,28 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     if (typeof source === 'string') {
       const blockchainCode = blockchain ?? BlockchainCode.Unknown;
 
-      this.token = tokenRegistry.bySymbol(blockchainCode, source);
+      this.token = tokenRegistry.byAddress(blockchainCode, source);
 
       details = {
         ...TxDefaults,
         type,
         amount: this.token.getAmount(0),
+        asset: source,
         blockchain: blockchainCode,
-        tokenSymbol: source,
       };
     } else {
-      this.token = tokenRegistry.bySymbol(source.blockchain, source.tokenSymbol);
+      this.token = tokenRegistry.byAddress(source.blockchain, source.asset);
 
       details = source;
     }
 
     this.amount = details.amount;
+    this.asset = details.asset;
     this.blockchain = details.blockchain;
     this.from = details.from;
     this.gas = details.gas;
     this.target = details.target;
     this.to = details.to;
-    this.tokenSymbol = details.tokenSymbol;
     this.totalBalance = details.totalBalance;
     this.totalTokenBalance = details.totalTokenBalance;
     this.transferType = details.transferType;
@@ -156,8 +157,10 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
       this.gasPrice = details.gasPrice ?? zeroAmount;
     }
 
+    this.tokenRegistry = tokenRegistry;
+
     this.zeroAmount = zeroAmount;
-    this.zeroTokenAmount = tokenRegistry.bySymbol(this.blockchain, this.tokenSymbol).getAmount(0);
+    this.zeroTokenAmount = tokenRegistry.byAddress(this.blockchain, this.asset).getAmount(0);
   }
 
   public static fromPlain(tokenRegistry: TokenRegistry, details: TxDetailsPlain): CreateERC20Tx {
@@ -168,13 +171,12 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     return this.amount;
   }
 
-  public setAmount(amount: BigAmount, tokenSymbol?: string): void {
-    if (tokenSymbol == null) {
-      throw new Error('Token symbol for ERC20 must be provided');
-    }
+  public getAsset(): string {
+    return this.asset;
+  }
 
+  public setAmount(amount: BigAmount): void {
     this.amount = amount;
-    this.tokenSymbol = tokenSymbol;
   }
 
   public getChange(): BigAmount | null {
@@ -197,10 +199,6 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     }
 
     return this.totalBalance.minus(this.getFees());
-  }
-
-  public getTokenSymbol(): string {
-    return this.tokenSymbol;
   }
 
   public getTotal(): BigAmount {
@@ -241,7 +239,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   }
 
   public display(): DisplayTx {
-    return new DisplayErc20Tx(this);
+    return new DisplayErc20Tx(this, this.tokenRegistry);
   }
 
   public dump(): TxDetailsPlain {

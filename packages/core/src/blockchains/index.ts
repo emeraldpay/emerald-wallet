@@ -2,8 +2,8 @@ export { EthereumMessage, isStructuredMessage } from './ethereum';
 export {
   InputDataDecoder,
   Token,
+  TokenAmount,
   TokenData,
-  TokenDirectory,
   TokenInstances,
   TokenRegistry,
   decodeData,

@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
+import { BlockchainCode, TokenRegistry } from '../../blockchains';
 import { CreateERC20Tx, TransferType } from './CreateErc20Tx';
 import { TxDetailsPlain, TxTarget, ValidationResult } from './types';
-import { BlockchainCode, TokenRegistry } from '../../blockchains';
 
 describe('CreateErc20Tx', () => {
   const tokenRegistry = new TokenRegistry([
@@ -16,10 +16,10 @@ describe('CreateErc20Tx', () => {
     },
   ]);
 
-  const daiToken = tokenRegistry.bySymbol(BlockchainCode.ETH, 'dai');
+  const daiToken = tokenRegistry.byAddress(BlockchainCode.ETH, '0x6B175474E89094C44Da98b954EedeAC495271d0F');
 
   it('creates tx', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
 
     expect(tx.validate()).toBe(ValidationResult.NO_FROM);
     expect(tx.target).toBe(TxTarget.MANUAL);
@@ -28,7 +28,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without from', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.from = undefined;
 
@@ -36,7 +36,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without balance', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalBalance = undefined;
 
@@ -44,7 +44,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without token balance', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalTokenBalance = undefined;
 
@@ -52,14 +52,14 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without to', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
 
     expect(tx.validate()).toBe(ValidationResult.NO_TO);
   });
 
   it('invalid without enough tokens', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = daiToken.getAmount(101);
@@ -68,7 +68,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without enough ether', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -79,7 +79,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('valid', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -90,7 +90,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('zero change', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -98,11 +98,11 @@ describe('CreateErc20Tx', () => {
     tx.amount = daiToken.getAmount(100);
 
     expect(tx.getChange()).toBeDefined();
-    expect(tx.getChange() || '?').toEqual(daiToken.getAmount(0));
+    expect(tx.getChange().equals(daiToken.getAmount(0))).toBeTruthy();
   });
 
   it('has change', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -110,11 +110,11 @@ describe('CreateErc20Tx', () => {
     tx.amount = daiToken.getAmount(50);
 
     expect(tx.getChange()).toBeDefined();
-    expect(tx.getChange() || '?').toEqual(daiToken.getAmount(50));
+    expect(tx.getChange().equals(daiToken.getAmount(50))).toBeTruthy();
   });
 
   it('change is null if total not set', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalTokenBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -126,7 +126,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -139,7 +139,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees are calculated if total not set', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -153,7 +153,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees change', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -166,7 +166,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees change are null if total not set', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -179,7 +179,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('rebalance to max sets max', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = daiToken.getAmount(20);
@@ -191,7 +191,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('rebalance to manual does not change amount', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = daiToken.getAmount(20);
@@ -203,7 +203,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('doesnt rebalance if total not set', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalTokenBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -216,7 +216,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('dumps plain', () => {
-    const tx = new CreateERC20Tx(tokenRegistry, 'DAI', BlockchainCode.ETH);
+    const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = daiToken.getAmount(20);
@@ -243,6 +243,7 @@ describe('CreateErc20Tx', () => {
     const dump: TxDetailsPlain = {
       amount: '999580000000500002/DAI',
       amountDecimals: 8,
+      asset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       blockchain: BlockchainCode.ETH,
       erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
@@ -251,7 +252,6 @@ describe('CreateErc20Tx', () => {
       priorityGasPrice: '5007000000/WEI',
       target: 1,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
-      tokenSymbol: 'DAI',
       totalEtherBalance: '1000000000057/WEI',
       totalTokenBalance: '2000000000015/DAI',
       transferType: 0,
@@ -262,10 +262,10 @@ describe('CreateErc20Tx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057', 'WEI'));
-    expect(tx.totalTokenBalance).toEqual(daiToken.getAmount('2000000000015'));
+    expect(tx.totalTokenBalance.equals(daiToken.getAmount('2000000000015'))).toBeTruthy();
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
-    expect(tx.amount).toEqual(daiToken.getAmount('999580000000500002'));
+    expect(tx.amount.equals(daiToken.getAmount('999580000000500002'))).toBeTruthy();
     expect(tx.maxGasPrice).toEqual(new Wei(10007, 'MWEI'));
     expect(tx.priorityGasPrice).toEqual(new Wei(5007, 'MWEI'));
     expect(tx.gas).toEqual(42011);
@@ -276,6 +276,7 @@ describe('CreateErc20Tx', () => {
     const dump: TxDetailsPlain = {
       amount: '999580000000500002/DAI',
       amountDecimals: 8,
+      asset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       blockchain: BlockchainCode.ETH,
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
@@ -283,7 +284,6 @@ describe('CreateErc20Tx', () => {
       priorityGasPrice: '5007000000/WEI',
       target: 1,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
-      tokenSymbol: 'DAI',
       totalEtherBalance: '1000000000057/WEI',
       totalTokenBalance: '2000000000015/DAI',
       transferType: 1,
@@ -294,10 +294,10 @@ describe('CreateErc20Tx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057'));
-    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(daiToken.getAmount('2000000000015'));
+    expect(tx.totalTokenBalance?.equals(daiToken.getAmount('2000000000015'))).toBeTruthy();
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
-    expect(tx.amount).toEqual(daiToken.getAmount('999580000000500002'));
+    expect(tx.amount.equals(daiToken.getAmount('999580000000500002'))).toBeTruthy();
     expect(tx.maxGasPrice).toEqual(new Wei(10007, 'MWEI'));
     expect(tx.priorityGasPrice).toEqual(new Wei(5007, 'MWEI'));
     expect(tx.gas).toEqual(42011);

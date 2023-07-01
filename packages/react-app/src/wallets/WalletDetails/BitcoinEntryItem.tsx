@@ -75,7 +75,7 @@ const BitcoinEntryItem: React.FC<StateProps & OwnProps> = ({ balance, blockchain
         <Typography>{blockchain.getTitle()}</Typography>
       </div>
       <div className={styles.balances}>
-        <AccountBalance key="main" classes={classes} balance={balance} blockchain={blockchain.params.code} />
+        <AccountBalance classes={classes} balance={balance} />
       </div>
     </div>
   );

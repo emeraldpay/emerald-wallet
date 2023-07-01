@@ -1,7 +1,7 @@
-import { CreateErc20WrappedTx } from './CreateErc20WrappedTx';
-import { TxTarget } from './types';
 import { BlockchainCode, TokenData, TokenRegistry, amountFactory } from '../../blockchains';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransactionType } from '../../transaction/ethereum';
+import { CreateErc20WrappedTx } from './CreateErc20WrappedTx';
+import { TxTarget } from './types';
 
 describe('CreateErc20WrappedTx', () => {
   const token: TokenData = {
@@ -71,7 +71,7 @@ describe('CreateErc20WrappedTx', () => {
   });
 
   it('correctly rebalance WETH', () => {
-    const wethToken = tokenRegistry.bySymbol(BlockchainCode.ETH, 'WETH');
+    const wethToken = tokenRegistry.byAddress(BlockchainCode.ETH, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
 
     const tx = new CreateErc20WrappedTx({
       token,

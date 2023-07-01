@@ -18,7 +18,7 @@ export enum TxTarget {
 
 export interface Tx<T extends BigAmount> {
   getAmount(): T;
-  getTokenSymbol(): string;
+  getAsset(): string;
   getTotalBalance(): T;
   setAmount(amount: T, tokenSymbol?: string): void;
   setTotalBalance(total: T): void;
@@ -27,6 +27,7 @@ export interface Tx<T extends BigAmount> {
 export interface TxDetailsPlain {
   amount: string;
   amountDecimals: number;
+  asset: string;
   blockchain: BlockchainCode;
   erc20?: string;
   from?: string;
@@ -36,7 +37,6 @@ export interface TxDetailsPlain {
   priorityGasPrice?: string;
   target: number;
   to?: string;
-  tokenSymbol: string;
   totalEtherBalance?: string;
   totalTokenBalance?: string;
   transferType?: number;

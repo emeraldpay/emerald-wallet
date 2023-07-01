@@ -19,7 +19,11 @@ const tokenRegistry = new TokenRegistry([
 
 storiesOf('Balance', module)
   .add('ethereum 10.501', () => <Balance balance={new Wei('10501000000000000000')} />)
-  .add('dai', () => (
-    <Balance balance={tokenRegistry.bySymbol(BlockchainCode.ETH, 'dai').getAmount('10501000000000000000')} />
-  ))
+  .add('dai', () => {
+    const balance = tokenRegistry
+      .byAddress(BlockchainCode.ETH, '0x6B175474E89094C44Da98b954EedeAC495271d0F')
+      .getAmount('10501000000000000000');
+
+    return <Balance balance={balance} />;
+  })
   .add('bitcoin 0.1', () => <Balance balance={new Satoshi('10000000')} />);

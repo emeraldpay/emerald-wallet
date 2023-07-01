@@ -44,7 +44,7 @@ const balance2: BalanceValue = {
 };
 
 const balance3: BalanceValue = {
-  balance: tokenRegistry.bySymbol(BlockchainCode.ETH, 'dai').getAmount(1045),
+  balance: tokenRegistry.byAddress(BlockchainCode.ETH, '0x6B175474E89094C44Da98b954EedeAC495271d0F').getAmount(1045),
   blockchain: BlockchainCode.ETH,
 };
 

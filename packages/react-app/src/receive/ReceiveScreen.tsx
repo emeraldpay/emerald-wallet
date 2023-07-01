@@ -7,7 +7,7 @@ import {
   isBitcoinEntry,
   isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, EthereumAddress, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
 import { BalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
 import { Address, Back, ButtonGroup, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
@@ -43,7 +43,7 @@ const useStyles = makeStyles(
 interface BaseAccept {
   blockchain: BlockchainCode;
   entryId: EntryId;
-  token: string;
+  symbol: string;
 }
 
 interface BitcoinAccept extends BaseAccept {
@@ -52,6 +52,7 @@ interface BitcoinAccept extends BaseAccept {
 
 interface EthereumAccept extends BaseAccept {
   addresses: string[];
+  contractAddress?: string;
 }
 
 type Accept = BitcoinAccept | EthereumAccept;
@@ -74,18 +75,18 @@ interface DispatchProps {
   onSave(entryId: EntryId): void;
 }
 
-function anyToken(accepted: Accept[], blockchain: BlockchainCode): string | undefined {
+function anyAccept(accepted: Accept[], blockchain: BlockchainCode): Accept | undefined {
   const [accepts] = accepted.filter((item) => item.blockchain === blockchain);
 
-  return accepts?.token;
+  return accepts;
 }
 
-function distinct<T>(value: T, index: number, array: T[]): boolean {
-  return array.indexOf(value) === index;
+function isBitcoinAccept(accept: unknown): accept is BitcoinAccept {
+  return accept != null && typeof accept === 'object' && 'xpub' in accept;
 }
 
-function isBitcoinAccept(accept: Accept): accept is BitcoinAccept {
-  return (accept as BitcoinAccept).xpub != null;
+function isEthereumAccept(accept: unknown): accept is EthereumAccept {
+  return accept != null && typeof accept === 'object' && 'addresses' in accept;
 }
 
 const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
@@ -103,21 +104,42 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   const mounted = React.useRef(true);
 
   const availableBlockchains = React.useMemo(
-    () => accepted.map((accept) => accept.blockchain).filter(distinct),
+    () => [...accepted.reduce<Set<BlockchainCode>>((carry, { blockchain }) => carry.add(blockchain), new Set())],
     [accepted],
   );
 
   const [availableAddresses, setAvailableAddresses] = React.useState<string[]>([]);
   const [currentBlockchain, setCurrentBlockchain] = React.useState(availableBlockchains[0]);
-  const [currentToken, setCurrentToken] = React.useState(anyToken(accepted, currentBlockchain));
+  const [currentAccept, setCurrentAccept] = React.useState(anyAccept(accepted, currentBlockchain));
   const [currentAddress, setCurrentAddress] = React.useState<string | undefined>(undefined);
 
-  const availableCoins = React.useMemo(
+  const availableAccepts = React.useMemo(
     () =>
-      accepted
-        .filter((item) => item.blockchain === currentBlockchain)
-        .map((item) => item.token)
-        .filter(distinct),
+      accepted.reduce<Accept[]>((carry, accept) => {
+        if (accept.blockchain === currentBlockchain) {
+          let existed: Accept | undefined;
+
+          if (isBitcoinAccept(accept)) {
+            existed = carry.find(({ symbol }) => symbol === accept.symbol);
+          } else {
+            existed = carry
+              .filter((accept): accept is EthereumAccept => isEthereumAccept(accept))
+              .find(({ contractAddress, symbol }) => {
+                if (contractAddress == null) {
+                  return symbol === accept.symbol;
+                }
+
+                return contractAddress === accept.contractAddress;
+              });
+          }
+
+          if (existed == null) {
+            return [...carry, accept];
+          }
+        }
+
+        return carry;
+      }, []),
     [accepted, currentBlockchain],
   );
 
@@ -126,30 +148,43 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
     [accepted, currentBlockchain],
   );
 
-  const selectBlockchain = React.useCallback(
-    (blockchain: BlockchainCode): void => {
-      const token = anyToken(accepted, blockchain);
-      const [address] = availableAddresses;
+  const selectAsset = (asset: string): void => {
+    if (EthereumAddress.isValid(asset)) {
+      setCurrentAccept(
+        accepted
+          .filter((accept): accept is EthereumAccept => isEthereumAccept(accept))
+          .find(({ contractAddress }) => contractAddress === asset),
+      );
+    } else {
+      setCurrentAccept(accepted.find(({ symbol }) => symbol === asset));
+    }
+  };
 
-      setCurrentAddress(address);
-      setCurrentBlockchain(blockchain);
-      setCurrentToken(token);
-    },
-    [accepted, availableAddresses],
-  );
+  const selectBlockchain = (blockchain: BlockchainCode): void => {
+    const accept = anyAccept(accepted, blockchain);
 
-  const selectToken = React.useCallback(
-    (token: string): void => {
-      const [address] = availableAddresses;
-
-      setCurrentAddress(address);
-      setCurrentToken(token);
-    },
-    [availableAddresses],
-  );
+    setCurrentAccept(accept);
+    setCurrentBlockchain(blockchain);
+  };
 
   React.useEffect(() => {
-    const accepts = accepted.filter((item) => item.blockchain === currentBlockchain && item.token === currentToken);
+    const accepts = accepted.filter((accept) => {
+      if (accept.blockchain === currentBlockchain) {
+        if (isBitcoinAccept(accept)) {
+          return accept.symbol === currentAccept?.symbol;
+        }
+
+        if (isEthereumAccept(currentAccept)) {
+          if (currentAccept.contractAddress == null) {
+            return accept.symbol === currentAccept.symbol;
+          }
+
+          return accept.contractAddress === currentAccept.contractAddress;
+        }
+      }
+
+      return false;
+    });
 
     Promise.all(
       accepts.map(async (accept) => {
@@ -163,15 +198,15 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
       }),
     ).then((addresses) => {
       if (mounted.current) {
-        const uniqueAddresses = addresses
-          .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
-          .filter(distinct);
+        const uniqueAddresses = [
+          ...addresses.flat().reduce<Set<string>>((carry, address) => carry.add(address), new Set()),
+        ];
 
         setAvailableAddresses(uniqueAddresses);
         setCurrentAddress(uniqueAddresses[0]);
       }
     });
-  }, [accepted, currentBlockchain, currentToken, getXPubPositionalAddress]);
+  }, [accepted, currentAccept, currentBlockchain, getXPubPositionalAddress]);
 
   React.useEffect(() => {
     return () => {
@@ -181,11 +216,15 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   let qrCodeValue = currentAddress;
 
-  if (currentToken != null && tokenRegistry.hasSymbol(currentBlockchain, currentToken)) {
-    const tokenData = tokenRegistry.bySymbol(currentBlockchain, currentToken);
+  if (
+    isEthereumAccept(currentAccept) &&
+    currentAccept.contractAddress != null &&
+    tokenRegistry.hasAddress(currentBlockchain, currentAccept.contractAddress)
+  ) {
+    const token = tokenRegistry.byAddress(currentBlockchain, currentAccept.contractAddress);
 
     // TODO There is no standards for that, check later
-    qrCodeValue = `${qrCodeValue}?erc20=${tokenData.symbol}`;
+    qrCodeValue = `${qrCodeValue}?erc20=${token.symbol}`;
   }
 
   const qrCode = useQRCode(qrCodeValue ?? '');
@@ -196,7 +235,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
       <Grid container>
         <Grid item xs={8}>
           <Grid container className={styles.form}>
-            <Grid item xs={10}>
+            <Grid item xs={9}>
               <FormControl fullWidth>
                 <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
                 <Select
@@ -213,42 +252,56 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={2}>
-              <FormControl fullWidth>
-                <InputLabel id="coin-select-label">Coin</InputLabel>
-                <Select
-                  disabled={availableCoins.length <= 1}
-                  labelId="coin-select-label"
-                  value={currentToken}
-                  onChange={(event) => selectToken(event.target.value as string)}
-                >
-                  {availableCoins.map((token) => (
-                    <MenuItem key={token} value={token}>
-                      {token}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <Grid item xs={3}>
+              {currentAccept != null && (
+                <FormControl fullWidth>
+                  <InputLabel id="coin-select-label">Coin</InputLabel>
+                  <Select
+                    disabled={availableAccepts.length <= 1}
+                    labelId="coin-select-label"
+                    value={
+                      isBitcoinAccept(currentAccept) || currentAccept.contractAddress == null
+                        ? currentAccept.symbol
+                        : currentAccept.contractAddress
+                    }
+                    onChange={(event) => selectAsset(event.target.value as string)}
+                  >
+                    {availableAccepts.map((accept) =>
+                      isBitcoinAccept(accept) || accept.contractAddress == null ? (
+                        <MenuItem key={accept.symbol} value={accept.symbol}>
+                          {accept.symbol}
+                        </MenuItem>
+                      ) : (
+                        <MenuItem key={accept.contractAddress} value={accept.contractAddress}>
+                          {accept.symbol}
+                        </MenuItem>
+                      ),
+                    )}
+                  </Select>
+                </FormControl>
+              )}
             </Grid>
-            <Grid item xs={10}>
+            <Grid item xs={9}>
               <FormControl fullWidth={true}>
                 <InputLabel id="address-select-label">Address</InputLabel>
-                <Select
-                  disabled={availableAddresses.length <= 1}
-                  labelId="address-select-label"
-                  value={currentAddress ?? ''}
-                  onChange={(event) => setCurrentAddress(event.target.value as string)}
-                >
-                  {availableAddresses.map((address) => (
-                    <MenuItem key={address} value={address}>
-                      <Address address={address} disableCopy={true} />
-                    </MenuItem>
-                  ))}
-                </Select>
+                {currentAddress != null && availableAddresses.includes(currentAddress) && (
+                  <Select
+                    disabled={availableAddresses.length <= 1}
+                    labelId="address-select-label"
+                    value={currentAddress}
+                    onChange={(event) => setCurrentAddress(event.target.value as string)}
+                  >
+                    {availableAddresses.map((address) => (
+                      <MenuItem key={address} value={address}>
+                        <Address address={address} disableCopy={true} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
               </FormControl>
             </Grid>
             {currentAddress != null && (
-              <Grid item xs={2} className={styles.copy}>
+              <Grid item xs={3} className={styles.copy}>
                 <Button onClick={() => clipboard.writeText(currentAddress)}>
                   <LibraryAddCheckIcon />
                   Copy
@@ -308,7 +361,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
                   blockchain,
                   xpub,
                   entryId: entry.id,
-                  token: Blockchains[blockchain].params.coinTicker,
+                  symbol: Blockchains[blockchain].params.coinTicker,
                 },
               ];
             }
@@ -318,21 +371,24 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             return carry;
           }
 
-          const accepts = tokenRegistry.getStablecoins(blockchain).reduce<Accept[]>((carry, { symbol }) => {
-            if (address == null) {
-              return carry;
-            }
+          const accepts = tokenRegistry
+            .getPinned(blockchain)
+            .reduce<Accept[]>((carry, { symbol, address: contractAddress }) => {
+              if (address == null) {
+                return carry;
+              }
 
-            return [
-              ...carry,
-              {
-                blockchain,
-                addresses: [address],
-                entryId: entry.id,
-                token: symbol,
-              },
-            ];
-          }, []);
+              return [
+                ...carry,
+                {
+                  blockchain,
+                  contractAddress,
+                  symbol,
+                  addresses: [address],
+                  entryId: entry.id,
+                },
+              ];
+            }, []);
 
           return [
             ...carry,
@@ -340,7 +396,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               blockchain,
               addresses: [address],
               entryId: entry.id,
-              token: Blockchains[blockchain].params.coinTicker,
+              symbol: Blockchains[blockchain].params.coinTicker,
             },
             ...accepts,
           ];
