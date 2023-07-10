@@ -1,6 +1,6 @@
 import { BlockchainCode, PersistentState, blockchainIdToCode, isBitcoin } from '@emeraldwallet/core';
 import { accounts, addressBook, screen, transaction } from '@emeraldwallet/store';
-import { Address, CoinAvatar } from '@emeraldwallet/ui';
+import { Address, BlockchainAvatar } from '@emeraldwallet/ui';
 import {
   CircularProgress,
   IconButton,
@@ -116,7 +116,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <CoinAvatar blockchain={blockchainCode} />
+        <BlockchainAvatar blockchain={blockchainCode} />
       </div>
       <div className={styles.account}>
         <Typography variant="body1">{label ?? currentAddress ?? address}</Typography>

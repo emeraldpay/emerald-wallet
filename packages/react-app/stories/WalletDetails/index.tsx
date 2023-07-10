@@ -3,7 +3,7 @@ import { accounts, tokens } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import DetailsPage from '../../src/wallets/WalletDetails';
-import Addresses from '../../src/wallets/WalletDetails/Addresses';
+import Addresses from '../../src/wallets/WalletDetails/addresses/Addresses';
 import WalletDetails from '../../src/wallets/WalletDetails/WalletDetails';
 import { MemoryApiMock } from '../__mocks__/apiMock';
 import { BackendMock } from '../__mocks__/backendMock';

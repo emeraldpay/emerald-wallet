@@ -1,3 +1,4 @@
+import { BigAmount } from '@emeraldpay/bigamount';
 import {
   AddressRole,
   CurrentAddress,
@@ -8,7 +9,7 @@ import {
   isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, EthereumAddress, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
-import { BalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
+import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Address, Back, ButtonGroup, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -63,7 +64,7 @@ interface OwnProps {
 
 interface StateProps {
   accepted: Accept[];
-  assets: BalanceValue[];
+  balances: BigAmount[];
   tokenRegistry: TokenRegistry;
   wallet?: Wallet;
   walletIcon?: string | null;
@@ -91,7 +92,7 @@ function isEthereumAccept(accept: unknown): accept is EthereumAccept {
 
 const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   accepted,
-  assets,
+  balances,
   tokenRegistry,
   wallet,
   walletIcon,
@@ -231,7 +232,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   return (
     <Page title="Request Cryptocurrency" leftIcon={<Back onClick={onCancel} />}>
-      {wallet != null && <WalletReference assets={assets} wallet={wallet} walletIcon={walletIcon} />}
+      {wallet != null && <WalletReference balances={balances} wallet={wallet} walletIcon={walletIcon} />}
       <Grid container>
         <Grid item xs={8}>
           <Grid container className={styles.form}>
@@ -337,7 +338,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
-    const assets: BalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
+    const balances = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet);
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
@@ -404,7 +405,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     return {
       accepted,
-      assets,
+      balances,
       tokenRegistry,
       wallet,
       walletIcon: state.accounts.icons[walletId],

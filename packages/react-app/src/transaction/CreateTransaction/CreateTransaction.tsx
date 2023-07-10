@@ -10,6 +10,7 @@ import {
   EthereumAddress,
   EthereumTransaction,
   EthereumTransactionType,
+  TokenAmount,
   TokenRegistry,
   amountDecoder,
   amountFactory,
@@ -56,10 +57,11 @@ type Request = {
 };
 
 interface OwnProps {
-  amount?: any;
   data?: any;
+  entry: WalletEntry;
   gasLimit?: any;
-  sourceEntry: WalletEntry;
+  initialAmount?: BigAmount;
+  initialAsset?: string;
 }
 
 interface CreateTxState {
@@ -91,7 +93,6 @@ interface Props {
   assets: CommonAsset[];
   amount: any;
   blockchain: BlockchainCode;
-  data: any;
   eip1559: boolean;
   fiatRate?: any;
   from?: any;
@@ -106,7 +107,7 @@ interface Props {
   getBalancesByAddress(address: string): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
   getFiatBalance(asset: string, address?: string): BigAmount | undefined;
-  getTokenBalance(contractAddress: string, address?: string): BigAmount;
+  getTokenBalance(contractAddress: string, address?: string): TokenAmount;
 }
 
 const { TxTarget } = workflow;
@@ -169,21 +170,40 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.setState({ transaction: tx.dump() });
   }
 
-  public static txFromProps(props: OwnProps & Props & DispatchFromProps) {
-    const zeroAmount = amountFactory(props.blockchain)(0) as WeiAny;
+  public static txFromProps({
+    amount,
+    asset,
+    blockchain,
+    eip1559,
+    gasLimit,
+    selectedFromAddress,
+    tokenRegistry,
+    getBalance,
+    getTokenBalance,
+  }: OwnProps & Props & DispatchFromProps) {
+    const txType = eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
 
-    const tx = new workflow.CreateEthereumTx(
-      null,
-      props.blockchain,
-      props.eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
-    );
+    const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
+    const totalBalance = selectedFromAddress == null ? zeroAmount : getBalance(selectedFromAddress);
 
-    tx.amount = props.amount;
-    tx.from = props.selectedFromAddress;
-    tx.gas = props.gasLimit ?? DEFAULT_GAS_LIMIT;
+    let tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
+
+    if (EthereumAddress.isValid(asset) && tokenRegistry.hasAddress(blockchain, asset)) {
+      tx = new workflow.CreateERC20Tx(tokenRegistry, asset, blockchain, txType);
+
+      tx.totalBalance = totalBalance;
+      tx.setTotalBalance(getTokenBalance(asset, selectedFromAddress));
+    } else {
+      tx = new workflow.CreateEthereumTx(null, blockchain, txType);
+
+      tx.setTotalBalance(totalBalance);
+    }
+
+    tx.amount = amount;
+    tx.from = selectedFromAddress;
+    tx.gas = gasLimit ?? DEFAULT_GAS_LIMIT;
     tx.maxGasPrice = zeroAmount;
     tx.priorityGasPrice = zeroAmount;
-    tx.setTotalBalance(props.selectedFromAddress == null ? zeroAmount : props.getBalance(props.selectedFromAddress));
 
     return tx;
   }
@@ -543,10 +563,8 @@ function sign(
 }
 
 export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    const { sourceEntry } = ownProps;
-
-    const blockchainCode = blockchainIdToCode(sourceEntry.blockchain);
+  (state: IState, { entry, gasLimit, initialAmount, initialAsset }: OwnProps): Props => {
+    const blockchainCode = blockchainIdToCode(entry.blockchain);
     const blockchain = Blockchains[blockchainCode];
     const txFeeSymbol = blockchain.params.coinTicker;
     const zero = amountFactory(blockchain.params.code)(0) as WeiAny;
@@ -563,33 +581,39 @@ export default connect(
 
     const uniqueAddresses =
       accounts.selectors
-        .findWalletByEntryId(state, sourceEntry.id)
+        .findWalletByEntryId(state, entry.id)
         ?.entries.filter((entry) => !entry.receiveDisabled)
         .reduce<Set<string>>(
           (carry, entry) =>
-            entry.blockchain === sourceEntry.blockchain && entry.address != null
-              ? carry.add(entry.address.value)
-              : carry,
+            entry.blockchain === entry.blockchain && entry.address != null ? carry.add(entry.address.value) : carry,
           new Set(),
         ) ?? new Set();
 
     const ownAddresses = [...uniqueAddresses];
 
-    const selectedFromAddress = sourceEntry.address?.value ?? ownAddresses[0];
+    const selectedFromAddress = entry.address?.value ?? ownAddresses[0];
+
+    let amount: BigAmount = zero;
+    let asset = initialAsset ?? blockchain.params.coinTicker;
+
+    if (EthereumAddress.isValid(asset) && tokenRegistry.hasAddress(blockchainCode, asset)) {
+      amount = tokenRegistry.byAddress(blockchainCode, asset).getAmount(0);
+    } else if (asset !== blockchain.params.coinTicker) {
+      asset = blockchain.params.coinTicker;
+    }
 
     return {
+      amount,
+      asset,
       assets,
       ownAddresses,
       getEntryByAddress,
       selectedFromAddress,
       txFeeSymbol,
       tokenRegistry,
-      amount: ownProps.amount ?? zero,
-      asset: blockchain.params.coinTicker,
       blockchain: blockchain.params.code,
-      data: ownProps.data,
       eip1559: blockchain.params.eip1559 ?? false,
-      gasLimit: ownProps.gasLimit ?? DEFAULT_GAS_LIMIT,
+      gasLimit: gasLimit ?? DEFAULT_GAS_LIMIT,
       getBalance(address) {
         const entry = getEntryByAddress(address);
 
@@ -663,7 +687,7 @@ export default connect(
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
     estimateGas(tx) {
-      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.sourceEntry.blockchain), tx));
+      return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
     },
     getFees(blockchain) {
       return dispatch(transaction.actions.getFee(blockchain));

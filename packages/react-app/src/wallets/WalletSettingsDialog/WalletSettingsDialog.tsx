@@ -1,7 +1,7 @@
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, application, screen } from '@emeraldwallet/store';
-import { HashIcon, Input } from '@emeraldwallet/ui';
+import { ButtonGroup, HashIcon, Input } from '@emeraldwallet/ui';
 import Button from '@emeraldwallet/ui/lib/components/common/Button';
 import {
   Box,
@@ -48,7 +48,7 @@ interface StateProps {
 
 interface DispatchProps {
   fsReadFile(filePath: string): Promise<Uint8Array | null>;
-  setWalletIcon(icon: Uint8Array): Promise<boolean>;
+  setWalletIcon(icon: Uint8Array | null): Promise<boolean>;
   showError(exception: Error): void;
   updateWalletName(name: string): void;
 }
@@ -85,20 +85,18 @@ const WalletSettingsDialog: React.FC<OwnProps & StateProps & DispatchProps> = ({
     setIcon(Buffer.from(content).toString('base64'));
   };
 
-  const onSave = async (): Promise<void> => {
-    if (icon == null || wallet == null) {
-      return;
-    }
+  const onResetIcon = (): void => {
+    setIcon(null);
+  };
 
+  const onSave = async (): Promise<void> => {
     updateWalletName(name ?? '');
 
     try {
-      await setWalletIcon(new Uint8Array(Buffer.from(icon, 'base64')));
+      await setWalletIcon(icon == null ? null : new Uint8Array(Buffer.from(icon, 'base64')));
 
       onClose();
     } catch (exception) {
-      onClose();
-
       showError(exception as Error);
     }
   };
@@ -122,7 +120,10 @@ const WalletSettingsDialog: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 </Grid>
                 <Grid item>
                   <Box mt={1}>
-                    <Button primary label="Set Image" onClick={onSetIcon} />
+                    <ButtonGroup vertical>
+                      <Button primary label="Set Image" onClick={onSetIcon} />
+                      <Button label="Reset Image" onClick={onResetIcon} />
+                    </ButtonGroup>
                   </Box>
                 </Grid>
               </Grid>

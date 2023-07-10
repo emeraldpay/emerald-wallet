@@ -1,8 +1,15 @@
-import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, EntryIdOp, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, CurrencyAmount, PersistentState, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  CurrencyAmount,
+  PersistentState,
+  blockchainIdToCode,
+  formatAmount,
+  formatFiatAmount,
+} from '@emeraldwallet/core';
 import { IState, StoredTransaction, accounts, blockchains, screen, settings, txhistory } from '@emeraldwallet/store';
-import { CoinAvatar, HashIcon } from '@emeraldwallet/ui';
+import { BlockchainAvatar, HashIcon } from '@emeraldwallet/ui';
 import { IconButton, InputAdornment, Menu, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -184,8 +191,6 @@ interface DispatchProps {
   setTransactionMeta(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem>;
 }
 
-const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
-
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   entryId,
   tx,
@@ -273,7 +278,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     <div className={styles.container} style={style}>
       <div className={styles.progress}>
         <ProgressPie progress={Math.min(100, (100 / CONFIRMATIONS[blockchainCode]) * confirmations)}>
-          <CoinAvatar blockchain={blockchainCode} className={classNames(styles.progressStatus, statusClass)} />
+          <BlockchainAvatar blockchain={blockchainCode} className={classNames(styles.progressStatus, statusClass)} />
         </ProgressPie>
       </div>
       <div className={styles.transaction}>
@@ -366,9 +371,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     {change.wallet.name}
                   </div>
                 )}
-                <div className={styles.changeItemAmountFiat}>
-                  {fiatFormatter.format(getFiatValue(change.amountValue))}
-                </div>
+                <div className={styles.changeItemAmountFiat}>{formatFiatAmount(getFiatValue(change.amountValue))}</div>
               </div>
             </div>
           ))}

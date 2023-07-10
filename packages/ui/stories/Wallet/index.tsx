@@ -1,16 +1,17 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
-import { BalanceValue } from '@emeraldwallet/store';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import { WalletReference } from '../../src';
+
+const contractAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
 const tokenRegistry = new TokenRegistry([
   {
     name: 'Dai Stablecoin',
     blockchain: 100,
-    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    address: contractAddress,
     symbol: 'DAI',
     decimals: 18,
     type: 'ERC20',
@@ -33,23 +34,12 @@ const wallet2: Wallet = {
   createdAt: new Date(1581081606000),
 };
 
-const balance1: BalanceValue = {
-  balance: Wei.ZERO,
-  blockchain: BlockchainCode.ETH,
-};
-
-const balance2: BalanceValue = {
-  balance: new Wei(10.25),
-  blockchain: BlockchainCode.ETH,
-};
-
-const balance3: BalanceValue = {
-  balance: tokenRegistry.byAddress(BlockchainCode.ETH, '0x6B175474E89094C44Da98b954EedeAC495271d0F').getAmount(1045),
-  blockchain: BlockchainCode.ETH,
-};
+const balance1 = Wei.ZERO;
+const balance2 = new Wei(10.25);
+const balance3 = tokenRegistry.byAddress(BlockchainCode.ETH, contractAddress).getAmount(1045);
 
 storiesOf('Wallet', module)
-  .add('empty wallet', () => <WalletReference wallet={wallet1} assets={[balance1]} />)
-  .add('wallet with one currency', () => <WalletReference wallet={wallet1} assets={[balance2]} />)
-  .add('wallet with two currencies', () => <WalletReference wallet={wallet1} assets={[balance2, balance3]} />)
-  .add('unnamed wallet', () => <WalletReference wallet={wallet2} assets={[balance1, balance3]} />);
+  .add('empty wallet', () => <WalletReference wallet={wallet1} balances={[balance1]} />)
+  .add('wallet with one currency', () => <WalletReference wallet={wallet1} balances={[balance2]} />)
+  .add('wallet with two currencies', () => <WalletReference wallet={wallet1} balances={[balance2, balance3]} />)
+  .add('unnamed wallet', () => <WalletReference wallet={wallet2} balances={[balance1, balance3]} />);

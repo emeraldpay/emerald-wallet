@@ -38,16 +38,14 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-type Asset = { balance: BigAmount };
-
 interface OwnProps {
-  assets: Asset[];
+  balances: BigAmount[];
   classes?: Partial<ClassNameMap<'root' | 'content'>>;
   wallet: Wallet;
   walletIcon?: string | null;
 }
 
-const WalletReference: React.FC<OwnProps> = ({ assets, walletIcon, wallet, classes = {} }) => {
+const WalletReference: React.FC<OwnProps> = ({ balances, walletIcon, wallet, classes = {} }) => {
   const styles = useStyles();
 
   return (
@@ -65,10 +63,10 @@ const WalletReference: React.FC<OwnProps> = ({ assets, walletIcon, wallet, class
           {wallet.id}
         </Typography>
         <Box className={styles.balances}>
-          {assets.map((asset) => (
+          {balances.map((asset) => (
             <Balance
-              key={`balance-${asset.balance.units.top.code}`}
-              balance={asset.balance}
+              key={`balance-${asset.units.top.code}`}
+              balance={asset}
               classes={{ root: styles.balance, coin: styles.coin }}
             />
           ))}

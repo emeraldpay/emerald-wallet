@@ -1,16 +1,17 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { IState, screen, txhistory } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
-import { Button, Divider, IconButton, Paper, Tab, Toolbar, createStyles, makeStyles } from '@material-ui/core';
+import { Divider, IconButton, Paper, Tab, Toolbar, Tooltip, createStyles, makeStyles } from '@material-ui/core';
+import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon } from '@material-ui/icons';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import classNames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Addresses from './Addresses';
+import TxHistory from '../../transactions/TxHistory';
+import Addresses from './addresses/Addresses';
 import WalletBalance from './WalletBalance';
 import WalletMenu from './WalletMenu';
 import WalletTitle from './WalletTitle';
-import TxHistory from '../../transactions/TxHistory';
 
 export enum WalletTabs {
   BALANCE = '0',
@@ -135,14 +136,22 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 </IconButton>
               )}
             </div>
-            <WalletTitle walletId={walletId} />
+            {tab !== WalletTabs.BALANCE && <WalletTitle walletId={walletId} />}
             <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsRight)}>
-              <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoSend}>
-                Send
-              </Button>
-              <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoReceive}>
-                Receive
-              </Button>
+              {tab !== WalletTabs.BALANCE && (
+                <>
+                  <Tooltip title="Send">
+                    <IconButton className={styles.toolbarButton} color="primary" onClick={gotoSend}>
+                      <SendIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Receive">
+                    <IconButton className={styles.toolbarButton} color="primary" onClick={gotoReceive}>
+                      <ReceiveIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
             </div>
           </Toolbar>
           <Divider />
@@ -162,16 +171,14 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state) => ({
-    hasOtherWallets: state.accounts.wallets.length > 1,
-  }),
+  (state) => ({ hasOtherWallets: state.accounts.wallets.length > 1 }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => ({
+  (dispatch: any, { walletId }) => ({
     gotoReceive() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.walletId));
+      dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, walletId));
     },
     gotoSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.walletId, null, true));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, walletId, null, true));
     },
     gotoWalletsScreen() {
       dispatch(screen.actions.gotoWalletsScreen());

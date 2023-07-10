@@ -1,8 +1,6 @@
-import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts } from '@emeraldwallet/store';
-import { InlineEdit } from '@emeraldwallet/ui';
-import { Pen3 as EditIcon } from '@emeraldwallet/ui/lib/icons';
-import { IconButton, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { HashIcon } from '@emeraldwallet/ui';
+import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -11,9 +9,19 @@ const useStyles = makeStyles((theme) =>
     container: {
       alignItems: 'center',
       display: 'flex',
+      justifyContent: 'center',
+      width: '100%',
     },
-    button: {
-      marginLeft: theme.spacing(),
+    walletIcon: {
+      cursor: 'default',
+      marginRight: theme.spacing(),
+      userSelect: 'none',
+    },
+    walletImage: {
+      display: 'inline-block',
+      height: 24,
+      marginRight: theme.spacing(),
+      width: 24,
     },
   }),
 );
@@ -23,54 +31,26 @@ interface OwnProps {
 }
 
 interface StateProps {
-  wallet?: Wallet;
+  walletIcon?: string | null;
+  walletName?: string;
 }
 
-interface DispatchProps {
-  updateWallet(data: Partial<Wallet>): void;
-}
-
-const WalletTitle: React.FC<OwnProps & StateProps & DispatchProps> = ({ wallet, updateWallet }) => {
+const WalletTitle: React.FC<OwnProps & StateProps> = ({ walletIcon, walletName, walletId }) => {
   const styles = useStyles();
 
-  const [edit, setEdit] = React.useState(false);
-
-  const onSave = React.useCallback(
-    ({ id, value }) => {
-      updateWallet({ id, name: value });
-      setEdit(false);
-    },
-    [updateWallet],
-  );
-
-  return edit ? (
-    <InlineEdit
-      id={wallet?.id}
-      initialValue={wallet?.name ?? ''}
-      placeholder="Wallet name"
-      onCancel={() => setEdit(false)}
-      onSave={onSave}
-    />
-  ) : (
+  return (
     <div className={styles.container}>
-      <Typography>{wallet?.name}</Typography>
-      <IconButton className={styles.button} onClick={() => setEdit(true)}>
-        <EditIcon />
-      </IconButton>
+      {walletIcon == null ? (
+        <HashIcon className={styles.walletIcon} value={`WALLET/${walletId}`} size={24} />
+      ) : (
+        <img alt="Wallet Icon" className={styles.walletImage} src={`data:image/png;base64,${walletIcon}`} />
+      )}
+      <Typography>{walletName}</Typography>
     </div>
   );
 };
 
-export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => ({
-    wallet: accounts.selectors.findWallet(state, ownProps.walletId),
-  }),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any) => ({
-    updateWallet(data) {
-      if (data.id != null) {
-        dispatch(accounts.actions.updateWallet(data.id, data.name ?? ''));
-      }
-    },
-  }),
-)(WalletTitle);
+export default connect<StateProps, unknown, OwnProps, IState>((state, { walletId }) => ({
+  walletIcon: state.accounts.icons[walletId],
+  walletName: accounts.selectors.findWallet(state, walletId)?.name,
+}))(WalletTitle);

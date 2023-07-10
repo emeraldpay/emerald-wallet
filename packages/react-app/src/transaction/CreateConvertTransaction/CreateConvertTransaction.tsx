@@ -6,6 +6,7 @@ import {
   EthereumTransaction,
   EthereumTransactionType,
   Token,
+  TokenAmount,
   TokenRegistry,
   amountFactory,
   blockchainIdToCode,
@@ -93,7 +94,7 @@ interface StateProps {
   getBalance(address?: string): BigAmount;
   getBalancesByAddress(address: string, token: string): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
-  getTokenBalanceByAddress(address?: string): BigAmount;
+  getTokenBalanceByAddress(address?: string): TokenAmount;
 }
 
 interface DispatchProps {

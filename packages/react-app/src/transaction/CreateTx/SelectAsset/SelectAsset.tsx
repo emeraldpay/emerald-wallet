@@ -58,10 +58,15 @@ export class SelectAsset extends React.Component<Props & WithStyles<typeof style
         >
           {assets?.map(({ address, symbol }) => {
             const key = address ?? symbol;
+            const balance = getAssetBalance(key);
+
+            if (balance.isZero()) {
+              return undefined;
+            }
 
             return (
               <MenuItem key={key} value={key}>
-                <ListItemText primary={symbol} secondary={formatAmount(getAssetBalance(key))} />
+                <ListItemText primary={symbol} secondary={formatAmount(balance)} />
               </MenuItem>
             );
           })}

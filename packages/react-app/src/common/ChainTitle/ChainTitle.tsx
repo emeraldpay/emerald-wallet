@@ -1,5 +1,5 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { CoinAvatar, PageTitle } from '@emeraldwallet/ui';
+import { BlockchainAvatar, PageTitle } from '@emeraldwallet/ui';
 import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
@@ -25,7 +25,7 @@ const ChainTitle: React.FC<OwnProps> = ({ blockchain, title = '' }) => {
 
   return (
     <div className={styles.container}>
-      <CoinAvatar blockchain={blockchain} className={styles.icon} />
+      <BlockchainAvatar blockchain={blockchain} className={styles.icon} />
       <PageTitle>{title}</PageTitle>
     </div>
   );

@@ -38,6 +38,10 @@ export class TokenAmount extends BigAmount {
   static is(value: unknown): value is TokenAmount {
     return BigAmount.is(value) && 'token' in value && value.token != null && typeof value.token === 'object';
   }
+
+  plus(amount: this): this {
+    return new TokenAmount(super.plus(amount), amount.units, this.token) as this;
+  }
 }
 
 export class Token implements TokenData {
@@ -48,7 +52,7 @@ export class Token implements TokenData {
   readonly address: string;
   readonly blockchain: number;
   readonly decimals: number;
-  readonly icon: string | undefined;
+  readonly icon?: string;
   readonly name: string;
   readonly symbol: string;
   readonly type: (typeof TOKEN_TYPES)[number];

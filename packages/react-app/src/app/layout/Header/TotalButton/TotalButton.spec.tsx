@@ -9,7 +9,7 @@ describe('Total', () => {
   it('should renders without crash', () => {
     const component = render(
       <ThemeProvider theme={Theme}>
-        <TotalButton fiatCurrencies={[]} loading={false} totalBalance={new CurrencyAmount(0, 'USD')} />
+        <TotalButton balances={[]} loading={false} totalBalance={new CurrencyAmount(0, 'USD')} />
       </ThemeProvider>,
     );
     expect(component).toBeDefined();

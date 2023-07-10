@@ -4,7 +4,7 @@ import { BlockchainCode, CurrencyAmount } from '@emeraldwallet/core';
 import { application } from '../index';
 import { SettingsState } from '../settings/types';
 import { IState } from '../types';
-import { aggregateByAsset, allAsArray, allBalances, balanceByChain, withFiatConversion } from './selectors';
+import { aggregateBalances, allAsArray, allBalances, balanceByChain, withFiatConversion } from './selectors';
 import { moduleName } from './types';
 
 const getAddress: () => AddressSingle = (() => {
@@ -209,7 +209,7 @@ describe('selectTotalBalance', () => {
     // wallet 1 - ETH + ETC, wallet 2 - BTC + ETH
     expect(assets.length).toBe(4);
 
-    const aggregatedAssets = aggregateByAsset(assets);
+    const aggregatedAssets = aggregateBalances(assets);
 
     // ETH + ETC + BTC
     expect(aggregatedAssets.length).toBe(3);
@@ -221,10 +221,10 @@ describe('selectTotalBalance', () => {
     expect(prices.length).toBe(3);
 
     // ETH = (1.2 + 1.1 + 3) * 256
-    expect(prices[0].converted?.toString()).toBe(CurrencyAmount.create(1356.8, 'USD').toString());
+    expect(prices[0].fiatBalance?.toString()).toBe(CurrencyAmount.create(1356.8, 'USD').toString());
     // ETC = 52 * 4.56
-    expect(prices[1].converted?.toString()).toBe(CurrencyAmount.create(237.12, 'USD').toString());
+    expect(prices[1].fiatBalance?.toString()).toBe(CurrencyAmount.create(237.12, 'USD').toString());
     // BTC = (0.5) * 12300
-    expect(prices[2].converted?.toString()).toBe(CurrencyAmount.create(6150, 'USD').toString());
+    expect(prices[2].fiatBalance?.toString()).toBe(CurrencyAmount.create(6150, 'USD').toString());
   });
 });

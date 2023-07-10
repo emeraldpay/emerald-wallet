@@ -1,6 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { BalanceValue, IState, accounts, screen } from '@emeraldwallet/store';
+import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Balance, HashIcon } from '@emeraldwallet/ui';
 import { Button, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -75,7 +75,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-  assets: BalanceValue[];
+  balances: BigAmount[];
   total: BigAmount | undefined;
   walletIcon?: string | null;
 }
@@ -86,7 +86,7 @@ interface DispatchProps {
 }
 
 const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
-  assets,
+  balances,
   total,
   wallet,
   walletIcon,
@@ -131,10 +131,10 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 {total?.isPositive() && <Balance classes={{ coin: styles.totalBalance }} balance={total} />}
               </Grid>
               <Grid item xs={12}>
-                {assets.map((asset) => (
+                {balances.map((balance) => (
                   <Balance
-                    key={asset.balance.units.top.code}
-                    balance={asset.balance}
+                    key={balance.units.top.code}
+                    balance={balance}
                     classes={{ coin: styles.balance, root: styles.balanceRoot }}
                   />
                 ))}
@@ -157,10 +157,10 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { wallet }) => {
-    const assets = accounts.selectors.getWalletBalances(state, wallet);
-    const total = accounts.selectors.fiatTotalBalance(state, assets);
+    const balances = accounts.selectors.getWalletBalances(state, wallet);
+    const total = accounts.selectors.fiatTotalBalance(state, balances);
 
-    return { assets, total, walletIcon: state.accounts.icons[wallet.id] };
+    return { balances, total, walletIcon: state.accounts.icons[wallet.id] };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { wallet }) => ({

@@ -15,44 +15,53 @@ limitations under the License.
 */
 
 import { withStyles } from '@material-ui/core';
+import { ClassNameMap } from '@material-ui/styles';
+import classNames from 'classnames';
 import * as React from 'react';
 import styles from './styles';
 
-interface Classes {
-  container: string;
-  firstItem: string;
-  restItems: string;
-}
+type ClassKeys = 'container' | 'firstItem' | 'restItem';
+type ClassKeysVertical = 'containerVertical' | 'firstItemVertical' | 'restItemVertical';
 
 interface OwnProps {
   children?: React.ReactNode | React.ReactNode[];
-  classes?: Classes;
+  classes?: ClassNameMap<ClassKeys | ClassKeysVertical>;
   style?: React.CSSProperties;
+  vertical?: boolean;
 }
 
-export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style }) => {
+export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style, vertical = false }) => {
   if (children == null) {
     return null;
   }
 
+  const isVertical = vertical !== false;
+
   return (
-    <div className={classes?.container} style={style}>
+    <div className={classNames(classes?.container, isVertical ? classes?.containerVertical : null)} style={style}>
       {Array.isArray(children) ? (
         children
           .filter((button) => button != null && button !== false)
-          .map((button, index) => (
-            <div
-              key={button.key ?? `group-button[${button.props.label ?? index}]`}
-              className={index === 0 ? classes?.firstItem : classes?.restItems}
-            >
-              {button}
-            </div>
-          ))
+          .map((button, index) => {
+            let className: string;
+
+            if (index === 0) {
+              className = isVertical ? classes?.firstItemVertical : classes?.firstItem;
+            } else {
+              className = isVertical ? classes?.restItemVertical : classes?.restItem;
+            }
+
+            return (
+              <div key={button.key ?? `group-button[${button.props.label ?? index}]`} className={className}>
+                {button}
+              </div>
+            );
+          })
       ) : (
-        <div className={classes?.firstItem}>{children}</div>
+        <div className={isVertical ? classes?.firstItemVertical : classes?.firstItem}>{children}</div>
       )}
     </div>
   );
 };
 
-export default withStyles(styles)(ButtonGroup);
+export default withStyles<ClassKeys>(styles)(ButtonGroup);

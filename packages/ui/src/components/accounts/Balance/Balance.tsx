@@ -33,19 +33,22 @@ const useStyles = makeStyles(
 const Balance: React.FC<OwnProps> = ({ balance, classes = {}, decimals = 3, onConvert }) => {
   const styles = useStyles();
 
-  const formatBalance = React.useCallback((balance: BigAmount) => {
-    const units = getStandardUnits(balance);
+  const formatBalance = React.useCallback(
+    (balance: BigAmount) => {
+      const units = getStandardUnits(balance);
 
-    const formatSelector = (whenTrue: FormatterBuilder, whenFalse: FormatterBuilder): void => {
-      whenTrue.useTopUnit();
-      whenFalse.useOptimalUnit(undefined, units, 3);
-    };
+      const formatSelector = (whenTrue: FormatterBuilder, whenFalse: FormatterBuilder): void => {
+        whenTrue.useTopUnit();
+        whenFalse.useOptimalUnit(undefined, units, 3);
+      };
 
-    const coinFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).number(decimals, true).build();
-    const unitFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).unitCode().build();
+      const coinFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).number(decimals, true).build();
+      const unitFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).unitCode().build();
 
-    return [coinFormatter.format(balance), unitFormatter.format(balance)];
-  }, []);
+      return [coinFormatter.format(balance), unitFormatter.format(balance)];
+    },
+    [decimals],
+  );
 
   const [coinBalance, balanceUnit] = formatBalance(balance);
 

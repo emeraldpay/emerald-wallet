@@ -29,31 +29,26 @@ import BigNumber from 'bignumber.js';
 import { createSelector } from 'reselect';
 import { settings, tokens } from '../index';
 import { IState } from '../types';
-import { BalanceValue, BalanceValueConverted, moduleName } from './types';
+import { ConvertedBalance, moduleName } from './types';
 import * as accounts from './index';
 
 type AddressesBalance<T extends BigAmount> = { [address: string]: T };
 type AddressesByBlockchain = Partial<Record<BlockchainCode, Set<string>>>;
 
 /**
- * Aggregate multiple similar assets into one, by summing all values
+ * Aggregate multiple similar balances into one by summing all values
  */
-export function aggregateByAsset(assets: BalanceValue[]): BalanceValue[] {
-  const grouped = assets.reduce<{ [key: string]: BalanceValue[] }>((carry, asset) => {
-    const { code } = asset.balance.units.top;
+export function aggregateBalances(balances: BigAmount[]): BigAmount[] {
+  const grouped = balances.reduce<{ [key: string]: BigAmount[] }>((carry, balance) => {
+    const { code } = balance.units.top;
 
     return {
       ...carry,
-      [code]: [...(carry[code] ?? []), asset],
+      [code]: [...(carry[code] ?? []), balance],
     };
   }, {});
 
-  return Object.values(grouped).map((group) =>
-    group.reduce((first: BalanceValue, second: BalanceValue) => ({
-      balance: first.balance.plus(second.balance),
-      blockchain: first.blockchain,
-    })),
-  );
+  return Object.values(grouped).map((group) => group.reduce((first, second) => first.plus(second)));
 }
 
 export function allAsArray(state: IState): Wallet[] {
@@ -67,18 +62,18 @@ export function zeroAmountFor<T extends BigAmount>(blockchain: BlockchainCode): 
 }
 
 /**
- * Returns summary of all current assets for the specified wallet
+ * Returns summary of all balances for the specified wallet
  */
 export function getWalletBalances(
   state: IState,
   wallet: Wallet,
   includeEmpty = false,
   excludeAddresses?: AddressesByBlockchain,
-): BalanceValue[] {
-  const assets: BalanceValue[] = [];
+): BigAmount[] {
+  const balances: BigAmount[] = [];
 
   if (wallet == null) {
-    return assets;
+    return balances;
   }
 
   const ethereumAccounts = wallet.entries.filter((entry) => {
@@ -104,9 +99,9 @@ export function getWalletBalances(
       .map((account) => getBalance(state, account.id, zero))
       .reduce((first, second) => first.plus(second), zero);
 
-    // show only assets that have at least one address in the wallet
+    // Show only balances that have at least one address in the wallet
     if (balance != null && (includeEmpty || blockchainAccounts.length > 0)) {
-      assets.push({ balance, blockchain });
+      balances.push(balance);
     }
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
@@ -121,8 +116,8 @@ export function getWalletBalances(
         if (account.address != null) {
           const balance = tokens.selectors.selectBalance(state, blockchain, account.address.value, token.address);
 
-          if (balance != null && (includeEmpty || !balance.isZero())) {
-            assets.push({ balance, blockchain });
+          if (balance != null && (includeEmpty || balance.isPositive())) {
+            balances.push(balance);
           }
         }
       });
@@ -147,22 +142,22 @@ export function getWalletBalances(
     const zero = zeroAmountFor<BigAmount>(blockchainCode);
     const balance = getBalance(state, id, zero);
 
-    assets.push({ balance, blockchain: blockchainCode });
+    balances.push(balance);
   });
 
-  return aggregateByAsset(assets);
+  return aggregateBalances(balances);
 }
 
 /**
- * Balances of all assets summarized by all wallets
+ * Balances summarized by all wallets
  */
-export function allBalances(state: IState): BalanceValue[] {
-  const assets: BalanceValue[] = [];
+export function allBalances(state: IState): BigAmount[] {
+  const balances: BigAmount[] = [];
 
   let knownAddresses: AddressesByBlockchain = {};
 
   state[moduleName].wallets.forEach((wallet) => {
-    getWalletBalances(state, wallet, false, knownAddresses).forEach((asset) => assets.push(asset));
+    getWalletBalances(state, wallet, false, knownAddresses).forEach((balance) => balances.push(balance));
 
     knownAddresses = wallet.entries.reduce<AddressesByBlockchain>((carry, { address, blockchain, receiveDisabled }) => {
       if (receiveDisabled || address == null) {
@@ -175,7 +170,7 @@ export function allBalances(state: IState): BalanceValue[] {
     }, knownAddresses);
   });
 
-  return assets;
+  return balances;
 }
 
 export function allWallets(state: IState): Wallet[] {
@@ -212,19 +207,19 @@ export function balanceByChain<T extends BigAmount>(state: IState, blockchain: B
 }
 
 /**
- * Calculate total balance in currently selected fiat currency. Returns undefined if source is empty of if some input
- * assets doesn't have an exchange rate defined yet
+ * Calculate the total balance in currently selected fiat currency.
+ * Returns undefined if a source is empty or if some input balance doesn't have an exchange rate defined yet.
  */
-export function fiatTotalBalance(state: IState, assets: BalanceValue[]): BigAmount | undefined {
-  const converted = assets
-    .map((asset) => {
-      const rate = settings.selectors.fiatRate(state, asset.balance);
+export function fiatTotalBalance(state: IState, balances: BigAmount[]): CurrencyAmount | undefined {
+  const converted = balances
+    .map((balance) => {
+      const rate = settings.selectors.fiatRate(state, balance);
 
       if (rate == null) {
         return null;
       }
 
-      return asset.balance.getNumberByUnit(asset.balance.units.top).multipliedBy(rate);
+      return balance.getNumberByUnit(balance.units.top).multipliedBy(rate);
     })
     .filter((balance): balance is BigNumber => balance != null);
 
@@ -385,17 +380,18 @@ export function isLoading(state: IState): boolean {
 }
 
 /**
- * Convert assets to fiat, plus return details about source asset
+ * Convert balance to fiat and return source balance
  */
-export function withFiatConversion(state: IState, assets: BalanceValue[]): BalanceValueConverted[] {
-  return assets
-    .map(
-      (asset) =>
-        ({
-          converted: fiatTotalBalance(state, [asset]),
-          source: asset,
-          rate: settings.selectors.fiatRate(state, asset.balance),
-        } as BalanceValueConverted),
-    )
-    .filter(({ converted, rate }) => converted != null && rate != null);
+export function withFiatConversion<T extends BigAmount>(
+  state: IState,
+  balance: T[],
+  onlyFiat = false,
+): ConvertedBalance<T>[] {
+  const conversions = balance.map((balance) => ({ balance, fiatBalance: fiatTotalBalance(state, [balance]) }));
+
+  if (onlyFiat) {
+    return conversions.filter(({ fiatBalance }) => fiatBalance != null);
+  }
+
+  return conversions;
 }
