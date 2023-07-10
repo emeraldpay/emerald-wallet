@@ -41,8 +41,11 @@ export class EmeraldApiAccess {
   readonly marketClient: MarketClient;
   readonly transactionClient: TransactionClient;
 
-  private currentState?: Status = undefined;
+  private status?: Status;
+
   private listeners: StatusListener[] = [];
+  private pingTimeout: NodeJS.Timeout | null = null;
+  private periodicTimeout: NodeJS.Timeout | null = null;
 
   private readonly credentials: CredentialsContext;
   private readonly connectionState: ConnectionState;
@@ -106,6 +109,14 @@ export class EmeraldApiAccess {
   }
 
   close(): void {
+    if (this.periodicTimeout != null) {
+      clearTimeout(this.periodicTimeout);
+    }
+
+    if (this.pingTimeout != null) {
+      clearTimeout(this.pingTimeout);
+    }
+
     this.blockchainClient.channel.close();
     this.marketClient.channel.close();
     this.monitoringClient.channel.close();
@@ -127,8 +138,8 @@ export class EmeraldApiAccess {
   statusListener(listener: StatusListener): void {
     this.listeners.push(listener);
 
-    if (this.currentState != null) {
-      listener(this.currentState);
+    if (this.status != null) {
+      listener(this.status);
     }
   }
 
@@ -145,7 +156,7 @@ export class EmeraldApiAccess {
   protected periodicCheck(): void {
     this.verifyOffline();
 
-    setTimeout(this.periodicCheck.bind(this), 3 * 1000);
+    this.periodicTimeout = setTimeout(this.periodicCheck.bind(this), 3 * 1000);
   }
 
   protected verifyConnection(): void {
@@ -179,22 +190,22 @@ export class EmeraldApiAccess {
   protected ping(): void {
     this.monitoringClient.ping().catch((error) => log.debug(`Ping error: ${error.message}`));
 
-    setTimeout(this.ping.bind(this), PERIOD_PING);
+    this.pingTimeout = setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
-  protected setStatus(state: Status): void {
-    if (this.currentState == null || this.currentState !== state) {
-      if (state === Status.DISCONNECTED) {
+  protected setStatus(status: Status): void {
+    if (this.status == null || this.status !== status) {
+      if (status === Status.DISCONNECTED) {
         log.error('Disconnected', this.connectionState);
-      } else if (state === Status.CONNECTION_ISSUES) {
+      } else if (status === Status.CONNECTION_ISSUES) {
         log.warn('Connection issues', this.connectionState);
-      } else if (state === Status.CONNECTED) {
+      } else if (status === Status.CONNECTED) {
         log.info('Connected');
       }
 
-      this.currentState = state;
+      this.status = status;
 
-      this.notifyListener(state);
+      this.notifyListener(status);
     }
   }
 }

@@ -16,29 +16,21 @@ export default class CategoryLogger implements ILogger {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   debug(...params: any[]): void {
-    if (params.length > 0) {
-      this.logger().debug(`${this.category} - ${params[0]}`, ...params.slice(1));
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  info(...params: any[]): void {
-    if (params.length > 0) {
-      this.logger().info(`${this.category} - ${params[0]}`, ...params.slice(1));
-    }
+    this.logger().debug(`${this.category} >`, ...params);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error(...params: any[]): void {
-    if (params.length > 0) {
-      this.logger().error(`${this.category} - ${params[0]}`, ...params.slice(1));
-    }
+    this.logger().error(`${this.category} >`, ...params);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  info(...params: any[]): void {
+    this.logger().info(`${this.category} >`, ...params);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   warn(...params: any[]): void {
-    if (params.length > 0) {
-      this.logger().warn(`${this.category} - ${params[0]}`, ...params.slice(1));
-    }
+    this.logger().warn(`${this.category} >`, ...params);
   }
 }
