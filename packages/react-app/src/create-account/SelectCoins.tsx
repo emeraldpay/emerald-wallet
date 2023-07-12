@@ -1,6 +1,6 @@
 import { BlockchainCode, IBlockchain, TokenRegistry } from '@emeraldwallet/core';
 import { IState } from '@emeraldwallet/store';
-import { CoinAvatar } from '@emeraldwallet/ui';
+import { BlockchainAvatar } from '@emeraldwallet/ui';
 import { FormControlLabel, Grid, Switch, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -76,7 +76,7 @@ const SelectCoins: React.FC<OwnProps & StateProps> = ({ blockchains, enabled, mu
           <Grid item={true} xs={12} key={blockchain.params.code} className={styles.row}>
             <Grid container={true}>
               <Grid item={true} xs={1} className={styles.iconBox}>
-                <CoinAvatar blockchain={blockchain.params.code} size="default" />
+                <BlockchainAvatar blockchain={blockchain.params.code} size="default" />
               </Grid>
               <Grid
                 item={true}

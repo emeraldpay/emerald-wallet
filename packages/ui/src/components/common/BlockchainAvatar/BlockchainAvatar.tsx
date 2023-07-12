@@ -3,7 +3,7 @@ import { Avatar, Theme, makeStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import * as React from 'react';
-import CoinIcon from './CoinIcon';
+import BlockchainIcon from './BlockchainIcon';
 
 const useStyle = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,6 +25,9 @@ const useStyle = makeStyles((theme: Theme) =>
     testbtcBlockchain: {
       backgroundColor: '#9a7e55',
     },
+    unknownBlockchain: {
+      backgroundColor: 'transparent',
+    },
     defaultSize: {
       width: theme.spacing(4),
       height: theme.spacing(4),
@@ -43,21 +46,20 @@ const useStyle = makeStyles((theme: Theme) =>
 
 interface OwnProps {
   blockchain: BlockchainCode;
-  center?: boolean;
   className?: string;
   size?: 'default' | 'small' | 'large';
 }
 
-const CoinAvatar: React.FC<OwnProps> = ({ blockchain, className, size = 'default' }) => {
-  const classes = useStyle();
+const BlockchainAvatar: React.FC<OwnProps> = ({ blockchain, className, size = 'default' }) => {
+  const styles = useStyle();
 
   return (
-    <div className={classNames(classes.container, className)}>
-      <Avatar className={classNames(classes[`${blockchain.toLowerCase()}Blockchain`], classes[`${size}Size`])}>
-        <CoinIcon blockchain={blockchain} size={size} />
+    <div className={classNames(styles.container, className)}>
+      <Avatar className={classNames(styles[`${blockchain.toLowerCase()}Blockchain`], styles[`${size}Size`])}>
+        <BlockchainIcon blockchain={blockchain} size={size} />
       </Avatar>
     </div>
   );
 };
 
-export default CoinAvatar;
+export default BlockchainAvatar;

@@ -1,8 +1,8 @@
 import { BigAmount } from '@emeraldpay/bigamount/lib/amount';
 import { Uuid, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { TokenAmount, blockchainIdToCode } from '@emeraldwallet/core';
-import { BalanceValue, IState, accounts, screen, tokens } from '@emeraldwallet/store';
-import { Back, CoinAvatar, Page, WalletReference } from '@emeraldwallet/ui';
+import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
+import { Back, BlockchainAvatar, Page, WalletReference } from '@emeraldwallet/ui';
 import { Button, Grid, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
@@ -21,10 +21,10 @@ const useStyles = makeStyles(
   }),
 );
 
-interface AccountBalance {
+interface EntryBalance {
   balance: BigAmount;
   entry: WalletEntry;
-  tokens: BigAmount[];
+  tokenBalances: TokenAmount[];
 }
 
 interface OwnProps {
@@ -32,24 +32,20 @@ interface OwnProps {
 }
 
 interface StateProps {
-  assets: BalanceValue[];
-  balances: AccountBalance[];
+  assets: BigAmount[];
+  entryBalances: EntryBalance[];
   wallet?: Wallet;
   walletIcon?: string | null;
 }
 
 interface DispatchProps {
   onCancel(): void;
-  onSelected(account: WalletEntry): void;
-}
-
-function acceptAccount({ balance }: AccountBalance): boolean {
-  return balance.isPositive();
+  onSelected(entry: WalletEntry): void;
 }
 
 const SelectAccount: React.FC<DispatchProps & OwnProps & StateProps> = ({
   assets,
-  balances,
+  entryBalances,
   wallet,
   walletIcon,
   onCancel,
@@ -65,28 +61,26 @@ const SelectAccount: React.FC<DispatchProps & OwnProps & StateProps> = ({
     <Page title="Select Account to Create Transaction" leftIcon={<Back onClick={() => onCancel()} />}>
       <Grid container>
         <Grid item xs={12}>
-          <WalletReference assets={assets} walletIcon={walletIcon} wallet={wallet} />
+          <WalletReference balances={assets} walletIcon={walletIcon} wallet={wallet} />
         </Grid>
         <Grid item className={styles.accountsList} xs={12}>
-          {balances.map((item) => {
-            const blockchain = blockchainIdToCode(item.entry.blockchain);
+          {entryBalances.map(({ balance, entry, tokenBalances }) => {
+            const blockchain = blockchainIdToCode(entry.blockchain);
 
             return (
-              <Grid container key={`acc-balance-${item.entry.id}`} className={styles.accountLine}>
+              <Grid container key={`acc-balance-${entry.id}`} className={styles.accountLine}>
                 <Grid item xs={2} />
                 <Grid item xs={1}>
-                  <CoinAvatar blockchain={blockchain} />
+                  <BlockchainAvatar blockchain={blockchain} />
                 </Grid>
                 <Grid item xs={6}>
-                  <AccountBalance balance={item.balance} />
-                  {item.tokens
-                    .filter((balance): balance is TokenAmount => TokenAmount.is(balance))
-                    .map((balance) => (
-                      <AccountBalance key={`token-${balance.token.address}`} balance={balance} />
-                    ))}
+                  <AccountBalance balance={balance} />
+                  {tokenBalances.map((item) => (
+                    <AccountBalance key={`token-${item.token.address}`} balance={item} />
+                  ))}
                 </Grid>
                 <Grid item xs={1}>
-                  <Button disabled={!acceptAccount(item)} onClick={() => onSelected(item.entry)}>
+                  <Button disabled={balance.isZero()} onClick={() => onSelected(entry)}>
                     Send
                   </Button>
                 </Grid>
@@ -103,22 +97,22 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
 
-    let assets: BalanceValue[] = [];
+    let assets: BigAmount[] = [];
 
     if (wallet != null) {
       assets = accounts.selectors.getWalletBalances(state, wallet);
     }
 
-    const balances: AccountBalance[] = Object.values(
+    const entryBalances: EntryBalance[] = Object.values(
       wallet?.entries
         .filter((entry) => !entry.receiveDisabled)
-        .reduce<Record<number, AccountBalance>>((carry, entry) => {
+        .reduce<Record<number, EntryBalance>>((carry, entry) => {
           const blockchainCode = blockchainIdToCode(entry.blockchain);
           const zeroAmount = accounts.selectors.zeroAmountFor(blockchainCode);
 
           const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount, true) ?? zeroAmount;
 
-          let tokenBalances: BigAmount[] = [];
+          let tokenBalances: TokenAmount[] = [];
 
           if (isEthereumEntry(entry) && entry.address != null) {
             tokenBalances = tokens.selectors.selectBalances(state, blockchainCode, entry.address.value) ?? [];
@@ -132,7 +126,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               [entry.blockchain]: {
                 balance,
                 entry,
-                tokens: tokenBalances,
+                tokenBalances: tokenBalances,
               },
             };
           }
@@ -147,14 +141,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             carry.splice(index, 1, carry[index].plus(token));
 
             return carry;
-          }, accountBalance.tokens);
+          }, accountBalance.tokenBalances);
 
           return {
             ...carry,
             [entry.blockchain]: {
+              tokenBalances,
               entry: accountBalance.entry,
               balance: accountBalance.balance.plus(balance),
-              tokens: tokenBalances,
             },
           };
         }, {}) ?? {},
@@ -162,18 +156,18 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     return {
       assets,
-      balances,
+      entryBalances,
       wallet,
       walletIcon: state.accounts.icons[walletId],
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { walletId }) => ({
-    onSelected(account: WalletEntry) {
-      if (isBitcoinEntry(account)) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id, null, true));
-      } else if (isEthereumEntry(account)) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account, null, true));
+    onSelected(entry: WalletEntry) {
+      if (isBitcoinEntry(entry)) {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, entry.id, null, true));
+      } else if (isEthereumEntry(entry)) {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry }, null, true));
       }
     },
     onCancel() {

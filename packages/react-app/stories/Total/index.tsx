@@ -6,12 +6,10 @@ import TotalButton from '../../src/app/layout/Header/TotalButton';
 
 storiesOf('TotalButton', module).add('default', () => (
   <TotalButton
-    fiatCurrencies={[
+    balances={[
       {
-        token: 'ETH',
-        total: Wei.ZERO,
-        fiatRate: 200,
-        fiatAmount: new CurrencyAmount(0, 'USD'),
+        balance: Wei.ZERO,
+        fiatBalance: new CurrencyAmount(0, 'USD'),
       },
     ]}
     loading={false}

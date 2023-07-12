@@ -251,7 +251,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(transaction.actions.broadcastTx(data));
     },
     onCancel() {
-      dispatch(screen.actions.gotoWalletsScreen());
+      dispatch(screen.actions.goBack());
     },
   }),
 )(CreateBitcoinTransaction);

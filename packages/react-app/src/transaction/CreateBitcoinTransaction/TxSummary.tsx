@@ -1,6 +1,6 @@
 import { UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, amountFactory } from '@emeraldwallet/core';
-import { Address, CoinAvatar } from '@emeraldwallet/ui';
+import { Address, BlockchainAvatar } from '@emeraldwallet/ui';
 import { Box, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
@@ -36,7 +36,7 @@ const TxSummary: React.FC<OwnProps> = ({ blockchain, tx: { outputs } }) => {
       <Grid container>
         <Grid item xs={1}>
           <div className={styles.icon}>
-            <CoinAvatar center blockchain={blockchain} />
+            <BlockchainAvatar blockchain={blockchain} />
           </div>
         </Grid>
         <Grid item xs={11}>

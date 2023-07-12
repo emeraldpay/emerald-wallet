@@ -63,7 +63,7 @@ export { BackendApi } from './BackendApi';
 export { Contract } from './Contract';
 export { fromBaseUnits, quantitiesToHex, toBaseUnits, toBigNumber, toHex, toNumber } from './convert';
 export { Currency, CurrencyAmount, CurrencyCode } from './Currency';
-export { formatAmount } from './format';
+export { formatAmount, formatAmountPartial, formatFiatAmount, formatFiatAmountPartial } from './format';
 export { IpcCommands } from './IpcCommands';
 export * as PersistentState from './persistentState';
 export { SettingsManager, SettingsOptions, SettingsStore } from './settings';

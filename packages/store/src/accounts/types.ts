@@ -1,6 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { AddressRole, EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, InputUtxo, PersistentState, TokenData } from '@emeraldwallet/core';
+import { BlockchainCode, CurrencyAmount, InputUtxo, PersistentState, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -29,18 +29,9 @@ export enum ActionTypes {
   WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
 }
 
-export interface BalanceValue {
-  balance: BigAmount;
-  blockchain: BlockchainCode;
-}
-
-/**
- * Balance in original "face" value, and converted to a common currency
- */
-export interface BalanceValueConverted {
-  converted?: BigAmount;
-  rate: number;
-  source: BalanceValue;
+export interface ConvertedBalance<T = BigAmount> {
+  balance: T;
+  fiatBalance: CurrencyAmount | undefined;
 }
 
 export interface AccountBalance {

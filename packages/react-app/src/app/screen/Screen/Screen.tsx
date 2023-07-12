@@ -75,7 +75,7 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
     case screen.Pages.CREATE_TX_CANCEL:
       return <CreateCancelTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
-      return <CreateTransaction sourceEntry={screenItem} />;
+      return <CreateTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_SPEED_UP:
       return <CreateSpeedUpTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:

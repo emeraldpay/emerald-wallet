@@ -44,7 +44,7 @@ export {
   SignHandler,
 } from './types';
 
-export { BalanceValue, BalanceValueConverted } from './accounts/types';
+export { ConvertedBalance } from './accounts/types';
 
 export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
 

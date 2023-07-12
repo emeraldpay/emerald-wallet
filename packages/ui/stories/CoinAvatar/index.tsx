@@ -1,15 +1,14 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import { CoinAvatar } from '../../src/components/common/CoinIcon';
+import { BlockchainAvatar } from '../../src/components/common/BlockchainAvatar';
 
-storiesOf('CoinAvatar', module)
-  .add('default', () => (
-    <React.Fragment>
-      <CoinAvatar blockchain={BlockchainCode.BTC}/>
-      <CoinAvatar blockchain={BlockchainCode.ETC}/>
-      <CoinAvatar blockchain={BlockchainCode.ETH}/>
-      <CoinAvatar blockchain={BlockchainCode.Goerli}/>
-      <CoinAvatar blockchain={BlockchainCode.TestBTC}/>
-    </React.Fragment>
-  ));
+storiesOf('BlockchainAvatar', module).add('default', () => (
+  <React.Fragment>
+    <BlockchainAvatar blockchain={BlockchainCode.BTC} />
+    <BlockchainAvatar blockchain={BlockchainCode.ETC} />
+    <BlockchainAvatar blockchain={BlockchainCode.ETH} />
+    <BlockchainAvatar blockchain={BlockchainCode.Goerli} />
+    <BlockchainAvatar blockchain={BlockchainCode.TestBTC} />
+  </React.Fragment>
+));

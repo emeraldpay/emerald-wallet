@@ -1,8 +1,8 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { TxTarget } from './types';
-import { BlockchainCode, Token, TokenData, amountFactory, wrapTokenAbi } from '../../blockchains';
+import { BlockchainCode, Token, TokenAmount, TokenData, amountFactory, wrapTokenAbi } from '../../blockchains';
 import { Contract } from '../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
+import { TxTarget } from './types';
 
 export interface Erc20WrappedDetails {
   address?: string;
@@ -15,7 +15,7 @@ export interface Erc20WrappedDetails {
   target?: TxTarget;
   token: TokenData;
   totalBalance?: BigAmount;
-  totalTokenBalance?: BigAmount;
+  totalTokenBalance?: TokenAmount;
   type: EthereumTransactionType;
 }
 
@@ -29,7 +29,7 @@ export class CreateErc20WrappedTx {
   public priorityGasPrice?: BigAmount;
   public target: TxTarget;
   public totalBalance: BigAmount;
-  public totalTokenBalance?: BigAmount;
+  public totalTokenBalance?: TokenAmount;
   public type: EthereumTransactionType;
 
   private readonly token: Token;

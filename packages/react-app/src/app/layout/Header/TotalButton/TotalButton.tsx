@@ -1,8 +1,16 @@
-import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
-import { CurrencyAmount, formatAmount } from '@emeraldwallet/core';
-import { Button, CurrencyIcon } from '@emeraldwallet/ui';
+import {
+  BlockchainCode,
+  CurrencyAmount,
+  TokenAmount,
+  blockchainIdToCode,
+  formatAmount,
+  formatFiatAmount,
+} from '@emeraldwallet/core';
+import { ConvertedBalance } from '@emeraldwallet/store';
+import { Button } from '@emeraldwallet/ui';
 import { List, ListItem, ListItemAvatar, ListItemText, Menu, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
+import { AssetIcon } from '../../../../common/AssetIcon';
 
 const useStyles = makeStyles(
   createStyles({
@@ -17,28 +25,19 @@ const useStyles = makeStyles(
   }),
 );
 
-export interface FiatCurrencies {
-  fiatAmount?: BigAmount;
-  fiatRate: number;
-  total: BigAmount;
-  token: string;
-}
-
 export interface StateProps {
-  fiatCurrencies: FiatCurrencies[];
+  balances: ConvertedBalance[];
   loading: boolean;
-  totalBalance?: BigAmount;
+  totalBalance?: CurrencyAmount;
 }
 
-const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
-
-const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalance }) => {
+const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) => {
   const styles = useStyles();
 
   const [menuElement, setMenuElement] = React.useState<HTMLButtonElement | null>(null);
 
   const onOpen = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    if (fiatCurrencies.length > 0) {
+    if (balances.length > 0) {
       setMenuElement(event.currentTarget);
     }
   };
@@ -47,11 +46,11 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalan
 
   return loading ? null : (
     <>
-      {totalBalance != null && fiatCurrency != null && totalBalance.isPositive() && (
+      {totalBalance?.isPositive() && (
         <Button
           classes={styles}
           disabled={false}
-          label={fiatFormatter.format(new CurrencyAmount(totalBalance.number, fiatCurrency))}
+          label={formatFiatAmount(totalBalance)}
           variant="text"
           onClick={onOpen}
         />
@@ -72,19 +71,29 @@ const TotalButton: React.FC<StateProps> = ({ fiatCurrencies, loading, totalBalan
           onClose={() => setMenuElement(null)}
         >
           <List>
-            {fiatCurrencies.map(({ fiatAmount, token, total }) => {
-              if (fiatAmount == null || fiatAmount.isZero()) {
+            {balances.map(({ balance, fiatBalance }) => {
+              if (fiatBalance == null || fiatBalance.isZero()) {
                 return null;
               }
 
+              let asset: string;
+              let blockchain: BlockchainCode | undefined;
+
+              if (TokenAmount.is(balance)) {
+                asset = balance.token.address;
+                blockchain = blockchainIdToCode(balance.token.blockchain);
+              } else {
+                asset = balance.units.top.code;
+              }
+
               return (
-                <ListItem key={token}>
+                <ListItem key={asset}>
                   <ListItemAvatar>
-                    <CurrencyIcon currency={token} />
+                    <AssetIcon asset={asset} blockchain={blockchain} />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={formatAmount(total)}
-                    secondary={fiatFormatter.format(new CurrencyAmount(fiatAmount.number, fiatCurrency))}
+                    primary={formatAmount(balance)}
+                    secondary={formatFiatAmount(new CurrencyAmount(fiatBalance.number, fiatCurrency))}
                   />
                 </ListItem>
               );

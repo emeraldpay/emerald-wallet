@@ -1,7 +1,6 @@
 export { Account } from './components/common/Account';
+export { BlockchainAssetAvatar, BlockchainAvatar, BlockchainIcon } from './components/common/BlockchainAvatar';
 export { ButtonGroup } from './components/common/ButtonGroup';
-export { CoinIcon, CoinAvatar } from './components/common/CoinIcon';
-export { CurrencyIcon } from './components/common/CurrencyIcon';
 export { default as AccountSelect } from './components/common/AccountSelect';
 export { default as Address } from './components/accounts/Address';
 export { default as Advice } from './components/common/Advice';

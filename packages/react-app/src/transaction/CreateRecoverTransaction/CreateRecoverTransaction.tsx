@@ -8,6 +8,7 @@ import {
   EthereumTransaction,
   EthereumTransactionType,
   IBlockchain,
+  TokenAmount,
   TokenData,
   TokenRegistry,
   blockchainIdToCode,
@@ -536,7 +537,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const zeroAmount = accounts.selectors.zeroAmountFor(recoverBlockchainCode);
     const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) ?? zeroAmount;
 
-    let entryTokenBalances: BigAmount[] = [];
+    let entryTokenBalances: TokenAmount[] = [];
 
     if (entry.address != null) {
       entryTokenBalances = tokens.selectors.selectBalances(state, recoverBlockchainCode, entry.address?.value) ?? [];

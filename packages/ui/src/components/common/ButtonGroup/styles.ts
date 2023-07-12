@@ -14,16 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const styles = {
+import { StyleRules } from '@material-ui/styles';
+
+const styles: StyleRules = {
   container: {
     alignItems: 'center',
     display: 'flex',
   },
+  containerVertical: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   firstItem: {
     marginLeft: 0,
   },
-  restItems: {
+  restItem: {
     marginLeft: 10,
+  },
+  firstItemVertical: {
+    marginTop: 0,
+  },
+  restItemVertical: {
+    marginTop: 10,
   },
 };
 

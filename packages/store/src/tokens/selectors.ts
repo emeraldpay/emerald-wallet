@@ -1,9 +1,22 @@
-import { BigAmount } from '@emeraldpay/bigamount';
-import { BlockchainCode, TokenRegistry } from '@emeraldwallet/core';
+import { BlockchainCode, TokenAmount, TokenRegistry } from '@emeraldwallet/core';
 import { IState } from '../types';
 import { TokensState, moduleName } from './types';
 
-export function selectBalances(state: IState, blockchain: BlockchainCode, address: string): BigAmount[] | undefined {
+export function aggregateBalances(balances: TokenAmount[]): TokenAmount[] {
+  return balances.reduce<TokenAmount[]>((carry, balance) => {
+    const index = carry.findIndex(({ token: { address } }) => address === balance.token.address);
+
+    if (index > -1) {
+      carry[index] = carry[index].plus(balance);
+    } else {
+      carry.push(balance);
+    }
+
+    return carry;
+  }, []);
+}
+
+export function selectBalances(state: IState, blockchain: BlockchainCode, address: string): TokenAmount[] | undefined {
   const balancesByBlockchains = state[moduleName] as TokensState;
 
   if (balancesByBlockchains[blockchain] != null) {
@@ -30,7 +43,7 @@ export function selectBalance(
   blockchain: BlockchainCode,
   address: string,
   contractAddress: string,
-): BigAmount | undefined {
+): TokenAmount | undefined {
   const balancesByBlockchains = state[moduleName] as TokensState;
 
   if (balancesByBlockchains != null) {

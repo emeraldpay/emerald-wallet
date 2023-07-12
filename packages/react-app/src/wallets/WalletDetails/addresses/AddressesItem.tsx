@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode, Blockchains } from '@emeraldwallet/core';
 import { accounts } from '@emeraldwallet/store';
-import { Address, Balance, CoinAvatar } from '@emeraldwallet/ui';
+import { Address, Balance, BlockchainAvatar } from '@emeraldwallet/ui';
 import { TableCell, TableRow, createStyles, makeStyles } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
@@ -43,7 +43,7 @@ const AddressesItem: React.FC<OwnProps & StateProps> = ({
   return (
     <TableRow>
       <TableCell>
-        <CoinAvatar blockchain={blockchain} />
+        <BlockchainAvatar blockchain={blockchain} />
       </TableCell>
       <TableCell>{Blockchains[blockchain].getTitle()}</TableCell>
       <TableCell>{hdPath}</TableCell>
