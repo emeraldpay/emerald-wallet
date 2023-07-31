@@ -1,5 +1,14 @@
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { Blockchains, EthereumTx, TokenRegistry, decodeData, toNumber } from '@emeraldwallet/core';
+import { BigAmount } from '@emeraldpay/bigamount';
+import {
+  Blockchains,
+  EthereumTx,
+  MAX_DISPLAY_ALLOWANCE,
+  TokenRegistry,
+  amountFactory,
+  decodeData,
+  formatAmountPartial,
+  toNumber,
+} from '@emeraldwallet/core';
 import { BroadcastData, IState, screen, transaction } from '@emeraldwallet/store';
 import { Account, Button, ButtonGroup, FormLabel, FormRow, Page } from '@emeraldwallet/ui';
 import { TextField, Typography, WithStyles, createStyles } from '@material-ui/core';
@@ -42,34 +51,34 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
       tokenRegistry,
     } = this.props;
 
-    const { chainId, code, coinTicker } = Blockchains[blockchain].params;
+    const factory = amountFactory(blockchain);
+
+    const { chainId, code } = Blockchains[blockchain].params;
+
     const decoded = EthereumTx.fromRaw(signed, chainId);
     const data = decoded.getData();
 
-    let coinSymbol: string = coinTicker;
+    let amount: BigAmount = factory(toNumber(decoded.getValue()));
+    let to = decoded.getRecipientAddress().toString();
 
-    let txTo: string | null = null;
-    let txValue: string | null = null;
-
-    const address = decoded.getRecipientAddress().toString();
+    let method: string | undefined;
 
     if (data.length > 0) {
       const decodedData = decodeData(data);
 
-      if (decodedData.inputs.length > 1 && tokenRegistry.hasAddress(code, address)) {
-        const tokenData = tokenRegistry.byAddress(code, address);
-        const tokenUnit = tokenData.getUnits().top;
+      method = decodedData.name;
 
-        coinSymbol = tokenUnit.code;
+      if (decodedData.inputs.length > 1 && tokenRegistry.hasAddress(code, to)) {
+        const [dataTo, dataAmount] = decodedData.inputs;
 
-        const [to, amount] = decodedData.inputs;
+        const tokenData = tokenRegistry.byAddress(code, to);
 
-        txTo = to.toString(16);
-        txValue = tokenData.getAmount(amount).getNumberByUnit(tokenUnit).toString();
+        amount = tokenData.getAmount(dataAmount);
+        to = dataTo.toString(16);
       }
     }
 
-    const amount = new Wei(toNumber(decoded.getValue()));
+    const [amountValue, amountUnit] = formatAmountPartial(amount);
 
     return (
       <Page title={<ChainTitle blockchain={blockchain} title="Publish Transaction" />}>
@@ -77,37 +86,18 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
           <FormLabel>From</FormLabel>
           <Account identity={true} address={decoded.getSenderAddress().toString()} />
         </FormRow>
-        {txTo === null ? (
-          <>
-            <FormRow>
-              <FormLabel>To</FormLabel>
-              <Account identity={true} address={address} />
-            </FormRow>
-            <FormRow>
-              <FormLabel>Amount</FormLabel>
-              <Typography>
-                <span data-testid="amount">
-                  {amount.toEther()} {coinSymbol}
-                </span>
-              </Typography>
-            </FormRow>
-          </>
-        ) : (
-          <>
-            <FormRow>
-              <FormLabel>To</FormLabel>
-              <Account identity={true} address={txTo} />
-            </FormRow>
-            <FormRow>
-              <FormLabel>Amount</FormLabel>
-              <Typography>
-                <span data-testid="amount">
-                  {txValue} {coinSymbol}
-                </span>
-              </Typography>
-            </FormRow>
-          </>
-        )}
+        <FormRow>
+          <FormLabel>To</FormLabel>
+          <Account identity={true} address={to} />
+        </FormRow>
+        <FormRow>
+          <FormLabel>{method === 'approve' ? 'Approving' : 'Amount'}</FormLabel>
+          <Typography>
+            <span data-testid="amount">
+              {amount.number.isGreaterThanOrEqualTo(MAX_DISPLAY_ALLOWANCE) ? <>&infin;</> : amountValue} {amountUnit}
+            </span>
+          </Typography>
+        </FormRow>
         <FormRow>
           <FormLabel>Nonce</FormLabel>
           <Typography>

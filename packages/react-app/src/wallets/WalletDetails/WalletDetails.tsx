@@ -9,14 +9,16 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
 import Addresses from './addresses/Addresses';
+import WalletAllowance from './WalletAllowance';
 import WalletBalance from './WalletBalance';
 import WalletMenu from './WalletMenu';
 import WalletTitle from './WalletTitle';
 
 export enum WalletTabs {
   BALANCE = '0',
-  ADDRESSES = '1',
-  TRANSACTIONS = '2',
+  ALLOWANCE = '1',
+  ADDRESSES = '2',
+  TRANSACTIONS = '3',
 }
 
 const useStyles = makeStyles((theme) =>
@@ -73,7 +75,7 @@ const useStyles = makeStyles((theme) =>
 
 interface OwnProps {
   initialTab?: WalletTabs;
-  walletId: string;
+  walletId: Uuid;
 }
 
 interface StateProps {
@@ -117,11 +119,15 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   }, [walletId, loadTransactions]);
 
   return (
-    <div className={styles.container} style={{ height: tab === WalletTabs.TRANSACTIONS ? '100%' : 'auto' }}>
+    <div
+      className={styles.container}
+      style={{ height: [WalletTabs.ALLOWANCE, WalletTabs.TRANSACTIONS].includes(tab) ? '100%' : 'auto' }}
+    >
       <TabContext value={tab}>
         <div className={styles.tabs}>
           <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
             <Tab label="Balance" value={WalletTabs.BALANCE} />
+            <Tab label="Allowance" value={WalletTabs.ALLOWANCE} />
             <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
             <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
           </TabList>
@@ -157,6 +163,9 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
           <Divider />
           <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.BALANCE}>
             <WalletBalance walletId={walletId} />
+          </TabPanel>
+          <TabPanel className={styles.tabPanel} value={WalletTabs.ALLOWANCE}>
+            <WalletAllowance walletId={walletId} />
           </TabPanel>
           <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.ADDRESSES}>
             <Addresses walletId={walletId} />

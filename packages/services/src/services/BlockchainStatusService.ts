@@ -1,24 +1,20 @@
 import { BlockchainCode, IpcCommands } from '@emeraldwallet/core';
 import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '..';
-import { ChainListener } from '../ChainListener';
-import { IService } from './Services';
+import { BlockchainListener } from '../BlockchainListener';
+import { Service } from './ServiceManager';
 
-export class BlockchainStatusService implements IService {
+export class BlockchainStatusService implements Service {
   readonly id: string;
 
   private readonly apiAccess: EmeraldApiAccess;
   private readonly blockchain: BlockchainCode;
 
-  private listener: ChainListener | null = null;
+  private listener: BlockchainListener | null = null;
 
   private webContents?: WebContents;
 
-  constructor(
-    blockchain: BlockchainCode,
-    apiAccess: EmeraldApiAccess,
-    webContents: Electron.CrossProcessExports.WebContents,
-  ) {
+  constructor(blockchain: BlockchainCode, apiAccess: EmeraldApiAccess, webContents: WebContents) {
     this.id = `BlockchainStatus-${blockchain}`;
 
     this.apiAccess = apiAccess;
@@ -29,7 +25,7 @@ export class BlockchainStatusService implements IService {
   start(): void {
     this.stop();
 
-    this.listener = this.apiAccess.newChainListener();
+    this.listener = this.apiAccess.newBlockchainListener();
     this.listener.subscribe(this.blockchain, (head) =>
       this.webContents?.send(IpcCommands.STORE_DISPATCH, {
         type: 'BLOCKCHAINS/BLOCK',

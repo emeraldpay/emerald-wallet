@@ -1,5 +1,7 @@
 export { EthereumMessage, isStructuredMessage } from './ethereum';
 export {
+  INFINITE_ALLOWANCE,
+  MAX_DISPLAY_ALLOWANCE,
   InputDataDecoder,
   Token,
   TokenAmount,
@@ -8,6 +10,7 @@ export {
   TokenRegistry,
   decodeData,
   isToken,
+  isWrappedToken,
   tokenAbi,
   wrapTokenAbi,
 } from './tokens';

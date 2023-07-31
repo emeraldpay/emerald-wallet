@@ -1,9 +1,16 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { EthereumEntry, Wallet, WalletEntry, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import {
+  EthereumEntry,
+  Uuid,
+  Wallet,
+  WalletEntry,
+  isBitcoinEntry,
+  isEthereumEntry,
+} from '@emeraldpay/emerald-vault-core';
 import { Blockchains, CurrencyAmount, blockchainIdToCode, formatFiatAmount } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { HashIcon, Ledger } from '@emeraldwallet/ui';
-import { Button, ButtonGroup, Divider, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Button, HashIcon, Ledger } from '@emeraldwallet/ui';
+import { ButtonGroup, Divider, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon, BorderColor as SignIcon } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -78,7 +85,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 interface OwnProps {
-  walletId: string;
+  walletId: Uuid;
 }
 
 interface StateProps {
@@ -214,15 +221,9 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </div>
           </div>
           <ButtonGroup>
-            <Button color="primary" startIcon={<SendIcon />} onClick={gotoSend}>
-              Send
-            </Button>
-            <Button color="primary" startIcon={<ReceiveIcon />} onClick={gotoReceive}>
-              Receive
-            </Button>
-            <Button color="primary" startIcon={<SignIcon />} onClick={gotoSign}>
-              Sign
-            </Button>
+            <Button primary icon={<SendIcon />} label="Send" onClick={gotoSend} />
+            <Button primary icon={<ReceiveIcon />} label="Receive" onClick={gotoReceive} />
+            <Button primary icon={<SignIcon />} label="Sign" onClick={gotoSign} />
           </ButtonGroup>
         </div>
         {entriesByBlockchain.map(renderEntry)}

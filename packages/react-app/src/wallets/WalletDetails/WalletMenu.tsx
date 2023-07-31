@@ -1,4 +1,4 @@
-import { isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
@@ -21,7 +21,7 @@ interface DispatchProps {
 }
 
 interface OwnProps {
-  walletId: string;
+  walletId: Uuid;
 }
 
 interface StateProps {

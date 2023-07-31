@@ -1,3 +1,4 @@
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts } from '@emeraldwallet/store';
 import { HashIcon } from '@emeraldwallet/ui';
 import { Typography, createStyles, makeStyles } from '@material-ui/core';
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 interface OwnProps {
-  walletId: string;
+  walletId: Uuid;
 }
 
 interface StateProps {

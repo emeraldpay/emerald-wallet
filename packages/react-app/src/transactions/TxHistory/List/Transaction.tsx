@@ -215,22 +215,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const [label, setLabel] = React.useState(tx.meta?.label ?? tx.txId);
   const [labelEdit, setLabelEdit] = React.useState(false);
 
-  const confirmations = React.useMemo(() => {
-    if (tx.block == null) {
-      return 0;
-    }
-
-    const height = getHeight();
-
-    if (height > 0) {
-      return height - tx.block.height;
-    }
-
-    return 0;
-  }, [tx.block, getHeight]);
-
-  const confirmed = React.useMemo(() => confirmations >= CONFIRMED[blockchainCode], [blockchainCode, confirmations]);
-
   const sinceTime = React.useMemo(
     () =>
       DateTime.fromJSDate(tx.sinceTimestamp).toRelative({
@@ -273,6 +257,16 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
     setLabelEdit(false);
   };
+
+  let confirmations = 0;
+
+  if (tx.block != null) {
+    const height = getHeight();
+
+    if (height > 0) {
+      confirmations = height - tx.block.height;
+    }
+  }
 
   return (
     <div className={styles.container} style={style}>
@@ -318,7 +312,10 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
         </div>
         <div className={styles.transactionDetails}>
           <div className={styles.transactionDetailsInfo}>
-            {sinceTime} / {confirmed ? 'Confirmed' : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
+            {sinceTime} /{' '}
+            {confirmations >= CONFIRMED[blockchainCode]
+              ? 'Confirmed'
+              : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
           </div>
           <IconButton className={styles.button} onClick={onOpenMenu}>
             <MoreIcon fontSize="inherit" />

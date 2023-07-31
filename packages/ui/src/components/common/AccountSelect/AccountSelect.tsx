@@ -108,8 +108,7 @@ export class AccountSelect extends React.Component<OwnProps, StateProps> {
     return (
       <Account
         address={selected}
-        addressProps={{ shortened: false }}
-        addressWidth="200px"
+        addressWidth={380}
         disabled={disabled}
         identity={true}
         onClick={this.handleListItemClick}

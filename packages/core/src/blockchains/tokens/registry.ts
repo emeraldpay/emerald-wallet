@@ -4,6 +4,12 @@ import { BlockchainCode, blockchainIdToCode } from '../blockchains';
 
 const TOKEN_TYPES = ['ERC20', 'ERC721', 'ERC1155'] as const;
 
+const WRAPPED_TOKENS: Readonly<Partial<Record<BlockchainCode, string>>> = {
+  [BlockchainCode.ETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  [BlockchainCode.ETC]: '0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a',
+  [BlockchainCode.Goerli]: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+};
+
 export interface TokenData {
   address: string;
   blockchain: number;
@@ -14,7 +20,6 @@ export interface TokenData {
   stablecoin?: boolean;
   symbol: string;
   type: (typeof TOKEN_TYPES)[number];
-  wrapped?: boolean;
 }
 
 export function isToken(value: unknown): value is TokenData {
@@ -24,6 +29,10 @@ export function isToken(value: unknown): value is TokenData {
     'type' in value &&
     typeof (value as { [key: string]: unknown }).type in TOKEN_TYPES
   );
+}
+
+export function isWrappedToken(token: TokenData): boolean {
+  return token.address.toLowerCase() === WRAPPED_TOKENS[blockchainIdToCode(token.blockchain)]?.toLowerCase();
 }
 
 export class TokenAmount extends BigAmount {
@@ -39,15 +48,42 @@ export class TokenAmount extends BigAmount {
     return BigAmount.is(value) && 'token' in value && value.token != null && typeof value.token === 'object';
   }
 
+  protected convert(amount: this): this {
+    return new TokenAmount(amount, this.units, this.token) as this;
+  }
+
+  protected copyWith(value: BigNumber): this {
+    return this.convert(super.copyWith(value));
+  }
+
   plus(amount: this): this {
-    return new TokenAmount(super.plus(amount), amount.units, this.token) as this;
+    return this.convert(super.plus(amount));
+  }
+
+  minus(amount: this): this {
+    return this.convert(super.minus(amount));
+  }
+
+  multiply(amount: number | BigNumber): this {
+    return this.convert(super.multiply(amount));
+  }
+
+  divide(amount: number | BigNumber): this {
+    return this.convert(super.divide(amount));
+  }
+
+  max(amount: this): this {
+    return this.convert(super.max(amount));
+  }
+
+  min(amount: this): this {
+    return this.convert(super.min(amount));
   }
 }
 
 export class Token implements TokenData {
   private readonly _pinned?: boolean;
   private readonly _stablecoin?: boolean;
-  private readonly _wrapped?: boolean;
 
   readonly address: string;
   readonly blockchain: number;
@@ -60,7 +96,6 @@ export class Token implements TokenData {
   constructor(token: TokenData) {
     this._pinned = token.pinned;
     this._stablecoin = token.stablecoin;
-    this._wrapped = token.wrapped;
 
     this.blockchain = token.blockchain;
     this.decimals = token.decimals;
@@ -81,7 +116,7 @@ export class Token implements TokenData {
   }
 
   get wrapped(): boolean {
-    return this._wrapped ?? false;
+    return isWrappedToken(this);
   }
 
   getUnits(): Units {
@@ -167,6 +202,12 @@ export class TokenRegistry {
     }
 
     return instances.has(address.toLowerCase());
+  }
+
+  hasAnyToken(blockchain: BlockchainCode): boolean {
+    const instances = this.instances.get(blockchain);
+
+    return (instances?.size ?? 0) > 0;
   }
 
   getStablecoins(blockchain: BlockchainCode): Token[] {

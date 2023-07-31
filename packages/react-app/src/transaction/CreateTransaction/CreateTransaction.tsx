@@ -35,8 +35,8 @@ import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
+import { CommonAsset } from '../../common/SelectAsset';
 import CreateTx from '../CreateTx';
-import { CommonAsset } from '../CreateTx/SelectAsset/SelectAsset';
 import SignTx from '../SignTransaction';
 
 enum PAGES {
@@ -145,7 +145,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     };
   }
 
-  get balance() {
+  get balance(): BigAmount {
     const tx = this.transaction;
 
     if (this.isToken(tx)) {
@@ -156,7 +156,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 
   get transaction(): AnyTransaction {
-    const { blockchain, tokenRegistry } = this.props;
+    const { tokenRegistry } = this.props;
     const { asset, transaction } = this.state;
 
     if (EthereumAddress.isValid(asset)) {
@@ -180,7 +180,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     tokenRegistry,
     getBalance,
     getTokenBalance,
-  }: OwnProps & Props & DispatchFromProps) {
+  }: OwnProps & Props & DispatchFromProps): workflow.CreateEthereumTx | workflow.CreateERC20Tx {
     const txType = eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
 
     const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
@@ -235,13 +235,15 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   };
 
-  public onChangeTo = (to: string | undefined) => {
+  public onChangeTo = (to: string | undefined): void => {
     const tx = this.transaction;
-    tx.to = to ?? undefined;
+
+    tx.to = to;
+
     this.transaction = tx;
   };
 
-  public onChangeAsset = (value: any) => {
+  public onChangeAsset = (value: any): void => {
     const { blockchain, tokenRegistry, getBalance, getTokenBalance } = this.props;
     const { asset, transaction } = this.state;
 
@@ -292,17 +294,17 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.setState({ asset: value });
   };
 
-  public onChangePassword = (password: string) => {
+  public onChangePassword = (password: string): void => {
     this.setState({ password });
   };
 
-  public onChangeGasLimit = (value: string) => {
+  public onChangeGasLimit = (value: string): void => {
     const tx = this.transaction;
     tx.gas = parseInt(value);
     this.transaction = tx;
   };
 
-  public onChangeAmount = (amount: BigAmount) => {
+  public onChangeAmount = (amount: BigAmount): void => {
     const tx = this.transaction;
 
     if (this.isToken(tx)) {
@@ -316,9 +318,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   };
 
-  public onChangeUseEip1559 = (enabled: boolean, max: number, priority: number) => {
+  public onChangeUseEip1559 = (enabled: boolean, max: number, priority: number): void => {
     const { blockchain } = this.props;
-    const { stdGasPrice } = this.state;
 
     const tx = this.transaction;
 
@@ -341,7 +342,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.setState({ useEip1559: enabled });
   };
 
-  public async componentDidMount() {
+  public async componentDidMount(): Promise<void> {
     const fees = await this.props.getFees(this.props.blockchain);
 
     const factory = amountFactory(this.props.blockchain);
@@ -372,14 +373,12 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     });
   }
 
-  public onSubmitCreateTransaction = async () => {
+  public onSubmitCreateTransaction = async (): Promise<void> => {
     const { estimateGas } = this.props;
 
     const tx = this.transaction;
 
-    const gas = await estimateGas(tx.build());
-
-    tx.gas = gas;
+    tx.gas = await estimateGas(tx.build());
     tx.rebalance();
 
     this.transaction = tx;
@@ -423,16 +422,18 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     });
   };
 
-  public onMaxClicked() {
+  public onMaxClicked(callback: (value: BigAmount) => void): void {
     const tx = this.transaction;
 
     tx.target = TxTarget.SEND_ALL;
     tx.rebalance();
 
+    callback(tx.amount);
+
     this.transaction = tx;
   }
 
-  public onSetMaxGasPrice(price: number, unit: Unit) {
+  public onSetMaxGasPrice(price: number, unit: Unit): void {
     const tx = this.transaction;
 
     const factory = amountFactory(tx.blockchain);
@@ -451,7 +452,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   }
 
-  public onSetPriorityGasPrice(price: number, unit: Unit) {
+  public onSetPriorityGasPrice(price: number, unit: Unit): void {
     const tx = this.transaction;
 
     const factory = amountFactory(tx.blockchain);
@@ -463,7 +464,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   }
 
-  public getPage() {
+  public getPage(): React.ReactNode {
     if (!this.state.transaction.from) {
       return null;
     }
@@ -471,6 +472,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const {
       assets,
       blockchain,
+      eip1559,
       ownAddresses,
       tokenRegistry,
       txFeeSymbol,
@@ -491,7 +493,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             asset={asset}
             assets={assets}
             chain={blockchain}
-            eip1559={useEip1559}
+            eip1559={eip1559}
             initializing={initializing}
             highGasPrice={highGasPrice}
             lowGasPrice={lowGasPrice}
@@ -500,6 +502,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             txFeeToken={txFeeSymbol}
             fiatBalance={getFiatBalance(asset, tx.from)}
             tokenRegistry={tokenRegistry}
+            useEip1559={useEip1559}
             ownAddresses={ownAddresses}
             onChangeFrom={this.onChangeFrom}
             onChangeAsset={this.onChangeAsset}
@@ -532,8 +535,9 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     }
   }
 
-  public render() {
+  public render(): React.ReactNode {
     const { blockchain } = this.props;
+
     return (
       <Page
         title={<ChainTitle blockchain={blockchain} title="Create Transaction" />}
@@ -563,7 +567,7 @@ function sign(
 }
 
 export default connect(
-  (state: IState, { entry, gasLimit, initialAmount, initialAsset }: OwnProps): Props => {
+  (state: IState, { entry, gasLimit, initialAsset }: OwnProps): Props => {
     const blockchainCode = blockchainIdToCode(entry.blockchain);
     const blockchain = Blockchains[blockchainCode];
     const txFeeSymbol = blockchain.params.coinTicker;
@@ -584,8 +588,8 @@ export default connect(
         .findWalletByEntryId(state, entry.id)
         ?.entries.filter((entry) => !entry.receiveDisabled)
         .reduce<Set<string>>(
-          (carry, entry) =>
-            entry.blockchain === entry.blockchain && entry.address != null ? carry.add(entry.address.value) : carry,
+          (carry, item) =>
+            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
           new Set(),
         ) ?? new Set();
 
@@ -633,7 +637,7 @@ export default connect(
         const balance = accounts.selectors.getBalance(state, entry.id, zero) ?? zero;
         const tokensBalances = tokens.selectors.selectBalances(state, blockchainCode, address) ?? [];
 
-        return [balance, ...tokensBalances].map(formatAmount);
+        return [balance, ...tokensBalances.filter((tokenBalance) => tokenBalance.isPositive())].map(formatAmount);
       },
       getFiatBalance(asset, address) {
         if (address == null) {

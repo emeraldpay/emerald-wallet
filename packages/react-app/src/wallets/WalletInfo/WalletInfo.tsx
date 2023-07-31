@@ -78,7 +78,7 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
           `Name: ${wallet?.name}`,
           `Created At: ${wallet?.createdAt}`,
           wallet?.reserved != null && wallet.reserved.length > 0
-            ? `HD Account: ${wallet.reserved.map(({ accountId }) => `m/x’/x’/${accountId}’/0/0`).join(', ')}`
+            ? `HD Account: ${wallet.reserved.map(({ accountId }) => `m/x'/x'/${accountId}'/0/0`).join(', ')}`
             : null,
           '-- Entries --',
           (wallet?.entries != null && wallet.entries.length > 0
@@ -151,7 +151,7 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
             <TableRow>
               <TitleTableCell>HD Account</TitleTableCell>
               <ValueTableCell>
-                {wallet.reserved.map((reserved) => `m/x’/x’/${reserved.accountId}’/0/0`).join(', ')}
+                {wallet.reserved.map((reserved) => `m/x'/x'/${reserved.accountId}'/0/0`).join(', ')}
               </ValueTableCell>
             </TableRow>
           )}

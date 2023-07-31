@@ -107,10 +107,6 @@ export function getWalletBalances(
     const tokenRegistry = new TokenRegistry(state.application.tokens);
     const supportedTokens = tokenRegistry.byBlockchain(blockchain);
 
-    if (supportedTokens == null) {
-      return;
-    }
-
     supportedTokens.forEach((token) => {
       blockchainAccounts.forEach((account: WalletEntry) => {
         if (account.address != null) {

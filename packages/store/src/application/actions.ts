@@ -54,6 +54,7 @@ export function setOptions(options: SettingsOptions): Dispatched<void, OptionsAc
 export function setTokens(tokens: TokenData[], changed: boolean): Dispatched<void, TokensAction> {
   return async (dispatch) => {
     if (changed) {
+      await ipcRenderer.invoke(IpcCommands.ALLOWANCE_SET_TOKENS, tokens);
       await ipcRenderer.invoke(IpcCommands.BALANCE_SET_TOKENS, tokens);
       await ipcRenderer.invoke(IpcCommands.TOKENS_SET_TOKENS, tokens);
       await ipcRenderer.invoke(IpcCommands.TXS_SET_TOKENS, tokens);

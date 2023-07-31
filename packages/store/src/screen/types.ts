@@ -26,6 +26,7 @@ export enum Pages {
   ADDRESS_BOOK = 'address-book',
   BROADCAST_TX = 'broadcast-tx',
   CREATE_TX = 'create-tx',
+  CREATE_TX_APPROVE = 'create-tx-approve',
   CREATE_TX_BITCOIN = 'create-tx-bitcoin',
   CREATE_TX_CANCEL = 'create-tx-cancel',
   CREATE_TX_CONVERT = 'create-tx-convert',

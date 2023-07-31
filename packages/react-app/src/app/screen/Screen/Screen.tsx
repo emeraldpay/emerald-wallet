@@ -20,7 +20,8 @@ import {
 import ShowMessage from '../../../message/ShowMessage';
 import SignMessage from '../../../message/SignMessage';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
-import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
+import CreateApproveTransaction from '../../../transaction/CreateApproveTransaction';
+import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction';
 import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
@@ -68,6 +69,8 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <BroadcastTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
       return <SelectAccount walletId={screenItem} />;
+    case screen.Pages.CREATE_TX_APPROVE:
+      return <CreateApproveTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
       return <CreateConvertTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_BITCOIN:

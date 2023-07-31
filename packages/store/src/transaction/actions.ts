@@ -35,15 +35,15 @@ import {
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { findEntry, findWalletByEntryId, zeroAmountFor } from '../accounts/selectors';
-import { IState, SignHandler, application } from '../index';
+import { GasPriceType, IState, application } from '../index';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import { IErrorAction, IOpenAction } from '../screen/types';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
-import { DEFAULT_FEE, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
+import { Dispatched } from '../types';
 import { WrappedError } from '../WrappedError';
-import { BroadcastData, SignData } from './types';
+import { BroadcastData, DEFAULT_FEE, FEE_KEYS, FeePrices, GasPrices, PriceSort, SignData, SignHandler } from './types';
 
 const { Direction, ChangeType, State, Status } = PersistentState;
 
@@ -260,7 +260,7 @@ export function broadcastTx({
 
         if (tokenAmount != null) {
           const amount = tokenAmount.number.toString();
-          const asset = tokenAmount.units.top.code;
+          const asset = tokenAmount.token.address;
 
           changes = [
             ...changes,
@@ -301,7 +301,14 @@ export function broadcastTx({
 
       const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-      dispatch(gotoScreen(Pages.TX_DETAILS, { entryId, tx: new StoredTransaction(tokenRegistry, transaction, null) }));
+      dispatch(
+        gotoScreen(
+          Pages.TX_DETAILS,
+          { entryId, tx: new StoredTransaction(tokenRegistry, transaction, null) },
+          null,
+          true,
+        ),
+      );
     } catch (exception) {
       if (exception instanceof Error) {
         const transaction = getState().history.transactions.find((tx) => tx.txId === txId);

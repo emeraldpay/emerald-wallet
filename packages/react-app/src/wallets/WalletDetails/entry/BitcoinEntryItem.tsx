@@ -81,7 +81,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>, { entry }) => ({
     gotoSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, entry.id));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, entry.id, null, true));
     },
   }),
 )(BitcoinEntryItem);

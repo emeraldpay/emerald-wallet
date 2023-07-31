@@ -12,17 +12,18 @@ function onInitState(state: TokensState, { payload: { balances, tokens } }: Init
       const blockchainCode = blockchainIdToCode(blockchain);
 
       if (tokenRegistry.hasAddress(blockchainCode, asset)) {
+        const balanceAddress = address.toLowerCase();
         const token = tokenRegistry.byAddress(blockchainCode, asset);
 
         const { [blockchainCode]: blockchainBalance = {} } = state;
-        const { [address]: addressBalances = {} } = blockchainBalance;
+        const { [balanceAddress]: addressBalances = {} } = blockchainBalance;
         const { [token.address]: addressTokenBalance } = addressBalances;
 
         if (addressTokenBalance == null) {
           draft[blockchainCode] = {
             ...draft[blockchainCode],
-            [address]: {
-              ...draft[blockchainCode]?.[address],
+            [balanceAddress]: {
+              ...draft[blockchainCode]?.[balanceAddress],
               [token.address]: {
                 decimals: token.decimals,
                 symbol: token.symbol,
@@ -39,11 +40,13 @@ function onInitState(state: TokensState, { payload: { balances, tokens } }: Init
 function onSetTokenBalance(state: TokensState, action: SetTokenBalanceAction): TokensState {
   const { address, blockchain, balance, contractAddress } = action.payload;
 
+  const balanceAddress = address.toLowerCase();
+
   return produce(state, (draft) => {
     draft[blockchain] = {
       ...draft[blockchain],
-      [address]: {
-        ...draft[blockchain]?.[address],
+      [balanceAddress]: {
+        ...draft[blockchain]?.[balanceAddress],
         [contractAddress.toLowerCase()]: { ...balance },
       },
     };

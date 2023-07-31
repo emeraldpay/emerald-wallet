@@ -2,14 +2,15 @@ import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import {
-  BalanceListener,
+  AllowanceService,
+  BalanceService,
   BlockchainStatusService,
-  ConnectionStatus,
+  ConnectionStatusService,
   EmeraldApiAccess,
-  PricesService,
-  Services,
+  PriceService,
+  ServiceManager,
   TokenService,
-  TxService,
+  TransactionService,
 } from '@emeraldwallet/services';
 import { IpcMain, WebContents } from 'electron';
 import { ApiMode } from './types';
@@ -17,10 +18,10 @@ import { Settings } from './index';
 
 class Reconnect {
   private previousStatus = 'CONNECTED';
-  private services: Services;
+  private serviceManager: ServiceManager;
 
-  constructor(services: Services) {
-    this.services = services;
+  constructor(serviceManager: ServiceManager) {
+    this.serviceManager = serviceManager;
   }
 
   untilReconnect(): void {
@@ -28,7 +29,7 @@ class Reconnect {
       setTimeout(this.untilReconnect.bind(this), 5 * 1000);
     }
 
-    this.services.reconnect();
+    this.serviceManager.reconnect();
   }
 
   statusListener(status: string): void {
@@ -53,37 +54,32 @@ export function createServices(
   apiMode: ApiMode,
   persistentState: PersistentStateManager,
   vault: IEmeraldVault,
-): Services {
-  const services = new Services();
+): ServiceManager {
+  const serviceManager = new ServiceManager();
 
-  const pricesService = new PricesService(ipcMain, apiAccess, persistentState, webContents);
+  serviceManager.add(new AllowanceService(ipcMain, apiAccess, settings, webContents));
 
-  services.add(pricesService);
+  const priceService = new PriceService(ipcMain, apiAccess, persistentState, webContents);
 
-  const balanceListener = new BalanceListener(
-    ipcMain,
-    apiAccess,
-    settings,
-    pricesService,
-    persistentState,
-    webContents,
-  );
+  serviceManager.add(priceService);
 
-  services.add(balanceListener);
-  services.add(new TokenService(ipcMain, apiAccess, settings, balanceListener));
-  services.add(new TxService(ipcMain, apiAccess, settings, persistentState, vault, webContents));
+  const balanceService = new BalanceService(ipcMain, apiAccess, settings, priceService, persistentState, webContents);
+
+  serviceManager.add(balanceService);
+  serviceManager.add(new TokenService(ipcMain, apiAccess, settings, balanceService));
+  serviceManager.add(new TransactionService(ipcMain, apiAccess, settings, persistentState, vault, webContents));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;
 
-    services.add(new BlockchainStatusService(blockchain, apiAccess, webContents));
+    serviceManager.add(new BlockchainStatusService(blockchain, apiAccess, webContents));
   }
 
-  services.add(new ConnectionStatus(ipcMain, apiAccess, webContents));
+  serviceManager.add(new ConnectionStatusService(ipcMain, apiAccess, webContents));
 
-  const reconnect = new Reconnect(services);
+  const reconnect = new Reconnect(serviceManager);
 
   reconnect.start(apiAccess);
 
-  return services;
+  return serviceManager;
 }

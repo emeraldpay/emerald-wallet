@@ -8,6 +8,7 @@ import {
   blockchainIdToCode,
   formatAmount,
 } from '@emeraldwallet/core';
+import { isWrappedToken } from '@emeraldwallet/core/lib/blockchains';
 import { ConvertedBalance, IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
 import { Button, IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) =>
       marginBottom: theme.spacing(),
     },
     entryWrapped: {
-      marginTop: theme.spacing(0.5),
+      marginTop: theme.spacing(),
     },
     entryToken: {
       marginTop: theme.spacing(2),
@@ -113,7 +114,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
   const { commonBalances: tokenCommonBalances, wrappedBalances: tokenWrappedBalances } =
     tokenBalances.reduce<TokenBalances>(
       (carry, tokenBalance) => {
-        if (tokenBalance.balance.token.wrapped) {
+        if (isWrappedToken(tokenBalance.balance.token)) {
           carry.wrappedBalances.push(tokenBalance);
         } else if (tokenBalance.balance.isPositive()) {
           carry.commonBalances.push(tokenBalance);
@@ -147,23 +148,29 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
         </div>
         <div className={styles.entryActions}>
           {tokenWrappedBalances.map(({ balance: wrappedBalance }) => (
-            <IconButton
+            <Tooltip
               key={`convert-${wrappedBalance.token.address}`}
-              classes={buttonClasses}
-              disabled={balance.isZero()}
-              size="small"
-              onClick={() => gotoConvert(wrappedBalance.token.address)}
+              title={`Convert between ${balance.units.top.name} and ${wrappedBalance.token.name}`}
             >
-              <Tooltip title={`Convert between ${balance.units.top.name} and ${wrappedBalance.token.name}`}>
-                <ConvertIcon fontSize="small" />
-              </Tooltip>
-            </IconButton>
-          ))}
-          <IconButton classes={buttonClasses} disabled={balance.isZero()} size="small" onClick={() => gotoSend()}>
-            <Tooltip title="Send">
-              <SendIcon fontSize="small" />
+              <span>
+                <IconButton
+                  classes={buttonClasses}
+                  disabled={balance.isZero()}
+                  size="small"
+                  onClick={() => gotoConvert(wrappedBalance.token.address)}
+                >
+                  <ConvertIcon fontSize="small" />
+                </IconButton>
+              </span>
             </Tooltip>
-          </IconButton>
+          ))}
+          <Tooltip title="Send">
+            <span>
+              <IconButton classes={buttonClasses} disabled={balance.isZero()} size="small" onClick={() => gotoSend()}>
+                <SendIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
         </div>
       </div>
       {tokenWrappedBalances.map(({ balance, fiatBalance }) => {
@@ -198,16 +205,18 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
               {fiatBalance?.isPositive() && <FiatBalance balance={fiatBalance} />}
             </div>
             <div className={styles.entryActions}>
-              <IconButton
-                classes={buttonClasses}
-                disabled={balance.isZero()}
-                size="small"
-                onClick={() => gotoSend(address)}
-              >
-                <Tooltip title="Send">
-                  <SendIcon fontSize="small" />
-                </Tooltip>
-              </IconButton>
+              <Tooltip title="Send">
+                <span>
+                  <IconButton
+                    classes={buttonClasses}
+                    disabled={balance.isZero()}
+                    size="small"
+                    onClick={() => gotoSend(address)}
+                  >
+                    <SendIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
             </div>
           </div>
         );
@@ -226,7 +235,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     const [{ balance, fiatBalance }] = accounts.selectors.withFiatConversion(state, [
       entries.reduce(
-        (carry, item) => carry.plus(accounts.selectors.getBalance(state, item.id, zeroAmount) ?? zeroAmount),
+        (carry, item) => carry.plus(accounts.selectors.getBalance(state, item.id, zeroAmount)),
         zeroAmount,
       ),
     ]);
@@ -249,13 +258,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>, { entries: [entry] }) => ({
     gotoConvert(contractAddress) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, contractAddress }));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, contractAddress }, null, true));
     },
     gotoRecover() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
     },
     gotoSend(asset) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry, initialAsset: asset }));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry, initialAsset: asset }, null, true));
     },
   }),
 )(EthereumEntryItem);

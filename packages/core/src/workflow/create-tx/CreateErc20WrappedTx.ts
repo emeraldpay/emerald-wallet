@@ -4,7 +4,7 @@ import { Contract } from '../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 import { TxTarget } from './types';
 
-export interface Erc20WrappedDetails {
+export interface Erc20WrappedTxDetails {
   address?: string;
   amount?: BigAmount;
   blockchain: BlockchainCode;
@@ -14,8 +14,8 @@ export interface Erc20WrappedDetails {
   priorityGasPrice?: BigAmount;
   target?: TxTarget;
   token: TokenData;
-  totalBalance?: BigAmount;
-  totalTokenBalance?: TokenAmount;
+  totalBalance: BigAmount;
+  totalTokenBalance: TokenAmount;
   type: EthereumTransactionType;
 }
 
@@ -29,7 +29,7 @@ export class CreateErc20WrappedTx {
   public priorityGasPrice?: BigAmount;
   public target: TxTarget;
   public totalBalance: BigAmount;
-  public totalTokenBalance?: TokenAmount;
+  public totalTokenBalance: TokenAmount;
   public type: EthereumTransactionType;
 
   private readonly token: Token;
@@ -37,7 +37,7 @@ export class CreateErc20WrappedTx {
 
   private tokenContract = new Contract(wrapTokenAbi);
 
-  constructor(details: Erc20WrappedDetails) {
+  constructor(details: Erc20WrappedTxDetails) {
     const zeroAmount = amountFactory(details.blockchain)(0);
 
     this.address = details.address;
@@ -45,7 +45,7 @@ export class CreateErc20WrappedTx {
     this.blockchain = details.blockchain;
     this.gas = details.gas ?? DEFAULT_GAS_LIMIT_ERC20;
     this.target = details.target ?? TxTarget.MANUAL;
-    this.totalBalance = details.totalBalance ?? zeroAmount;
+    this.totalBalance = details.totalBalance;
     this.totalTokenBalance = details.totalTokenBalance;
     this.type = details.type;
 
@@ -60,7 +60,7 @@ export class CreateErc20WrappedTx {
     this.zeroAmount = zeroAmount;
   }
 
-  public static fromPlain(details: Erc20WrappedDetails): CreateErc20WrappedTx {
+  public static fromPlain(details: Erc20WrappedTxDetails): CreateErc20WrappedTx {
     return new CreateErc20WrappedTx(details);
   }
 
@@ -71,7 +71,7 @@ export class CreateErc20WrappedTx {
 
     const data = isDeposit
       ? this.tokenContract.functionToData('deposit', {})
-      : this.tokenContract.functionToData('withdraw', { _value: amount.number.toString() });
+      : this.tokenContract.functionToData('withdraw', { _value: amount.number.toFixed() });
 
     return {
       blockchain,
@@ -87,7 +87,7 @@ export class CreateErc20WrappedTx {
     };
   }
 
-  public dump(): Erc20WrappedDetails {
+  public dump(): Erc20WrappedTxDetails {
     return {
       address: this.address,
       amount: this.amount,
@@ -118,7 +118,7 @@ export class CreateErc20WrappedTx {
         if (amount.isZero() || amount.isPositive()) {
           this.amount = amountFactory(this.blockchain)(amount.number);
         }
-      } else if (this.totalTokenBalance != null) {
+      } else {
         this.amount = this.totalTokenBalance;
       }
     }

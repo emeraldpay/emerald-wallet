@@ -70,6 +70,12 @@ function subscribeAccountTokens(entries: WalletEntry[]): void {
 
       if (address != null) {
         ipcRenderer
+          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, blockchainCode, address)
+          .catch((error) =>
+            console.warn(`Can't subscribe to allowance for ${address} on ${blockchainCode} blockchain`, error),
+          );
+
+        ipcRenderer
           .invoke(IpcCommands.TOKENS_SUBSCRIBE_ADDRESS, entry.id, blockchainCode, address)
           .catch((error) =>
             console.warn(`Can't subscribe to tokens for ${address} on ${blockchainCode} blockchain`, error),
@@ -92,13 +98,21 @@ function* afterAccountImported(vault: IEmeraldVault, action: WalletImportedActio
   const [{ address, blockchain, id: entryId }] = wallet.entries;
   const { code, coin } = Blockchains[blockchain].params;
 
-  ipcRenderer
-    .invoke(IpcCommands.BALANCE_SUBSCRIBE, code, entryId, address?.value, coin)
-    .catch((error) => console.warn(`Can't subscribe to balance for ${address} on ${code} blockchain`, error));
+  if (address != null) {
+    const { value: addressValue } = address;
 
-  ipcRenderer
-    .invoke(IpcCommands.TOKENS_SUBSCRIBE_ADDRESS, code, entryId, address?.value)
-    .catch((error) => console.warn(`Can't subscribe to tokens for ${address} on ${code} blockchain`, error));
+    ipcRenderer
+      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, coin, addressValue)
+      .catch((error) => console.warn(`Can't subscribe to allowance for ${addressValue} on ${code} blockchain`, error));
+
+    ipcRenderer
+      .invoke(IpcCommands.BALANCE_SUBSCRIBE, entryId, code, addressValue, coin)
+      .catch((error) => console.warn(`Can't subscribe to balance for ${addressValue} on ${code} blockchain`, error));
+
+    ipcRenderer
+      .invoke(IpcCommands.TOKENS_SUBSCRIBE_ADDRESS, entryId, code, addressValue)
+      .catch((error) => console.warn(`Can't subscribe to tokens for ${addressValue} on ${code} blockchain`, error));
+  }
 }
 
 /**
@@ -212,15 +226,21 @@ function* createHdAddress(vault: IEmeraldVault, action: CreateHdEntryAction): Sa
         const { coin } = Blockchains[shadowBlockchain].params;
 
         ipcRenderer
+          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, shadowBlockchain, shadowAddress)
+          .catch((error) =>
+            console.warn(`Can't subscribe to allowance for ${shadowAddress} on ${shadowBlockchain} blockchain`, error),
+          );
+
+        ipcRenderer
           .invoke(IpcCommands.BALANCE_SUBSCRIBE, shadowEntryId, shadowBlockchain, shadowAddress, coin)
           .catch((error) =>
-            console.warn(`Can't subscribe to balance for ${address} on ${blockchain} blockchain`, error),
+            console.warn(`Can't subscribe to balance for ${shadowAddress} on ${blockchain} blockchain`, error),
           );
 
         ipcRenderer
           .invoke(IpcCommands.TOKENS_SUBSCRIBE_ADDRESS, shadowEntryId, shadowBlockchain, shadowAddress)
           .catch((error) =>
-            console.warn(`Can't subscribe to tokens for ${address} on ${blockchain} blockchain`, error),
+            console.warn(`Can't subscribe to tokens for ${shadowAddress} on ${blockchain} blockchain`, error),
           );
 
         yield put(hdAccountCreated(walletId, shadowEntry));
@@ -231,12 +251,22 @@ function* createHdAddress(vault: IEmeraldVault, action: CreateHdEntryAction): Sa
     const { coin } = Blockchains[blockchain].params;
 
     ipcRenderer
+      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, blockchain, entryAddress)
+      .catch((error) =>
+        console.warn(`Can't subscribe to tokens for ${entryAddress} on ${blockchain} blockchain`, error),
+      );
+
+    ipcRenderer
       .invoke(IpcCommands.BALANCE_SUBSCRIBE, entry.id, blockchain, entryAddress, coin)
-      .catch((error) => console.warn(`Can't subscribe to balance for ${address} on ${blockchain} blockchain`, error));
+      .catch((error) =>
+        console.warn(`Can't subscribe to balance for ${entryAddress} on ${blockchain} blockchain`, error),
+      );
 
     ipcRenderer
       .invoke(IpcCommands.TOKENS_SUBSCRIBE_ADDRESS, entry.id, blockchain, entryAddress)
-      .catch((error) => console.warn(`Can't subscribe to tokens for ${address} on ${blockchain} blockchain`, error));
+      .catch((error) =>
+        console.warn(`Can't subscribe to tokens for ${entryAddress} on ${blockchain} blockchain`, error),
+      );
 
     yield put(hdAccountCreated(walletId, entry));
 

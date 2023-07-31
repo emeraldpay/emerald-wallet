@@ -68,7 +68,7 @@ export const Input: React.FC<OwnProps> = ({
   }
 
   if (leftIcon) {
-    props.InputProps.startAdornment = <InputAdornment position="start"> {leftIcon} </InputAdornment>;
+    props.InputProps.startAdornment = <InputAdornment position="start">{leftIcon}</InputAdornment>;
   }
 
   if (rightIcon) {
