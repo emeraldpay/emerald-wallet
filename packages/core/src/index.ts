@@ -6,6 +6,8 @@ import * as workflow from './workflow';
 export { blockchains, config, workflow, utils };
 
 export {
+  INFINITE_ALLOWANCE,
+  MAX_DISPLAY_ALLOWANCE,
   Blockchains,
   BlockchainCode,
   Coin,

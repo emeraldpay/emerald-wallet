@@ -29,9 +29,9 @@ import {
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { AmountField } from '../../common/AmountField';
+import { FromField } from '../../common/FromField';
 import WaitLedger from '../../ledger/WaitLedger';
-import AmountField from '../CreateTx/AmountField/AmountField';
-import FromField from '../CreateTx/FromField';
 
 const useStyles = makeStyles(
   createStyles({
@@ -92,7 +92,7 @@ interface StateProps {
   isHardware: boolean;
   token: Token;
   getBalance(address?: string): BigAmount;
-  getBalancesByAddress(address: string, token: string): string[];
+  getBalancesByAddress(address: string): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
   getTokenBalanceByAddress(address?: string): TokenAmount;
 }
@@ -397,21 +397,23 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             </ToggleButtonGroup>
           </FormRow>
           <FormRow>
+            <FormLabel>From</FormLabel>
             <FromField
               accounts={addresses}
               disabled={initializing}
               selectedAccount={convertTx.address}
               onChangeAccount={onChangeAddress}
-              getBalancesByAddress={(address) => getBalancesByAddress(address, contractAddress)}
+              getBalancesByAddress={(address) => getBalancesByAddress(address)}
             />
           </FormRow>
           <FormRow>
+            <FormLabel>Amount</FormLabel>
             <AmountField
               disabled={initializing}
               amount={currentTx.amount}
               units={currentTx.amount.units}
               onChangeAmount={onChangeAmount}
-              onMaxClicked={onClickMaxAmount}
+              onMaxClick={onClickMaxAmount}
             />
           </FormRow>
           <FormAccordion
@@ -666,9 +668,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         const tokenZero = token.getAmount(0);
 
         const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
-        const tokensBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address) ?? tokenZero;
+        const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address) ?? tokenZero;
 
-        return [balance, tokensBalance].map(formatAmount);
+        return [balance, tokenBalance].map(formatAmount);
       },
       getEntryByAddress(address) {
         return accounts.selectors.findAccountByAddress(state, address, blockchain);
@@ -720,9 +722,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               ...signed,
               fee: (tx.maxGasPrice ?? tx.gasPrice ?? zeroAmount).multiply(tx.gas),
               originalAmount: tx.amount,
-              tokenAmount: tx.amount.units.equals(tx.totalBalance.units)
-                ? token.getAmount(tx.amount.number)
-                : amountFactory(blockchainCode)(tx.amount.number),
+              tokenAmount: token.getAmount(tx.amount.number),
             },
             null,
             true,

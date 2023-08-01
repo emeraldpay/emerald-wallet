@@ -1,6 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { StoredTransaction } from '@emeraldwallet/store';
-import { Theme, createStyles } from '@material-ui/core';
+import { Theme, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { AutoSizer, Index, List } from 'react-virtualized';
@@ -12,13 +12,12 @@ const useStyles = makeStyles<Theme>((theme) =>
     container: {
       height: '100%',
     },
-    emptyList: {
-      color: theme.palette.text.secondary,
-      padding: theme.spacing(4),
-    },
     list: {
       paddingBottom: theme.spacing(4),
       paddingTop: theme.spacing(4),
+    },
+    empty: {
+      padding: theme.spacing(4),
     },
   }),
 );
@@ -52,7 +51,7 @@ const TransactionsList: React.FC<OwnProps> = ({
   );
 
   const calculateRowHeight = ({ index }: Index): number => {
-    const changeCount = transactions[index].changes.filter((change) => change.wallet != null).length;
+    const changeCount = Math.max(1, transactions[index].changes.filter((change) => change.wallet != null).length);
 
     return 53 + (changeCount - 1) * 63 + 20;
   };
@@ -108,7 +107,11 @@ const TransactionsList: React.FC<OwnProps> = ({
       </AutoSizer>
     </div>
   ) : (
-    <div className={styles.emptyList}>There are no transactions.</div>
+    <div className={styles.empty}>
+      <Typography color="secondary" variant="body2">
+        There are no transactions.
+      </Typography>
+    </div>
   );
 };
 

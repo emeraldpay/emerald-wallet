@@ -5,13 +5,13 @@ import { BlockchainCode, EthereumTransactionType, TokenRegistry, workflow } from
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
+import { AmountField } from '../../src/common/AmountField';
+import { FromField } from '../../src/common/FromField';
+import { ToField } from '../../src/common/ToField';
 import Confirm from '../../src/transaction/CreateBitcoinTransaction/Confirm';
 import CreateBitcoinTransaction from '../../src/transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
 import Sign from '../../src/transaction/CreateBitcoinTransaction/Sign';
 import CreateTx from '../../src/transaction/CreateTx';
-import AmountField from '../../src/transaction/CreateTx/AmountField';
-import FromField from '../../src/transaction/CreateTx/FromField';
-import ToField from '../../src/transaction/CreateTx/ToField';
 import { MemoryApiMock } from '../__mocks__/apiMock';
 import { BackendMock } from '../__mocks__/backendMock';
 import { REAL_BTC_TX } from '../__mocks__/vaultMock';
@@ -56,17 +56,19 @@ storiesOf('CreateTx Ethereum', module)
         tokenRegistry={tokenRegistry}
         tx={ethereumTx}
         txFeeToken="ETC"
+        useEip1559={false}
         getBalance={() => new Wei(0)}
         getTokenBalance={() => new Wei(0)}
         onChangeAmount={action('onChangeAmount')}
         onChangeTo={action('onChangeTo')}
         onChangeUseEip1559={action('onChangeUseEip1559')}
+        onMaxClicked={(callback) => callback(new Wei(0))}
       />
     );
   })
   .add('Create EIP-1559', () => (
     <CreateTx
-      asset="ETC"
+      asset="ETG"
       assets={assets}
       chain={BlockchainCode.Goerli}
       eip1559={true}
@@ -77,16 +79,29 @@ storiesOf('CreateTx Ethereum', module)
       tokenRegistry={tokenRegistry}
       tx={ethereumTx}
       txFeeToken="ETC"
+      useEip1559={true}
       getBalance={() => new Wei(0)}
       getTokenBalance={() => new Wei(0)}
       onChangeAmount={action('onChangeAmount')}
       onChangeTo={action('onChangeTo')}
       onChangeUseEip1559={action('onChangeUseEip1559')}
+      onMaxClicked={(callback) => callback(new Wei(0))}
     />
   ))
-  .add('AmountField', () => <AmountField units={WEIS} onChangeAmount={action('onChangeAmount')} />)
+  .add('AmountField', () => (
+    <AmountField
+      units={WEIS}
+      onChangeAmount={action('onChangeAmount')}
+      onMaxClick={(callback) => callback(new Wei(0))}
+    />
+  ))
   .add('AmountField (101.202)', () => (
-    <AmountField units={WEIS} amount={new Wei('101.202', 'ETHER')} onChangeAmount={action('onChangeAmount')} />
+    <AmountField
+      units={WEIS}
+      amount={new Wei('101.202', 'ETHER')}
+      onChangeAmount={action('onChangeAmount')}
+      onMaxClick={(callback) => callback(new Wei(0))}
+    />
   ))
   .add('FromField', () => <FromField accounts={['0x1', '02']} />)
   .add('ToField', () => <ToField blockchain={BlockchainCode.Goerli} onChange={action('onChangeToField')} />);

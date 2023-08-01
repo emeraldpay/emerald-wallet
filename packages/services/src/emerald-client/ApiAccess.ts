@@ -9,9 +9,9 @@ import {
   emeraldCredentials,
 } from '@emeraldpay/api-node';
 import { Logger, Versions } from '@emeraldwallet/core';
-import { ChainListener } from '../ChainListener';
-import { AddressListener } from '../services/balances/AddressListener';
-import { PriceListener } from '../services/prices/PricesListener';
+import { BlockchainListener } from '../BlockchainListener';
+import { BalanceListener } from '../services/balance/BalanceListener';
+import { PriceListener } from '../services/price/PriceListener';
 
 enum Status {
   CONNECTED = 'CONNECTED',
@@ -123,15 +123,15 @@ export class EmeraldApiAccess {
     this.transactionClient.channel.close();
   }
 
-  newAddressListener(): AddressListener {
-    return new AddressListener(this.blockchainClient);
+  newBalanceListener(): BalanceListener {
+    return new BalanceListener(this.blockchainClient);
   }
 
-  newChainListener(): ChainListener {
-    return new ChainListener(this.blockchainClient);
+  newBlockchainListener(): BlockchainListener {
+    return new BlockchainListener(this.blockchainClient);
   }
 
-  newPricesListener(): PriceListener {
+  newPriceListener(): PriceListener {
     return new PriceListener(this.marketClient);
   }
 

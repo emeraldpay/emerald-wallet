@@ -16,8 +16,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import validate from 'bitcoin-address-validation';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import AmountField from '../CreateTx/AmountField';
-import ToField from '../CreateTx/ToField/ToField';
+import { AmountField } from '../../common/AmountField';
+import ToField from '../../common/ToField/ToField';
 
 const { ValidationResult } = workflow;
 
@@ -132,15 +132,17 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   return (
     <>
       <FormRow>
+        <FormLabel>To</FormLabel>
         <ToField blockchain={blockchainIdToCode(entry.blockchain)} to={create.toAddress} onChange={onSetTo} />
       </FormRow>
       <FormRow>
+        <FormLabel>Amount</FormLabel>
         <AmountField
           amount={amount}
           maxDisabled={initializing}
           units={create.requiredAmount.units}
           onChangeAmount={onSetAmount}
-          onMaxClicked={onSetAmountMax}
+          onMaxClick={onSetAmountMax}
         />
       </FormRow>
       <FormRow>

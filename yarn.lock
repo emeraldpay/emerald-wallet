@@ -3434,25 +3434,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/2c423635/emeraldpay-api-node-v0.4.0-dev.tgz":
+"@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/ebb1aeb6/emeraldpay-api-node-v0.4.0-dev.tgz":
   version: 0.4.0-dev
-  resolution: "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/2c423635/emeraldpay-api-node-v0.4.0-dev.tgz"
+  resolution: "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/ebb1aeb6/emeraldpay-api-node-v0.4.0-dev.tgz"
   dependencies:
     "@emeraldpay/api": 0.4.0-dev
-    "@grpc/grpc-js": ^1.8.14
+    "@grpc/grpc-js": ^1.8.18
     google-protobuf: ^3.21.2
-    protobufjs: ^7.2.3
-  checksum: a7a46fb6790a1362f22c98b567e28126c4a0faf3561c84c7dd8245a70e4dca75a0a99c97ec398b2ba335afa04ba16c5f06adbaf6ee52f91ac59c38452ebfcea7
+    protobufjs: ^7.2.4
+  checksum: aa70983383d8dbd35bfe58321f12d8af6fbfb9b9f9a845525700b9db9af0415a4b6a632fc6760de4936b237853e04561e50a6d64c857b39c2bb8ec919df3d195
   languageName: node
   linkType: hard
 
-"@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/2c423635/emeraldpay-api-v0.4.0-dev.tgz":
+"@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/ebb1aeb6/emeraldpay-api-v0.4.0-dev.tgz":
   version: 0.4.0-dev
-  resolution: "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/2c423635/emeraldpay-api-v0.4.0-dev.tgz"
+  resolution: "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/ebb1aeb6/emeraldpay-api-v0.4.0-dev.tgz"
   dependencies:
     google-protobuf: ^3.21.2
-    protobufjs: ^7.2.3
-  checksum: d74ac97abbef9dd3642f75eaf3e207046bad63889d471d94305c9aaa5d82c272c3dec14481e7c59cdfe7bf07ee80bf10e473a65fed5015a2039c423922a5eb2a
+    protobufjs: ^7.2.4
+  checksum: 95ccf05f296abbe314b1b515d509c972b6dec01768fbc9e7a8431b794c8fc33786dc9946aee6ebb465dc87f1fde30d662cfc8f5231608a623418ec2d04f0a54f
   languageName: node
   linkType: hard
 
@@ -4127,6 +4127,16 @@ __metadata:
     "@grpc/proto-loader": ^0.7.0
     "@types/node": ">=12.12.47"
   checksum: 7b889ae67cde5eb9b4feb92d54e73945d881309b9b879a2dde478fa7850b99835efa7592a8154a0f923851d7a18a177c106f5f52b45061180bb04aef7783c1c9
+  languageName: node
+  linkType: hard
+
+"@grpc/grpc-js@npm:^1.8.18":
+  version: 1.8.18
+  resolution: "@grpc/grpc-js@npm:1.8.18"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.0
+    "@types/node": ">=12.12.47"
+  checksum: 90260dec594f2704d6ac6800d88a8fbbda872cc347d692a8bb88f73ed12035c60dd98c98569c5cfab508f1cdbf380ecc107e32a24f412952a7796148993dfc3a
   languageName: node
   linkType: hard
 
@@ -19696,9 +19706,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.2.3":
-  version: 7.2.3
-  resolution: "protobufjs@npm:7.2.3"
+"protobufjs@npm:^7.2.4":
+  version: 7.2.4
+  resolution: "protobufjs@npm:7.2.4"
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -19712,7 +19722,7 @@ __metadata:
     "@protobufjs/utf8": ^1.1.0
     "@types/node": ">=13.7.0"
     long: ^5.0.0
-  checksum: 9afa6de5fced0139a5180c063718508fac3ea734a9f1aceb99712367b15473a83327f91193f16b63540f9112b09a40912f5f0441a9b0d3f3c6a1c7f707d78249
+  checksum: a952cdf2a5e5250c16ae651b570849b6f5b20a5475c3eef63ffb290ad239aa2916adfc1cc676f7fc93c69f48113df268761c0c246f7f023118c85bdd1a170044
   languageName: node
   linkType: hard
 

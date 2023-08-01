@@ -1,7 +1,7 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { IpcCommands, Logger, Versions } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
-import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
+import { ChainRpcConnections, EmeraldApiAccess, ServiceManager } from '@emeraldwallet/services';
 import { WebContents, ipcMain } from 'electron';
 import { createServices } from '../createServices';
 import { ElectronLogger } from '../ElectronLogger';
@@ -20,7 +20,7 @@ export class Application {
   public settings: Settings;
   public versions: Versions;
 
-  private services: Services | null | undefined;
+  private serviceManager: ServiceManager | null | undefined;
   private webContents: WebContents | null | undefined;
 
   constructor(settings: Settings, versions: Versions) {
@@ -49,16 +49,24 @@ export class Application {
 
     this.log.info('Running services');
 
-    this.services = createServices(this.settings, ipcMain, webContents, apiAccess, apiMode, persistentState, vault);
-    this.services.start();
+    this.serviceManager = createServices(
+      this.settings,
+      ipcMain,
+      webContents,
+      apiAccess,
+      apiMode,
+      persistentState,
+      vault,
+    );
+    this.serviceManager.start();
   }
 
   public stop(): void {
     this.log.info('Stopping services');
 
-    if (this.services != null) {
-      this.services.stop();
-      this.services = null;
+    if (this.serviceManager != null) {
+      this.serviceManager.stop();
+      this.serviceManager = null;
     }
   }
 
@@ -68,10 +76,10 @@ export class Application {
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
-    this.services?.setWebContents(webContents);
+    this.serviceManager?.setWebContents(webContents);
   }
 
   reconnect(reloaded = false): void {
-    this.services?.reconnect(reloaded);
+    this.serviceManager?.reconnect(reloaded);
   }
 }

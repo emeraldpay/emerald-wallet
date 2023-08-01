@@ -2,24 +2,14 @@ import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
-import { Button, ButtonGroup, FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
-import {
-  Box,
-  CircularProgress,
-  FormControlLabel,
-  FormHelperText,
-  Slider,
-  Switch,
-  WithStyles,
-  createStyles,
-  withStyles,
-} from '@material-ui/core';
+import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
+import { CircularProgress, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
-import AmountField from './AmountField';
-import FromField from './FromField';
-import SelectAsset from './SelectAsset';
-import { CommonAsset } from './SelectAsset/SelectAsset';
-import ToField from './ToField';
+import { AmountField } from '../../common/AmountField';
+import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
+import { FromField } from '../../common/FromField';
+import { Asset, CommonAsset, SelectAsset } from '../../common/SelectAsset';
+import { ToField } from '../../common/ToField';
 
 const { ValidationResult } = workflow;
 
@@ -77,6 +67,7 @@ export interface Props extends WithStyles<typeof styles> {
   tokenRegistry: TokenRegistry;
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   txFeeToken: string;
+  useEip1559: boolean;
   getBalance(address: string): WeiAny;
   getBalancesByAddress?(address: string): string[];
   getTokenBalance(token: string, address?: string): BigAmount;
@@ -87,7 +78,7 @@ export interface Props extends WithStyles<typeof styles> {
   onChangeGasLimit?(value: string): void;
   onChangeTo(to: string): void;
   onChangeUseEip1559(value: boolean, max: number, priority: number): void;
-  onMaxClicked?(): void;
+  onMaxClicked(callback: (value: BigAmount) => void): void;
   onSetMaxGasPrice?(value: number, unit: Unit): void;
   onSetPriorityGasPrice?(value: number, unit: Unit): void;
   onSubmit?(): void;
@@ -97,8 +88,6 @@ interface State {
   currentMaxGasPrice: number;
   currentPriorityGasPrice: number;
   useEip1559: boolean;
-  useStdMaxGasPrice: boolean;
-  useStdPriorityGasPrice: boolean;
 }
 
 class CreateTx extends React.Component<Props, State> {
@@ -111,8 +100,6 @@ class CreateTx extends React.Component<Props, State> {
       currentMaxGasPrice: 0,
       currentPriorityGasPrice: 0,
       useEip1559: props.eip1559,
-      useStdMaxGasPrice: true,
-      useStdPriorityGasPrice: true,
     };
   }
 
@@ -157,6 +144,7 @@ class CreateTx extends React.Component<Props, State> {
       assets,
       chain,
       classes,
+      eip1559,
       fiatBalance,
       initializing,
       highGasPrice,
@@ -176,8 +164,19 @@ class CreateTx extends React.Component<Props, State> {
       onSetPriorityGasPrice,
       onSubmit,
     } = this.props;
-    const { currentMaxGasPrice, currentPriorityGasPrice, useEip1559, useStdMaxGasPrice, useStdPriorityGasPrice } =
-      this.state;
+
+    const { currentMaxGasPrice, currentPriorityGasPrice, useEip1559 } = this.state;
+
+    const assetsWithBalances = assets.reduce<Asset[]>((carry, { address, symbol }) => {
+      const key = address ?? symbol;
+      const balance = this.getAssetBalance(key);
+
+      if (balance.isPositive()) {
+        return [...carry, { address, balance, symbol }];
+      }
+
+      return carry;
+    }, []);
 
     const factory = amountFactory(chain);
 
@@ -202,6 +201,7 @@ class CreateTx extends React.Component<Props, State> {
     return (
       <>
         <FormRow>
+          <FormLabel>From</FormLabel>
           <FromField
             accounts={ownAddresses}
             disabled={initializing}
@@ -211,176 +211,58 @@ class CreateTx extends React.Component<Props, State> {
           />
         </FormRow>
         <FormRow>
+          <FormLabel>Token</FormLabel>
           <SelectAsset
             asset={asset}
-            assets={assets}
+            assets={assetsWithBalances}
             balance={tx.getTotalBalance()}
             fiatBalance={fiatBalance}
-            getAssetBalance={this.getAssetBalance}
             onChangeAsset={onChangeAsset}
           />
         </FormRow>
         <FormRow>
+          <FormLabel>To</FormLabel>
           <ToField blockchain={chain} to={tx.to} onChange={onChangeTo} />
         </FormRow>
         <FormRow>
+          <FormLabel>Amount</FormLabel>
           <AmountField
             amount={tx.getAmount()}
             maxDisabled={initializing}
             units={tx.getAmount().units}
             onChangeAmount={onChangeAmount}
-            onMaxClicked={onMaxClicked}
+            onMaxClick={onMaxClicked}
           />
         </FormRow>
-        <FormAccordion
-          title={
-            <FormRow last>
-              <FormLabel>Settings</FormLabel>
-              {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {currentMaxGasPrice.toFixed(2)} {unit.toString()}
-              {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
-              {useEip1559 ? ` / ${currentPriorityGasPrice.toFixed(2)} ${unit.toString()} Priority Gas Price` : null}
-            </FormRow>
-          }
-        >
-          <FormRow>
-            <FormLabel>Use EIP-1559</FormLabel>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={useEip1559}
-                  color="primary"
-                  disabled={initializing}
-                  onChange={({ target: { checked } }) => {
-                    this.setState({ useEip1559: checked });
+        <EthTxSettings
+          initializing={initializing}
+          supportEip1559={eip1559}
+          useEip1559={useEip1559}
+          gasPriceUnit={unit}
+          maxGasPrice={currentMaxGasPrice}
+          stdMaxGasPrice={stdMaxGasPriceNumber}
+          lowMaxGasPrice={lowMaxGasPriceNumber}
+          highMaxGasPrice={highMaxGasPriceNumber}
+          priorityGasPrice={currentPriorityGasPrice}
+          stdPriorityGasPrice={stdPriorityGasPriceNumber}
+          lowPriorityGasPrice={lowPriorityGasPriceNumber}
+          highPriorityGasPrice={highPriorityGasPriceNumber}
+          onUse1559Change={(value) => {
+            this.setState({ useEip1559: value });
 
-                    onChangeUseEip1559(checked, currentMaxGasPrice, currentPriorityGasPrice);
-                  }}
-                />
-              }
-              label={useEip1559 ? 'Enabled' : 'Disabled'}
-            />
-          </FormRow>
-          <FormRow>
-            <FormLabel top>{useEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-            <Box className={classes.inputField}>
-              <Box className={classes.gasPriceTypeBox}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={useStdMaxGasPrice}
-                      disabled={initializing}
-                      onChange={({ target: { checked } }) => {
-                        if (checked) {
-                          this.setState({ currentMaxGasPrice: stdMaxGasPriceNumber });
+            onChangeUseEip1559(value, currentMaxGasPrice, currentPriorityGasPrice);
+          }}
+          onMaxGasPriceChange={(value) => {
+            this.setState({ currentMaxGasPrice: value });
 
-                          onSetMaxGasPrice?.(stdMaxGasPriceNumber, unit);
-                        }
+            onSetMaxGasPrice?.(value, unit);
+          }}
+          onPriorityGasPriceChange={(value) => {
+            this.setState({ currentPriorityGasPrice: value });
 
-                        this.setState({ useStdMaxGasPrice: checked });
-                      }}
-                      color="primary"
-                    />
-                  }
-                  label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
-                />
-              </Box>
-              {!useStdMaxGasPrice && (
-                <Box className={classes.gasPriceSliderBox}>
-                  <Slider
-                    className={classes.gasPriceSlider}
-                    classes={{
-                      markLabel: classes.gasPriceMarkLabel,
-                      valueLabel: classes.gasPriceValueLabel,
-                    }}
-                    getAriaValueText={() => `${currentMaxGasPrice.toFixed(2)} ${unit.toString()}`}
-                    aria-labelledby="discrete-slider"
-                    valueLabelDisplay="auto"
-                    step={0.01}
-                    marks={[
-                      { value: lowMaxGasPriceNumber, label: 'Slow' },
-                      { value: highMaxGasPriceNumber, label: 'Urgent' },
-                    ]}
-                    min={lowMaxGasPriceNumber}
-                    max={highMaxGasPriceNumber}
-                    value={currentMaxGasPrice}
-                    onChange={(event, value) => {
-                      this.setState({ currentMaxGasPrice: value as number });
-
-                      onSetMaxGasPrice?.(value as number, unit);
-                    }}
-                    valueLabelFormat={(value) => value.toFixed(2)}
-                  />
-                </Box>
-              )}
-              <Box className={classes.gasPriceHelpBox}>
-                <FormHelperText className={classes.gasPriceHelp}>
-                  {currentMaxGasPrice.toFixed(2)} {unit.toString()}
-                </FormHelperText>
-              </Box>
-            </Box>
-          </FormRow>
-          {useEip1559 && (
-            <FormRow>
-              <FormLabel top>Priority gas price</FormLabel>
-              <Box className={classes.inputField}>
-                <Box className={classes.gasPriceTypeBox}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={useStdPriorityGasPrice}
-                        disabled={initializing}
-                        onChange={({ target: { checked } }) => {
-                          if (checked) {
-                            this.setState({ currentPriorityGasPrice: stdPriorityGasPriceNumber });
-
-                            onSetPriorityGasPrice?.(stdPriorityGasPriceNumber, unit);
-                          }
-
-                          this.setState({ useStdPriorityGasPrice: checked });
-                        }}
-                        color="primary"
-                      />
-                    }
-                    label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
-                  />
-                </Box>
-                {!useStdPriorityGasPrice && (
-                  <Box className={classes.gasPriceSliderBox}>
-                    <Slider
-                      className={classes.gasPriceSlider}
-                      classes={{
-                        markLabel: classes.gasPriceMarkLabel,
-                        valueLabel: classes.gasPriceValueLabel,
-                      }}
-                      getAriaValueText={() => `${currentPriorityGasPrice.toFixed(2)} ${unit.toString()}`}
-                      aria-labelledby="discrete-slider"
-                      valueLabelDisplay="auto"
-                      step={0.01}
-                      marks={[
-                        { value: lowPriorityGasPriceNumber, label: 'Slow' },
-                        { value: highPriorityGasPriceNumber, label: 'Urgent' },
-                      ]}
-                      min={lowPriorityGasPriceNumber}
-                      max={highPriorityGasPriceNumber}
-                      value={currentPriorityGasPrice}
-                      onChange={(event, value) => {
-                        this.setState({ currentPriorityGasPrice: value as number });
-
-                        onSetPriorityGasPrice?.(value as number, unit);
-                      }}
-                      valueLabelFormat={(value) => value.toFixed(2)}
-                    />
-                  </Box>
-                )}
-                <Box className={classes.gasPriceHelpBox}>
-                  <FormHelperText className={classes.gasPriceHelp}>
-                    {currentPriorityGasPrice.toFixed(2)} {unit.toString()}
-                  </FormHelperText>
-                </Box>
-              </Box>
-            </FormRow>
-          )}
-        </FormAccordion>
+            onSetPriorityGasPrice?.(value, unit);
+          }}
+        />
         <FormRow last>
           <FormLabel />
           <ButtonGroup classes={{ container: classes.buttons }}>

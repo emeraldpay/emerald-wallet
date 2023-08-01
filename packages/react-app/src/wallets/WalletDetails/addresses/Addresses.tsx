@@ -133,12 +133,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
                 const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainCode);
 
                 const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount);
-                const tokensBalance =
+                const tokenBalance =
                   tokens.selectors
                     .selectBalances(state, blockchainCode, info.address)
                     ?.filter((balance) => balance.isPositive()) ?? [];
 
-                info.balances[info.address] = [balance, ...tokensBalance];
+                info.balances[info.address] = [balance, ...tokenBalance];
 
                 return info;
               }),

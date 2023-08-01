@@ -1,4 +1,5 @@
 import { SettingsOptions, TokenData } from '@emeraldwallet/core';
+import { GasPriceType } from '../index';
 
 export const moduleName = 'application';
 
@@ -26,6 +27,15 @@ export interface ApplicationState {
   settingsUpdated: boolean;
   terms: string;
   tokens: TokenData[];
+}
+
+export interface DefaultFee<T = GasPriceType> {
+  max: T;
+  min: T;
+  std: T;
+  priority_max?: string;
+  priority_min?: string;
+  priority_std?: string;
 }
 
 export interface ConfigAction {

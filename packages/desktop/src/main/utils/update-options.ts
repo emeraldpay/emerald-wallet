@@ -1,6 +1,8 @@
-import { SettingsOptions } from '@emeraldwallet/core';
+import { Logger, SettingsOptions } from '@emeraldwallet/core';
 import fetch from 'node-fetch';
 import { options as defaults } from '../../../defaults.json';
+
+const log = Logger.forCategory('Store::UpdateOptions');
 
 export default async function (appVersion: string, stored: SettingsOptions): Promise<typeof defaults> {
   const response = await fetch(
@@ -10,12 +12,16 @@ export default async function (appVersion: string, stored: SettingsOptions): Pro
   const exists = { ...defaults, ...stored };
 
   if (response.status === 200) {
-    const options = await response.json();
+    try {
+      const options = await response.json();
 
-    return {
-      ...exists,
-      ...(options as SettingsOptions),
-    };
+      return {
+        ...exists,
+        ...(options as SettingsOptions),
+      };
+    } catch (exception) {
+      log.error('Error while parsing options update from server:', exception);
+    }
   }
 
   return exists;

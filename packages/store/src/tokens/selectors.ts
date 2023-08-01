@@ -23,7 +23,7 @@ export function selectBalances(state: IState, blockchain: BlockchainCode, addres
     const { [blockchain]: blockchainBalances } = balancesByBlockchains;
 
     if (blockchainBalances != null) {
-      const { [address]: addressBalance } = blockchainBalances;
+      const { [address.toLowerCase()]: addressBalance } = blockchainBalances;
 
       if (addressBalance != null) {
         const tokenRegistry = new TokenRegistry(state.application.tokens);
@@ -50,10 +50,10 @@ export function selectBalance(
     const { [blockchain]: blockchainBalances } = balancesByBlockchains;
 
     if (blockchainBalances != null) {
-      const { [address]: addressBalance } = blockchainBalances;
+      const { [address.toLowerCase()]: addressBalance } = blockchainBalances;
 
       if (addressBalance != null) {
-        const { [contractAddress]: tokenBalance } = addressBalance;
+        const { [contractAddress.toLowerCase()]: tokenBalance } = addressBalance;
 
         if (tokenBalance != null) {
           const tokenRegistry = new TokenRegistry(state.application.tokens);

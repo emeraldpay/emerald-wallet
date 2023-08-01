@@ -69,7 +69,7 @@ export const styles = createStyles({
 interface OwnProps {
   address: string;
   addressProps?: Record<string, unknown>;
-  addressWidth?: string;
+  addressWidth?: number | string;
   classes: Record<keyof typeof styles, string>;
   disabled?: boolean;
   editable?: boolean;

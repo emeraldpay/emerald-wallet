@@ -24,6 +24,10 @@ export enum IpcCommands {
   /** @deprecated */
   BROADCAST_TX = 'broadcast-tx',
 
+  // Allowance service
+  ALLOWANCE_SET_TOKENS = 'allowance-set-tokens',
+  ALLOWANCE_SUBSCRIBE_ADDRESS = 'allowance-subscribe-address',
+
   // Balance service
   BALANCE_SET_TOKENS = 'balance-set-tokens',
   BALANCE_SUBSCRIBE = 'balance-subscribe',

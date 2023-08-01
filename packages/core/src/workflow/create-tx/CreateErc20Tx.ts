@@ -222,7 +222,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public build(): EthereumTransaction {
     const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
 
-    const data = this.tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toString() });
+    const data = this.tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toFixed() });
 
     return {
       blockchain,

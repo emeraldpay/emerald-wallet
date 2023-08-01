@@ -1,6 +1,7 @@
 import * as accounts from './accounts';
 import * as addAccount from './add-account';
 import * as addressBook from './address-book';
+import * as allowance from './allowance';
 import * as application from './application';
 import * as blockchains from './blockchains';
 import * as connection from './connection';
@@ -17,6 +18,7 @@ export {
   accounts,
   addAccount,
   addressBook,
+  allowance,
   application,
   blockchains,
   connection,
@@ -30,25 +32,23 @@ export {
   wallet,
 };
 
+export { ConvertedBalance } from './accounts/types';
+export { Allowance, AllowanceType } from './allowance/types';
+export { DefaultFee } from './application/types';
+export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
 export {
   DEFAULT_FEE,
   FEE_KEYS,
   BroadcastData,
-  DefaultFee,
   FeePrices,
-  GasPrices,
   GasPriceType,
-  IState,
+  GasPrices,
   PriceSort,
   SignData,
   SignHandler,
-} from './types';
-
-export { ConvertedBalance } from './accounts/types';
-
-export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
-
+} from './transaction/types';
 export { StoredTransaction } from './txhistory/types';
+export { IState } from './types';
 
 export { rootReducer } from './root-reducer';
 export { BackendApiInvoker } from './BackendApiInvoker';

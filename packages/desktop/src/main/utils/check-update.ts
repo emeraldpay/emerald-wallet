@@ -1,3 +1,4 @@
+import { Logger } from '@emeraldwallet/core';
 import fetch from 'node-fetch';
 import * as semver from 'semver';
 
@@ -20,6 +21,8 @@ const { NODE_ENV } = process.env;
 const HOST: Readonly<string> =
   NODE_ENV === 'development' || NODE_ENV === 'verifying' ? 'cdn.emeraldpay.dev' : 'updates.emerald.cash';
 
+const log = Logger.forCategory('Store::CheckUpdates');
+
 export default async function (appVersion: string): Promise<Update> {
   let latest = true;
   let version = appVersion;
@@ -28,15 +31,19 @@ export default async function (appVersion: string): Promise<Update> {
     const response = await fetch(`https://${HOST}/latest.json?ref_app=desktop-wallet&ref_version=${appVersion}`);
 
     if (response.status === 200) {
-      const release = await response.json();
+      try {
+        const release = await response.json();
 
-      ({
-        releases: {
-          'emerald-wallet': { version },
-        },
-      } = release as Release);
+        ({
+          releases: {
+            'emerald-wallet': { version },
+          },
+        } = release as Release);
 
-      latest = semver.lte(version, appVersion);
+        latest = semver.lte(version, appVersion);
+      } catch (exception) {
+        log.error('Error while parsing application update from server:', exception);
+      }
     }
   }
 
