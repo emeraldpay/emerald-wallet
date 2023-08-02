@@ -19,23 +19,23 @@ pub fn if_time(ts: u64) -> Option<DateTime<Utc>> {
 }
 
 pub fn blockchain_from_code<S: AsRef<str>>(code: S) -> Result<u32, StateManagerError> {
-  match code.as_ref().to_ascii_uppercase().as_str() {
-    "BTC" => Ok(1),
-    "ETH" => Ok(100),
-    "ETC" => Ok(101),
-    "TESTBTC" => Ok(10003),
-    "GOERLI" => Ok(10005),
+  match code.as_ref().to_ascii_lowercase().as_str() {
+    "btc" => Ok(1),
+    "eth" => Ok(100),
+    "etc" => Ok(101),
+    "testbtc" => Ok(10003),
+    "goerli" => Ok(10005),
     _ => Err(StateManagerError::InvalidValue("Invalid blockchain code".to_string()))
   }
 }
 
 pub fn blockchain_to_code(id: u32) -> Result<String, StateManagerError> {
   match id {
-    1 => Ok("BTC".to_string()),
-    100 => Ok("ETH".to_string()),
-    101 => Ok("ETC".to_string()),
-    10003 => Ok("TESTBTC".to_string()),
-    10005 => Ok("GOERLI".to_string()),
+    1 => Ok("btc".to_string()),
+    100 => Ok("eth".to_string()),
+    101 => Ok("etc".to_string()),
+    10003 => Ok("testbtc".to_string()),
+    10005 => Ok("goerli".to_string()),
     _ => Err(StateManagerError::InvalidValue("Invalid blockchain id".to_string()))
   }
 }

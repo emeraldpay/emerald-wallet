@@ -399,6 +399,53 @@ export interface Cache {
   evict(id: string): Promise<void>;
 }
 
+/**
+ * Cached value for an ERC-20 Allowance
+ */
+export interface CachedAllowance {
+  /**
+   * Blockchain code. Supposed to be an Ethereum-based blockchain
+   */
+  blockchain: BlockchainCode;
+  /**
+   * Token address
+   */
+  token: Address;
+  /**
+   * Owner of the allowance
+   */
+  owner: Address;
+  /**
+   * Spender of the allowance
+   */
+  spender: Address;
+  /**
+   * Amount allowed to spend
+   */
+  value: string;
+}
+
+/**
+ * Manage ERC-20 Allowances
+ */
+export interface Allowances {
+  /**
+   * Add a new allowance to the cache
+   *
+   * @param wallet_id
+   * @param item
+   * @param ttl (optional) time to live for the cache entry in milliseconds
+   */
+  add(wallet_id: Uuid, item: CachedAllowance, ttl?: number): Promise<void>;
+
+  /**
+   * List all allowances, optionally filtered by a Wallet
+   *
+   * @param wallet_id
+   */
+  list(wallet_id?: Uuid): Promise<PageResult<CachedAllowance>>;
+}
+
 export interface PersistentState {
   /**
    * Manager Address Book
@@ -424,4 +471,9 @@ export interface PersistentState {
    * Manage XPub position
    */
   xpubpos: XPubPosition;
+
+  /**
+   * Manage ERC-20 Allowances
+   */
+  allowances: Allowances;
 }
