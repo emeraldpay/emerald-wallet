@@ -15,6 +15,7 @@ mod xpubpos;
 mod transaction_meta;
 mod balance;
 mod cache;
+mod allowances;
 
 use neon::prelude::*;
 
@@ -47,6 +48,9 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
   cx.export_function("cache_get", cache::get)?;
   cx.export_function("cache_put", cache::put)?;
   cx.export_function("cache_evict", cache::evict)?;
+
+  cx.export_function("allowances_add", allowances::add)?;
+  cx.export_function("allowances_list", allowances::list)?;
 
   Ok(())
 }
