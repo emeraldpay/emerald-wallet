@@ -70,7 +70,7 @@ function subscribeAccountTokens(entries: WalletEntry[]): void {
 
       if (address != null) {
         ipcRenderer
-          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, blockchainCode, address)
+          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, entry.id, blockchainCode, address)
           .catch((error) =>
             console.warn(`Can't subscribe to allowance for ${address} on ${blockchainCode} blockchain`, error),
           );
@@ -102,7 +102,7 @@ function* afterAccountImported(vault: IEmeraldVault, action: WalletImportedActio
     const { value: addressValue } = address;
 
     ipcRenderer
-      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, coin, addressValue)
+      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, entryId, coin, addressValue)
       .catch((error) => console.warn(`Can't subscribe to allowance for ${addressValue} on ${code} blockchain`, error));
 
     ipcRenderer
@@ -226,7 +226,7 @@ function* createHdAddress(vault: IEmeraldVault, action: CreateHdEntryAction): Sa
         const { coin } = Blockchains[shadowBlockchain].params;
 
         ipcRenderer
-          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, shadowBlockchain, shadowAddress)
+          .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, shadowEntryId, shadowBlockchain, shadowAddress)
           .catch((error) =>
             console.warn(`Can't subscribe to allowance for ${shadowAddress} on ${shadowBlockchain} blockchain`, error),
           );
@@ -251,7 +251,7 @@ function* createHdAddress(vault: IEmeraldVault, action: CreateHdEntryAction): Sa
     const { coin } = Blockchains[blockchain].params;
 
     ipcRenderer
-      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, blockchain, entryAddress)
+      .invoke(IpcCommands.ALLOWANCE_SUBSCRIBE_ADDRESS, entry.id, blockchain, entryAddress)
       .catch((error) =>
         console.warn(`Can't subscribe to tokens for ${entryAddress} on ${blockchain} blockchain`, error),
       );

@@ -37,7 +37,7 @@ describe('CreateTx', () => {
             initializing={false}
             tokenRegistry={tokenRegistry}
             tx={tx}
-            txFeeToken="ETH"
+            coinTicker="ETH"
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
             onChangeAmount={() => undefined}
@@ -63,7 +63,7 @@ describe('CreateTx', () => {
             initializing={false}
             tokenRegistry={tokenRegistry}
             tx={tx}
-            txFeeToken="ETH"
+            coinTicker="ETH"
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
             onChangeAmount={() => undefined}

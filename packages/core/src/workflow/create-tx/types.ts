@@ -39,7 +39,7 @@ export interface TxDetailsPlain {
   to?: string;
   totalEtherBalance?: string;
   totalTokenBalance?: string;
-  transferType?: number;
+  transferFrom?: string;
   type: string;
 }
 

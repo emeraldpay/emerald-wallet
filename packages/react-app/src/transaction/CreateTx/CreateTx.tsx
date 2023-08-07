@@ -2,12 +2,11 @@ import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
-import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
+import { AccountSelect, Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { CircularProgress, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { AmountField } from '../../common/AmountField';
 import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
-import { FromField } from '../../common/FromField';
 import { Asset, CommonAsset, SelectAsset } from '../../common/SelectAsset';
 import { ToField } from '../../common/ToField';
 
@@ -53,28 +52,32 @@ const styles = createStyles({
   },
 });
 
+interface Account {
+  address: string;
+  ownerAddress?: string;
+}
+
 export interface Props extends WithStyles<typeof styles> {
+  accounts: Record<string, Account>;
   asset: string;
-  assets: CommonAsset[];
   chain: BlockchainCode;
+  coinTicker: string;
   eip1559: boolean;
   fiatBalance?: BigAmount;
-  initializing: boolean;
   highGasPrice: GasPrices;
+  initializing: boolean;
   lowGasPrice: GasPrices;
-  ownAddresses?: string[];
   stdGasPrice: GasPrices;
   tokenRegistry: TokenRegistry;
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
-  txFeeToken: string;
   useEip1559: boolean;
   getBalance(address: string): WeiAny;
-  getBalancesByAddress?(address: string): string[];
-  getTokenBalance(token: string, address?: string): BigAmount;
+  getBalancesByAddress?(address: string, ownerAddress: string | null): string[];
+  getTokenBalance(token: string, address?: string, ownerAddress?: string): BigAmount;
   onCancel?(): void;
+  onChangeAccount?(key: string): void;
   onChangeAmount(amount: BigAmount): void;
   onChangeAsset?(tokenSymbol: string): void;
-  onChangeFrom?(from: string): void;
   onChangeGasLimit?(value: string): void;
   onChangeTo(to: string): void;
   onChangeUseEip1559(value: boolean, max: number, priority: number): void;
@@ -91,8 +94,6 @@ interface State {
 }
 
 class CreateTx extends React.Component<Props, State> {
-  private readonly minimalUnit = new Unit(9, '', undefined);
-
   constructor(props: Props) {
     super(props);
 
@@ -115,7 +116,7 @@ class CreateTx extends React.Component<Props, State> {
       const stdMaxGasPrice = factory(max);
       const stdPriorityGasPrice = factory(priority);
 
-      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit(this.minimalUnit);
+      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
       this.setState({
         currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
@@ -132,16 +133,16 @@ class CreateTx extends React.Component<Props, State> {
     }
 
     if (EthereumAddress.isValid(asset)) {
-      return getTokenBalance(asset, tx.from);
+      return getTokenBalance(asset, tx.from, this.isToken(tx) ? tx.transferFrom : undefined);
     }
 
     return getBalance(tx.from);
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const {
+      accounts,
       asset,
-      assets,
       chain,
       classes,
       eip1559,
@@ -149,14 +150,15 @@ class CreateTx extends React.Component<Props, State> {
       initializing,
       highGasPrice,
       lowGasPrice,
-      ownAddresses,
       stdGasPrice,
+      tokenRegistry,
       tx,
+      coinTicker,
       getBalancesByAddress,
       onCancel,
       onChangeAmount,
       onChangeAsset,
-      onChangeFrom,
+      onChangeAccount,
       onChangeTo,
       onChangeUseEip1559,
       onMaxClicked,
@@ -166,6 +168,14 @@ class CreateTx extends React.Component<Props, State> {
     } = this.props;
 
     const { currentMaxGasPrice, currentPriorityGasPrice, useEip1559 } = this.state;
+
+    const selectedAccount = this.isToken(tx) && tx.transferFrom != null ? `${tx.from}:${tx.transferFrom}` : tx.from;
+
+    let assets: CommonAsset[] = tokenRegistry.byBlockchain(tx.blockchain);
+
+    if (!this.isToken(tx) || tx.transferFrom == null) {
+      assets = [{ symbol: coinTicker }, ...assets];
+    }
 
     const assetsWithBalances = assets.reduce<Asset[]>((carry, { address, symbol }) => {
       const key = address ?? symbol;
@@ -188,7 +198,7 @@ class CreateTx extends React.Component<Props, State> {
     const lowPriorityGasPrice = factory(lowGasPrice.priority);
     const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
-    const unit = stdMaxGasPrice.getOptimalUnit(this.minimalUnit);
+    const unit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
     const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(unit).toNumber();
     const lowMaxGasPriceNumber = lowMaxGasPrice.getNumberByUnit(unit).toNumber();
@@ -202,12 +212,12 @@ class CreateTx extends React.Component<Props, State> {
       <>
         <FormRow>
           <FormLabel>From</FormLabel>
-          <FromField
-            accounts={ownAddresses}
+          <AccountSelect
+            accounts={accounts}
             disabled={initializing}
-            selectedAccount={tx.from}
-            onChangeAccount={onChangeFrom}
+            selectedAccount={selectedAccount}
             getBalancesByAddress={getBalancesByAddress}
+            onChange={onChangeAccount}
           />
         </FormRow>
         <FormRow>
@@ -280,6 +290,10 @@ class CreateTx extends React.Component<Props, State> {
         </FormRow>
       </>
     );
+  }
+
+  private isToken(tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx): tx is workflow.CreateERC20Tx {
+    return this.props.tokenRegistry.hasAddress(tx.blockchain, tx.getAsset());
   }
 }
 

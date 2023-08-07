@@ -17,52 +17,53 @@ limitations under the License.
 import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import cx from 'classnames';
+import classNames from 'classnames';
 import * as React from 'react';
 import { Pen3 as EditIcon } from '../../../icons';
 import Address from '../Address';
 import IdentityIcon from '../IdentityIcon';
 
 export const styles = createStyles({
-  accountBalance: {
-    fontSize: 15,
-    marginRight: 10,
-  },
-  accountBalances: {
-    display: 'flex',
-  },
-  accountContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  accountNameContainer: {
-    alignItems: 'center',
-    display: 'flex',
-  },
-  clickable: {
-    cursor: 'pointer',
-  },
-  editNameIconContainer: {
-    marginLeft: 5,
-  },
-  identityIcon: {
-    marginRight: 20,
-  },
-  nameEditIcon: {
-    cursor: 'pointer',
-    height: 13,
-    width: 13,
-  },
-  nameTypography: {
-    fontSize: 14,
-    lineHeight: 2,
-  },
   root: {
     alignItems: 'center',
     cursor: 'default',
     display: 'flex',
-    width: '100%',
+    minHeight: 50,
+  },
+  clickable: {
+    cursor: 'pointer',
+  },
+  account: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  accountBalances: {
+    display: 'flex',
+  },
+  accountBalance: {
+    fontSize: 14,
+    '& + &': {
+      marginLeft: 5,
+    },
+  },
+  accountName: {
+    alignItems: 'center',
+    display: 'flex',
+  },
+  accountNameEdit: {
+    marginLeft: 5,
+  },
+  accountNameEditIcon: {
+    cursor: 'pointer',
+    height: 13,
+    width: 13,
+  },
+  accountDescription: {
+    fontSize: 15,
+  },
+  accountIdentityIcon: {
+    marginRight: 20,
   },
 });
 
@@ -70,13 +71,14 @@ interface OwnProps {
   address: string;
   addressProps?: Record<string, unknown>;
   addressWidth?: number | string;
+  balances?: string[];
   classes: Record<keyof typeof styles, string>;
+  description?: React.ReactNode;
   disabled?: boolean;
   editable?: boolean;
   identity?: boolean;
   identityProps?: Record<string, unknown>;
   name?: string;
-  getBalancesByAddress?(address: string): string[];
   onClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onEditClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
@@ -86,82 +88,50 @@ export class Account extends React.PureComponent<OwnProps> {
     addressWidth: 'auto',
     disabled: false,
     editable: false,
-    name: null,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.getIdentityIcon = this.getIdentityIcon.bind(this);
-    this.getNameEditIcon = this.getNameEditIcon.bind(this);
-    this.getNameField = this.getNameField.bind(this);
-  }
-
-  public getIdentityIcon(): React.ReactElement {
-    const { identity, classes, address } = this.props;
-
-    if (identity == null) {
-      return null;
-    }
-
-    return (
-      <div className={classes.identityIcon}>
-        <IdentityIcon id={address} />
-      </div>
-    );
-  }
-
-  public getNameEditIcon(): React.ReactElement {
-    const { editable, classes, onEditClick } = this.props;
-
-    if (editable === false) {
-      return null;
-    }
-
-    return (
-      <div className={classes.editNameIconContainer} onClick={onEditClick}>
-        <EditIcon className={classes.nameEditIcon} />
-      </div>
-    );
-  }
-
-  public getNameField(): React.ReactElement {
-    const { name, classes } = this.props;
-
-    if (name === null) {
-      return null;
-    }
-
-    return (
-      <div className={classes.accountNameContainer}>
-        <Typography className={classes.nameTypography}>{name}</Typography>
-        {this.getNameEditIcon()}
-      </div>
-    );
-  }
-
-  public render(): React.ReactElement {
-    const { address, addressProps, addressWidth, classes, disabled, getBalancesByAddress, onClick } = this.props;
-
-    const newAddressProps = {
-      hideCopy: true,
-      id: address,
-      shortened: true,
-      ...addressProps,
-    };
+  public render(): React.ReactNode {
+    const {
+      address,
+      addressProps,
+      addressWidth,
+      balances,
+      classes,
+      description,
+      disabled,
+      editable,
+      identity,
+      name,
+      onClick,
+      onEditClick,
+    } = this.props;
 
     return (
       <div
-        className={cx(classes.root, { [classes.clickable]: !disabled })}
+        className={classNames(classes.root, { [classes.clickable]: !disabled })}
         onClick={(event) => !disabled && onClick?.(event)}
       >
-        {this.getIdentityIcon()}
-        <div className={classes.accountContainer} style={{ width: addressWidth }}>
-          {this.getNameField()}
-          <Address {...newAddressProps} />
-          {getBalancesByAddress != null && (
+        {identity != null && (
+          <div className={classes.accountIdentityIcon}>
+            <IdentityIcon id={address} />
+          </div>
+        )}
+        <div className={classes.account} style={{ width: addressWidth }}>
+          {name != null && (
+            <div className={classes.accountName}>
+              <Typography>{name}</Typography>
+              {editable && (
+                <div className={classes.accountNameEdit} onClick={onEditClick}>
+                  <EditIcon className={classes.accountNameEditIcon} />
+                </div>
+              )}
+            </div>
+          )}
+          <Address hideCopy shortened address={address} {...addressProps} />
+          {description != null && <Typography className={classes.accountDescription}>{description}</Typography>}
+          {balances != null && (
             <div className={classes.accountBalances}>
-              {getBalancesByAddress(address).map((balance, index) => (
+              {balances.map((balance, index) => (
                 <Typography key={`balance[${index}]`} className={classes.accountBalance} color="secondary">
                   {balance}
                 </Typography>

@@ -1,15 +1,17 @@
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { blockchainIdToCode } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState } from '../types';
 import { Allowance, moduleName } from './types';
 
+export function getAddressAllowances(state: IState, blockchain: BlockchainCode, address: string): Allowance[] {
+  const { allowedFor = {}, approvedBy = {} } = state[moduleName][blockchain]?.[address] ?? {};
+
+  return [...Object.values(approvedBy), ...Object.values(allowedFor)].flat();
+}
+
 export function getEntryAllowances(state: IState, entry: WalletEntry): Allowance[] {
   if (isEthereumEntry(entry) && entry.address != null) {
-    const blockchainCode = blockchainIdToCode(entry.blockchain);
-
-    const { allowedFor = {}, approvedBy = {} } = state[moduleName][blockchainCode]?.[entry.address.value] ?? {};
-
-    return [...Object.values(approvedBy).flat(), ...Object.values(allowedFor).flat()];
+    return getAddressAllowances(state, blockchainIdToCode(entry.blockchain), entry.address.value);
   }
 
   return [];

@@ -42,11 +42,11 @@ const SelectEntry: React.FC<OwnProps & StateProps> = ({ disabled, entries, selec
       <Account
         address={entry.address.value}
         addressProps={{ hideCopy: true }}
-        addressWidth={380}
+        addressWidth={450}
+        balances={selected ? undefined : getBalances(entry)}
         disabled={disabled}
         identity={true}
         onClick={selected ? onOpenMenu : () => onEntryClick(entry)}
-        getBalancesByAddress={selected ? undefined : () => getBalances(entry)}
       />
     );
   };
@@ -78,11 +78,13 @@ export default connect<StateProps, unknown, OwnProps, IState>((state) => ({
     const balance = accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0));
 
     if (isEthereumEntry(entry) && entry.address != null) {
-      const tokenBalances = tokens.selectors.selectBalances(state, blockchain, entry.address.value) ?? [];
+      const tokenBalances = tokens.selectors.selectBalances(state, blockchain, entry.address.value);
 
-      return [balance, ...tokenBalances.filter((tokenBalance) => tokenBalance.isPositive())].map(formatAmount);
+      return [balance, ...tokenBalances.filter((tokenBalance) => tokenBalance.isPositive())].map((amount) =>
+        formatAmount(amount),
+      );
     }
 
-    return [balance].map(formatAmount);
+    return [balance].map((amount) => formatAmount(amount));
   },
 }))(SelectEntry);

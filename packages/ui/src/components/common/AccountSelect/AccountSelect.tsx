@@ -14,121 +14,148 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { StyleRules, Theme } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Account } from '../Account';
+import Monospace from '../Monospace';
 
-const styles = (theme: Theme): StyleRules => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    width: '100%',
-  },
-});
+interface AccountItem {
+  address: string;
+  ownerAddress?: string;
+}
+
+interface Accounts {
+  [key: string]: AccountItem | string;
+}
 
 interface OwnProps {
-  accounts?: string[];
-  classes: Record<string, string>;
+  accounts?: Accounts;
   disabled?: boolean;
   selectedAccount?: string;
-  getBalancesByAddress?(address: string): string[];
+  getBalancesByAddress?(address: string, ownerAddress: string | null): string[];
   onChange?(account: string): void;
 }
 
 interface StateProps {
-  anchorElement?: HTMLDivElement;
-  selectedIndex?: number;
+  menuElement?: HTMLDivElement;
+  selectedAccount?: string;
 }
 
 export class AccountSelect extends React.Component<OwnProps, StateProps> {
   constructor(props) {
     super(props);
 
-    const { accounts = [], selectedAccount } = props;
+    const { accounts = {} } = props;
 
-    const selectedIndex = selectedAccount == null ? 0 : accounts.indexOf(selectedAccount);
+    let { selectedAccount } = props;
+
+    if (selectedAccount == null) {
+      [selectedAccount] = Object.keys(accounts);
+    }
 
     this.state = {
-      anchorElement: null,
-      selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
+      selectedAccount,
+      menuElement: null,
     };
 
     this.renderAccounts = this.renderAccounts.bind(this);
   }
 
-  public handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-    this.setState({ anchorElement: event.currentTarget });
+  public handleMenuOpen = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    this.setState({ menuElement: event.currentTarget });
   };
 
-  public handleMenuItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number): void => {
-    this.setState({ selectedIndex: index, anchorElement: null });
-
-    const { accounts = [], onChange } = this.props;
-
-    if (onChange != null && accounts.length > 0) {
-      onChange(this.props.accounts[index]);
-    }
+  public handleMenuClose = (): void => {
+    this.setState({ menuElement: null });
   };
 
-  public handleClose = (): void => {
-    this.setState({ anchorElement: null });
+  public handleMenuItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, selectedAccount: string): void => {
+    this.setState({ selectedAccount, menuElement: null });
+
+    this.props.onChange?.(selectedAccount);
   };
 
-  public renderAccounts(): React.ReactElement[] {
-    const { accounts = [], getBalancesByAddress } = this.props;
+  public renderAccounts(): React.ReactNode[] {
+    const { accounts = {}, getBalancesByAddress } = this.props;
 
-    return accounts.map((account, index) => (
-      <MenuItem key={account} selected={index === this.state.selectedIndex}>
-        <Account
-          address={account}
-          addressProps={{ hideCopy: true }}
-          identity={true}
-          getBalancesByAddress={getBalancesByAddress}
-          onClick={(event) => this.handleMenuItemClick(event, index)}
-        />
-      </MenuItem>
-    ));
+    return Object.entries(accounts).map(([key, account]) => {
+      const { address, ownerAddress = null } = typeof account === 'string' ? { address: account } : account;
+
+      let description: React.ReactNode;
+
+      if (ownerAddress != null) {
+        description = (
+          <>
+            Owner <Monospace text={ownerAddress} />
+          </>
+        );
+      }
+
+      return (
+        <MenuItem key={key} selected={key === this.state.selectedAccount}>
+          <Account
+            address={address}
+            addressProps={{ hideCopy: true }}
+            balances={getBalancesByAddress?.(address, ownerAddress)}
+            description={description}
+            identity={true}
+            onClick={(event) => this.handleMenuItemClick(event, key)}
+          />
+        </MenuItem>
+      );
+    });
   }
 
-  public renderSelected(): React.ReactElement {
-    const { accounts = [], disabled = false } = this.props;
+  public renderSelected(): React.ReactNode {
+    const { accounts = {}, disabled = false } = this.props;
 
-    if (accounts.length === 0) {
+    if (Object.keys(accounts).length === 0) {
       return <div>No accounts provided</div>;
     }
 
-    const selected = accounts[this.state.selectedIndex];
+    const { [this.state.selectedAccount]: selected } = accounts;
 
     if (selected == null) {
       return null;
     }
 
+    const { address, ownerAddress = null } = typeof selected === 'string' ? { address: selected } : selected;
+
+    let description: React.ReactNode;
+
+    if (ownerAddress != null) {
+      description = (
+        <>
+          Owner <Monospace text={ownerAddress} />
+        </>
+      );
+    }
+
     return (
       <Account
-        address={selected}
-        addressWidth={380}
+        address={address}
+        addressWidth={450}
+        description={description}
         disabled={disabled}
         identity={true}
-        onClick={this.handleListItemClick}
+        onClick={this.handleMenuOpen}
       />
     );
   }
 
-  public render(): React.ReactElement {
-    const { classes } = this.props;
-    const { anchorElement } = this.state;
+  public render(): React.ReactNode {
+    const { menuElement } = this.state;
 
     return (
-      <div className={classes.root}>
+      <>
         {this.renderSelected()}
-        <Menu anchorEl={anchorElement} open={anchorElement != null} onClose={this.handleClose}>
+        <Menu anchorEl={menuElement} open={menuElement != null} onClose={this.handleMenuClose}>
           {this.renderAccounts()}
         </Menu>
-      </div>
+      </>
     );
   }
 }
 
-export default withStyles(styles)(AccountSelect);
+export default AccountSelect;
