@@ -1,20 +1,5 @@
-export { EthereumMessage, isStructuredMessage } from './ethereum';
-export {
-  INFINITE_ALLOWANCE,
-  MAX_DISPLAY_ALLOWANCE,
-  InputDataDecoder,
-  Token,
-  TokenAmount,
-  TokenData,
-  TokenInstances,
-  TokenRegistry,
-  decodeData,
-  isToken,
-  isWrappedToken,
-  tokenAbi,
-  wrapTokenAbi,
-} from './tokens';
-export { InputUtxo } from './Bitcoin';
+/* eslint sort-exports/sort-exports: error */
+
 export {
   BlockchainCode,
   Blockchains,
@@ -31,5 +16,24 @@ export {
 } from './blockchains';
 export { Coin, CoinCode, getCoinAsset } from './coin';
 export { CoinTicker, CoinTickerCode, isEthereumCoinTicker } from './coinTicker';
+export {
+  DecodedInput,
+  DecodedType,
+  INFINITE_ALLOWANCE,
+  InputDataDecoder,
+  MAX_DISPLAY_ALLOWANCE,
+  Token,
+  TokenAmount,
+  TokenData,
+  TokenInstances,
+  TokenRegistry,
+  decodeData,
+  isToken,
+  isWrappedToken,
+  tokenAbi,
+  wrapTokenAbi,
+} from './tokens';
+export { EthereumMessage, isStructuredMessage } from './ethereum';
 export { HDPath } from './HDPath';
 export { IBlockchain } from './IBlockchain';
+export { InputUtxo } from './Bitcoin';

@@ -25,9 +25,13 @@ function setAddressAllowance(
   if (tokenRegistry.hasAddress(blockchain, contractAddress)) {
     const token = tokenRegistry.byAddress(blockchain, contractAddress);
 
-    const type = address === ownerAddress ? AllowanceType.ALLOWED_FOR : AllowanceType.APPROVED_BY;
+    const allowanceAddress = address.toLowerCase();
+    const allowanceContractAddress = contractAddress.toLowerCase();
 
-    const oldAllowances = state[blockchain]?.[address]?.[type]?.[contractAddress] ?? [];
+    const type =
+      allowanceAddress === ownerAddress.toLowerCase() ? AllowanceType.ALLOWED_FOR : AllowanceType.APPROVED_BY;
+
+    const oldAllowances = state[blockchain]?.[allowanceAddress]?.[type]?.[allowanceContractAddress] ?? [];
     const allowances = [...oldAllowances];
 
     const newAllowance: Allowance = {
@@ -41,7 +45,7 @@ function setAddressAllowance(
     };
 
     if (allowances.length > 0) {
-      const index = allowances.findIndex((item) => item.spenderAddress === spenderAddress);
+      const index = allowances.findIndex((item) => item.spenderAddress.toLowerCase() === spenderAddress.toLowerCase());
 
       if (index > -1) {
         allowances[index] = newAllowance;
@@ -55,11 +59,11 @@ function setAddressAllowance(
     return produce(state, (draft) => {
       draft[blockchain] = {
         ...draft[blockchain],
-        [address]: {
-          ...draft[blockchain]?.[address],
+        [allowanceAddress]: {
+          ...draft[blockchain]?.[allowanceAddress],
           [type]: {
-            ...draft[blockchain]?.[address]?.[type],
-            [contractAddress]: allowances,
+            ...draft[blockchain]?.[allowanceAddress]?.[type],
+            [allowanceContractAddress]: allowances,
           },
         },
       };

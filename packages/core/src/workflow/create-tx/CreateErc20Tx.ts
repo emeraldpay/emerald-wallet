@@ -6,11 +6,6 @@ import { Contract } from '../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
 import { Tx, TxDetailsPlain, TxTarget, ValidationResult, targetFromNumber } from './types';
 
-export enum TransferType {
-  STANDARD,
-  DELEGATE,
-}
-
 export interface ERC20TxDetails {
   amount: BigAmount;
   asset: string;
@@ -24,7 +19,7 @@ export interface ERC20TxDetails {
   to?: string;
   totalBalance?: WeiAny;
   totalTokenBalance?: BigAmount;
-  transferType: TransferType;
+  transferFrom?: string;
   type: EthereumTransactionType;
 }
 
@@ -33,16 +28,7 @@ const TxDefaults: Omit<ERC20TxDetails, 'amount' | 'asset' | 'blockchain' | 'type
   gas: DEFAULT_GAS_LIMIT_ERC20,
   target: TxTarget.MANUAL,
   to: undefined,
-  transferType: TransferType.STANDARD,
 };
-
-export function transferFromNumber(value?: number): TransferType {
-  if (value === TransferType.DELEGATE.valueOf()) {
-    return TransferType.DELEGATE;
-  }
-
-  return TransferType.STANDARD;
-}
 
 function fromPlainDetails(tokenRegistry: TokenRegistry, plain: TxDetailsPlain): ERC20TxDetails {
   const units = tokenRegistry.byAddress(plain.blockchain, plain.asset).getUnits();
@@ -62,7 +48,7 @@ function fromPlainDetails(tokenRegistry: TokenRegistry, plain: TxDetailsPlain): 
     to: plain.to,
     totalBalance: plain.totalEtherBalance == null ? undefined : decoder(plain.totalEtherBalance),
     totalTokenBalance: plain.totalTokenBalance == null ? undefined : BigAmount.decode(plain.totalTokenBalance, units),
-    transferType: transferFromNumber(plain.transferType),
+    transferFrom: plain.transferFrom,
     type: parseInt(plain.type, 16) === 2 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
   };
 }
@@ -82,7 +68,7 @@ function toPlainDetails(tx: ERC20TxDetails): TxDetailsPlain {
     to: tx.to,
     totalEtherBalance: tx.totalBalance?.encode(),
     totalTokenBalance: tx.totalTokenBalance?.encode(),
-    transferType: tx.transferType.valueOf(),
+    transferFrom: tx.transferFrom,
     type: `0x${tx.type.toString(16)}`,
   };
 }
@@ -100,7 +86,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public to?: string;
   public totalBalance?: WeiAny;
   public totalTokenBalance?: BigAmount;
-  public transferType: TransferType;
+  public transferFrom?: string;
   public type: EthereumTransactionType;
 
   private readonly token: Token;
@@ -145,7 +131,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     this.to = details.to;
     this.totalBalance = details.totalBalance;
     this.totalTokenBalance = details.totalTokenBalance;
-    this.transferType = details.transferType;
+    this.transferFrom = details.transferFrom;
     this.type = details.type;
 
     const zeroAmount = amountFactory(details.blockchain)(0) as WeiAny;
@@ -222,7 +208,12 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   public build(): EthereumTransaction {
     const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
 
-    const data = this.tokenContract.functionToData('transfer', { _to: to, _value: amount.number.toFixed() });
+    const value = amount.number.toFixed();
+
+    const data =
+      this.transferFrom == null
+        ? this.tokenContract.functionToData('transfer', { _to: to, _value: value })
+        : this.tokenContract.functionToData('transferFrom', { _from: this.transferFrom, _to: to, _value: value });
 
     return {
       blockchain,

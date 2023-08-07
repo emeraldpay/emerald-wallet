@@ -2,17 +2,30 @@ import { BlockchainCode, PersistentState, TokenData } from '@emeraldwallet/core'
 
 export const moduleName = 'tokens';
 
+export enum TokenBalanceBelong {
+  ANY,
+  OWN,
+  ALLOWED,
+}
+
+export interface TokenBalanceFilter {
+  belonging?: TokenBalanceBelong;
+  belongsTo?: string;
+}
+
 export interface TokenBalance {
   decimals: number;
   symbol: string;
   unitsValue: string;
 }
 
+interface AddressBalance {
+  [contractAddress: string]: TokenBalance | undefined;
+}
+
 export type TokensState = {
   [blockchain in BlockchainCode]?: {
-    [address: string]: {
-      [contractAddress: string]: TokenBalance;
-    };
+    [address: string]: AddressBalance | undefined;
   };
 };
 

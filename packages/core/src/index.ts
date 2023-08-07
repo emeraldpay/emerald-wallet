@@ -15,6 +15,8 @@ export {
   CoinCode,
   CoinTicker,
   CoinTickerCode,
+  DecodedInput,
+  DecodedType,
   EthereumMessage,
   HDPath,
   IBlockchain,

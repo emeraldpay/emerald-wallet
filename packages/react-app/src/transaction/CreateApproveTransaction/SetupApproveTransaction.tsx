@@ -1,4 +1,4 @@
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, EthereumEntry, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -13,7 +13,17 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import { ApproveTarget, ValidationResult } from '@emeraldwallet/core/lib/workflow';
-import { Allowance, FEE_KEYS, GasPrices, IState, accounts, allowance, tokens, transaction } from '@emeraldwallet/store';
+import {
+  Allowance,
+  FEE_KEYS,
+  GasPrices,
+  IState,
+  TokenBalanceBelong,
+  accounts,
+  allowance,
+  tokens,
+  transaction,
+} from '@emeraldwallet/store';
 import { Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { CircularProgress, IconButton, Tooltip, createStyles, makeStyles } from '@material-ui/core';
 import { AllInclusive as InfiniteIcon } from '@material-ui/icons';
@@ -68,8 +78,6 @@ interface StateProps {
 interface DispatchProps {
   getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
 }
-
-const minimalUnit = new Unit(9, '', undefined);
 
 const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   balances,
@@ -136,7 +144,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
   const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0), [currentBlockchain]);
 
-  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(minimalUnit));
+  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
   const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
 
   const [stdMaxGasPrice, setStdMaxGasPrice] = React.useState(zeroAmount);
@@ -202,7 +210,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         setHighPriorityGasPrice(factory(avgMiddle.priority));
         setLowPriorityGasPrice(factory(avgLast.priority));
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(minimalUnit);
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
         setGasPriceUnit(gasPriceOptimalUnit);
         setGasPriceUnits(newStdMaxGasPrice.units);
@@ -507,7 +515,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return zero;
       }
 
-      return tokens.selectors.selectBalance(state, blockchain, entry.address.value, token.address) ?? zero;
+      return (
+        tokens.selectors.selectBalance(state, blockchain, entry.address.value, token.address, {
+          belonging: TokenBalanceBelong.OWN,
+        }) ?? zero
+      );
     },
     getTokenFiatBalance(amount) {
       const [{ fiatBalance }] = accounts.selectors.withFiatConversion(state, [amount]);

@@ -1,4 +1,4 @@
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
@@ -98,12 +98,12 @@ interface OwnProps {
 }
 
 interface StateProps {
+  addresses: Record<string, string>;
   balanceByToken: Record<string, BigAmount>;
   eip1559: boolean;
   isHardware: boolean;
-  ownAddresses: string[];
   recoverBlockchain: IBlockchain;
-  tokensData: TokenData[];
+  tokenDataList: TokenData[];
   wrongBlockchain: IBlockchain;
   getBalancesByAddress(address: string): string[];
 }
@@ -116,16 +116,14 @@ interface DispatchProps {
   signTransaction(tx: workflow.CreateEthereumTx, password?: string): Promise<void>;
 }
 
-const minimalUnit = new Unit(9, '', undefined);
-
 const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
-  entry: { address: fromAddress },
-  eip1559,
+  addresses,
   balanceByToken,
+  eip1559,
+  entry: { address: fromAddress },
   isHardware,
-  ownAddresses,
   recoverBlockchain,
-  tokensData,
+  tokenDataList,
   wrongBlockchain,
   checkGlobalKey,
   estimateGas,
@@ -139,8 +137,8 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [initializing, setInitializing] = useState(true);
   const [stage, setStage] = useState(Stages.SETUP);
 
-  const [address, setAddress] = React.useState(ownAddresses[0]);
-  const [token, setToken] = React.useState(tokensData[0]);
+  const [address, setAddress] = React.useState(Object.keys(addresses)[0]);
+  const [token, setToken] = React.useState(tokenDataList[0]);
 
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
@@ -171,13 +169,13 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
   const onTokenChange = React.useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-      const tokenData = tokensData.find((item) => item.symbol === value);
+      const tokenData = tokenDataList.find((item) => item.symbol === value);
 
       if (tokenData != null) {
         setToken(tokenData);
       }
     },
-    [tokensData],
+    [tokenDataList],
   );
 
   const onCreateTransaction = useCallback(async () => {
@@ -262,7 +260,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
         setHighPriorityGasPrice(new Wei(avgMiddle.priority));
         setLowPriorityGasPrice(new Wei(avgLast.priority));
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(minimalUnit);
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
         const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
         const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
@@ -301,22 +299,18 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             <>
               <FormRow>
                 <FormLabel>Address</FormLabel>
-                {ownAddresses.length === 1 ? (
-                  <>{address}</>
-                ) : (
-                  <AccountSelect
-                    accounts={ownAddresses}
-                    selectedAccount={address}
-                    getBalancesByAddress={getBalancesByAddress}
-                    onChange={setAddress}
-                  />
-                )}
+                <AccountSelect
+                  accounts={addresses}
+                  selectedAccount={address}
+                  getBalancesByAddress={getBalancesByAddress}
+                  onChange={setAddress}
+                />
               </FormRow>
-              {tokensData.length > 1 && (
+              {tokenDataList.length > 1 && (
                 <FormRow>
                   <FormLabel>Token</FormLabel>
                   <TextField select value={token.symbol} onChange={onTokenChange}>
-                    {tokensData.map((item) => (
+                    {tokenDataList.map((item) => (
                       <MenuItem key={item.symbol} value={item.symbol}>
                         {item.symbol}
                       </MenuItem>
@@ -540,7 +534,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     let entryTokenBalances: TokenAmount[] = [];
 
     if (entry.address != null) {
-      entryTokenBalances = tokens.selectors.selectBalances(state, recoverBlockchainCode, entry.address?.value) ?? [];
+      entryTokenBalances = tokens.selectors.selectBalances(state, recoverBlockchainCode, entry.address?.value);
     }
 
     let isHardware = false;
@@ -564,28 +558,30 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-    const tokensUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
-    const tokensData =
-      tokenRegistry.byBlockchain(recoverBlockchainCode)?.filter(({ symbol }) => tokensUnit.includes(symbol)) ?? [];
+    const tokenUnit = entryTokenBalances.filter((balance) => balance.isPositive()).map(({ units }) => units.base.code);
+    const tokenDataList = tokenRegistry
+      .byBlockchain(recoverBlockchainCode)
+      .filter(({ symbol }) => tokenUnit.includes(symbol));
 
-    const uniqueAddresses =
-      accounts.selectors
-        .findWalletByEntryId(state, entry.id)
-        ?.entries.reduce<Set<string>>(
-          (carry, item) =>
-            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
-          new Set(),
-        ) ?? new Set();
+    const entries = wallet?.entries.filter((entry) => !entry.receiveDisabled) ?? [];
+
+    const addresses = Object.fromEntries(
+      entries.reduce<Map<string, string>>(
+        (carry, { address, blockchain }) =>
+          address != null && blockchain === entry.blockchain ? carry.set(address.value, address.value) : carry,
+        new Map(),
+      ),
+    );
 
     return {
+      addresses,
       balanceByToken,
       isHardware,
       recoverBlockchain,
       wrongBlockchain,
       eip1559: recoverBlockchain.params.eip1559 ?? false,
-      ownAddresses: [...uniqueAddresses],
-      tokensData: [
-        ...tokensData,
+      tokenDataList: [
+        ...tokenDataList,
         {
           address: '',
           symbol: recoverBlockchain.params.coinTicker,

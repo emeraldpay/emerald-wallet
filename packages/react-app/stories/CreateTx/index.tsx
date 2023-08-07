@@ -2,11 +2,11 @@ import { Satoshi, WEIS } from '@emeraldpay/bigamount-crypto';
 import { Wei } from '@emeraldpay/bigamount-crypto/lib/ethereum';
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, EthereumTransactionType, TokenRegistry, workflow } from '@emeraldwallet/core';
+import { AccountSelect } from '@emeraldwallet/ui';
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import { AmountField } from '../../src/common/AmountField';
-import { FromField } from '../../src/common/FromField';
 import { ToField } from '../../src/common/ToField';
 import Confirm from '../../src/transaction/CreateBitcoinTransaction/Confirm';
 import CreateBitcoinTransaction from '../../src/transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
@@ -35,8 +35,6 @@ const ethereumTx = new workflow.CreateEthereumTx({
   type: EthereumTransactionType.EIP1559,
 });
 
-const assets = [{ symbol: 'ETC' }];
-
 const tokenRegistry = new TokenRegistry([]);
 
 storiesOf('CreateTx Ethereum', module)
@@ -45,8 +43,8 @@ storiesOf('CreateTx Ethereum', module)
   .add('Create ETC', () => {
     return (
       <CreateTx
+        accounts={{ 0: { address: '0x1' } }}
         asset="ETC"
-        assets={assets}
         chain={BlockchainCode.Goerli}
         eip1559={false}
         highGasPrice={{ max: 0, priority: 0 }}
@@ -55,7 +53,7 @@ storiesOf('CreateTx Ethereum', module)
         stdGasPrice={{ max: 0, priority: 0 }}
         tokenRegistry={tokenRegistry}
         tx={ethereumTx}
-        txFeeToken="ETC"
+        coinTicker="ETC"
         useEip1559={false}
         getBalance={() => new Wei(0)}
         getTokenBalance={() => new Wei(0)}
@@ -68,8 +66,8 @@ storiesOf('CreateTx Ethereum', module)
   })
   .add('Create EIP-1559', () => (
     <CreateTx
+      accounts={{ 0: { address: '0x1' } }}
       asset="ETG"
-      assets={assets}
       chain={BlockchainCode.Goerli}
       eip1559={true}
       highGasPrice={{ max: '30000000000', priority: '3000000000' }}
@@ -78,7 +76,7 @@ storiesOf('CreateTx Ethereum', module)
       stdGasPrice={{ max: '20000000000', priority: '2000000000' }}
       tokenRegistry={tokenRegistry}
       tx={ethereumTx}
-      txFeeToken="ETC"
+      coinTicker="ETC"
       useEip1559={true}
       getBalance={() => new Wei(0)}
       getTokenBalance={() => new Wei(0)}
@@ -103,7 +101,7 @@ storiesOf('CreateTx Ethereum', module)
       onMaxClick={(callback) => callback(new Wei(0))}
     />
   ))
-  .add('FromField', () => <FromField accounts={['0x1', '02']} />)
+  .add('FromField', () => <AccountSelect accounts={{ 0: '0x1', 1: '02' }} />)
   .add('ToField', () => <ToField blockchain={BlockchainCode.Goerli} onChange={action('onChangeToField')} />);
 
 const bitcoinTx = new workflow.CreateBitcoinTx(

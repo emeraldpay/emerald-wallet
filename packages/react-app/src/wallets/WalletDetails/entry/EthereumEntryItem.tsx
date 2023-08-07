@@ -247,7 +247,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           return carry;
         }
 
-        const balances = tokens.selectors.selectBalances(state, blockchainCode, address.value) ?? [];
+        const balances = tokens.selectors.selectBalances(state, blockchainCode, address.value);
 
         return tokens.selectors.aggregateBalances([...carry, ...balances]);
       }, []),

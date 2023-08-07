@@ -1,4 +1,4 @@
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -103,8 +103,6 @@ interface DispatchProps {
   signTransaction(tx: EthereumTransaction, entryId?: string, password?: string): Promise<void>;
 }
 
-const minimalUnit = new Unit(9, '', undefined);
-
 const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps> = ({
   entryId,
   ethTx,
@@ -130,7 +128,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   const factory = React.useMemo(() => amountFactory(ethTx.blockchain), [ethTx.blockchain]);
 
   const txGasPrice = factory(ethTx.maxGasPrice ?? ethTx.gasPrice ?? defaultFee?.std ?? 0);
-  const txGasPriceUnit = txGasPrice.getOptimalUnit(minimalUnit);
+  const txGasPriceUnit = txGasPrice.getOptimalUnit(undefined, undefined, 6);
 
   const [useEip1559, setUseEip1559] = React.useState(ethTx.type === EthereumTransactionType.EIP1559);
 

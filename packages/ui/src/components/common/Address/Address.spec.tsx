@@ -18,14 +18,14 @@ import Typography from '@material-ui/core/Typography';
 import { ThemeProvider } from '@material-ui/styles';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
-import Address from './Address';
 import { Theme } from '../../../index';
+import Address from './Address';
 
 describe('Address', () => {
   it('shows address', () => {
     const accountAddr = mount(
       <ThemeProvider theme={Theme}>
-        <Address id="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
+        <Address address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
       </ThemeProvider>,
     );
 
@@ -35,7 +35,7 @@ describe('Address', () => {
   it('has showCheck == false by default', () => {
     const accountAddr = shallow(
       <ThemeProvider theme={Theme}>
-        <Address id="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
+        <Address address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
       </ThemeProvider>,
     );
 
@@ -45,7 +45,7 @@ describe('Address', () => {
   it('shows sanitized hex', () => {
     const accountAddr = mount(
       <ThemeProvider theme={Theme}>
-        <Address id="FBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" shortened={true} />
+        <Address address="FBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" shortened={true} />
       </ThemeProvider>,
     );
 

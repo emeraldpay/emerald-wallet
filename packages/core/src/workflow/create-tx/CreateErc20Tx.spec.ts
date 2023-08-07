@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, TokenRegistry } from '../../blockchains';
-import { CreateERC20Tx, TransferType } from './CreateErc20Tx';
+import { CreateERC20Tx } from './CreateErc20Tx';
 import { TxDetailsPlain, TxTarget, ValidationResult } from './types';
 
 describe('CreateErc20Tx', () => {
@@ -23,7 +23,6 @@ describe('CreateErc20Tx', () => {
 
     expect(tx.validate()).toBe(ValidationResult.NO_FROM);
     expect(tx.target).toBe(TxTarget.MANUAL);
-    expect(tx.transferType).toBe(TransferType.STANDARD);
     expect(tx.amount.number.toString()).toBe('0');
   });
 
@@ -236,7 +235,6 @@ describe('CreateErc20Tx', () => {
     expect(dump.maxGasPrice).toBe('10007000000/WEI');
     expect(dump.priorityGasPrice).toBe('5007000000/WEI');
     expect(dump.gas).toBe(42011);
-    expect(dump.transferType).toBe(0);
   });
 
   it('reads from dumps', () => {
@@ -254,7 +252,6 @@ describe('CreateErc20Tx', () => {
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       totalEtherBalance: '1000000000057/WEI',
       totalTokenBalance: '2000000000015/DAI',
-      transferType: 0,
       type: '0x2',
     };
 
@@ -269,38 +266,5 @@ describe('CreateErc20Tx', () => {
     expect(tx.maxGasPrice).toEqual(new Wei(10007, 'MWEI'));
     expect(tx.priorityGasPrice).toEqual(new Wei(5007, 'MWEI'));
     expect(tx.gas).toEqual(42011);
-    expect(tx.transferType).toEqual(TransferType.STANDARD);
-  });
-
-  it('reads from dumps - delegate mode', () => {
-    const dump: TxDetailsPlain = {
-      amount: '999580000000500002/DAI',
-      amountDecimals: 8,
-      asset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-      blockchain: BlockchainCode.ETH,
-      from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
-      gas: 42011,
-      maxGasPrice: '10007000000/WEI',
-      priorityGasPrice: '5007000000/WEI',
-      target: 1,
-      to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
-      totalEtherBalance: '1000000000057/WEI',
-      totalTokenBalance: '2000000000015/DAI',
-      transferType: 1,
-      type: '0x2',
-    };
-
-    const tx = CreateERC20Tx.fromPlain(tokenRegistry, dump);
-
-    expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057'));
-    expect(tx.totalTokenBalance?.equals(daiToken.getAmount('2000000000015'))).toBeTruthy();
-    expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
-    expect(tx.target).toEqual(TxTarget.SEND_ALL);
-    expect(tx.amount.equals(daiToken.getAmount('999580000000500002'))).toBeTruthy();
-    expect(tx.maxGasPrice).toEqual(new Wei(10007, 'MWEI'));
-    expect(tx.priorityGasPrice).toEqual(new Wei(5007, 'MWEI'));
-    expect(tx.gas).toEqual(42011);
-    expect(tx.transferType).toEqual(TransferType.DELEGATE);
   });
 });

@@ -1,6 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import {
   Blockchains,
+  DecodedInput,
   EthereumTx,
   MAX_DISPLAY_ALLOWANCE,
   TokenRegistry,
@@ -61,6 +62,7 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
     let amount: BigAmount = factory(toNumber(decoded.getValue()));
     let to = decoded.getRecipientAddress().toString();
 
+    let owner: string | undefined;
     let method: string | undefined;
 
     if (data.length > 0) {
@@ -69,12 +71,29 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
       method = decodedData.name;
 
       if (decodedData.inputs.length > 1 && tokenRegistry.hasAddress(code, to)) {
-        const [dataTo, dataAmount] = decodedData.inputs;
+        let dataFrom: DecodedInput | undefined;
+        let dataTo: DecodedInput | undefined;
+        let dataAmount: DecodedInput | undefined;
 
-        const tokenData = tokenRegistry.byAddress(code, to);
+        switch (method) {
+          case 'approve':
+          case 'transfer': {
+            [dataTo, dataAmount] = decodedData.inputs;
 
-        amount = tokenData.getAmount(dataAmount);
-        to = dataTo.toString(16);
+            break;
+          }
+          case 'transferFrom': {
+            [dataFrom, dataTo, dataAmount] = decodedData.inputs;
+          }
+        }
+
+        if (dataTo != null && dataAmount != null) {
+          const tokenData = tokenRegistry.byAddress(code, to);
+
+          amount = tokenData.getAmount(dataAmount);
+          owner = dataFrom?.toString(16);
+          to = dataTo.toString(16);
+        }
       }
     }
 
@@ -86,6 +105,12 @@ class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps 
           <FormLabel>From</FormLabel>
           <Account identity={true} address={decoded.getSenderAddress().toString()} />
         </FormRow>
+        {owner != null && (
+          <FormRow>
+            <FormLabel>Owner</FormLabel>
+            <Account identity={true} address={owner} />
+          </FormRow>
+        )}
         <FormRow>
           <FormLabel>To</FormLabel>
           <Account identity={true} address={to} />
