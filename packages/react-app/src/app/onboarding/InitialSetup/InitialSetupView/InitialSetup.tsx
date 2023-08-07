@@ -1,7 +1,6 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import * as React from 'react';
-
 import Terms from '../Terms';
 
 export interface OwnProps {
@@ -17,7 +16,7 @@ export interface StateProps {
 }
 
 class InitialSetup extends React.Component<DispatchProps & OwnProps & StateProps> {
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { currentTermsVersion, terms, onTermsAgreed } = this.props;
 
     return (

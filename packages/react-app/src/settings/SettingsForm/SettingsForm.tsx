@@ -3,9 +3,9 @@ import { MenuItem, Tab, TextField, createStyles, withStyles } from '@material-ui
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
-import SeedItem from './SeedItem';
 import { DispatchProps, MutableState, StateProps } from '../Settings/Settings';
 import { ExportResult } from '../Settings/types';
+import SeedItem from './SeedItem';
 
 const styles = createStyles({
   buttons: {
@@ -118,7 +118,7 @@ export class SettingsForm extends React.Component<Props, State> {
     }
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { classes, goBack, hasWallets, seeds, t, updateSeed } = this.props;
     const { currency, globalKeySet, language } = this.state;
 

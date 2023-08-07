@@ -20,7 +20,6 @@ export { default as About } from './app/AboutDialog/About';
 export { default as ConnectionStatus } from './app/layout/ConnectionStatus';
 export { default as Notification } from './app/layout/Notification';
 export { default as Header } from './app/layout/Header';
-export { default as Dashboard } from './app/layout/Dashboard';
 export { default as Home } from './app/layout/Home';
 
 // tx history

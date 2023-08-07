@@ -1,8 +1,7 @@
 import { BlockchainCode, IBlockchain, PersistentState } from '@emeraldwallet/core';
 import { IState, addressBook, screen, settings } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
-import { Button, MenuItem, TextField } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Button, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
 import ContactIcon from '@material-ui/icons/PersonAdd';
 import * as React from 'react';
 import { connect } from 'react-redux';

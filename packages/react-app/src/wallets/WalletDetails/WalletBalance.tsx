@@ -150,7 +150,7 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
     [wallet?.entries],
   );
 
-  const renderEntry = (entries: WalletEntry[]): React.ReactElement => {
+  const renderEntry = (entries: WalletEntry[]): React.ReactNode => {
     if (wallet != null) {
       const [entry] = entries;
 

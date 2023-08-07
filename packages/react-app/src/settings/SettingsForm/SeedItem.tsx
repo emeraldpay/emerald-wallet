@@ -96,7 +96,7 @@ function seedTypeName(type: SeedType): string {
   }
 }
 
-function seedTypeIcon(type: SeedType): React.ReactElement {
+function seedTypeIcon(type: SeedType): React.ReactNode {
   switch (type) {
     case 'ledger':
       return <Ledger color="secondary" fontSize="small" />;

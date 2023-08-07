@@ -68,7 +68,7 @@ class AddressBookMenuItem extends React.Component<Props> {
     }
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const {
       contact: {
         address: { address, type },

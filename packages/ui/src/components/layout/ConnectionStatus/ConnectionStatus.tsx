@@ -30,7 +30,7 @@ export interface StateProps {
 type Props = StateProps & WithStyles<typeof styles>;
 
 class ConnectionStatus extends React.Component<Props> {
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { classes, status } = this.props;
 
     let className: string | undefined;

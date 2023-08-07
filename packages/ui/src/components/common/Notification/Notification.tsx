@@ -71,7 +71,7 @@ class Notification extends React.Component<Props> {
       onClose,
     } = this.props;
 
-    let action: React.ReactNode | undefined;
+    let action: React.ReactNode;
 
     if (notificationButtonText != null) {
       action = (
