@@ -21,7 +21,7 @@ module.exports = {
     },
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'import', 'unused-imports'],
+  plugins: ['@typescript-eslint', 'import', 'sort-exports', 'unused-imports'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': [
@@ -45,6 +45,12 @@ module.exports = {
     ],
     'react/display-name': 'off',
     'react/prop-types': 'off',
+    'sort-exports/sort-exports': [
+      'off',
+      {
+        sortExportKindFirst: 'type',
+      },
+    ],
     'sort-imports': [
       'warn',
       {

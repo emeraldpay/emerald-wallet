@@ -51,7 +51,7 @@ install it from https://visualstudio.microsoft.com/downloads/#build-tools-for-vi
 
 .Install development tools
 ----
-npm install -g yarn
+npm install -g yarn@3
 ----
 
 .Install dependencies:

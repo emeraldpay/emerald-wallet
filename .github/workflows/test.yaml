@@ -43,7 +43,7 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: Install Yarn
-        run: npm install -g yarn
+        run: npm install -g yarn@3
 
       - name: Install dependencies
         run: yarn install
