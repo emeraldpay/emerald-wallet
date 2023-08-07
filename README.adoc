@@ -49,9 +49,9 @@ install it from https://visualstudio.microsoft.com/downloads/#build-tools-for-vi
 
 ==== Install NPM packages
 
-.Install development tools
+.Enable Corepack
 ----
-npm install -g yarn@3
+corepack enable
 ----
 
 .Install dependencies:

@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: '18.x'
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -41,9 +44,6 @@ jobs:
       - name: Setup Display (Linux)
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
-
-      - name: Install Yarn
-        run: npm install -g yarn@3
 
       - name: Install dependencies
         run: yarn install
