@@ -32,7 +32,7 @@ export class ChainSelector extends React.Component<OwnProps, State> {
     this.props.onChange?.(event.target.value);
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { blockchains } = this.props;
     const { value } = this.state;
 

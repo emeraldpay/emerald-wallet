@@ -26,7 +26,7 @@ interface OwnProps {
 }
 
 class Label extends React.Component<OwnProps & WithStyles<typeof styles>> {
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { classes, children, top } = this.props;
 
     return (

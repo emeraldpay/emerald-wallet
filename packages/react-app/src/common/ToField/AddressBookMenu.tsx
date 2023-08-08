@@ -39,7 +39,7 @@ class AddressBookMenu extends React.Component<Props, State> {
     this.preventId = id;
   };
 
-  public renderAddresses(): React.ReactElement | React.ReactElement[] {
+  public renderAddresses(): React.ReactNode {
     const { contacts } = this.props;
 
     if (contacts.length === 0) {
@@ -51,7 +51,7 @@ class AddressBookMenu extends React.Component<Props, State> {
     ));
   }
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     return (
       <div>
         <IconButton ref={(node) => (this.menuElement = node)} size="small" onClick={this.onClick}>

@@ -2,8 +2,7 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Balance, HashIcon } from '@emeraldwallet/ui';
-import { Button, Card, CardContent, Grid, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Button, Card, CardContent, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

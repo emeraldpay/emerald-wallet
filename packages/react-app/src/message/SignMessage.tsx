@@ -229,39 +229,36 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     [entryById, styles],
   );
 
-  const renderMessage = React.useCallback(
-    (message: unknown, keys: string[] = []): React.ReactNode | Array<React.ReactNode | null> => {
-      if (message != null && typeof message === 'object') {
-        return Object.entries(message).map(([key, value]) => {
-          const path = [...keys, key];
+  const renderMessage = React.useCallback((message: unknown, keys: string[] = []): React.ReactNode => {
+    if (message != null && typeof message === 'object') {
+      return Object.entries(message).map(([key, value]) => {
+        const path = [...keys, key];
 
-          if (typeof value === 'string') {
-            return (
-              <TableRow key={key}>
-                <TableCell>{path.join(' > ')}</TableCell>
-                <TableCell>{value}</TableCell>
-              </TableRow>
-            );
-          }
+        if (typeof value === 'string') {
+          return (
+            <TableRow key={key}>
+              <TableCell>{path.join(' > ')}</TableCell>
+              <TableCell>{value}</TableCell>
+            </TableRow>
+          );
+        }
 
-          if (value != null && typeof value === 'object') {
-            return renderMessage(value, path);
-          }
+        if (value != null && typeof value === 'object') {
+          return renderMessage(value, path);
+        }
 
-          return null;
-        });
-      }
+        return null;
+      });
+    }
 
-      return (
-        <TableRow>
-          <TableCell align="center" colSpan={2}>
-            Empty message
-          </TableCell>
-        </TableRow>
-      );
-    },
-    [],
-  );
+    return (
+      <TableRow>
+        <TableCell align="center" colSpan={2}>
+          Empty message
+        </TableCell>
+      </TableRow>
+    );
+  }, []);
 
   const isInvalid = validation === Validation.INVALID;
   const seed = getSeed(selectedAddress.entryId);

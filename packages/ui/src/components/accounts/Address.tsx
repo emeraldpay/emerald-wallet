@@ -35,7 +35,7 @@ interface OwnProps {
   disableCopy?: boolean;
   label?: string;
   loading?: boolean;
-  loadingIcon?: React.ReactElement;
+  loadingIcon?: React.ReactNode;
   onCopy?(address: string): void;
 }
 

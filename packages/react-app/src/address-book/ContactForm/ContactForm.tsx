@@ -84,7 +84,7 @@ class ContactForm extends React.Component<Props, State> {
     this.props.onCancel();
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { blockchains = [], classes, contact, title } = this.props;
     const { address, blockchain, label } = this.state;
 

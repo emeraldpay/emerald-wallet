@@ -24,7 +24,7 @@ type ClassKeys = 'container' | 'firstItem' | 'restItem';
 type ClassKeysVertical = 'containerVertical' | 'firstItemVertical' | 'restItemVertical';
 
 interface OwnProps {
-  children?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode;
   classes?: ClassNameMap<ClassKeys | ClassKeysVertical>;
   style?: React.CSSProperties;
   vertical?: boolean;

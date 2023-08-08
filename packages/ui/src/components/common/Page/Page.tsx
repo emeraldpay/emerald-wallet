@@ -48,13 +48,13 @@ const useStyles = makeStyles<Theme>((theme) =>
 
 interface OwnProps {
   className?: string;
-  footer?: React.ReactElement;
+  footer?: React.ReactNode;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
-  title: React.ReactElement | string;
+  title: React.ReactNode;
 }
 
-const getIconWithButton = (icon?: React.ReactElement): React.ReactElement => {
+const getIconWithButton = (icon?: React.ReactElement): React.ReactNode => {
   if (icon == null) {
     return <div />;
   }

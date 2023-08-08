@@ -23,14 +23,14 @@ interface OwnProps {
   disabled?: boolean;
   errorText?: string | null;
   hintText?: string | null;
-  leftIcon?: React.ReactElement;
+  leftIcon?: React.ReactNode;
   max?: number | string;
   maxRows?: number;
   min?: number | string;
   minRows?: number;
   multiline?: boolean;
   placeholder?: string;
-  rightIcon?: React.ReactElement;
+  rightIcon?: React.ReactNode;
   type?: string;
   value?: string | number;
   onChange?(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;

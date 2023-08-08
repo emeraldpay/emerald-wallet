@@ -43,7 +43,7 @@ export class InlineEdit extends React.Component<Props, State> {
     });
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { placeholder } = this.props;
     const { currentValue } = this.state;
 

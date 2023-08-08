@@ -1,15 +1,16 @@
+/* eslint sort-exports/sort-exports: error */
+
 import * as blockchains from './blockchains';
 import * as config from './config';
 import * as utils from './utils';
 import * as workflow from './workflow';
 
-export { blockchains, config, workflow, utils };
-
+export * as PersistentState from './persistentState';
+export { BackendApi } from './BackendApi';
+export { BitcoinRawTransaction, BitcoinRawTransactionInput, BitcoinRawTransactionOutput } from './transaction/bitcoin';
 export {
-  INFINITE_ALLOWANCE,
-  MAX_DISPLAY_ALLOWANCE,
-  Blockchains,
   BlockchainCode,
+  Blockchains,
   Coin,
   CoinCode,
   CoinTicker,
@@ -17,8 +18,10 @@ export {
   EthereumMessage,
   HDPath,
   IBlockchain,
+  INFINITE_ALLOWANCE,
   InputDataDecoder,
   InputUtxo,
+  MAX_DISPLAY_ALLOWANCE,
   Token,
   TokenAmount,
   TokenData,
@@ -42,33 +45,29 @@ export {
   tokenAbi,
   wrapTokenAbi,
 } from './blockchains';
-export { Ethereum as EthereumBlockchain, EthereumTx } from './blockchains/ethereum';
-export { EthereumAddress } from './blockchains/ethereum/EthereumAddress';
-export { default as IFrontApp } from './frontend/IFrontApp';
-export { default as DefaultLogger } from './logging/DefaultLogger';
-export { default as ILogger } from './logging/ILogger';
-export { default as Logger } from './logging/Logger';
-export { BitcoinRawTransaction, BitcoinRawTransactionInput, BitcoinRawTransactionOutput } from './transaction/bitcoin';
+export { Contract } from './Contract';
+export { Currency, CurrencyAmount, CurrencyCode } from './Currency';
 export {
   DEFAULT_GAS_LIMIT,
   DEFAULT_GAS_LIMIT_ERC20,
+  EthereumBasicTransaction,
   EthereumRawReceipt,
   EthereumRawTransaction,
   EthereumReceipt,
   EthereumTransaction,
   EthereumTransactionType,
-  EthereumBasicTransaction,
   isEthereumTransaction,
 } from './transaction/ethereum';
-export { getStandardUnits } from './asset';
-export { BackendApi } from './BackendApi';
-export { Contract } from './Contract';
-export { fromBaseUnits, quantitiesToHex, toBaseUnits, toBigNumber, toHex, toNumber } from './convert';
-export { Currency, CurrencyAmount, CurrencyCode } from './Currency';
-export { formatAmount, formatAmountPartial, formatFiatAmount, formatFiatAmountPartial } from './format';
+export { default as DefaultLogger } from './logging/DefaultLogger';
+export { EthereumAddress } from './blockchains/ethereum/EthereumAddress';
+export { Ethereum as EthereumBlockchain, EthereumTx } from './blockchains/ethereum';
+export { default as ILogger } from './logging/ILogger';
 export { IpcCommands } from './IpcCommands';
-export * as PersistentState from './persistentState';
+export { default as Logger } from './logging/Logger';
 export { SettingsManager, SettingsOptions, SettingsStore } from './settings';
 export { Versions } from './versions';
 export { WalletApi } from './WalletApi';
-export { default as WithDefaults } from './withDefaults';
+export { blockchains, config, utils, workflow };
+export { formatAmount, formatAmountPartial, formatFiatAmount, formatFiatAmountPartial } from './format';
+export { getStandardUnits } from './asset';
+export { quantitiesToHex, toBigNumber, toHex, toNumber } from './convert';

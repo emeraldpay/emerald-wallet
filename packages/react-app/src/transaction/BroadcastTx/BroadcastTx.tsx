@@ -44,7 +44,7 @@ interface DispatchProps {
 }
 
 class BroadcastTx extends React.Component<OwnProps & StateProps & DispatchProps & WithStyles<typeof styles>> {
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const {
       classes,
       data: { blockchain, signed },

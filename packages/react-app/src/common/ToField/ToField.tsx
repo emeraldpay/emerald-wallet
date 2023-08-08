@@ -39,7 +39,7 @@ class ToField extends React.Component<Props, State> {
     };
   }
 
-  getRightIcon = (): React.ReactElement => {
+  getRightIcon = (): React.ReactNode => {
     const { contacts } = this.props;
 
     return <AddressBookMenu contacts={contacts} onChange={(value) => this.onChange(value)} />;
@@ -93,7 +93,7 @@ class ToField extends React.Component<Props, State> {
     }
   };
 
-  public render(): React.ReactElement {
+  public render(): React.ReactNode {
     const { error, hint, value } = this.state;
 
     return (

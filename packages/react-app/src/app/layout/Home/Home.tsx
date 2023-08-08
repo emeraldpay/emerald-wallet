@@ -2,7 +2,7 @@ import { IState, application } from '@emeraldwallet/store';
 import { CircularProgress, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Dashboard from '../Dashboard';
+import WalletList from '../../../wallets/WalletList';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -32,7 +32,7 @@ export const Home: React.FC<HomeProps> = ({ connecting, statusMessage }) => {
       {statusMessage}
     </div>
   ) : (
-    <Dashboard />
+    <WalletList />
   );
 };
 
