@@ -30,14 +30,14 @@
   },
   "devDependencies": {
     "@types/color-hash": "^1.0.2",
-    "@types/jest": "^29.5.1",
-    "@types/node": "^20.1.5",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
     "@types/redux-logger": "^3.0.9",
     "electron": "22.3.9",
-    "jest": "^29.5.0",
-    "rimraf": "^5.0.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.0.4"
+    "jest": "^29.6.2",
+    "rimraf": "^5.0.1",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.1.6"
   },
   "jest": {
     "preset": "ts-jest",

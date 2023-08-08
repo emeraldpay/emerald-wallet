@@ -56,6 +56,9 @@ jobs:
         with:
           node-version: '18.x'
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -68,7 +71,7 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: Install global packages
-        run: npm install -g codecov yarn
+        run: npm install -g codecov
 
       - name: Install dependencies
         run: yarn install
