@@ -1,3 +1,6 @@
+// FIXME Refactor component
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { BigAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
@@ -24,7 +27,9 @@ import {
   GasPrices,
   IState,
   SignData,
+  TokenBalanceBelong,
   accounts,
+  allowance,
   screen,
   settings,
   tokens,
@@ -35,7 +40,6 @@ import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
-import { CommonAsset } from '../../common/SelectAsset';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTransaction';
 
@@ -88,26 +92,31 @@ interface DispatchFromProps {
   signAndSend(tokenRegistry: TokenRegistry, request: Request): void;
 }
 
-interface Props {
+interface Account {
+  address: string;
   asset: string;
-  assets: CommonAsset[];
+  ownerAddress?: string;
+}
+
+interface Props {
+  accounts: Record<string, Account>;
+  asset: string;
   amount: any;
   blockchain: BlockchainCode;
   eip1559: boolean;
   fiatRate?: any;
   from?: any;
   gasLimit: any;
-  ownAddresses: string[];
   selectedFromAddress?: string;
   to?: any;
   tokenRegistry: TokenRegistry;
-  txFeeSymbol: string;
+  coinTicker: string;
   value?: any;
   getBalance(address: string): WeiAny;
-  getBalancesByAddress(address: string): string[];
+  getBalancesByAddress(address: string, ownerAddress: string | null): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
   getFiatBalance(asset: string, address?: string): BigAmount | undefined;
-  getTokenBalance(contractAddress: string, address?: string): TokenAmount;
+  getTokenBalance(contractAddress: string, address?: string, ownerAddress?: string): TokenAmount;
 }
 
 const { TxTarget } = workflow;
@@ -116,7 +125,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   constructor(props: OwnProps & Props & DispatchFromProps) {
     super(props);
 
-    this.onChangeFrom = this.onChangeFrom.bind(this);
+    this.onChangeAccount = this.onChangeAccount.bind(this);
     this.onChangeTo = this.onChangeTo.bind(this);
     this.onChangeAsset = this.onChangeAsset.bind(this);
     this.onChangeGasLimit = this.onChangeGasLimit.bind(this);
@@ -212,27 +221,41 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     return this.props.tokenRegistry.hasAddress(tx.blockchain, tx.getAsset());
   }
 
-  public onChangeFrom = (from: string): void => {
-    if (from == null) {
-      return;
-    }
+  public onChangeAccount = (key: string): void => {
+    const {
+      accounts: { [key]: account },
+      getBalance,
+      getTokenBalance,
+    } = this.props;
 
-    const tx = this.transaction;
+    const { address, asset, ownerAddress } = account ?? {};
 
-    if (this.isToken(tx)) {
-      const balance = this.props.getTokenBalance(this.state.asset, from);
+    if (ownerAddress == null) {
+      if (address == null) {
+        return;
+      }
 
-      tx.setTotalBalance(balance);
+      const tx = this.transaction;
+
+      if (this.isToken(tx)) {
+        const balance = getTokenBalance(this.state.asset, address, ownerAddress);
+
+        tx.transferFrom = undefined;
+
+        tx.setTotalBalance(balance);
+      } else {
+        const balance = getBalance(address);
+
+        tx.setTotalBalance(balance);
+      }
+
+      tx.from = address;
+      tx.rebalance();
+
+      this.transaction = tx;
     } else {
-      const balance = this.props.getBalance(from);
-
-      tx.setTotalBalance(balance);
+      this.onChangeAsset(asset, ownerAddress);
     }
-
-    tx.from = from;
-    tx.rebalance();
-
-    this.transaction = tx;
   };
 
   public onChangeTo = (to: string | undefined): void => {
@@ -243,7 +266,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   };
 
-  public onChangeAsset = (value: any): void => {
+  public onChangeAsset = (value: string, ownerAddress?: string): void => {
     const { blockchain, tokenRegistry, getBalance, getTokenBalance } = this.props;
     const { asset, transaction } = this.state;
 
@@ -271,10 +294,11 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         gas: Math.max(transaction.gas, DEFAULT_GAS_LIMIT_ERC20),
         totalEtherBalance: undefined,
         totalTokenBalance: undefined,
+        transferFrom: ownerAddress,
       });
 
       tx.totalBalance = getBalance(tx.from!);
-      tx.setTotalBalance(getTokenBalance(value, tx.from));
+      tx.setTotalBalance(getTokenBalance(value, tx.from, ownerAddress));
     } else {
       const factory = amountFactory(blockchain);
 
@@ -470,12 +494,11 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     }
 
     const {
-      assets,
+      accounts,
       blockchain,
       eip1559,
-      ownAddresses,
       tokenRegistry,
-      txFeeSymbol,
+      coinTicker,
       getBalance,
       getBalancesByAddress,
       getFiatBalance,
@@ -490,8 +513,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       case PAGES.TX:
         return (
           <CreateTx
+            accounts={accounts}
             asset={asset}
-            assets={assets}
             chain={blockchain}
             eip1559={eip1559}
             initializing={initializing}
@@ -499,12 +522,11 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             lowGasPrice={lowGasPrice}
             stdGasPrice={stdGasPrice}
             tx={tx}
-            txFeeToken={txFeeSymbol}
+            coinTicker={coinTicker}
             fiatBalance={getFiatBalance(asset, tx.from)}
             tokenRegistry={tokenRegistry}
             useEip1559={useEip1559}
-            ownAddresses={ownAddresses}
-            onChangeFrom={this.onChangeFrom}
+            onChangeAccount={this.onChangeAccount}
             onChangeAsset={this.onChangeAsset}
             onChangeGasLimit={this.onChangeGasLimit}
             onChangeAmount={this.onChangeAmount}
@@ -570,32 +592,37 @@ export default connect(
   (state: IState, { entry, gasLimit, initialAsset }: OwnProps): Props => {
     const blockchainCode = blockchainIdToCode(entry.blockchain);
     const blockchain = Blockchains[blockchainCode];
-    const txFeeSymbol = blockchain.params.coinTicker;
+    const coinTicker = blockchain.params.coinTicker;
     const zero = amountFactory(blockchain.params.code)(0) as WeiAny;
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-    const assets: CommonAsset[] = [
-      { symbol: txFeeSymbol },
-      ...(tokenRegistry.byBlockchain(blockchain.params.code) ?? []),
-    ];
-
     const getEntryByAddress = (address: string): WalletEntry | undefined =>
       accounts.selectors.findAccountByAddress(state, address, blockchainCode);
 
-    const uniqueAddresses =
-      accounts.selectors
-        .findWalletByEntryId(state, entry.id)
-        ?.entries.filter((entry) => !entry.receiveDisabled)
-        .reduce<Set<string>>(
-          (carry, item) =>
-            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
-          new Set(),
-        ) ?? new Set();
+    const entries = accounts.selectors.findWalletByEntryId(state, entry.id)?.entries ?? [];
 
-    const ownAddresses = [...uniqueAddresses];
+    const accountByAddress = entries.reduce<Map<string, Account>>((carry, item) => {
+      if (item.blockchain === entry.blockchain && item.address != null) {
+        const { value: address } = item.address;
 
-    const selectedFromAddress = entry.address?.value ?? ownAddresses[0];
+        carry.set(address, { address: address, asset: coinTicker });
+
+        const allowances = allowance.selectors
+          .getEntryAllowances(state, item)
+          .filter(({ spenderAddress }) => spenderAddress === address);
+
+        allowances.forEach(({ allowance: { token }, ownerAddress, spenderAddress }) =>
+          carry.set(`${spenderAddress}:${ownerAddress}`, {
+            ownerAddress,
+            address: spenderAddress,
+            asset: token.address,
+          }),
+        );
+      }
+
+      return carry;
+    }, new Map());
 
     let amount: BigAmount = zero;
     let asset = initialAsset ?? blockchain.params.coinTicker;
@@ -609,15 +636,14 @@ export default connect(
     return {
       amount,
       asset,
-      assets,
-      ownAddresses,
-      getEntryByAddress,
-      selectedFromAddress,
-      txFeeSymbol,
+      coinTicker,
       tokenRegistry,
+      getEntryByAddress,
+      accounts: Object.fromEntries(accountByAddress.entries()),
       blockchain: blockchain.params.code,
       eip1559: blockchain.params.eip1559 ?? false,
       gasLimit: gasLimit ?? DEFAULT_GAS_LIMIT,
+      selectedFromAddress: entry.address?.value,
       getBalance(address) {
         const entry = getEntryByAddress(address);
 
@@ -627,17 +653,30 @@ export default connect(
 
         return accounts.selectors.getBalance(state, entry.id, zero);
       },
-      getBalancesByAddress(address) {
-        const entry = getEntryByAddress(address);
+      getBalancesByAddress(address, ownerAddress) {
+        let balance: WeiAny | undefined;
 
-        if (entry == null || !isEthereumEntry(entry)) {
-          return [];
+        if (ownerAddress == null) {
+          const entry = getEntryByAddress(address);
+
+          if (entry == null || !isEthereumEntry(entry)) {
+            return [];
+          }
+
+          balance = accounts.selectors.getBalance(state, entry.id, zero);
         }
 
-        const balance = accounts.selectors.getBalance(state, entry.id, zero) ?? zero;
-        const tokensBalances = tokens.selectors.selectBalances(state, blockchainCode, address) ?? [];
+        const tokenBalanceBelong = ownerAddress == null ? TokenBalanceBelong.OWN : TokenBalanceBelong.ALLOWED;
 
-        return [balance, ...tokensBalances.filter((tokenBalance) => tokenBalance.isPositive())].map(formatAmount);
+        const tokenBalances = tokens.selectors
+          .selectBalances(state, blockchainCode, address, { belonging: tokenBalanceBelong })
+          .filter((tokenBalance) => tokenBalance.isPositive());
+
+        if (balance == null) {
+          return tokenBalances.map((amount) => formatAmount(amount));
+        }
+
+        return [balance, ...tokenBalances].map((amount) => formatAmount(amount));
       },
       getFiatBalance(asset, address) {
         if (address == null) {
@@ -650,7 +689,10 @@ export default connect(
           const tokenData = tokenRegistry.byAddress(blockchainCode, asset);
           const zeroAmount = tokenData.getAmount(0);
 
-          balance = tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address) ?? zeroAmount;
+          balance =
+            tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address, {
+              belonging: TokenBalanceBelong.OWN,
+            }) ?? zeroAmount;
         } else {
           const entry = getEntryByAddress(address);
 
@@ -672,7 +714,7 @@ export default connect(
           settings.selectors.fiatCurrency(state),
         );
       },
-      getTokenBalance(contractAddress, address) {
+      getTokenBalance(contractAddress, address, ownerAddress) {
         const { code: blockchainCode } = blockchain.params;
 
         const tokenData = tokenRegistry.byAddress(blockchainCode, contractAddress);
@@ -682,7 +724,12 @@ export default connect(
           return zeroAmount;
         }
 
-        return tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address) ?? zeroAmount;
+        return (
+          tokens.selectors.selectBalance(state, blockchainCode, address, tokenData.address, {
+            belonging: ownerAddress == null ? TokenBalanceBelong.OWN : TokenBalanceBelong.ALLOWED,
+            belongsTo: ownerAddress,
+          }) ?? zeroAmount
+        );
       },
     };
   },

@@ -167,7 +167,6 @@ export class BalanceService implements Service {
                 type: 'TOKENS/SET_TOKEN_BALANCE',
                 payload: {
                   blockchain,
-                  entryId,
                   address: eventAddress,
                   balance: {
                     decimals: token.decimals,

@@ -115,7 +115,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           let tokenBalances: TokenAmount[] = [];
 
           if (isEthereumEntry(entry) && entry.address != null) {
-            tokenBalances = tokens.selectors.selectBalances(state, blockchainCode, entry.address.value) ?? [];
+            tokenBalances = tokens.selectors.selectBalances(state, blockchainCode, entry.address.value);
           }
 
           const accountBalance = carry[entry.blockchain];

@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Theme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { Theme, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../../icons';
 import ToggledIconButton from '../ToggledIconButton';
@@ -26,7 +24,6 @@ export const useStyles = makeStyles((theme: Theme) =>
     container: {
       alignItems: 'center',
       display: 'flex',
-      height: 28,
       width: '100%',
     },
     fullAddress: {
@@ -49,22 +46,22 @@ export const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface OwnProps {
+  address: string;
   hideCopy?: boolean;
-  id: string;
   shortened?: boolean;
 }
 
-const Address: React.FC<OwnProps> = ({ hideCopy, id, shortened }) => {
+const Address: React.FC<OwnProps> = ({ address, hideCopy, shortened }) => {
   const styles = useStyles();
 
   return (
     <div className={styles.container}>
-      <Typography className={shortened === true ? styles.shortenedAddress : styles.fullAddress}>{id}</Typography>
+      <Typography className={shortened === true ? styles.shortenedAddress : styles.fullAddress}>{address}</Typography>
       {hideCopy === true ? null : (
         <ToggledIconButton
           icon={<CloneIcon color="secondary" />}
           toggledIcon={<CheckCircle color="primary" />}
-          onClick={() => navigator.clipboard.writeText(id)}
+          onClick={() => navigator.clipboard.writeText(address)}
         />
       )}
     </div>

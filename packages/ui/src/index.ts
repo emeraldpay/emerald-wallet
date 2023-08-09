@@ -54,6 +54,7 @@ export { default as ImportPk, ImportPkType } from './components/accounts/ImportP
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { Input } from './components/common/Input';
 export { default as Logo } from './components/common/Logo';
+export { default as Monospace } from './components/common/Monospace';
 export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export {
   default as Notification,

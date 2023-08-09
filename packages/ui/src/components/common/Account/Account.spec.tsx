@@ -35,7 +35,7 @@ describe('Account', () => {
   it('shows Address when address provided', () => {
     const accountAddr = shallow(<Account classes={classes} address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />);
 
-    expect(accountAddr.find(Address).props().id).toEqual('0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98');
+    expect(accountAddr.find(Address).props().address).toEqual('0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98');
   });
 
   it('not editable by default', () => {

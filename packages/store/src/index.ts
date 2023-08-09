@@ -36,6 +36,7 @@ export { ConvertedBalance } from './accounts/types';
 export { Allowance, AllowanceType } from './allowance/types';
 export { DefaultFee } from './application/types';
 export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
+export { TokenBalanceBelong } from './tokens/types';
 export {
   DEFAULT_FEE,
   FEE_KEYS,

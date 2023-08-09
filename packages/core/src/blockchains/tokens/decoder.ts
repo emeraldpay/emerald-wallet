@@ -3,10 +3,11 @@ import { BigNumber as EtherBigNumber } from '@ethersproject/bignumber';
 import { BigNumber } from 'bignumber.js';
 import { tokenAbi } from './abi';
 
-type DecodedType = string | undefined;
+export type DecodedInput = BigNumber | number | string;
+export type DecodedType = string | undefined;
 
 interface Decoded {
-  inputs: ReadonlyArray<BigNumber | number | string>;
+  inputs: ReadonlyArray<DecodedInput>;
   name?: string;
   types: DecodedType[];
 }

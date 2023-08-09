@@ -1,4 +1,4 @@
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -14,7 +14,17 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
-import { Back, Button, ButtonGroup, FormAccordion, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
+import {
+  AccountSelect,
+  Back,
+  Button,
+  ButtonGroup,
+  FormAccordion,
+  FormLabel,
+  FormRow,
+  Page,
+  PasswordInput,
+} from '@emeraldwallet/ui';
 import {
   Box,
   CircularProgress,
@@ -30,7 +40,6 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AmountField } from '../../common/AmountField';
-import { FromField } from '../../common/FromField';
 import WaitLedger from '../../ledger/WaitLedger';
 
 const useStyles = makeStyles(
@@ -86,7 +95,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-  addresses: string[];
+  addresses: Record<string, string>;
   blockchain: BlockchainCode;
   eip1559: boolean;
   isHardware: boolean;
@@ -104,8 +113,6 @@ interface DispatchProps {
   goBack(): void;
   signTransaction(entryId: string, tx: workflow.CreateErc20WrappedTx, token: Token, password?: string): Promise<void>;
 }
-
-const minimalUnit = new Unit(9, '', undefined);
 
 const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   addresses,
@@ -154,7 +161,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroAmount);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroAmount);
 
-  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(minimalUnit));
+  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
   const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(0);
@@ -317,7 +324,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
         setHighPriorityGasPrice(factory(avgMiddle.priority));
         setLowPriorityGasPrice(factory(avgLast.priority));
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(minimalUnit);
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
         setGasPriceUnit(gasPriceOptimalUnit);
         setGasPriceUnits(newStdMaxGasPrice.units);
@@ -371,7 +378,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-  const gasPriceOptimalUnit = stdMaxGasPrice.getOptimalUnit(minimalUnit);
+  const gasPriceOptimalUnit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
   const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
   const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
@@ -398,12 +405,12 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
           </FormRow>
           <FormRow>
             <FormLabel>From</FormLabel>
-            <FromField
+            <AccountSelect
               accounts={addresses}
               disabled={initializing}
               selectedAccount={convertTx.address}
-              onChangeAccount={onChangeAddress}
               getBalancesByAddress={(address) => getBalancesByAddress(address)}
+              onChange={onChangeAddress}
             />
           </FormRow>
           <FormRow>
@@ -629,21 +636,21 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     }
 
-    const uniqueAddresses =
-      accounts.selectors
-        .findWalletByEntryId(state, entry.id)
-        ?.entries.filter((entry) => !entry.receiveDisabled)
-        .reduce<Set<string>>(
-          (carry, item) =>
-            item.blockchain === entry.blockchain && item.address != null ? carry.add(item.address.value) : carry,
-          new Set(),
-        ) ?? new Set();
+    const entries = wallet?.entries.filter((entry) => !entry.receiveDisabled) ?? [];
+
+    const addresses = Object.fromEntries(
+      entries.reduce<Map<string, string>>(
+        (carry, { address, blockchain }) =>
+          address != null && blockchain === entry.blockchain ? carry.set(address.value, address.value) : carry,
+        new Map(),
+      ),
+    );
 
     return {
+      addresses,
       blockchain,
       isHardware,
       token,
-      addresses: [...uniqueAddresses],
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
         if (address == null) {
@@ -670,7 +677,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
         const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address) ?? tokenZero;
 
-        return [balance, tokenBalance].map(formatAmount);
+        return [balance, tokenBalance].map((amount) => formatAmount(amount));
       },
       getEntryByAddress(address) {
         return accounts.selectors.findAccountByAddress(state, address, blockchain);
