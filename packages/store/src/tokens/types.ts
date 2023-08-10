@@ -24,9 +24,12 @@ interface AddressBalance {
 }
 
 export type TokensState = {
-  [blockchain in BlockchainCode]?: {
-    [address: string]: AddressBalance | undefined;
+  balances: {
+    [blockchain in BlockchainCode]?: {
+      [address: string]: AddressBalance | undefined;
+    };
   };
+  initialized: boolean;
 };
 
 export enum ActionTypes {

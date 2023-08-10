@@ -2,6 +2,7 @@ import { IpcCommands, Logger, SettingsOptions, TokenData, Versions, WalletApi } 
 import {
   BackendApiInvoker,
   RemoteAddressBook,
+  RemoteAllowances,
   RemoteBalances,
   RemoteCache,
   RemoteTxHistory,
@@ -22,6 +23,7 @@ import { Action } from 'redux';
 import checkUpdate from '../../main/utils/check-update';
 import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
+import { initAllowancesState } from './cache/allowances';
 import { initBalancesState } from './cache/balances';
 
 Logger.setInstance(ElectronLogger);
@@ -30,6 +32,7 @@ const log = Logger.forCategory('Store');
 
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
+  allowances: RemoteAllowances,
   balances: RemoteBalances,
   cache: RemoteCache,
   txHistory: RemoteTxHistory,
@@ -38,7 +41,9 @@ const api: WalletApi = {
   xPubPos: RemoteXPubPosition,
 };
 
-export const store = createStore(api, new BackendApiInvoker());
+const backendApi = new BackendApiInvoker();
+
+export const store = createStore(api, backendApi);
 
 function checkOptionsUpdates(appVersion: string, stored: SettingsOptions): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,22 +80,6 @@ function listenElectron(): void {
     log.debug(`Got action from IPC: ${JSON.stringify(action)}`);
 
     store.dispatch(action);
-
-    // TODO remove once we have an api to get history
-    if (
-      action.type === 'ACCOUNT/SET_BALANCE' &&
-      action.payload?.entryId != null &&
-      (action.payload?.utxo?.length ?? 0) > 0
-    ) {
-      const state = store.getState();
-      const entry = accounts.selectors.findEntry(state, action.payload.entryId);
-
-      store.dispatch({
-        balance: action.payload,
-        entry: entry,
-        type: 'WALLET/HISTORY/BALANCE_TX',
-      });
-    }
   });
 }
 
@@ -154,6 +143,8 @@ function startSync(): void {
 
   triggers.onceAccountsLoaded(store).then(() => {
     RemoteCache.get('rates').then((rates) => store.dispatch(settings.actions.setRates(JSON.parse(rates))));
+
+    triggers.onceTokenBalancesLoaded(store).then(() => initAllowancesState(api, backendApi, store));
 
     initBalancesState(api, store);
   });

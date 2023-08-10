@@ -1,4 +1,4 @@
-import { EntryIdOp } from '@emeraldpay/emerald-vault-core';
+import { EntryIdOp, Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 
 export class MemoryAddressBook {
@@ -12,7 +12,7 @@ export class MemoryAddressBook {
     return Promise.resolve(id);
   }
 
-  get(id): Promise<PersistentState.AddressbookItem> {
+  get(id: string): Promise<PersistentState.AddressbookItem> {
     return Promise.resolve(this.storage[id]);
   }
 
@@ -51,6 +51,33 @@ export class MemoryAddressBook {
   }
 }
 
+export class MemoryAllowances {
+  private allowances = new Map<Uuid, PersistentState.CachedAllowance[]>();
+
+  list(walletId?: Uuid): Promise<PersistentState.PageResult<PersistentState.CachedAllowance>> {
+    let items: PersistentState.CachedAllowance[];
+
+    if (walletId == null) {
+      items = [...this.allowances.values()].flat();
+    } else {
+      items = this.allowances.get(walletId) ?? [];
+    }
+
+    return Promise.resolve({
+      items,
+      cursor: '0',
+    });
+  }
+
+  set(walletId: Uuid, allowance: PersistentState.CachedAllowance, ttl?: number): Promise<void> {
+    const allowances = this.allowances.get(walletId) ?? [];
+
+    setTimeout(() => this.allowances.set(walletId, [...allowances, allowance]), ttl);
+
+    return Promise.resolve();
+  }
+}
+
 export class MemoryBalances {
   private balances = new Map<PersistentState.Address | PersistentState.XPub, PersistentState.Balance[]>();
 
@@ -74,14 +101,14 @@ export class MemoryCache {
     this.storage.delete(key);
   }
 
-  get(key: string): string | undefined {
-    return this.storage.get(key);
+  get(key: string): string | null {
+    return this.storage.get(key) ?? null;
   }
 
   set(key: string, value: string, ttl?: number): void {
     this.storage.set(key, value);
 
-    setTimeout(() => this.delete(key), ttl * 1000);
+    setTimeout(() => this.delete(key), (ttl ?? 0) * 1000);
   }
 }
 
@@ -101,11 +128,15 @@ export class MemoryTxHistory {
     filter?: PersistentState.TxHistoryFilter,
     query?: PersistentState.PageQuery,
   ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
-    const cursorIndex = query.cursor == null ? -1 : this.transactions.findIndex((tx) => tx.cursor === query.cursor);
+    const cursorIndex = query?.cursor == null ? -1 : this.transactions.findIndex((tx) => tx.cursor === query.cursor);
 
     const filtered = this.transactions
       .slice(cursorIndex > -1 ? cursorIndex : 0)
-      .filter(({ tx }) => tx.changes.some((change) => EntryIdOp.of(change.wallet).extractWalletId() === filter.wallet));
+      .filter(({ tx }) =>
+        tx.changes.some(
+          (change) => change.wallet != null && EntryIdOp.of(change.wallet).extractWalletId() === filter?.wallet,
+        ),
+      );
 
     const [lastItem] = filtered.slice(-1);
     const [lastTx] = this.transactions.slice(-1);
@@ -195,6 +226,22 @@ export class AddressBookMock implements PersistentState.Addressbook {
   }
 }
 
+export class AllowancesMock implements PersistentState.Allowances {
+  readonly allowances: MemoryAllowances;
+
+  constructor(allowances: MemoryAllowances) {
+    this.allowances = allowances;
+  }
+
+  add(walletId: Uuid, allowance: PersistentState.CachedAllowance, ttl?: number): Promise<void> {
+    return this.allowances.set(walletId, allowance, ttl);
+  }
+
+  list(walletId?: Uuid): Promise<PersistentState.PageResult<PersistentState.CachedAllowance>> {
+    return this.allowances.list(walletId);
+  }
+}
+
 export class BalancesMock implements PersistentState.Balances {
   readonly balances: MemoryBalances;
 
@@ -269,7 +316,7 @@ export class TxMetaMock implements PersistentState.TxMeta {
     this.txMeta = txMeta;
   }
 
-  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMetaItem> {
+  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMetaItem | null> {
     return this.txMeta.getMeta(blockchain, txid);
   }
 

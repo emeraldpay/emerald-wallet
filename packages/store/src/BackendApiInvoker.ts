@@ -1,4 +1,4 @@
-import { EstimationMode } from '@emeraldpay/api';
+import { DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
 import {
   BackendApi,
   BitcoinRawTransaction,
@@ -16,6 +16,10 @@ import { ipcRenderer } from 'electron';
 export class BackendApiInvoker implements BackendApi {
   broadcastSignedTx(blockchain: BlockchainCode, tx: string): Promise<string> {
     return ipcRenderer.invoke(IpcCommands.BROADCAST_TX, blockchain, tx);
+  }
+
+  describeAddress(blockchain: BlockchainCode, address: string): Promise<DescribeAddressResponse> {
+    return ipcRenderer.invoke(IpcCommands.DESCRIBE_ADDRESS, blockchain, address);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

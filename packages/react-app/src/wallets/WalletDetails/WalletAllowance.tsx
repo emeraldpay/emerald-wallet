@@ -1,15 +1,16 @@
+import { DescribeAddressControl } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
-import { Uuid } from '@emeraldpay/emerald-vault-core';
+import { EthereumEntry, Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, MAX_DISPLAY_ALLOWANCE, TokenAmount, formatAmountPartial } from '@emeraldwallet/core';
-import { Allowance, AllowanceType, IState, accounts, allowance, screen } from '@emeraldwallet/store';
+import { Allowance, AllowanceType, IState, accounts, allowances, screen } from '@emeraldwallet/store';
 import { Address, Button } from '@emeraldwallet/ui';
-import { ButtonGroup, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { ButtonGroup, SvgIcon, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
 import {
-  AccountCircle as AccountIcon,
   Create as AllowIcon,
   RemoveCircleOutline as AllowedForIcon,
   AddCircleOutline as ApprovedByIcon,
   DeveloperBoard as ContractIcon,
+  AccountCircle as PersonIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -73,23 +74,43 @@ interface OwnProps {
 }
 
 interface StateProps {
-  allowances: Allowance[];
+  entries: EthereumEntry[];
   hasBalances: boolean;
+  walletAllowances: Allowance[];
 }
 
 interface DispatchProps {
   gotoApprove(initialAllowance?: Allowance): void;
+  gotoTransfer(entries: EthereumEntry[], address: string, initialAllowance: Allowance): void;
 }
 
-const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({ allowances, hasBalances, gotoApprove }) => {
+const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  entries,
+  hasBalances,
+  walletAllowances,
+  gotoApprove,
+  gotoTransfer,
+}) => {
   const styles = useStyles();
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {allowances.length > 0 ? (
-          allowances.map((item) => {
-            const { blockchain, allowance, available, spenderAddress, token, type } = item;
+        {walletAllowances.length > 0 ? (
+          walletAllowances.map((item) => {
+            const {
+              blockchain,
+              allowance,
+              available,
+              ownerAddress,
+              ownerControl,
+              spenderAddress,
+              spenderControl,
+              token,
+              type,
+            } = item;
+
+            const addressControl = type === AllowanceType.ALLOWED_FOR ? spenderControl : ownerControl;
 
             const [allowanceValue, allowanceUnit] = formatAmountPartial(allowance);
             const [availableValue, availableUnit] = formatAmountPartial(available);
@@ -133,17 +154,14 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({ allo
                 </div>
                 <div>
                   <div className={styles.allowanceAddress}>
-                    {type === AllowanceType.ALLOWED_FOR ? (
-                      <>
-                        <AccountIcon className={styles.allowanceAddressIcon} color="secondary" />
-                        <Address address={spenderAddress} />
-                      </>
+                    {addressControl === DescribeAddressControl.CONTRACT ? (
+                      <ContractIcon className={styles.allowanceAddressIcon} color="secondary" />
+                    ) : spenderControl === DescribeAddressControl.PERSON ? (
+                      <PersonIcon className={styles.allowanceAddressIcon} color="secondary" />
                     ) : (
-                      <>
-                        <ContractIcon className={styles.allowanceAddressIcon} color="secondary" />
-                        <Address address={token.address} />
-                      </>
+                      <SvgIcon className={styles.allowanceAddressIcon} />
                     )}
+                    <Address address={type === AllowanceType.ALLOWED_FOR ? spenderAddress : ownerAddress} />
                   </div>
                 </div>
                 <div className={styles.allowanceActions}>
@@ -157,7 +175,12 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({ allo
                       <Button primary label="Change" onClick={() => gotoApprove(item)} />
                     </ButtonGroup>
                   ) : (
-                    <Button primary label="Transfer" variant="outlined" />
+                    <Button
+                      primary
+                      label="Transfer"
+                      variant="outlined"
+                      onClick={() => gotoTransfer(entries, spenderAddress, item)}
+                    />
                   )}
                 </div>
               </div>
@@ -187,6 +210,7 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({ allo
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
+    const entries = wallet?.entries.filter((entry): entry is EthereumEntry => isEthereumEntry(entry)) ?? [];
 
     let balances: BigAmount[] = [];
 
@@ -206,8 +230,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     );
 
     return {
-      allowances: allowance.selectors.getEntriesGroupedAllowances(state, wallet?.entries ?? []),
+      entries,
       hasBalances: hasBalance && hasTokenBalance,
+      walletAllowances: allowances.selectors.getEntriesGroupedAllowances(state, entries),
     };
   },
   (dispatch, { walletId }) => ({
@@ -220,6 +245,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           true,
         ),
       );
+    },
+    gotoTransfer(entries, address, initialAllowance) {
+      const entry = entries.find((entry) => entry.address?.value === address);
+
+      if (entry != null) {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry, initialAllowance }, null, true));
+      }
     },
   }),
 )(WalletAllowance);

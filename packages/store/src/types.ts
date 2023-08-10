@@ -3,7 +3,7 @@ import { Action, AnyAction, Dispatch } from 'redux';
 import { AccountsState, moduleName as accountsModule } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
 import { AddressBookState, moduleName as addressBookModule } from './address-book/types';
-import { AllowanceState, moduleName as allowanceModule } from './allowance/types';
+import { AllowanceState, moduleName as allowanceModule } from './allowances/types';
 import { ApplicationState, moduleName as applicationModule } from './application/types';
 import { BlockchainsState, moduleName as blockchainsModule } from './blockchains/types';
 import { ConnectionState, moduleName as connectionModule } from './connection/types';

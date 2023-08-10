@@ -1,5 +1,6 @@
 import { ConnectionStatus } from '@emeraldpay/api';
 import {
+  AddressClient,
   AuthenticationStatus,
   BlockchainClient,
   CredentialsContext,
@@ -24,6 +25,7 @@ type StatusListener = (state: Status) => void;
 interface ConnectionState {
   connectedAt: Date;
   authenticated: boolean;
+  addressConnected: boolean;
   blockchainConnected: boolean;
   marketConnected: boolean;
   monitoringConnected: boolean;
@@ -37,6 +39,7 @@ const log = Logger.forCategory('ApiAccess');
 
 export class EmeraldApiAccess {
   readonly address: string;
+  readonly addressClient: AddressClient;
   readonly blockchainClient: BlockchainClient;
   readonly marketClient: MarketClient;
   readonly transactionClient: TransactionClient;
@@ -70,6 +73,7 @@ export class EmeraldApiAccess {
     this.connectionState = {
       connectedAt: new Date(),
       authenticated: false,
+      addressConnected: false,
       blockchainConnected: false,
       marketConnected: false,
       monitoringConnected: false,
@@ -79,6 +83,7 @@ export class EmeraldApiAccess {
 
     const channelCredentials = this.credentials.getChannelCredentials();
 
+    this.addressClient = new AddressClient(address, channelCredentials, agents);
     this.blockchainClient = new BlockchainClient(address, channelCredentials, agents);
     this.marketClient = new MarketClient(address, channelCredentials, agents);
     this.monitoringClient = new MonitoringClient(address, channelCredentials, agents);
@@ -86,6 +91,11 @@ export class EmeraldApiAccess {
 
     this.credentials.setListener((status) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
+      this.verifyConnection();
+    });
+
+    this.addressClient.setConnectionListener((status) => {
+      this.connectionState.addressConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
 
@@ -117,6 +127,7 @@ export class EmeraldApiAccess {
       clearTimeout(this.pingTimeout);
     }
 
+    this.addressClient.channel.close();
     this.blockchainClient.channel.close();
     this.marketClient.channel.close();
     this.monitoringClient.channel.close();

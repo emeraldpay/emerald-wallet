@@ -27,6 +27,10 @@ export const REAL_BTC_TX =
   'd1a0ff49efcae7bc9aa922d97d4395de856d76c39ef5069a02205599f95b7e7eadc742c309100d4db42e33225f8766279502' +
   'd9f1068e8d517f2a012102e8e1d7659d6fbc0dbf653826937b09475ba6763c347138965bfebdb762a9b107f8ed0900';
 
+interface SeedAddresses {
+  [key: string]: string;
+}
+
 export class MemoryVault {
   entries: Record<EntryId, Array<CurrentAddress>> = {};
   passwords: Record<Uuid, string> = {};
@@ -63,11 +67,11 @@ export class VaultMock implements IEmeraldVault {
   }
 
   addEntry(): Promise<EntryId> {
-    return Promise.resolve(undefined);
+    return Promise.resolve('');
   }
 
   addWallet(): Promise<Uuid> {
-    return Promise.resolve(undefined);
+    return Promise.resolve('');
   }
 
   changeGlobalKey(): Promise<boolean> {
@@ -121,7 +125,7 @@ export class VaultMock implements IEmeraldVault {
   }
 
   importSeed(): Promise<Uuid> {
-    return Promise.resolve(undefined);
+    return Promise.resolve('');
   }
 
   isGlobalKeySet(): Promise<boolean> {
@@ -146,7 +150,7 @@ export class VaultMock implements IEmeraldVault {
     seedId: Uuid | SeedReference | SeedDefinition,
     blockchain: number,
     hdpaths: string[],
-  ): Promise<{ [key: string]: string }> {
+  ): Promise<SeedAddresses> {
     if (typeof seedId == 'object') {
       if (seedId.type == 'id') {
         const seed: IdSeedReference = seedId;
@@ -169,7 +173,7 @@ export class VaultMock implements IEmeraldVault {
           return Promise.resolve({});
         }
 
-        const result = {};
+        const result: SeedAddresses = {};
 
         hdpaths.forEach((hdpath) => {
           if (seedData[hdpath]) {

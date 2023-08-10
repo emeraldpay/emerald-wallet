@@ -5,9 +5,10 @@ import { BlockchainCode } from './blockchains';
  * =====================================================================================================================
  *
  * Set of interfaces for Persistent Store access and use.
- * The Persistent Store itself is supposed to be split into two parts, one on Electron side that does actual persistence,
+ * The Persistent Store itself is supposed to be split into two parts,
+ * one on the Electron side that does actual persistence,
  * and another one on the UI side to access it.
- * Implementation of the persisting layer is in the package @emeraldwallet/persistent-state
+ * Implementation of the persisting layer is in the package @emeraldwallet/persistent-state.
  *
  * =====================================================================================================================
  */
@@ -20,7 +21,7 @@ export type XPub = string;
 export interface PageQuery {
   /**
    * Optional cursor to continue fetching the results. As returned by `PageResult#cursor`.
-   * If not set the query starts from the beginning.
+   * If not, set the query starts from the beginning.
    */
   cursor?: string;
   /**
@@ -35,8 +36,9 @@ export interface PageQuery {
  */
 export interface PageResult<T> {
   /**
-   * Optional cursor to request a next page. When it's not set it means there is no following page.
-   * The cursor is supposed to be passed when querying the API
+   * Optional cursor to request a next page.
+   * When it's not set,it means there is no following page.
+   * The cursor is supposed to be passed when querying the API.
    */
   cursor?: string;
   /**
@@ -49,15 +51,15 @@ export enum State {
   PREPARED = 0,
   SUBMITTED = 10,
   /**
-   * When transaction is replaced by another tx, i.e., not included into blockchain.
+   * When a transaction is replaced by another tx, i.e., not included into blockchain.
    */
   REPLACED = 11,
   /**
-   * When transaction is included into blockchain. A normal and expected state after submission.
+   * When transaction is included in the blockchain. A normal and expected state after submission.
    */
   CONFIRMED = 12,
   /**
-   * A state when a transaction was just lost, i.e., not confirmed and not replaced
+   * A state when a transaction was just lost, i.e., not confirmed and not replaced.
    */
   DROPPED = 20,
 }
@@ -94,7 +96,7 @@ export interface Change {
   amount: string;
   asset: string;
   /**
-   * Specified if the amount is EARNED (i.e. a positive sign for amount) or SPENT (i.e., a negative sign)
+   * Specified if the amount is EARNED (i.e., a positive sign for amount) or SPENT (i.e., a negative sign)
    */
   direction: Direction;
   hdPath?: string;
@@ -105,21 +107,22 @@ export interface Change {
 export interface UnconfirmedTransaction {
   blockchain: number;
   /**
-   * Changes and references to the user wallets
+   * Changes and references to the user wallets.
    */
   changes: Change[];
   /**
-   * Application state of the transaction. In general, it's PREPARED->SUBMITTED->CONFIRMED, but have other states
+   * Application state of the transaction. In general, it's PREPARED -> SUBMITTED -> CONFIRMED, but has other states.
    */
   state: State;
   /**
-   * Timestamp of the moment when the transaction is known to the application. I.e. the moment whe transactions
-   * first created.
+   * Timestamp of the moment when the transaction is known to the application.
+   * I.e., the moment the transactions were first created.
    */
   sinceTimestamp: Date;
   /**
-   * Status of a transaction which is included into blockchain.
-   * It may be OK or FAILED. Before the inclusion it's UNKNOWN
+   * Status of a transaction which is included in the blockchain.
+   * It may be OK or FAILED.
+   * Before the inclusion, it's UNKNOWN.
    */
   status: Status;
   txId: string;
@@ -128,15 +131,15 @@ export interface UnconfirmedTransaction {
 
 export interface TransactionConfirmation {
   /**
-   * Block that contains the transaction
+   * Block that contains the transaction.
    */
   block: BlockRef;
   /**
-   * Position of the transaction in the block
+   * Position of the transaction in the block.
    */
   blockPos: number;
   /**
-   * Timestamp of the moment when the transaction is included in a block
+   * Timestamp of the moment when the transaction is included in a block.
    */
   confirmTimestamp: Date;
 }
@@ -153,88 +156,91 @@ export function isConfirmed(tx: Transaction): tx is ConfirmedTransaction {
 }
 
 /**
- * Criteria to select transactions when queried
+ * Criteria to select transactions when queried.
  */
 export interface TxHistoryFilter {
   /**
-   * Require a transaction known or confirmed after the specified moment
+   * Require a transaction known or confirmed after the specified moment.
    */
   after?: Date;
   /**
-   * Require a transaction known or confirmed before the specified moment
+   * Require a transaction known or confirmed before the specified moment.
    */
   before?: Date;
   /**
-   * Requre the specified state
+   * Require the specified state.
    */
   state?: State;
   /**
-   * Requre the specified status
+   * Require the specified status.
    */
   status?: Status;
   /**
-   * Require the specified wallet or its entry
+   * Require the specified wallet or its entry.
    */
   wallet?: Uuid | EntryId;
 }
 
 export interface TxHistory {
   /**
-   * Get current API Cursor for the specified address
+   * Get the current API Cursor for the specified address.
    *
    * @param target individual address or xpub
    */
   getCursor(target: Address | XPub): Promise<string | null>;
   /**
-   * Set current cursor received from remote API
+   * Set the current cursor received from remote API.
    *
    * @param target individual address or xpub
    * @param cursor cursor value
    */
   setCursor(target: Address | XPub, cursor: string): Promise<void>;
   /**
-   * Remove transaction from the storage
+   * Remove transaction from the storage.
    */
   remove(blockchain: number, txid: string): Promise<void>;
   /**
-   * Add or update existing transaction in the storage
+   * Add or update existing transaction in the storage.
    *
-   * @returns the stored version of just submitted transaction, which may have different values if it's merged/enhanced with already stored data
+   * @returns
+   *   the stored version of just submitted transaction,
+   *   which may have different values if it's merged/enhanced with already stored data
    */
   submit(tx: Transaction): Promise<Transaction>;
   /**
-   * Find transactions under the specified criteria
+   * Find transactions under the specified criteria.
    */
   query(filter?: TxHistoryFilter, query?: PageQuery): Promise<PageResult<Transaction>>;
 }
 
 export interface TxMetaItem {
   /**
-   * Blockchain
+   * Blockchain.
    */
   blockchain: BlockchainCode;
   /**
-   * Used assigned label
+   * Used assigned label.
    */
   label?: string;
   /**
-   * Timestamp when the meta was assigned by user
+   * Timestamp when user assigned the meta.
    */
   timestamp: Date;
   /**
-   * Transaction ID aka Hash
+   * Transaction ID aka Hash.
    */
   txId: string;
 }
 
 export interface TxMeta {
   /**
-   * Read meta for a transaction
+   * Read meta for a transaction.
    */
   get(blockchain: BlockchainCode, txid: string): Promise<TxMetaItem | null>;
   /**
-   * Persist the meta. If an existing meta has an older timestamp get replaced with new, otherwise it keeps it as is
-   * (i.e. always the newest meta)
+   * Persist the meta.
+   * If an existing meta has an older timestamp get replaced with new, otherwise keep it as is
+   * (i.e., always the newest meta).
    *
    * @return the most up-to-date meta, which may be just provided or an existing one
    */
@@ -242,17 +248,17 @@ export interface TxMeta {
 }
 
 /**
- * Criteria to select address book records when queried
+ * Criteria to select address book records when queried.
  */
 export interface AddressbookFilter {
   /**
-   * Filter by blockchain
+   * Filter by blockchain.
    */
   blockchain?: number | undefined;
 }
 
 /**
- * Addressbook Item details
+ * Addressbook item details.
  */
 export interface AddressbookItem {
   address: {
@@ -269,24 +275,24 @@ export interface AddressbookItem {
 
 export interface Addressbook {
   /**
-   * Add or update existing transaction in the storage
+   * Add or update existing transaction in the storage.
    */
   add(item: AddressbookItem): Promise<string>;
   /**
-   * Get address book item by id
+   * Get address book item by id.
    */
   get(id: string): Promise<AddressbookItem | null>;
   /**
-   * Remove an item from the address book
+   * Remove an item from the address book.
    */
   remove(id: string): Promise<void>;
   /**
-   * Find address book items under the specified criteria
+   * Find address book items under the specified criteria.
    */
   query(filter?: AddressbookFilter, query?: PageQuery): Promise<PageResult<AddressbookItem>>;
   /**
-   * Update and existing address book item with new values. Currently, it accepts to update only the label and
-   * description
+   * Update and existing address book item with new values.
+   * Currently, it accepts to update only the label and description.
    *
    * @param id id of the existing address book
    * @param item updated fields
@@ -296,20 +302,21 @@ export interface Addressbook {
 
 export interface XPubPosition {
   /**
-   * Get next position at the xpub
+   * Get the next position at the xpub.
    */
   getNext(xpub: XPub): Promise<number>;
   /**
-   * Set the current minimum position for the specified xpub. If the storage knows a larger position it stays on
-   * that position, otherwise moves up to the specified.
+   * Set the current minimum position for the specified xpub.
+   * If the storage knows a larger position, it stays in that position, otherwise moves up to the specified.
    *
-   * NOTE: It's the next position. I.e., if we have xpub with used address at position N and want to use then next
-   * address then set it as N+1 here.
+   * NOTE:
+   *   It's the next position.
+   *   I.e., if we have xpub with used address at position N and want to use the next address, then set it as N+1 here.
    */
   setNextAddressAtLeast(xpub: XPub, pos: number): Promise<void>;
   /**
-   * Set the current known position for the specified xpub. If the storage knows a larger position it stays on
-   * that position, otherwise moves up to the specified.
+   * Set the current known position for the specified xpub.
+   * If the storage knows a larger position, it stays in that position, otherwise moves up to the specified.
    */
   setCurrentAddressAt(xpub: XPub, pos: number): Promise<void>;
 }
@@ -319,19 +326,19 @@ export interface XPubPosition {
  */
 export interface Balance {
   /**
-   * Address
+   * Address.
    */
   address: Address;
   /**
-   * Amount encoded as a string
+   * Amount encoded as a string.
    */
   amount: string;
   /**
-   * Asset (ETHER, BTC, or a ERC20 code)
+   * Asset (ETHER, BTC, or a ERC20 code).
    */
   asset: string;
   /**
-   * BLockchain with balance
+   * Blockchain with balance.
    */
   blockchain: number;
   /**
@@ -340,16 +347,17 @@ export interface Balance {
   timestamp?: Date | undefined;
   /**
    * Individual components of the balance for the current address.
-   * Must contain only _unspent_ transactions and the total amount MUST equal the main `amount` field of the `Balance` object.
-   * If the total amount is not equal to the utxo sum then the utxo are ignored by the persistent store.
+   * Must contain only _unspent_ transactions and the total amount MUST equal the main `amount` field of the `Balance`
+   * object.
+   * If the total amount is not equal to the utxo sum, then the utxo are ignored by the persistent store.
    *
-   * Should be undefined for Ethereum.
+   * It should be undefined for Ethereum.
    */
   utxo?: Utxo[] | undefined;
 }
 
 /**
- * Bitcoin UTXO details
+ * Bitcoin UTXO details.
  */
 export interface Utxo {
   amount: string;
@@ -358,88 +366,93 @@ export interface Utxo {
 }
 
 /**
- * Manage current cached balances
+ * Manage current cached balances.
  */
 export interface Balances {
   /**
-   * List all balances per address or xpub
+   * List all balances per address or xpub.
+   *
    * @param address address or xpub
    */
   list(address: Address | XPub): Promise<Balance[]>;
   /**
-   * Remember a balance
+   * Remember a balance.
+   *
    * @param balance current value
    */
   set(balance: Balance): Promise<boolean>;
 }
 
 /**
- * A generic cache for data stored between walelt runs
+ * A generic cache for data stored between wallet runs.
  */
 export interface Cache {
   /**
-   * Put a value into cache
+   * Put a value into cache.
    *
-   * @param id id for data
+   * Note that the cache purges the data only occasionally and data may live longer in the cache.
+   *
+   * @param id id of data
    * @param value value (ex. a JSON)
-   * @param ttl_seconds (optionally) a Time To Live for that value. Note that the cache purges the data only occasionally and data may live longer in the cache
+   * @param [ttl_seconds] a Time To Live for that value.
    */
   put(id: string, value: string, ttl_seconds?: number | undefined): Promise<void>;
   /**
-   * Get known value. Return null if cache has no `value` for the specified `id`
+   * Get known value.
+   * Return null if cache has no `value` for the specified `id`.
    *
-   * @param id id for the data
+   * @param id id of the data
    */
   get(id: string): Promise<string | null>;
   /**
-   * Remove a value for the specified `id` from the cache
+   * Remove a value for the specified `id` from the cache.
    *
-   * @param id
+   * @param id id of the data
    */
   evict(id: string): Promise<void>;
 }
 
 /**
- * Cached value for an ERC-20 Allowance
+ * Cached value for an ERC-20 Allowance.
  */
 export interface CachedAllowance {
   /**
-   * Blockchain code. Supposed to be an Ethereum-based blockchain
+   * Amount allowed to spend.
+   */
+  amount: string;
+  /**
+   * Blockchain code. Supposed to be an Ethereum-based blockchain.
    */
   blockchain: BlockchainCode;
   /**
-   * Token address
-   */
-  token: Address;
-  /**
-   * Owner of the allowance
+   * Owner of the allowance.
    */
   owner: Address;
   /**
-   * Spender of the allowance
+   * Spender of the allowance.
    */
   spender: Address;
   /**
-   * Amount allowed to spend
+   * Token address.
    */
-  value: string;
+  token: Address;
 }
 
 /**
- * Manage ERC-20 Allowances
+ * Manage ERC-20 Allowances.
  */
 export interface Allowances {
   /**
-   * Add a new allowance to the cache
+   * Add a new allowance to the cache.
    *
    * @param wallet_id
    * @param item
-   * @param ttl (optional) time to live for the cache entry in milliseconds
+   * @param [ttl] time to live for the cache entry in milliseconds
    */
   add(wallet_id: Uuid, item: CachedAllowance, ttl?: number): Promise<void>;
 
   /**
-   * List all allowances, optionally filtered by a Wallet
+   * List all allowances, optionally filtered by a Wallet.
    *
    * @param wallet_id
    */
@@ -448,32 +461,31 @@ export interface Allowances {
 
 export interface PersistentState {
   /**
-   * Manager Address Book
+   * Manager Address Book.
    */
   addressbook: Addressbook;
   /**
-   * Manage current balance cache
+   * Manage ERC-20 Allowances.
+   */
+  allowances: Allowances;
+  /**
+   * Manage current balance cache.
    */
   balances: Balances;
   /**
-   * Generic cache
+   * Generic cache.
    */
   cache: Cache;
   /**
-   * Manage Transaction History
+   * Manage Transaction History.
    */
   txhistory: TxHistory;
   /**
-   * Manage Transaction Meta
+   * Manage Transaction Meta.
    */
   txmeta: TxMeta;
   /**
-   * Manage XPub position
+   * Manage XPub position.
    */
   xpubpos: XPubPosition;
-
-  /**
-   * Manage ERC-20 Allowances
-   */
-  allowances: Allowances;
 }

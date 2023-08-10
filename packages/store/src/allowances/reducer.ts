@@ -6,19 +6,30 @@ import {
   AllowanceAction,
   AllowanceState,
   AllowanceType,
-  SetAddressAllowanceAction,
+  InitAllowanceAction,
+  SetAllowanceAction,
 } from './types';
 
 const INITIAL_STATE: AllowanceState = {};
 
-function setAddressAllowance(
+function setAllowance(
   state: AllowanceState,
   {
     payload: {
-      allowance: { address, blockchain, allowance, available, contractAddress, ownerAddress, spenderAddress },
+      allowance: {
+        address,
+        blockchain,
+        allowance,
+        available,
+        contractAddress,
+        ownerAddress,
+        ownerControl,
+        spenderAddress,
+        spenderControl,
+      },
       tokens,
     },
-  }: SetAddressAllowanceAction,
+  }: SetAllowanceAction,
 ): AllowanceState {
   const tokenRegistry = new TokenRegistry(tokens);
 
@@ -37,7 +48,9 @@ function setAddressAllowance(
     const newAllowance: Allowance = {
       blockchain,
       ownerAddress,
+      ownerControl,
       spenderAddress,
+      spenderControl,
       token,
       type,
       allowance: token.getAmount(allowance),
@@ -73,10 +86,33 @@ function setAddressAllowance(
   return state;
 }
 
+function initAllowance(state: AllowanceState, { payload }: InitAllowanceAction): AllowanceState {
+  const {
+    allowance: { address, blockchain, contractAddress, ownerAddress, spenderAddress },
+  } = payload;
+
+  const allowanceAddress = address.toLowerCase();
+  const allowanceContractAddress = contractAddress.toLowerCase();
+
+  const type = allowanceAddress === ownerAddress.toLowerCase() ? AllowanceType.ALLOWED_FOR : AllowanceType.APPROVED_BY;
+
+  const allowance = state[blockchain]?.[allowanceAddress]?.[type]?.[allowanceContractAddress].find(
+    (item) => item.spenderAddress === spenderAddress,
+  );
+
+  if (allowance == null) {
+    return setAllowance(state, { payload, type: ActionTypes.SET_ALLOWANCE });
+  }
+
+  return state;
+}
+
 export function reducer(state = INITIAL_STATE, action: AllowanceAction): AllowanceState {
   switch (action.type) {
-    case ActionTypes.SET_ADDRESS_ALLOWANCE:
-      return setAddressAllowance(state, action);
+    case ActionTypes.INIT_ALLOWANCE:
+      return initAllowance(state, action);
+    case ActionTypes.SET_ALLOWANCE:
+      return setAllowance(state, action);
     default:
       return state;
   }

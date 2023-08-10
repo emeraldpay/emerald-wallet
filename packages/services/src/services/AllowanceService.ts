@@ -1,15 +1,18 @@
 import { AddressAllowanceResponse, Publisher } from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
+import { extractWalletId } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
   BlockchainCode,
   IpcCommands,
   Logger,
+  PersistentState,
   SettingsManager,
   TokenData,
   TokenRegistry,
   blockchainCodeToId,
   blockchainIdToCode,
 } from '@emeraldwallet/core';
+import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../emerald-client/ApiAccess';
 import { BalanceService } from './balance/BalanceService';
@@ -30,9 +33,12 @@ const log = Logger.forCategory('AllowanceService');
 export class AllowanceService implements Service {
   readonly id = 'AllowanceService';
 
+  private readonly cacheTtl = 24 * 60 * 60 * 1000;
+
   private apiAccess: EmeraldApiAccess;
   private balanceService: BalanceService;
   private ipcMain: IpcMain;
+  private persistentState: PersistentStateManager;
   private tokens: TokenData[];
   private tokenRegistry: TokenRegistry;
   private webContents: WebContents;
@@ -44,11 +50,13 @@ export class AllowanceService implements Service {
     ipcMain: IpcMain,
     apiAccess: EmeraldApiAccess,
     settings: SettingsManager,
+    persistentState: PersistentStateManager,
     webContents: WebContents,
     balanceService: BalanceService,
   ) {
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
+    this.persistentState = persistentState;
     this.webContents = webContents;
     this.balanceService = balanceService;
 
@@ -111,23 +119,46 @@ export class AllowanceService implements Service {
         contractAddresses: tokens.map(({ address }) => address),
       })
       .onData(({ allowance, available, chain, contractAddress, ownerAddress, spenderAddress }) => {
-        this.balanceService.createSubscription(entryId, blockchain, ownerAddress, contractAddress);
+        const blockchain = blockchainIdToCode(chain);
 
-        this.webContents.send(IpcCommands.STORE_DISPATCH, {
-          type: 'WALLET/ALLOWANCE/SET_ADDRESS_ALLOWANCE',
-          payload: {
-            allowance: {
-              address,
-              allowance,
-              available,
-              contractAddress,
-              ownerAddress,
-              spenderAddress,
-              blockchain: blockchainIdToCode(chain),
-            },
-            tokens: this.tokens,
-          },
-        });
+        const cachedAllowance: PersistentState.CachedAllowance = {
+          blockchain,
+          amount: allowance,
+          owner: ownerAddress,
+          spender: spenderAddress,
+          token: contractAddress,
+        };
+
+        return this.persistentState.allowances
+          .add(extractWalletId(entryId), cachedAllowance, this.cacheTtl)
+          .then(() => {
+            this.balanceService.createSubscription(entryId, blockchain, ownerAddress, contractAddress);
+
+            const blockchainId = blockchainCodeToId(blockchain);
+
+            Promise.all([
+              this.apiAccess.addressClient.describeAddress({ address: ownerAddress, chain: blockchainId }),
+              this.apiAccess.addressClient.describeAddress({ address: spenderAddress, chain: blockchainId }),
+            ]).then(([{ control: ownerControl }, { control: spenderControl }]) =>
+              this.webContents.send(IpcCommands.STORE_DISPATCH, {
+                type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
+                payload: {
+                  allowance: {
+                    address,
+                    allowance,
+                    available,
+                    blockchain,
+                    contractAddress,
+                    ownerAddress,
+                    ownerControl,
+                    spenderAddress,
+                    spenderControl,
+                  },
+                  tokens: this.tokens,
+                },
+              }),
+            );
+          });
       })
       .onError((error) => log.error(`Error while subscribing for ${address} on ${blockchain} blockchain`, error));
 

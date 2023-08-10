@@ -22,6 +22,7 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import {
+  Allowance,
   DEFAULT_FEE,
   FEE_KEYS,
   GasPrices,
@@ -29,7 +30,7 @@ import {
   SignData,
   TokenBalanceBelong,
   accounts,
-  allowance,
+  allowances,
   screen,
   settings,
   tokens,
@@ -64,6 +65,7 @@ interface OwnProps {
   data?: any;
   entry: WalletEntry;
   gasLimit?: any;
+  initialAllowance?: Allowance;
   initialAmount?: BigAmount;
   initialAsset?: string;
 }
@@ -185,6 +187,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     blockchain,
     eip1559,
     gasLimit,
+    initialAllowance,
     selectedFromAddress,
     tokenRegistry,
     getBalance,
@@ -201,6 +204,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       tx = new workflow.CreateERC20Tx(tokenRegistry, asset, blockchain, txType);
 
       tx.totalBalance = totalBalance;
+      tx.transferFrom = initialAllowance?.ownerAddress;
+
       tx.setTotalBalance(getTokenBalance(asset, selectedFromAddress));
     } else {
       tx = new workflow.CreateEthereumTx(null, blockchain, txType);
@@ -589,7 +594,7 @@ function sign(
 }
 
 export default connect(
-  (state: IState, { entry, gasLimit, initialAsset }: OwnProps): Props => {
+  (state: IState, { entry, gasLimit, initialAllowance, initialAsset }: OwnProps): Props => {
     const blockchainCode = blockchainIdToCode(entry.blockchain);
     const blockchain = Blockchains[blockchainCode];
     const coinTicker = blockchain.params.coinTicker;
@@ -608,11 +613,11 @@ export default connect(
 
         carry.set(address, { address: address, asset: coinTicker });
 
-        const allowances = allowance.selectors
+        const addressAllowances = allowances.selectors
           .getEntryAllowances(state, item)
           .filter(({ spenderAddress }) => spenderAddress === address);
 
-        allowances.forEach(({ allowance: { token }, ownerAddress, spenderAddress }) =>
+        addressAllowances.forEach(({ allowance: { token }, ownerAddress, spenderAddress }) =>
           carry.set(`${spenderAddress}:${ownerAddress}`, {
             ownerAddress,
             address: spenderAddress,
@@ -625,7 +630,7 @@ export default connect(
     }, new Map());
 
     let amount: BigAmount = zero;
-    let asset = initialAsset ?? blockchain.params.coinTicker;
+    let asset = initialAsset ?? initialAllowance?.token.address ?? blockchain.params.coinTicker;
 
     if (EthereumAddress.isValid(asset) && tokenRegistry.hasAddress(blockchainCode, asset)) {
       amount = tokenRegistry.byAddress(blockchainCode, asset).getAmount(0);
