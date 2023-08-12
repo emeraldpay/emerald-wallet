@@ -5,13 +5,14 @@ import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import UnlockSeed from '../../src/create-account/UnlockSeed';
 import CreateWalletWizard from '../../src/create-wallet/CreateWalletWizard';
+import { Result } from '../../src/create-wallet/flow/types';
 import { MemoryApiMock } from '../__mocks__/apiMock';
 import { BackendMock } from '../__mocks__/backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
 
 const handlers = {
-  onCreate: (value) => {
+  onCreate: (value: Result) => {
     action('Wallet Create')(value);
     return Promise.resolve('6aacf568-ec33-435f-b234-3668534a7f13');
   },

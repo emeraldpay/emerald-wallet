@@ -64,7 +64,7 @@ export function createServices(
   const balanceService = new BalanceService(ipcMain, apiAccess, settings, priceService, persistentState, webContents);
 
   serviceManager.add(balanceService);
-  serviceManager.add(new AllowanceService(ipcMain, apiAccess, settings, webContents, balanceService));
+  serviceManager.add(new AllowanceService(ipcMain, apiAccess, settings, persistentState, webContents, balanceService));
   serviceManager.add(new TokenService(ipcMain, apiAccess, settings, balanceService));
   serviceManager.add(new TransactionService(ipcMain, apiAccess, settings, persistentState, vault, webContents));
 

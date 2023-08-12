@@ -13,6 +13,7 @@ export enum IpcCommands {
   SET_TOKENS = 'set-tokens',
 
   // Backend API
+  DESCRIBE_ADDRESS = 'describe-address',
   ESTIMATE_FEE = 'estimate-fee',
   ESTIMATE_TX = 'estimate-tx',
   GET_BTC_TX = 'get-btc-tx',
@@ -55,6 +56,10 @@ export enum IpcCommands {
   ADDRESS_BOOK_REMOVE = 'address-book-remove',
   ADDRESS_BOOK_QUERY = 'address-book-query',
   ADDRESS_BOOK_UPDATE = 'address-book-update',
+
+  // Allowances
+  ALLOWANCES_ADD = 'allowances-add',
+  ALLOWANCES_LIST = 'allowances-list',
 
   // Balances
   BALANCES_LIST = 'balances-list',

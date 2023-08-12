@@ -4,7 +4,7 @@ import {
   accounts,
   addAccount,
   addressBook,
-  allowance,
+  allowances,
   application,
   blockchains,
   connection,
@@ -18,7 +18,7 @@ import {
 export const rootReducer = combineReducers<IState>({
   [accounts.moduleName]: accounts.reducer,
   [addressBook.moduleName]: addressBook.reducer,
-  [allowance.moduleName]: allowance.reducer,
+  [allowances.moduleName]: allowances.reducer,
   [application.moduleName]: application.reducer,
   [connection.moduleName]: connection.reducer,
   [screen.moduleName]: screen.reducer,

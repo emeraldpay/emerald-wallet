@@ -1,3 +1,4 @@
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, IpcCommands, PersistentState } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { ipcMain } from 'electron';
@@ -18,6 +19,14 @@ export function setupPersistentStateIpc(persistentState: PersistentStateManager)
   ipcMain.handle(IpcCommands.ADDRESS_BOOK_UPDATE, (event, id: string, item: Partial<PersistentState.AddressbookItem>) =>
     persistentState.addressbook.update(id, item),
   );
+
+  ipcMain.handle(
+    IpcCommands.ALLOWANCES_ADD,
+    (event, walletId: Uuid, allowance: PersistentState.CachedAllowance, ttl?: number) =>
+      persistentState.allowances.add(walletId, allowance, ttl),
+  );
+
+  ipcMain.handle(IpcCommands.ALLOWANCES_LIST, (event, walletId: Uuid) => persistentState.allowances.list(walletId));
 
   ipcMain.handle(IpcCommands.BALANCES_LIST, (event, address: PersistentState.Address | PersistentState.XPub) =>
     persistentState.balances.list(address),

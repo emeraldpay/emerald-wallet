@@ -1,7 +1,7 @@
 import { BlockchainCode, TokenAmount, TokenRegistry } from '@emeraldwallet/core';
-import { Allowance, allowance, tokens } from '../index';
+import { Allowance, allowances, tokens } from '../index';
 import { IState } from '../types';
-import { TokenBalanceBelong, TokenBalanceFilter, TokensState, moduleName } from './types';
+import { TokenBalanceBelong, TokenBalanceFilter, moduleName } from './types';
 
 export function aggregateBalances(balances: TokenAmount[]): TokenAmount[] {
   return balances.reduce<TokenAmount[]>((carry, balance) => {
@@ -19,6 +19,10 @@ export function aggregateBalances(balances: TokenAmount[]): TokenAmount[] {
   }, []);
 }
 
+export function isInitialized(state: IState): boolean {
+  return state[moduleName].initialized;
+}
+
 export function selectBalance(
   state: IState,
   blockchain: BlockchainCode,
@@ -26,7 +30,7 @@ export function selectBalance(
   contractAddress: string,
   filter?: TokenBalanceFilter,
 ): TokenAmount | undefined {
-  const { [blockchain]: blockchainBalances } = state[moduleName] as TokensState;
+  const { [blockchain]: blockchainBalances } = state[moduleName].balances;
 
   if (blockchainBalances == null) {
     return undefined;
@@ -54,7 +58,7 @@ export function selectBalance(
       return balance;
     }
 
-    const allowed = allowance.selectors
+    const allowed = allowances.selectors
       .getAddressAllowances(state, blockchain, balanceAddress)
       .filter(({ ownerAddress, spenderAddress }) => {
         const belongs = spenderAddress.toLowerCase() === balanceAddress;
@@ -106,14 +110,14 @@ export function selectBalances(
   const balanceAddress = address.toLowerCase();
   const belongAddress = belongsTo?.toLowerCase();
 
-  const { [blockchain]: blockchainBalances } = state[moduleName] as TokensState;
+  const { [blockchain]: blockchainBalances } = state[moduleName].balances;
   const { [balanceAddress]: tokenBalances } = blockchainBalances ?? {};
 
   if (tokenBalances == null && belonging === TokenBalanceBelong.OWN) {
     return [];
   }
 
-  const allowances = allowance.selectors
+  const allowanceByContractAddress = allowances.selectors
     .getAddressAllowances(state, blockchain, balanceAddress)
     .filter(({ ownerAddress, spenderAddress }) => {
       const belongs = spenderAddress.toLowerCase() === balanceAddress;
@@ -130,7 +134,7 @@ export function selectBalances(
     );
 
   if (tokenBalances == null) {
-    return [...allowances.values()].map(({ allowance, available, ownerAddress }) => {
+    return [...allowanceByContractAddress.values()].map(({ allowance, available, ownerAddress }) => {
       const ownerBalance = tokens.selectors.selectBalance(state, blockchain, ownerAddress, allowance.token.address, {
         belonging: TokenBalanceBelong.OWN,
       });
@@ -158,7 +162,7 @@ export function selectBalances(
 
     const contractAddress = token.address.toLowerCase();
 
-    const allowed = allowances.get(contractAddress);
+    const allowed = allowanceByContractAddress.get(contractAddress);
 
     if (allowed == null) {
       if (belonging === TokenBalanceBelong.ALLOWED) {
@@ -168,7 +172,7 @@ export function selectBalances(
       return balance;
     }
 
-    allowances.delete(contractAddress);
+    allowanceByContractAddress.delete(contractAddress);
 
     const ownerBalance = tokens.selectors.selectBalance(
       state,
@@ -191,5 +195,7 @@ export function selectBalances(
     return balances;
   }
 
-  return balances.concat([...allowances.values()].map(({ allowance, available }) => allowance.max(available)));
+  return balances.concat(
+    [...allowanceByContractAddress.values()].map(({ allowance, available }) => allowance.max(available)),
+  );
 }

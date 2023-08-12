@@ -10,6 +10,7 @@ import { ApiMock, MemoryApiMock } from './__mocks__/apiMock';
 import { BackendMock } from './__mocks__/backendMock';
 import {
   AddressBookMock,
+  AllowancesMock,
   BalancesMock,
   CacheMock,
   TxHistoryMock,
@@ -21,6 +22,7 @@ import { VaultMock } from './__mocks__/vaultMock';
 function createApi(api: MemoryApiMock): WalletApi {
   return new ApiMock(
     new AddressBookMock(api.addressBook),
+    new AllowancesMock(api.allowances),
     new BalancesMock(api.balances),
     new CacheMock(api.cache),
     new TxHistoryMock(api.txHistory),

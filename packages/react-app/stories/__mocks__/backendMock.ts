@@ -1,4 +1,4 @@
-import { EstimationMode } from '@emeraldpay/api';
+import { DescribeAddressControl, DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
 import {
   BackendApi,
   BitcoinRawTransaction,
@@ -30,6 +30,15 @@ export class BackendMock implements BackendApi {
 
   broadcastSignedTx(): Promise<string> {
     return Promise.resolve('');
+  }
+
+  describeAddress(blockchain: BlockchainCode, address: string): Promise<DescribeAddressResponse> {
+    return Promise.resolve({
+      address,
+      active: true,
+      capabilities: [],
+      control: DescribeAddressControl.PERSON,
+    });
   }
 
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<number> {

@@ -20,7 +20,7 @@ import {
   IState,
   TokenBalanceBelong,
   accounts,
-  allowance,
+  allowances,
   tokens,
   transaction,
 } from '@emeraldwallet/store';
@@ -504,7 +504,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { tokenRegistry }) => ({
     getAllowances(entry) {
-      return allowance.selectors.getEntryAllowances(state, entry);
+      return allowances.selectors.getEntryAllowances(state, entry);
     },
     getTokenBalance(entry, contractAddress) {
       const blockchain = blockchainIdToCode(entry.blockchain);

@@ -1,7 +1,7 @@
 import { config } from '@emeraldwallet/core';
 import { Store } from 'redux';
 import { Dispatcher } from './types';
-import { IState, accounts, application, settings } from './index';
+import { IState, accounts, application, settings, tokens } from './index';
 
 export enum TriggerStatus {
   CONTINUE,
@@ -38,6 +38,12 @@ const handleTrigger = (store: Store<IState>, check: () => boolean, resolve: () =
 
 export function onceAccountsLoaded(store: Store<IState>): Promise<void> {
   return new Promise((resolve) => handleTrigger(store, () => !accounts.selectors.isLoading(store.getState()), resolve));
+}
+
+export function onceTokenBalancesLoaded(store: Store<IState>): Promise<void> {
+  return new Promise((resolve) =>
+    handleTrigger(store, () => tokens.selectors.isInitialized(store.getState()), resolve),
+  );
 }
 
 export function onceModeSet(store: Store<IState>): Promise<void> {

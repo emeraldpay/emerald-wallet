@@ -1,15 +1,17 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { allowance, application, tokens } from '../index';
+import { allowances, application, tokens } from '../index';
 import { IState } from '../types';
 import { selectBalance, selectBalances } from './selectors';
 
 describe('selectors', () => {
   it('selectBalances works for address without data', () => {
     const state: unknown = {
-      [allowance.moduleName]: {},
+      [allowances.moduleName]: {},
       [tokens.moduleName]: {
-        [BlockchainCode.ETC]: {
-          '0x2': {},
+        balances: {
+          [BlockchainCode.ETC]: {
+            '0x2': {},
+          },
         },
       },
     };
@@ -23,7 +25,7 @@ describe('selectors', () => {
     const contractAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
     const state = {
-      [allowance.moduleName]: {},
+      [allowances.moduleName]: {},
       [application.moduleName]: {
         tokens: [
           {
@@ -38,11 +40,13 @@ describe('selectors', () => {
         ],
       },
       [tokens.moduleName]: {
-        [BlockchainCode.ETH]: {
-          '0x1': {
-            [contractAddress.toLowerCase()]: {
-              symbol: 'DAI',
-              unitsValue: '1000000000000000000',
+        balances: {
+          [BlockchainCode.ETH]: {
+            '0x1': {
+              [contractAddress.toLowerCase()]: {
+                symbol: 'DAI',
+                unitsValue: '1000000000000000000',
+              },
             },
           },
         },

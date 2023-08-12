@@ -8,7 +8,9 @@ export function getStandardUnits(amount: BigAmount): Unit[] | undefined {
   }
 
   if (TokenAmount.is(amount)) {
-    return [new Unit(18, amount.token.symbol, amount.token.symbol)];
+    const { decimals, symbol } = amount.token;
+
+    return [new Unit(decimals, symbol, symbol)];
   }
 
   if (Wei.is(amount)) {

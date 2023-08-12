@@ -15,16 +15,16 @@ describe('tokens reducer', () => {
 
     let state = reducer(undefined, setTokenBalance(BlockchainCode.ETH, address, '0x66666', balance));
 
-    expect(state[BlockchainCode.ETH]?.[address]?.['0x66666']?.unitsValue).toEqual(balance.unitsValue);
+    expect(state.balances[BlockchainCode.ETH]?.[address]?.['0x66666']?.unitsValue).toEqual(balance.unitsValue);
 
     balance.unitsValue = '777';
 
     state = reducer(state, setTokenBalance(BlockchainCode.ETH, address, '0x66666', balance));
 
-    expect(state[BlockchainCode.ETH]?.[address]?.['0x66666']?.unitsValue).toEqual('777');
+    expect(state.balances[BlockchainCode.ETH]?.[address]?.['0x66666']?.unitsValue).toEqual('777');
 
     state = reducer(state, setTokenBalance(BlockchainCode.ETH, address, '0x88888', balance));
 
-    expect(state[BlockchainCode.ETH]?.[address]?.['0x88888']?.unitsValue).toEqual('777');
+    expect(state.balances[BlockchainCode.ETH]?.[address]?.['0x88888']?.unitsValue).toEqual('777');
   });
 });

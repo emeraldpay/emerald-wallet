@@ -161,4 +161,8 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
           });
       }),
   );
+
+  ipcMain.handle(IpcCommands.DESCRIBE_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
+    apiAccess.addressClient.describeAddress({ address, chain: blockchainCodeToId(blockchain) }),
+  );
 }
