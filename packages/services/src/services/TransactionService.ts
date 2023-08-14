@@ -7,7 +7,6 @@ import {
   PersistentState,
   SettingsManager,
   TokenData,
-  TokenRegistry,
   blockchainIdToCode,
 } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
@@ -30,7 +29,6 @@ export class TransactionService implements Service {
   private persistentState: PersistentStateManager;
   private settings: SettingsManager;
   private tokens: TokenData[];
-  private tokenRegistry: TokenRegistry;
   private vault: IEmeraldVault;
   private webContents: WebContents;
 
@@ -54,11 +52,9 @@ export class TransactionService implements Service {
     this.webContents = webContents;
 
     this.tokens = settings.getTokens();
-    this.tokenRegistry = new TokenRegistry(this.tokens);
 
     ipcMain.handle(IpcCommands.TXS_SET_TOKENS, (event, tokens) => {
       this.tokens = tokens;
-      this.tokenRegistry = new TokenRegistry(tokens);
 
       this.stop();
       this.start();
@@ -203,24 +199,14 @@ export class TransactionService implements Service {
 
                 const transaction: PersistentState.UnconfirmedTransaction = {
                   blockchain,
-                  changes: tx.changes.map<PersistentState.Change>((change) => {
-                    let asset = 'UNKNOWN';
-
-                    if (change.contractAddress == null) {
-                      asset = Blockchains[blockchainCode].params.coinTicker;
-                    } else if (this.tokenRegistry.hasAddress(blockchainCode, change.contractAddress)) {
-                      asset = change.contractAddress;
-                    }
-
-                    return {
-                      asset,
-                      address: change.address,
-                      amount: change.amount,
-                      direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
-                      type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
-                      wallet: change.address === tx.address ? entryId : undefined,
-                    };
-                  }),
+                  changes: tx.changes.map<PersistentState.Change>((change) => ({
+                    address: change.address,
+                    amount: change.amount,
+                    asset: change.contractAddress ?? Blockchains[blockchainCode].params.coinTicker,
+                    direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
+                    type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
+                    wallet: change.address === tx.address ? entryId : undefined,
+                  })),
                   sinceTimestamp: tx.block?.timestamp ?? now,
                   state: tx.mempool ? State.SUBMITTED : State.CONFIRMED,
                   status: tx.failed ? Status.FAILED : Status.OK,

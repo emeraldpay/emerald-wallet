@@ -4,7 +4,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { createTestStore } from '../../_tests';
+import { createTestStore } from '../../testStore';
 import AmountField from './AmountField';
 
 describe('AmountField', () => {
@@ -12,7 +12,7 @@ describe('AmountField', () => {
     const wrapper = shallow(
       <Provider store={createTestStore()}>
         <ThemeProvider theme={Theme}>
-          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={jest.fn()} />
+          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={jest.fn()} onMaxClick={jest.fn()} />
         </ThemeProvider>
       </Provider>,
     );
@@ -26,7 +26,7 @@ describe('AmountField', () => {
     const wrapper = mount(
       <Provider store={createTestStore()}>
         <ThemeProvider theme={Theme}>
-          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={onChangeAmount} />
+          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={onChangeAmount} onMaxClick={jest.fn()} />
         </ThemeProvider>
       </Provider>,
     );

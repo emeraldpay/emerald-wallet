@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { createTestStore } from '../../_tests';
+import { createTestStore } from '../../testStore';
 import ToField from './ToField';
 
 describe('ToField', () => {

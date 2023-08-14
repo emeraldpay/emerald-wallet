@@ -8,6 +8,7 @@ import {
   RemoveStoredTxAction,
   StoredTransaction,
   UpdateStoredTxAction,
+  UpdateTxTokensAction,
 } from './types';
 
 const INITIAL_STATE: HistoryState = {
@@ -103,6 +104,14 @@ function onUpdateStoreTransaction(
   return state;
 }
 
+function onUpdateTransactionTokens(state: HistoryState, { tokens }: UpdateTxTokensAction): HistoryState {
+  const tokenRegistry = new TokenRegistry(tokens);
+
+  state.transactions.forEach((transaction) => (transaction.tokenRegistry = tokenRegistry));
+
+  return state;
+}
+
 export function reducer(state = INITIAL_STATE, action: HistoryAction): HistoryState {
   switch (action.type) {
     case ActionTypes.LOAD_STORED_TXS:
@@ -113,6 +122,8 @@ export function reducer(state = INITIAL_STATE, action: HistoryAction): HistorySt
       return onRemoveStoreTransaction(state, action);
     case ActionTypes.UPDATE_STORED_TX:
       return onUpdateStoreTransaction(state, action);
+    case ActionTypes.UPDATE_TX_TOKENS:
+      return onUpdateTransactionTokens(state, action);
     default:
       return state;
   }

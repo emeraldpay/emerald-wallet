@@ -6,11 +6,11 @@ import { ThemeProvider } from '@material-ui/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { createTestStore } from '../../_tests';
+import { createTestStore } from '../../testStore';
 import CreateTx from './CreateTx';
 
 describe('CreateTx', () => {
-  const assets = [{ symbol: 'ETH' }];
+  const accounts = { 0: { address: '0x1' } };
 
   const tokenRegistry = new TokenRegistry([]);
 
@@ -27,22 +27,24 @@ describe('CreateTx', () => {
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <CreateTx
+            accounts={accounts}
             asset="ETH"
-            assets={assets}
             chain={BlockchainCode.ETH}
-            eip1559={false}
+            coinTicker="ETH"
+            eip1559={true}
             highGasPrice={{ max: 0, priority: 0 }}
+            initializing={false}
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
-            initializing={false}
             tokenRegistry={tokenRegistry}
             tx={tx}
-            coinTicker="ETH"
+            useEip1559={true}
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
             onChangeAmount={() => undefined}
             onChangeTo={() => undefined}
             onChangeUseEip1559={() => undefined}
+            onMaxClicked={() => undefined}
           />
         </ThemeProvider>
       </Provider>,
@@ -53,22 +55,24 @@ describe('CreateTx', () => {
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <CreateTx
+            accounts={accounts}
             asset="ETH"
-            assets={assets}
             chain={BlockchainCode.ETH}
-            eip1559={false}
+            coinTicker="ETH"
+            eip1559={true}
             highGasPrice={{ max: 0, priority: 0 }}
+            initializing={false}
             lowGasPrice={{ max: 0, priority: 0 }}
             stdGasPrice={{ max: 0, priority: 0 }}
-            initializing={false}
             tokenRegistry={tokenRegistry}
             tx={tx}
-            coinTicker="ETH"
+            useEip1559={true}
             getBalance={() => new Wei(0)}
             getTokenBalance={() => new Wei(0)}
             onChangeAmount={() => undefined}
             onChangeTo={() => undefined}
             onChangeUseEip1559={() => undefined}
+            onMaxClicked={() => undefined}
           />
         </ThemeProvider>
       </Provider>,

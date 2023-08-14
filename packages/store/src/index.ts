@@ -41,7 +41,7 @@ export { RemoteTxHistory } from './remote-access/TxHistory';
 export { RemoteTxMeta } from './remote-access/TxMeta';
 export { RemoteVault } from './remote-access/Vault';
 export { RemoteXPubPosition } from './remote-access/XPubPos';
-export { StoredTransaction } from './txhistory/types';
+export { StoredTransaction, StoredTransactionChange } from './txhistory/types';
 export { TokenBalanceBelong } from './tokens/types';
 export {
   accounts,
