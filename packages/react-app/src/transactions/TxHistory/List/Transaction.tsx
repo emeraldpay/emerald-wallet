@@ -8,7 +8,16 @@ import {
   formatAmount,
   formatFiatAmount,
 } from '@emeraldwallet/core';
-import { IState, StoredTransaction, accounts, blockchains, screen, settings, txhistory } from '@emeraldwallet/store';
+import {
+  IState,
+  StoredTransaction,
+  StoredTransactionChange,
+  accounts,
+  blockchains,
+  screen,
+  settings,
+  txhistory,
+} from '@emeraldwallet/store';
 import { BlockchainAvatar, HashIcon } from '@emeraldwallet/ui';
 import { IconButton, InputAdornment, Menu, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
@@ -167,17 +176,17 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-type Change = Omit<txhistory.types.StoredTransactionChange, 'wallet'> & { icon: string | null; wallet: Wallet };
-
 interface OwnProps {
   tx: StoredTransaction;
   style?: React.CSSProperties;
   walletId: Uuid;
 }
 
+type WalletIcons = Record<string, string | null>;
+
 interface StateProps {
   entryId: EntryId | undefined;
-  walletIcons: Record<string, string | null>;
+  walletIcons: WalletIcons;
   getFiatValue(amount: BigAmount): CurrencyAmount;
   getHeight(): number;
   getWallet(entryId: EntryId): Wallet | undefined;
@@ -189,6 +198,18 @@ interface DispatchProps {
   goToTransaction(entryId: EntryId | undefined, tx: StoredTransaction): void;
   goToWallet(walletId: string): void;
   setTransactionMeta(meta: PersistentState.TxMetaItem): Promise<PersistentState.TxMetaItem>;
+}
+
+class Change extends StoredTransactionChange {
+  icon: string | null;
+  walletInstance: Wallet;
+
+  constructor(change: txhistory.types.StoredTransactionChange, wallet: Wallet, walletIcons: WalletIcons) {
+    super(change, change.blockchain, change.tokenRegistry);
+
+    this.icon = walletIcons[wallet.id];
+    this.walletInstance = wallet;
+  }
 }
 
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -340,7 +361,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
               return carry;
             }
 
-            return [...carry, { ...change, amountValue: change.amountValue, icon: walletIcons[wallet.id], wallet }];
+            return [...carry, new Change(change, wallet, walletIcons)];
           }, [])
           .map((change, index) => (
             <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
@@ -348,15 +369,15 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue, 6)}
               </div>
               <div className={styles.changeItemAmount}>
-                {change.wallet.id === walletId ? (
+                {change.walletInstance.id === walletId ? (
                   <div />
                 ) : (
-                  <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
+                  <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.walletInstance.id)}>
                     {change.icon == null ? (
                       <HashIcon
                         className={styles.changeItemAmountWalletIcon}
                         size={24}
-                        value={`WALLET/${change.wallet.id}`}
+                        value={`WALLET/${change.walletInstance.id}`}
                       />
                     ) : (
                       <img
@@ -365,7 +386,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                         src={`data:image/png;base64,${change.icon}`}
                       />
                     )}
-                    {change.wallet.name}
+                    {change.walletInstance.name}
                   </div>
                 )}
                 <div className={styles.changeItemAmountFiat}>{formatFiatAmount(getFiatValue(change.amountValue))}</div>

@@ -1,5 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, PersistentState, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, TokenData, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
+import { accounts } from '../index';
 import { Dispatched } from '../types';
 import {
   ActionTypes,
@@ -8,11 +9,14 @@ import {
   RemoveStoredTxAction,
   StoredTransaction,
   UpdateStoredTxAction,
+  UpdateTxTokensAction,
 } from './types';
 
-export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void, LoadStoredTxsAction> {
+export function loadTransactions(walletId: Uuid, initial: boolean, limit = 20): Dispatched<void, LoadStoredTxsAction> {
   return async (dispatch, getState, extra) => {
-    const { application, history } = getState();
+    const state = getState();
+
+    const { application, history } = state;
 
     if (walletId === history.walletId && (initial || history.cursor === null)) {
       return;
@@ -26,10 +30,10 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
 
     const page: PersistentState.PageResult<PersistentState.Transaction> = await extra.api.txHistory.query(
       { wallet: walletId },
-      { cursor: walletCursor, limit: 20 },
+      { limit, cursor: walletCursor },
     );
 
-    const transactions = await Promise.all(
+    const storedTransactions = await Promise.all(
       page.items.map(async (tx) => {
         const meta = await extra.api.txMeta.get(blockchainIdToCode(tx.blockchain), tx.txId);
 
@@ -39,12 +43,35 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
       }),
     );
 
+    const addresses =
+      accounts.selectors
+        .findWallet(state, walletId)
+        ?.entries.map(({ address }) => address?.value)
+        .filter((address): address is string => address != null) ?? [];
+
+    const transactions = storedTransactions.filter(
+      ({ changes }) =>
+        changes.filter(({ address, type }) => {
+          if (address != null && type === PersistentState.ChangeType.FEE) {
+            return addresses.includes(address);
+          }
+
+          return true;
+        }).length > 0,
+    );
+
     dispatch({
-      type: ActionTypes.LOAD_STORED_TXS,
+      transactions,
       walletId,
       cursor: page.cursor,
-      transactions: transactions.filter((tx) => tx.changes.length > 0),
+      type: ActionTypes.LOAD_STORED_TXS,
     });
+
+    const missingCount = transactions.length - limit;
+
+    if (missingCount > 0) {
+      loadTransactions(walletId, initial, missingCount);
+    }
   };
 }
 
@@ -73,6 +100,10 @@ export function updateTransaction(
       type: ActionTypes.UPDATE_STORED_TX,
     });
   };
+}
+
+export function updateTransactionTokens(tokens: TokenData[]): UpdateTxTokensAction {
+  return { type: ActionTypes.UPDATE_TX_TOKENS, tokens };
 }
 
 export function getTransactionMeta(

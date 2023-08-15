@@ -146,7 +146,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
         <Typography variant="caption">Transaction not found! Please try again later.</Typography>
       ) : (
         <>
-          <StoredTxView tx={{ ...transaction, status: txStatus ?? transaction.status }} />
+          <StoredTxView status={txStatus} tx={transaction} />
           <FormRow>
             <FormLabel>Block</FormLabel>
             <Typography>{transaction.block?.height ?? 'Pending'}</Typography>

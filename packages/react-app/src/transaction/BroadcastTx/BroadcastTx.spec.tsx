@@ -7,8 +7,8 @@ import { render } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { Provider } from 'react-redux';
+import { createTestStore } from '../../testStore';
 import BroadcastTx from './BroadcastTx';
-import { createTestStore } from '../../_tests';
 
 describe('BroadcastTx', () => {
   const data: BroadcastData = {

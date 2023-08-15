@@ -1,5 +1,7 @@
 import { IpcCommands, Logger, SettingsOptions, TokenData, Versions } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
+import { txhistory } from '../index';
+import { UpdateTxTokensAction } from '../txhistory/types';
 import { Dispatched } from '../types';
 import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
 
@@ -51,7 +53,10 @@ export function setOptions(options: SettingsOptions): Dispatched<void, OptionsAc
   };
 }
 
-export function setTokens(tokens: TokenData[], changed: boolean): Dispatched<void, TokensAction> {
+export function setTokens(
+  tokens: TokenData[],
+  changed: boolean,
+): Dispatched<void, TokensAction | UpdateTxTokensAction> {
   return async (dispatch) => {
     if (changed) {
       await ipcRenderer.invoke(IpcCommands.ALLOWANCE_SET_TOKENS, tokens);
@@ -63,6 +68,8 @@ export function setTokens(tokens: TokenData[], changed: boolean): Dispatched<voi
     await ipcRenderer.invoke(IpcCommands.SET_TOKENS, tokens);
 
     dispatch({ type: ActionTypes.TOKENS, payload: tokens });
+
+    dispatch(txhistory.actions.updateTransactionTokens(tokens));
   };
 }
 

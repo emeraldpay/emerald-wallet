@@ -2,6 +2,7 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
+  CoinTicker,
   PersistentState,
   TokenData,
   TokenRegistry,
@@ -10,7 +11,7 @@ import {
 } from '@emeraldwallet/core';
 
 export class StoredTransactionChange implements PersistentState.Change {
-  amount: string;
+  tokenRegistry: TokenRegistry;
 
   readonly address?: string;
   readonly asset: string;
@@ -19,11 +20,13 @@ export class StoredTransactionChange implements PersistentState.Change {
   readonly type: PersistentState.ChangeType;
   readonly wallet?: EntryId;
 
-  private readonly blockchain: BlockchainCode;
-  private readonly tokenRegistry: TokenRegistry;
+  private _amount: string;
+
+  private readonly _blockchain: BlockchainCode;
 
   constructor(change: PersistentState.Change, blockchain: BlockchainCode, tokenRegistry: TokenRegistry) {
-    this.amount = change.amount;
+    this.tokenRegistry = tokenRegistry;
+
     this.address = change.address;
     this.asset = change.asset;
     this.direction = change.direction;
@@ -31,27 +34,36 @@ export class StoredTransactionChange implements PersistentState.Change {
     this.type = change.type;
     this.wallet = change.wallet;
 
-    this.blockchain = blockchain;
-    this.tokenRegistry = tokenRegistry;
+    this._amount = change.amount;
+    this._blockchain = blockchain;
+  }
+
+  get amount(): string {
+    return this._amount;
   }
 
   get amountValue(): BigAmount {
-    if (this.tokenRegistry.hasAddress(this.blockchain, this.asset)) {
-      return this.tokenRegistry.byAddress(this.blockchain, this.asset).getAmount(this.amount);
+    if (this.tokenRegistry.hasAddress(this._blockchain, this.asset)) {
+      return this.tokenRegistry.byAddress(this._blockchain, this.asset).getAmount(this.amount);
     }
 
-    return amountFactory(this.blockchain)(this.amount);
+    return amountFactory(this._blockchain)(this.amount);
   }
 
   set amountValue(amount: BigAmount) {
-    this.amount = amount.number.toString();
+    this._amount = amount.number.toString();
+  }
+
+  get blockchain(): BlockchainCode {
+    return this._blockchain;
   }
 }
 
 export class StoredTransaction implements Omit<PersistentState.Transaction, 'changes'> {
+  changes: StoredTransactionChange[];
+
   readonly block?: PersistentState.BlockRef | null;
   readonly blockchain: number;
-  readonly changes: StoredTransactionChange[];
   readonly confirmTimestamp?: Date | null;
   readonly meta: PersistentState.TxMetaItem | null;
   readonly sinceTimestamp: Date;
@@ -74,10 +86,20 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
       this.confirmTimestamp = tx.confirmTimestamp;
     }
 
-    const blockchain = blockchainIdToCode(tx.blockchain);
+    this.changes = this.convertChanges(blockchainIdToCode(tx.blockchain), tx.changes, tokenRegistry);
+  }
 
-    this.changes = tx.changes
-      .filter((change) => change.asset !== 'UNKNOWN')
+  set tokenRegistry(tokenRegistry: TokenRegistry) {
+    this.changes = this.convertChanges(blockchainIdToCode(this.blockchain), this.changes, tokenRegistry);
+  }
+
+  private convertChanges(
+    blockchain: BlockchainCode,
+    changes: PersistentState.Change[],
+    tokenRegistry: TokenRegistry,
+  ): StoredTransactionChange[] {
+    return changes
+      .filter((change) => change.asset in CoinTicker || tokenRegistry.hasAddress(blockchain, change.asset))
       .map((change) => new StoredTransactionChange(change, blockchain, tokenRegistry))
       .filter((change) => change.amountValue.isPositive())
       .sort((first, second) => {
@@ -102,6 +124,7 @@ export enum ActionTypes {
   SET_LAST_TX_ID = 'WALLET/HISTORY/SET_LAST_TX_ID',
   REMOVE_STORED_TX = 'WALLET/HISTORY/REMOVE_STORED_TX',
   UPDATE_STORED_TX = 'WALLET/HISTORY/UPDATE_STORED_TX',
+  UPDATE_TX_TOKENS = 'WALLET/HISTORY/UPDATE_TX_TOKENS',
 }
 
 export interface LastTxIdAction {
@@ -129,4 +152,14 @@ export interface UpdateStoredTxAction {
   walletId: Uuid;
 }
 
-export type HistoryAction = LastTxIdAction | LoadStoredTxsAction | RemoveStoredTxAction | UpdateStoredTxAction;
+export interface UpdateTxTokensAction {
+  type: ActionTypes.UPDATE_TX_TOKENS;
+  tokens: TokenData[];
+}
+
+export type HistoryAction =
+  | LastTxIdAction
+  | LoadStoredTxsAction
+  | RemoveStoredTxAction
+  | UpdateStoredTxAction
+  | UpdateTxTokensAction;
