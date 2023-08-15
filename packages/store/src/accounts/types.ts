@@ -61,7 +61,7 @@ export interface CreateHdEntryAction {
   type: ActionTypes.CREATE_HD_ACCOUNT;
   blockchain: BlockchainCode;
   seedId?: Uuid;
-  seedPassword: string;
+  seedPassword?: string;
   walletId: Uuid;
 }
 

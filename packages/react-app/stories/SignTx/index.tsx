@@ -29,6 +29,7 @@ storiesOf('SignTx', module)
   .add('default', () => (
     <SignTransaction
       transaction={ethereumTx}
+      verifying={false}
       onCancel={action('onCancel')}
       onChangePassword={action('onChangePassword')}
       onSubmit={action('onSubmit')}

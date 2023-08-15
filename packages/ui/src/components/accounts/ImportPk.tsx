@@ -1,90 +1,90 @@
-import { Box, Button, createStyles, Grid, TextField, Typography } from '@material-ui/core';
+import { Box, Grid, TextField, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import Dropzone from 'react-dropzone';
-import { PasswordInput } from '../../index';
+import { Button, FormLabel, FormRow, PasswordInput } from '../../index';
 
 const useStyles = makeStyles(
   createStyles({
-    divider: {
-      margin: '20px 0 20px 0',
-    },
     dropBox: {
       backgroundColor: '#f0faff',
       border: '1px solid #f0f0f0',
       cursor: 'pointer',
-      margin: '10px 40px',
-      padding: '40px 0 40px 0',
+      padding: 40,
       textAlign: 'center',
+      width: '100%',
     },
   }),
 );
 
-export type ImportPkType = { password: string; json?: string; jsonPassword?: string; raw?: string };
+interface Web3 {
+  address: string;
+  crypto: object;
+}
+
+function isWeb3(json: unknown): json is Web3 {
+  return (
+    json != null &&
+    typeof json === 'object' &&
+    'address' in json &&
+    typeof json.address === 'string' &&
+    'crypto' in json &&
+    typeof json.crypto === 'object'
+  );
+}
+
+export interface ImportedPk {
+  password: string;
+  json?: string;
+  jsonPassword?: string;
+  raw?: string;
+}
 
 interface OwnProps {
-  classes?: any;
   raw: boolean;
   checkGlobalKey(password: string): Promise<boolean>;
-  onChange(value: ImportPkType): void;
+  onChange(value: ImportedPk): void;
 }
 
-function isWeb3(json: any): boolean {
-  return typeof json == 'object'
-    && typeof json.address == 'string'
-    && typeof json.crypto == 'object';
-}
-
-const Component: React.FC<OwnProps> = (props) => {
+const ImportPk: React.FC<OwnProps> = ({ raw, checkGlobalKey, onChange }) => {
   const styles = useStyles();
 
-  const [json, setJson] = React.useState('');
-  const [jsonAddress, setJsonAddress] = React.useState('');
-  const [jsonPassword, setJsonPassword] = React.useState('');
-  const [password, setPassword] = React.useState('');
   const [rawPk, setRawPk] = React.useState('');
+  const [jsonPk, setJsonPk] = React.useState('');
 
-  const [pkPasswordError, setPkPasswordError] = React.useState<string>();
+  const [jsonAddress, setJsonAddress] = React.useState('');
+
+  const [password, setPassword] = React.useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
+  const [passwordVerified, setPasswordVerified] = React.useState(false);
+
+  const [jsonPassword, setJsonPassword] = React.useState<string>();
   const [jsonPasswordError, setJsonPasswordError] = React.useState<string>();
 
-  function setPk(value: string): void {
+  const handleRawPkChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
     setRawPk(value);
 
-    if (value.length > 0 && password.length > 0) {
-      props.onChange({ password, raw: value });
+    if (value.length > 0 && password != null && password.length > 0) {
+      onChange({ password, raw: value });
     }
-  }
+  };
 
-  async function setPkGlobalPassword(): Promise<void> {
-    const correctGlobalPassword = await props.checkGlobalKey(password);
-
-    if (correctGlobalPassword) {
-      props.onChange({ password, raw: rawPk });
-
-      setPkPasswordError(undefined);
-    } else {
-      props.onChange({ password: '', raw: rawPk });
-
-      setPkPasswordError('Incorrect password');
-    }
-  }
-
-  function onJsonDrop(acceptedFiles: File[]): void {
-    const resolve = (json: string, web3: any): void => {
-      setJson(json);
+  const handleJsonPkDrop = (acceptedFiles: File[]): void => {
+    const resolve = (json: string, web3: Web3): void => {
+      setJsonPk(json);
       setJsonAddress(web3.address);
 
-      if (json.length > 0 && password.length > 0) {
-        props.onChange({ json, jsonPassword, password });
+      if (json.length > 0 && password != null && password.length > 0) {
+        onChange({ json, jsonPassword, password });
       }
-    }
+    };
 
     const reject = (err: string): void => {
       console.warn('Failed to read JSON', err);
 
-      setJson('');
-      setJsonAddress('');
-    }
+      setJsonPk(undefined);
+      setJsonAddress(undefined);
+    };
 
     if (acceptedFiles.length == 0) {
       reject('File not selected');
@@ -94,11 +94,11 @@ const Component: React.FC<OwnProps> = (props) => {
 
       reader.onabort = () => {
         reject('file reading was aborted');
-      }
+      };
 
       reader.onerror = () => {
         reject('file reading has failed');
-      }
+      };
 
       reader.onload = () => {
         const result = reader.result;
@@ -114,113 +114,159 @@ const Component: React.FC<OwnProps> = (props) => {
         } else {
           reject('Not a string ' + typeof result);
         }
-      }
+      };
 
       reader.readAsText(file);
     }
-  }
+  };
 
-  async function setJsonGlobalPassword(): Promise<void> {
-    const correctGlobalPassword = await props.checkGlobalKey(password);
+  const handleJsonPkRemove = (): void => {
+    setJsonPk(undefined);
+    setJsonAddress(undefined);
+  };
 
-    if (correctGlobalPassword) {
-      props.onChange({ json, jsonPassword, password });
-
-      setJsonPasswordError(undefined);
-    } else {
-      props.onChange({ json, jsonPassword, password: '' });
-
-      setJsonPasswordError('Incorrect password');
-    }
-  }
-
-  function setJsonFilePassword(value: string): void {
+  const handleJsonPkPasswordChange = (value: string): void => {
     setJsonPassword(value);
 
     if (value.length > 0 && password.length > 0) {
-      props.onChange({ json, password, jsonPassword: value });
+      onChange({ json: jsonPk, password, jsonPassword: value });
     }
-  }
+  };
 
-  return <Grid container={true}>
-    {props.raw ? (
-      <Grid item={true} xs={12}>
-        <Typography variant="h5">Raw Private Key</Typography>
-        <Typography variant="subtitle1">
-          Submit an Ethereum Private Key formatted as Hex (66 character string starting with 0x)
-        </Typography>
-        <Grid container={true} alignItems="center" spacing={1}>
-          <Grid item={true} xs={3}>
-            <Typography variant="caption">Private Key</Typography>
-          </Grid>
-          <Grid item={true} xs={9}>
-            <TextField
-              placeholder="0x..."
-              fullWidth={true}
-              onChange={(e) => setPk(e.target.value)}
+  const handlePasswordChange = (value: string): void => {
+    setPassword(value);
+    setPasswordVerified(false);
+  };
+
+  const handleRawPkGlobalPasswordChange = async (): Promise<void> => {
+    if (password != null) {
+      const correctGlobalPassword = await checkGlobalKey(password);
+
+      if (correctGlobalPassword) {
+        onChange({ password, raw: rawPk });
+
+        setPasswordError(undefined);
+        setPasswordVerified(true);
+      } else {
+        onChange({ password: '', raw: rawPk });
+
+        setPasswordError('Incorrect password');
+        setPasswordVerified(false);
+      }
+    }
+  };
+
+  const handleJsonPkGlobalPasswordChange = async (): Promise<void> => {
+    if (password != null) {
+      const correctGlobalPassword = await checkGlobalKey(password);
+
+      if (correctGlobalPassword) {
+        onChange({ json: jsonPk, jsonPassword, password });
+
+        setJsonPasswordError(undefined);
+        setPasswordVerified(true);
+      } else {
+        onChange({ json: jsonPk, jsonPassword, password: '' });
+
+        setJsonPasswordError('Incorrect password');
+        setPasswordVerified(false);
+      }
+    }
+  };
+
+  return raw ? (
+    <>
+      <FormRow>
+        <FormLabel />
+        <div>
+          <Typography variant="h5">Raw Private Key</Typography>
+          <Typography variant="subtitle1">
+            Submit an Ethereum Private Key formatted as Hex (66 character string starting with 0x)
+          </Typography>
+        </div>
+      </FormRow>
+      <FormRow>
+        <FormLabel>Private Key</FormLabel>
+        <TextField autoFocus placeholder="0x..." fullWidth={true} onChange={handleRawPkChange} />
+      </FormRow>
+      <FormRow last>
+        <FormLabel>Global password</FormLabel>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item xs>
+            <PasswordInput
+              error={passwordError}
+              minLength={1}
+              placeholder="Enter existing password"
+              showLengthNotice={false}
+              onChange={handlePasswordChange}
             />
           </Grid>
-          <Grid item={true} xs={3}>
-            <Typography variant="caption">Global password</Typography>
-          </Grid>
-          <Grid item={true} xs={7}>
-            <PasswordInput error={pkPasswordError} onChange={setPassword} />
-          </Grid>
-          <Grid item={true} xs={2}>
-            <Button variant="contained" onClick={setPkGlobalPassword}>Save</Button>
+          <Grid item xs="auto">
+            <Button
+              primary
+              disabled={password == null || passwordVerified}
+              label="Verify"
+              onClick={handleRawPkGlobalPasswordChange}
+            />
           </Grid>
         </Grid>
-      </Grid>
-    ) : (
-      <Grid item={true} xs={12}>
-        <Typography variant="h5">JSON Private Key</Typography>
-        <Typography variant="subtitle1">Submit an Ethereum Private Key saved as a JSON file</Typography>
-        {json && jsonAddress ? (
+      </FormRow>
+    </>
+  ) : (
+    <>
+      <FormRow>
+        <FormLabel />
+        <div>
+          <Typography variant="h5">JSON Private Key</Typography>
+          <Typography variant="subtitle1">Submit an Ethereum Private Key saved as a JSON file</Typography>
+        </div>
+      </FormRow>
+      <FormRow>
+        <FormLabel />
+        {jsonPk && jsonAddress ? (
           <Box className={styles.dropBox}>
             <Typography variant="caption">JSON for address {jsonAddress} is set.</Typography>
-            <Button
-              variant="text"
-              onClick={() => {
-                setJson('');
-                setJsonAddress('');
-              }}
-            >
-              Remove
-            </Button>
+            <Button label="Remove" variant="text" onClick={handleJsonPkRemove} />
           </Box>
         ) : (
-          <Dropzone multiple={false} maxSize={1024 * 1024} onDrop={onJsonDrop}>
+          <Dropzone multiple={false} maxSize={1024 * 1024} onDrop={handleJsonPkDrop}>
             {({ getRootProps, getInputProps }) => (
-              <section>
-                <div {...getRootProps()} className={styles.dropBox}>
-                  <input {...getInputProps()} />
-                  <Typography variant="caption">Drag&apos;n&apos;drop JSON file here, or click to select
-                    file</Typography>
-                </div>
-              </section>
+              <div {...getRootProps()} className={styles.dropBox}>
+                <input {...getInputProps()} />
+                <Typography variant="caption">Drag&apos;n&apos;drop JSON file here, or click to select file</Typography>
+              </div>
             )}
           </Dropzone>
         )}
-        <Grid container={true} alignItems="center" spacing={1}>
-          <Grid item={true} xs={3}>
-            <Typography variant="caption">Global password</Typography>
+      </FormRow>
+      <FormRow>
+        <FormLabel>Private Key Password</FormLabel>
+        <PasswordInput onChange={handleJsonPkPasswordChange} />
+      </FormRow>
+      <FormRow last>
+        <FormLabel>Global password</FormLabel>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item xs>
+            <PasswordInput
+              error={jsonPasswordError}
+              minLength={1}
+              placeholder="Enter existing password"
+              showLengthNotice={false}
+              onChange={handlePasswordChange}
+            />
           </Grid>
-          <Grid item={true} xs={9}>
-            <PasswordInput error={jsonPasswordError} onChange={setPassword} />
-          </Grid>
-          <Grid item={true} xs={3}>
-            <Typography variant="caption">Private Key Password</Typography>
-          </Grid>
-          <Grid item={true} xs={7}>
-            <PasswordInput onChange={setJsonFilePassword} />
-          </Grid>
-          <Grid item={true} xs={2}>
-            <Button variant="contained" onClick={setJsonGlobalPassword}>Save</Button>
+          <Grid item xs="auto">
+            <Button
+              primary
+              disabled={password == null || passwordVerified}
+              label="Verify"
+              onClick={handleJsonPkGlobalPasswordChange}
+            />
           </Grid>
         </Grid>
-      </Grid>
-    )}
-  </Grid>
+      </FormRow>
+    </>
+  );
 };
 
-export default Component;
+export default ImportPk;

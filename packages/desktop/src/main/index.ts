@@ -93,13 +93,13 @@ app.on('ready', () => {
 
   logger.info('Connect to', apiAccess.address);
 
-  const persistentStateDir = dataDir == null ? null : resolvePath(joinPath(dataDir, 'state'));
+  const persistentStateDir = dataDir == null ? undefined : resolvePath(joinPath(dataDir, 'state'));
 
   logger.info(`Setup Persistent State in ${persistentStateDir ?? 'default directory'}`);
 
   const persistentState = new PersistentStateManager(persistentStateDir);
 
-  const vaultDir = dataDir == null ? null : resolvePath(joinPath(dataDir, 'vault'));
+  const vaultDir = dataDir == null ? undefined : resolvePath(joinPath(dataDir, 'vault'));
 
   logger.info(`Setup Vault in ${vaultDir ?? 'default directory'}`);
 

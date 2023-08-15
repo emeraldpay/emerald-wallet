@@ -107,11 +107,11 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   goBack(): void;
   signTransaction(entryId: string, tx: workflow.CreateErc20WrappedTx, token: Token, password?: string): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -122,7 +122,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   entry: { address },
   token,
   isHardware,
-  checkGlobalKey,
   estimateGas,
   getBalance,
   getBalancesByAddress,
@@ -131,14 +130,19 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   getTokenBalanceByAddress,
   goBack,
   signTransaction,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
+
+  const mounted = React.useRef(true);
 
   const coinTicker = React.useMemo(() => Blockchains[blockchain].params.coinTicker, [blockchain]);
   const zeroAmount = React.useMemo(() => amountFactory(blockchain)(0), [blockchain]);
 
-  const [convertable, setConvertable] = React.useState<string>(coinTicker);
   const [initializing, setInitializing] = React.useState(true);
+  const [verifying, setVerifying] = React.useState(false);
+
+  const [convertable, setConvertable] = React.useState<string>(coinTicker);
 
   const [convertTx, setConvertTx] = React.useState(() => {
     const tx = new workflow.CreateErc20WrappedTx({
@@ -173,8 +177,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [useEip1559, setUseEip1559] = React.useState(eip1559);
 
   const [stage, setStage] = React.useState(Stages.SETUP);
-  const [password, setPassword] = React.useState('');
 
+  const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
   const oldAmount = React.useRef(convertTx.amount);
@@ -268,41 +272,54 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     if (isHardware) {
       await signTransaction(entry.id, tx, token);
     } else {
-      const correctPassword = await checkGlobalKey(password);
+      if (password == null) {
+        return;
+      }
+
+      setVerifying(true);
+
+      const correctPassword = await verifyGlobalKey(password);
 
       if (correctPassword) {
         await signTransaction(entry.id, tx, token, password);
       } else {
         setPasswordError('Incorrect password');
       }
+
+      if (mounted.current) {
+        setVerifying(false);
+      }
     }
   };
 
-  const onUseEip1559Change = React.useCallback(
-    ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
-      const factory = amountFactory(blockchain);
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
+    }
+  };
 
-      const gasPrice = BigAmount.createFor(maxGasPrice, gasPriceUnits, factory, gasPriceUnit);
+  const onUseEip1559Change = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>): void => {
+    const factory = amountFactory(blockchain);
 
-      const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+    const gasPrice = BigAmount.createFor(maxGasPrice, gasPriceUnits, factory, gasPriceUnit);
 
-      if (checked) {
-        tx.gasPrice = undefined;
-        tx.maxGasPrice = gasPrice;
-        tx.priorityGasPrice = BigAmount.createFor(priorityGasPrice, gasPriceUnits, factory, gasPriceUnit);
-      } else {
-        tx.gasPrice = gasPrice;
-        tx.maxGasPrice = undefined;
-        tx.priorityGasPrice = undefined;
-      }
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+    if (checked) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = gasPrice;
+      tx.priorityGasPrice = BigAmount.createFor(priorityGasPrice, gasPriceUnits, factory, gasPriceUnit);
+    } else {
+      tx.gasPrice = gasPrice;
+      tx.maxGasPrice = undefined;
+      tx.priorityGasPrice = undefined;
+    }
 
-      setConvertTx(tx.dump());
-      setUseEip1559(checked);
-    },
-    [blockchain, convertTx, gasPriceUnit, gasPriceUnits, maxGasPrice, priorityGasPrice],
-  );
+    tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+    setConvertTx(tx.dump());
+    setUseEip1559(checked);
+  };
 
   React.useEffect(
     () => {
@@ -375,6 +392,12 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       }
     }
   }, [blockchain, contractAddress, convertable, convertTx, estimateGas]);
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
@@ -595,7 +618,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+              <PasswordInput
+                error={passwordError}
+                minLength={1}
+                placeholder="Enter existing password"
+                showLengthNotice={false}
+                onChange={setPassword}
+                onPressEnter={onPasswordEnter}
+              />
             </FormRow>
           )}
           <FormRow last>
@@ -603,7 +633,12 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               {!isHardware && (
-                <Button primary disabled={password.length === 0} label="Sign Transaction" onClick={onSignTransaction} />
+                <Button
+                  primary
+                  disabled={verifying || (password?.length ?? 0) === 0}
+                  label="Sign Transaction"
+                  onClick={onSignTransaction}
+                />
               )}
             </ButtonGroup>
           </FormRow>
@@ -697,9 +732,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { entry }) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     estimateGas(tx) {
       return dispatch(transaction.actions.estimateGas(blockchainIdToCode(entry.blockchain), tx));
     },
@@ -736,6 +768,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           ),
         );
       }
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(CreateConvertTransaction);

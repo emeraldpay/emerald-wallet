@@ -81,7 +81,7 @@ const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
           <ListItemIcon>
             <SetupIcon fontSize="small" />
           </ListItemIcon>
-          <Typography variant="inherit">Setup Supported Coins</Typography>
+          <Typography variant="inherit">Setup Supported Blockchains</Typography>
         </MenuItem>
         <MenuItem disabled={!hasHDAccount || !hasEthereumEntry} onClick={onAddAddress}>
           <ListItemIcon>

@@ -24,10 +24,15 @@ module.exports = ({ config }) => {
   config.plugins.push(
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-    })
+    }),
   );
 
   config.resolve.extensions.push('.ts', '.tsx');
+
+  config.resolve.fallback.http = require.resolve('stream-http');
+  config.resolve.fallback.https = require.resolve('https-browserify');
+  config.resolve.fallback.stream = require.resolve('stream-browserify');
+  config.resolve.fallback.zlib = require.resolve('browserify-zlib');
 
   return config;
 };

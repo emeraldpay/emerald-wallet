@@ -77,12 +77,12 @@ interface StateProps {
 
 interface DispatchProps {
   addEntryToWallet(walletId: Uuid, entry: AddSeedEntry): Promise<string>;
-  checkGlobalKey(password: string): Promise<boolean>;
   disableReceiveForEntry(entryId: EntryId, disabled?: boolean): Promise<boolean>;
   goBack(): void;
   isGlobalKeySet(): Promise<boolean>;
   listAddresses(seed: SeedReference, blockchain: number, hdPaths: string[]): Promise<{ [hdPath: string]: string }>;
   loadWallets(): void;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -91,20 +91,22 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
   seed,
   walletId,
   addEntryToWallet,
-  checkGlobalKey,
   disableReceiveForEntry,
   goBack,
   isGlobalKeySet,
   listAddresses,
   loadWallets,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
 
   const listKey = React.useRef<string | undefined>();
   const mounted = React.useRef(true);
 
-  const [loading, setLoading] = React.useState(false);
   const [stage, setStage] = React.useState(Stage.UNLOCK);
+
+  const [initializing, setInitializing] = React.useState(false);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
@@ -117,18 +119,25 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const [seedAddresses, setSeedAddresses] = React.useState<SeedAddress[]>([]);
 
   const onSeedUnlock = async (): Promise<void> => {
+    if (password == null) {
+      return;
+    }
+
     setPasswordError(undefined);
+    setVerifying(true);
 
     const hasGlobalKey = await isGlobalKeySet();
 
     if (hasGlobalKey) {
-      const correctPassword = await checkGlobalKey(password ?? '');
+      const correctPassword = await verifyGlobalKey(password);
 
       if (correctPassword) {
         setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST);
       } else {
         setPasswordError('Incorrect password');
       }
+
+      setVerifying(false);
     } else {
       const entry = entries.find((item) => item.blockchain === selectedBlockchain);
 
@@ -153,6 +162,14 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
       } else {
         setPasswordError('Incorrect password');
       }
+
+      setVerifying(false);
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSeedUnlock();
     }
   };
 
@@ -209,7 +226,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
         listKey.current = key;
 
-        setLoading(true);
+        setInitializing(true);
 
         const baseHdPath = HDPath.parse(entryHdPath);
 
@@ -266,7 +283,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
               }),
           );
 
-          setLoading(false);
+          setInitializing(false);
         }
       })();
   }, [counter, entries, password, stage, listAddresses, selectedBlockchain]);
@@ -287,14 +304,14 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
               <ButtonGroup>
                 <Button
                   primary
-                  disabled={loading || counter === 0}
+                  disabled={initializing || counter === 0}
                   label="Back"
                   variant="outlined"
                   onClick={() => setCounter(counter - 1)}
                 />
                 <Button
                   primary
-                  disabled={loading}
+                  disabled={initializing}
                   label="Next"
                   variant="outlined"
                   onClick={() => setCounter(counter + 1)}
@@ -319,14 +336,28 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
               </FormRow>
               <FormRow>
                 <FormLabel>Password</FormLabel>
-                <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSeedUnlock} />
+                <PasswordInput
+                  error={passwordError}
+                  minLength={1}
+                  placeholder="Enter existing password"
+                  showLengthNotice={false}
+                  onChange={setPassword}
+                  onPressEnter={onPasswordEnter}
+                />
               </FormRow>
             </>
           )}
           <FormRow last>
             <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
-              {seed?.type !== 'ledger' && <Button primary label="Unlock" onClick={onSeedUnlock} />}
+              {seed?.type !== 'ledger' && (
+                <Button
+                  primary
+                  disabled={verifying || (password?.length ?? 0) === 0}
+                  label="Unlock"
+                  onClick={onSeedUnlock}
+                />
+              )}
             </ButtonGroup>
           </FormRow>
         </>
@@ -367,7 +398,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading || seedAddresses.length === 0
+              {initializing || seedAddresses.length === 0
                 ? Array.from({ length: 10 }).map((item, index) => (
                     <TableRow key={`skeleton-row-${index}`}>
                       <TableCell className={styles.tableCellHdPath}>
@@ -430,9 +461,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     addEntryToWallet(walletId, entry) {
       return dispatch(accounts.actions.addEntryToWallet(walletId, entry));
     },
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     disableReceiveForEntry(entryId, disabled = true) {
       return dispatch(accounts.actions.disableReceiveForEntry(entryId, disabled));
     },
@@ -447,6 +475,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     loadWallets() {
       return dispatch(accounts.actions.loadWalletsAction());
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(AddHDAddress);

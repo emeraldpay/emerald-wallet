@@ -1,18 +1,9 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { accounts } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
-import { Box, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Box, Grid, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-
-const useStyles = makeStyles(
-  createStyles({
-    alert: {
-      marginTop: 20,
-    },
-  }),
-);
 
 interface OwnProps {
   seedId: Uuid;
@@ -23,26 +14,46 @@ interface DispatchProps {
   verifyPassword(password: string): Promise<boolean>;
 }
 
-const Component: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verifyPassword }) => {
-  const styles = useStyles();
+const UnlockSeed: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verifyPassword }) => {
+  const mounted = React.useRef(true);
 
-  const [password, setPassword] = React.useState('');
-
-  const [invalid, setInvalid] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
 
-  const onVerify = (): void => {
+  const [password, setPassword] = React.useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
+
+  const onVerify = async (): Promise<void> => {
+    if (password == null) {
+      return;
+    }
+
+    setPasswordError(undefined);
     setVerifying(true);
 
-    verifyPassword(password).then((valid) => {
-      if (valid) {
-        onUnlock(password);
-      }
+    const correctPassword = await verifyPassword(password);
 
-      setInvalid(!valid);
+    if (correctPassword) {
+      onUnlock(password);
+    } else {
+      setPasswordError('Invalid password');
+    }
+
+    if (mounted.current) {
       setVerifying(false);
-    });
+    }
   };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onVerify();
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <Grid container>
@@ -56,25 +67,20 @@ const Component: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, verif
             <Grid item xs>
               <PasswordInput
                 disabled={verifying}
-                initialValue={password}
+                error={passwordError}
+                placeholder="Enter existing password"
                 minLength={1}
-                showPlaceholder={false}
+                showLengthNotice={false}
                 onChange={setPassword}
+                onPressEnter={onPasswordEnter}
               />
             </Grid>
             <Grid item xs="auto">
-              <Button primary disabled={verifying} label="Unlock" onClick={onVerify} />
+              <Button primary disabled={verifying || (password?.length ?? 0) === 0} label="Unlock" onClick={onVerify} />
             </Grid>
           </Grid>
         </Box>
       </Grid>
-      {invalid && (
-        <Grid item xs={12}>
-          <Alert className={styles.alert} severity="error">
-            Invalid password
-          </Alert>
-        </Grid>
-      )}
     </Grid>
   );
 };
@@ -84,9 +90,7 @@ export default connect<unknown, DispatchProps, OwnProps>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { seedId }): DispatchProps => ({
     verifyPassword(password) {
-      return new Promise((resolve) => {
-        dispatch(accounts.actions.unlockSeed(seedId, password, resolve));
-      });
+      return new Promise((resolve) => dispatch(accounts.actions.unlockSeed(seedId, password, resolve)));
     },
   }),
-)(Component);
+)(UnlockSeed);

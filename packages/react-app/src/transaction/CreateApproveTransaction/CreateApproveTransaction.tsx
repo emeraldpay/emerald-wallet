@@ -43,9 +43,9 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   goBack(): void;
   signTx(entry: EthereumEntry, tx: workflow.CreateErc20ApproveTx, password?: string): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -53,12 +53,14 @@ const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   entries,
   initialAllowance,
   tokenRegistry,
-  checkGlobalKey,
   detectHardware,
   goBack,
   signTx,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
+
+  const mounted = React.useRef(true);
 
   const [stage, setStage] = React.useState(Stages.SETUP);
 
@@ -66,6 +68,8 @@ const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [entry, setEntry] = React.useState<EthereumEntry | undefined>();
 
   const isHardware = React.useMemo(() => (entry == null ? false : detectHardware(entry)), [entry, detectHardware]);
+
+  const [verifying, setVerifying] = React.useState(false);
 
   const [password, setPassword] = React.useState<string | undefined>();
   const [passwordError, setPasswordError] = React.useState<string | undefined>();
@@ -93,15 +97,33 @@ const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
         return;
       }
 
-      const passed = await checkGlobalKey(password);
+      setVerifying(true);
 
-      if (passed) {
+      const correctPassword = await verifyGlobalKey(password);
+
+      if (correctPassword) {
         await signTx(entry, tx, password);
       } else {
         setPasswordError('Incorrect password');
       }
+
+      if (mounted.current) {
+        setVerifying(false);
+      }
     }
   };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const tx = approveTx == null ? undefined : workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
@@ -138,7 +160,14 @@ const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               ) : (
                 <FormRow>
                   <FormLabel>Password</FormLabel>
-                  <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+                  <PasswordInput
+                    error={passwordError}
+                    minLength={1}
+                    placeholder="Enter existing password"
+                    showLengthNotice={false}
+                    onChange={setPassword}
+                    onPressEnter={onPasswordEnter}
+                  />
                 </FormRow>
               )}
               <FormRow last>
@@ -148,7 +177,7 @@ const CreateApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
                   {!isHardware && (
                     <Button
                       primary
-                      disabled={(password?.length ?? 0) === 0}
+                      disabled={verifying || (password?.length ?? 0) === 0}
                       label="Sign Transaction"
                       onClick={onSignTransaction}
                     />
@@ -216,9 +245,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     goBack() {
       dispatch(screen.actions.goBack());
     },
@@ -246,6 +272,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           ),
         );
       }
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(CreateApproveTransaction);

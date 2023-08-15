@@ -115,6 +115,8 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
 }) => {
   const styles = useStyles();
 
+  const mounted = React.useRef(true);
+
   const [stage, setStage] = React.useState(Stages.SETUP);
 
   const [addressMenuElement, setAddressMenuElement] = React.useState<HTMLDivElement | null>(null);
@@ -132,6 +134,8 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
   const [messageType, setMessageType] = React.useState(MessageType.AUTO);
 
   const [validation, setValidation] = React.useState(Validation.EMPTY);
+
+  const [verifying, setVerifying] = React.useState(false);
 
   const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
@@ -188,9 +192,14 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
   };
 
   const onSignMessage = async (): Promise<void> => {
-    setPasswordError(undefined);
+    if (password == null) {
+      return;
+    }
 
-    const correctPassword = await verifyGlobalKey(password ?? '');
+    setPasswordError(undefined);
+    setVerifying(true);
+
+    const correctPassword = await verifyGlobalKey(password);
 
     if (correctPassword) {
       const signed = await signMessage(selectedAddress.entryId, messageText, messageType, password);
@@ -199,37 +208,44 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     } else {
       setPasswordError('Incorrect password');
     }
+
+    if (mounted.current) {
+      setVerifying(false);
+    }
   };
 
-  const renderAddress = React.useCallback(
-    (signAddress: SignAddress) => {
-      const { address, entryId } = signAddress;
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignMessage();
+    }
+  };
 
-      const onClick = (): void => {
-        setAddressMenuElement(null);
-        setSelectedAddress(signAddress);
-      };
+  const renderAddress = (signAddress: SignAddress): React.ReactNode => {
+    const { address, entryId } = signAddress;
 
-      return (
-        <div className={styles.address} onClick={onClick}>
-          <div className={styles.addressIcon}>
-            <IdentityIcon id={address} />
-          </div>
-          <div>
-            <Address disableCopy address={address} />
-            {entryById != null && (
-              <Typography color="secondary" variant="body2">
-                {blockchainById(entryById[entryId].blockchain)?.getTitle()}
-              </Typography>
-            )}
-          </div>
+    const onClick = (): void => {
+      setAddressMenuElement(null);
+      setSelectedAddress(signAddress);
+    };
+
+    return (
+      <div className={styles.address} onClick={onClick}>
+        <div className={styles.addressIcon}>
+          <IdentityIcon id={address} />
         </div>
-      );
-    },
-    [entryById, styles],
-  );
+        <div>
+          <Address disableCopy address={address} />
+          {entryById != null && (
+            <Typography color="secondary" variant="body2">
+              {blockchainById(entryById[entryId].blockchain)?.getTitle()}
+            </Typography>
+          )}
+        </div>
+      </div>
+    );
+  };
 
-  const renderMessage = React.useCallback((message: unknown, keys: string[] = []): React.ReactNode => {
+  const renderMessage = (message: unknown, keys: string[] = []): React.ReactNode => {
     if (message != null && typeof message === 'object') {
       return Object.entries(message).map(([key, value]) => {
         const path = [...keys, key];
@@ -258,6 +274,12 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
         </TableCell>
       </TableRow>
     );
+  };
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
   const isInvalid = validation === Validation.INVALID;
@@ -391,8 +413,10 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
                 <PasswordInput
                   error={passwordError}
                   minLength={1}
+                  placeholder="Enter existing password"
+                  showLengthNotice={false}
                   onChange={setPassword}
-                  onPressEnter={onSignMessage}
+                  onPressEnter={onPasswordEnter}
                 />
               </FormRow>
             </>
@@ -401,7 +425,12 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
             <ButtonGroup classes={{ container: styles.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               {seed?.type !== 'ledger' && (
-                <Button disabled={password?.length === 0} label="Sign Message" primary={true} onClick={onSignMessage} />
+                <Button
+                  disabled={verifying || (password?.length ?? 0) === 0}
+                  label="Sign Message"
+                  primary={true}
+                  onClick={onSignMessage}
+                />
               )}
             </ButtonGroup>
           </FormRow>

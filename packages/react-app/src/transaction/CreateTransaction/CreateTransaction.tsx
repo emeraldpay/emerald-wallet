@@ -54,13 +54,6 @@ type CreateERC20Tx = workflow.CreateERC20Tx;
 
 type AnyTransaction = CreateEthereumTx | CreateERC20Tx;
 
-type Request = {
-  entryId: string;
-  password?: string;
-  token: string;
-  transaction: AnyTransaction;
-};
-
 interface OwnProps {
   data?: any;
   entry: WalletEntry;
@@ -70,37 +63,13 @@ interface OwnProps {
   initialAsset?: string;
 }
 
-interface CreateTxState {
-  amount?: any;
-  asset: string;
-  data?: any;
-  hash?: string;
-  page: PAGES;
-  password?: string;
-  passwordError?: string;
-  transaction: workflow.TxDetailsPlain;
-  initializing: boolean;
-  highGasPrice: GasPrices;
-  lowGasPrice: GasPrices;
-  stdGasPrice: GasPrices;
-  useEip1559: boolean;
-}
-
-interface DispatchFromProps {
-  checkGlobalKey(password: string): Promise<boolean>;
-  estimateGas(tx: EthereumTransaction): Promise<number>;
-  getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
-  onCancel(): void;
-  signAndSend(tokenRegistry: TokenRegistry, request: Request): void;
-}
-
 interface Account {
   address: string;
   asset: string;
   ownerAddress?: string;
 }
 
-interface Props {
+interface StateProps {
   accounts: Record<string, Account>;
   asset: string;
   amount: any;
@@ -121,10 +90,44 @@ interface Props {
   getTokenBalance(contractAddress: string, address?: string, ownerAddress?: string): TokenAmount;
 }
 
+interface Request {
+  entryId: string;
+  password?: string;
+  token: string;
+  transaction: AnyTransaction;
+}
+
+interface DispatchProps {
+  estimateGas(tx: EthereumTransaction): Promise<number>;
+  getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
+  onCancel(): void;
+  signAndSend(tokenRegistry: TokenRegistry, request: Request): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
+}
+
+interface State {
+  amount?: any;
+  asset: string;
+  data?: any;
+  hash?: string;
+  page: PAGES;
+  password?: string;
+  passwordError?: string;
+  transaction: workflow.TxDetailsPlain;
+  initializing: boolean;
+  highGasPrice: GasPrices;
+  lowGasPrice: GasPrices;
+  stdGasPrice: GasPrices;
+  useEip1559: boolean;
+  verifying: boolean;
+}
+
+type Props = OwnProps & StateProps & DispatchProps;
+
 const { TxTarget } = workflow;
 
-class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromProps, CreateTxState> {
-  constructor(props: OwnProps & Props & DispatchFromProps) {
+class CreateTransaction extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.onChangeAccount = this.onChangeAccount.bind(this);
@@ -153,6 +156,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       page: PAGES.TX,
       transaction: tx.dump(),
       useEip1559: props.eip1559,
+      verifying: false,
     };
   }
 
@@ -192,7 +196,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     tokenRegistry,
     getBalance,
     getTokenBalance,
-  }: OwnProps & Props & DispatchFromProps): workflow.CreateEthereumTx | workflow.CreateERC20Tx {
+  }: Props): workflow.CreateEthereumTx | workflow.CreateERC20Tx {
     const txType = eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
 
     const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
@@ -424,17 +428,21 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       return;
     }
 
-    const { tokenRegistry, checkGlobalKey, getEntryByAddress, signAndSend } = this.props;
+    const { tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey } = this.props;
     const { password, asset } = this.state;
 
-    if (password != null) {
-      const correctPassword = await checkGlobalKey(password ?? '');
+    if (password == null) {
+      return;
+    }
 
-      if (!correctPassword) {
-        this.setState({ passwordError: 'Incorrect password' });
+    this.setState({ verifying: true });
 
-        return;
-      }
+    const correctPassword = await verifyGlobalKey(password);
+
+    if (!correctPassword) {
+      this.setState({ passwordError: 'Incorrect password', verifying: false });
+
+      return;
     }
 
     const entry = getEntryByAddress(tx.from);
@@ -448,7 +456,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       password: password,
       transaction: tx,
       token: asset,
-    });
+    }).catch(() => this.setState({ verifying: false }));
   };
 
   public onMaxClicked(callback: (value: BigAmount) => void): void {
@@ -510,7 +518,9 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       getTokenBalance,
       onCancel,
     } = this.props;
-    const { asset, initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, useEip1559 } = this.state;
+
+    const { asset, initializing, highGasPrice, lowGasPrice, passwordError, stdGasPrice, useEip1559, verifying } =
+      this.state;
 
     const tx = this.transaction;
 
@@ -552,6 +562,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
           <SignTx
             passwordError={passwordError}
             transaction={tx}
+            verifying={verifying}
             onCancel={onCancel}
             onChangePassword={this.onChangePassword}
             onSubmit={this.onSubmitSignTxForm}
@@ -593,8 +604,8 @@ function sign(
   return dispatch(transaction.actions.signTransaction(entryId, tx.build(), password));
 }
 
-export default connect(
-  (state: IState, { entry, gasLimit, initialAllowance, initialAsset }: OwnProps): Props => {
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, { entry, gasLimit, initialAllowance, initialAsset }) => {
     const blockchainCode = blockchainIdToCode(entry.blockchain);
     const blockchain = Blockchains[blockchainCode];
     const coinTicker = blockchain.params.coinTicker;
@@ -738,10 +749,7 @@ export default connect(
       },
     };
   },
-  (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
+  (dispatch: any, ownProps) => ({
     estimateGas(tx) {
       return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
     },
@@ -752,22 +760,31 @@ export default connect(
       dispatch(screen.actions.goBack());
     },
     signAndSend(tokenRegistry, request) {
-      sign(dispatch, ownProps, tokenRegistry, request).then((signed) => {
-        if (signed != null) {
-          dispatch(
-            screen.actions.gotoScreen(
-              screen.Pages.BROADCAST_TX,
-              {
-                ...signed,
-                fee: request.transaction.getFees(),
-                originalAmount: request.transaction.amount,
-              },
-              null,
-              true,
-            ),
-          );
-        }
-      });
+      return new Promise((resolve, reject) =>
+        sign(dispatch, ownProps, tokenRegistry, request).then((signed) => {
+          if (signed == null) {
+            reject();
+          } else {
+            resolve();
+
+            dispatch(
+              screen.actions.gotoScreen(
+                screen.Pages.BROADCAST_TX,
+                {
+                  ...signed,
+                  fee: request.transaction.getFees(),
+                  originalAmount: request.transaction.amount,
+                },
+                null,
+                true,
+              ),
+            );
+          }
+        }),
+      );
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(CreateTransaction);

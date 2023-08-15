@@ -3,7 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import HDPathCounter from '../../src/create-account/HDPathCounter';
-import SelectCoins from '../../src/create-account/SelectCoins';
+import SelectCoins from '../../src/create-account/SelectBlockchains';
 import SelectHDPath from '../../src/create-account/SelectHDPath';
 import { MemoryApiMock } from '../__mocks__/apiMock';
 import { BackendMock } from '../__mocks__/backendMock';

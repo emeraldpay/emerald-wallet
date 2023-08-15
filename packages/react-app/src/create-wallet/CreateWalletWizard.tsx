@@ -17,7 +17,7 @@ import {
 import * as bip39 from 'bip39';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import SelectCoins from '../create-account/SelectCoins';
+import SelectCoins from '../create-account/SelectBlockchains';
 import SelectHDPath from '../create-account/SelectHDPath';
 import UnlockSeed from '../create-account/UnlockSeed';
 import WaitLedger from '../ledger/WaitLedger';
@@ -41,7 +41,6 @@ const useStyles = makeStyles(
     },
     content: {
       flex: 1,
-      minHeight: 100,
       overflowY: 'auto',
     },
     footer: {
@@ -97,7 +96,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
 
   const prevAddresses = React.useRef<HDPathAddresses>({});
 
-  const [walletId, setWalletId] = React.useState<string | undefined>();
+  const [walletId, setWalletId] = React.useState<string>();
 
   const [step, setStep] = React.useState(
     new CreateWalletFlow((result) =>
@@ -152,7 +151,12 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   if (page.code === STEP_CODE.KEY_SOURCE) {
     activeStepPage = <SelectKeySource seeds={seeds} onSelect={applyWithState(step.applySource)} />;
   } else if (page.code === STEP_CODE.OPTIONS) {
-    activeStepPage = <WalletOptions onChange={applyWithState(step.applyOptions)} />;
+    activeStepPage = (
+      <WalletOptions
+        onChange={applyWithState(step.applyOptions)}
+        onPressEnter={() => applyWithState(step.applyNext)()}
+      />
+    );
   } else if (page.code === STEP_CODE.SELECT_BLOCKCHAIN) {
     activeStepPage = (
       <SelectCoins

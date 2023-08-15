@@ -33,7 +33,13 @@ interface OwnProps {
   onChange(value: BlockchainCode[]): void;
 }
 
-const SelectCoins: React.FC<OwnProps & StateProps> = ({ blockchains, enabled, multiple, tokenRegistry, onChange }) => {
+const SelectBlockchains: React.FC<OwnProps & StateProps> = ({
+  blockchains,
+  enabled,
+  multiple,
+  tokenRegistry,
+  onChange,
+}) => {
   const styles = useStyles();
 
   const [justEnabled, setJustEnabled] = React.useState<BlockchainCode[]>([]);
@@ -108,6 +114,6 @@ const SelectCoins: React.FC<OwnProps & StateProps> = ({ blockchains, enabled, mu
   );
 };
 
-export default connect<StateProps, unknown, unknown, IState>((state) => ({
+export default connect<StateProps, unknown, OwnProps, IState>((state) => ({
   tokenRegistry: new TokenRegistry(state.application.tokens),
-}))(SelectCoins);
+}))(SelectBlockchains);

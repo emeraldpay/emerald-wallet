@@ -9,6 +9,7 @@ import WaitLedger from '../../ledger/WaitLedger';
 interface OwnProps {
   passwordError?: string;
   transaction: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
+  verifying: boolean;
   onChangePassword(password: string): void;
   onSubmit(): void;
   onCancel(): void;
@@ -93,17 +94,14 @@ type StyledProps = Props & WithStyles<typeof styles>;
 
 interface State {
   nameByAddress: Record<string, string>;
-  password: string;
+  password?: string;
 }
 
 class SignTransaction extends React.Component<StyledProps, State> {
   constructor(props: StyledProps) {
     super(props);
 
-    this.state = {
-      nameByAddress: {},
-      password: '',
-    };
+    this.state = { nameByAddress: {} };
   }
 
   async componentDidMount(): Promise<void> {
@@ -139,8 +137,19 @@ class SignTransaction extends React.Component<StyledProps, State> {
     this.props.onChangePassword(password);
   };
 
+  handlePasswordEnter = (): void => {
+    const {
+      props: { verifying, onSubmit },
+      state: { password },
+    } = this;
+
+    if (!verifying && (password?.length ?? 0) > 0) {
+      onSubmit();
+    }
+  };
+
   render(): React.ReactNode {
-    const { classes, isHardware, passwordError, transaction, onCancel, onSubmit } = this.props;
+    const { classes, isHardware, passwordError, transaction, verifying, onCancel, onSubmit } = this.props;
     const { nameByAddress, password } = this.state;
 
     const display = transaction.display();
@@ -179,14 +188,26 @@ class SignTransaction extends React.Component<StyledProps, State> {
         ) : (
           <FormRow>
             <FormLabel>Password</FormLabel>
-            <PasswordInput error={passwordError} onChange={this.handlePasswordChange} />
+            <PasswordInput
+              error={passwordError}
+              minLength={1}
+              placeholder="Enter existing password"
+              showLengthNotice={false}
+              onChange={this.handlePasswordChange}
+              onPressEnter={this.handlePasswordEnter}
+            />
           </FormRow>
         )}
         <FormRow last>
           <ButtonGroup classes={{ container: classes.buttons }}>
             <Button label="Cancel" onClick={onCancel} />
             {!isHardware && (
-              <Button disabled={password.length === 0} primary={true} label="Sign Transaction" onClick={onSubmit} />
+              <Button
+                disabled={verifying || (password?.length ?? 0) === 0}
+                primary={true}
+                label="Sign Transaction"
+                onClick={onSubmit}
+              />
             )}
           </ButtonGroup>
         </FormRow>

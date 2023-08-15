@@ -89,29 +89,33 @@ interface OwnProps {
 
 interface DispatchProps {
   broadcastTransaction(data: BroadcastData): void;
-  checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode): Promise<GasPrices<number>>;
   restoreBtcTx(cancel: boolean): Promise<workflow.BitcoinTx>;
   signTransaction(unsigned: UnsignedBitcoinTx, handler: SignHandler, password?: string): void;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
   entryId,
   isHardware,
   tx,
+  isCancel = false,
   broadcastTransaction,
-  checkGlobalKey,
   getTopFee,
   goBack,
   renderNotice,
   restoreBtcTx,
   signTransaction,
-  isCancel = false,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
 
-  const [initializing, setInitializing] = React.useState(true);
+  const mounted = React.useRef(true);
+
   const [stage, setStage] = React.useState(Stages.SETUP);
+
+  const [initializing, setInitializing] = React.useState(true);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [restoredTx, setRestoredTx] = React.useState<workflow.BitcoinTx>();
 
@@ -121,7 +125,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
   const [minFeePrice, setMinFeePrice] = React.useState(0);
   const [maxFeePrice, setMaxFeePrice] = React.useState(0);
 
-  const [password, setPassword] = React.useState('');
+  const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
   const [signedRawTx, setSignedRawTx] = React.useState<string | null>(null);
@@ -165,7 +169,13 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
           setStage(Stages.CONFIRM);
         });
       } else {
-        const correctPassword = await checkGlobalKey(password);
+        if (password == null) {
+          return;
+        }
+
+        setVerifying(true);
+
+        const correctPassword = await verifyGlobalKey(password);
 
         if (correctPassword) {
           signTransaction(
@@ -181,7 +191,17 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
         } else {
           setPasswordError('Incorrect password');
         }
+
+        if (mounted.current) {
+          setVerifying(false);
+        }
       }
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
     }
   };
 
@@ -189,11 +209,9 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
 
   React.useEffect(
     () => {
-      let mounted = true;
-
       Promise.all([restoreBtcTx(isCancel), getTopFee(blockchainCode)])
         .then(([btcTx, { max: currentMaxFee }]) => {
-          if (mounted) {
+          if (mounted.current) {
             const { vkbPrice } = btcTx;
 
             const minimalFee = vkbPrice.plus(vkbPrice.multiply(0.1)).number.toNumber();
@@ -218,7 +236,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
         .catch(console.warn);
 
       return () => {
-        mounted = false;
+        mounted.current = false;
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -326,7 +344,14 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
               ) : (
                 <FormRow>
                   <FormLabel>Password</FormLabel>
-                  <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+                  <PasswordInput
+                    error={passwordError}
+                    minLength={1}
+                    placeholder="Enter existing password"
+                    showLengthNotice={false}
+                    onChange={setPassword}
+                    onPressEnter={onPasswordEnter}
+                  />
                 </FormRow>
               )}
               <FormRow last>
@@ -336,7 +361,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                   {!isHardware && (
                     <Button
                       primary
-                      disabled={password.length === 0 || tx.state > State.SUBMITTED}
+                      disabled={verifying || (password?.length ?? 0) === 0 || tx.state > State.SUBMITTED}
                       label="Sign Transaction"
                       onClick={onSignTransaction}
                     />
@@ -376,9 +401,6 @@ export default connect<unknown, DispatchProps, OwnProps>(
     broadcastTransaction(data) {
       dispatch(transaction.actions.broadcastTx(data));
     },
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     getTopFee(blockchain) {
       return dispatch(transaction.actions.getTopFee(blockchain));
     },
@@ -391,6 +413,9 @@ export default connect<unknown, DispatchProps, OwnProps>(
       }
 
       dispatch(transaction.actions.signBitcoinTransaction(entryId, unsigned, password, handler));
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(ModifyBitcoinTransaction);

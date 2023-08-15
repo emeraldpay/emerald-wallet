@@ -1,29 +1,22 @@
 {
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "src",
-    "esModuleInterop": true,
+    "baseUrl": "../src",
+    "composite": false,
     "jsx": "react",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2021",
     "resolveJsonModule": true,
     "rootDirs": [
-      "src",
-      "stories"
+      "../src",
+      "../stories"
     ],
     "typeRoots": [
-      "node_modules/@types",
       "../../node_modules/@types"
     ]
   },
   "exclude": [
     "../../node_modules",
     "../src/**/*.spec.ts",
-    "../src/**/*.spec.tsx",
-    "node_modules"
+    "../src/**/*.spec.tsx"
   ],
   "include": [
     "../src/**/*.ts",

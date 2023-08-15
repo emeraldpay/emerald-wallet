@@ -147,7 +147,7 @@ export function accountImportedAction(walletId: string): Dispatched<void, Wallet
 export function createHdAccountAction(
   walletId: string,
   blockchain: BlockchainCode,
-  seedPassword: string,
+  seedPassword?: string,
 ): CreateHdEntryAction {
   return {
     type: ActionTypes.CREATE_HD_ACCOUNT,

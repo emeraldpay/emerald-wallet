@@ -89,7 +89,8 @@ export default createTheme({
     },
     MuiFormHelperText: {
       root: {
-        bottom: -(spacing * 1.8),
+        bottom: -16,
+        fontSize: '0.8rem',
         lineHeight: 1,
         marginTop: 0,
         position: 'absolute',

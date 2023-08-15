@@ -1,41 +1,37 @@
-import { TextField, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { FormLabel, FormRow } from '@emeraldwallet/ui';
+import { TextField } from '@material-ui/core';
 import * as React from 'react';
 import { Options } from '../flow/types';
 
-const useStyles = makeStyles(
-  createStyles({
-    field: {
-      width: 400,
-    },
-  }),
-);
-
 interface OwnProps {
   onChange(value: Options): void;
+  onPressEnter?(): void;
 }
 
-const WalletOptions: React.FC<OwnProps> = ({ onChange }) => {
-  const styles = useStyles();
-
+const WalletOptions: React.FC<OwnProps> = ({ onChange, onPressEnter }) => {
   const [options, setOptions] = React.useState<Options>({});
 
   return (
-    <form noValidate autoComplete="off">
+    <FormRow last>
+      <FormLabel>Label</FormLabel>
       <TextField
-        className={styles.field}
-        helperText="(optional) Wallet Label"
-        id="label"
-        label="Label"
+        autoFocus
+        fullWidth
+        placeholder="Optional"
         value={options.label}
         onChange={({ target: { value } }) => {
-          const updated = Object.assign({}, options, { label: value });
+          const updated = { ...options, label: value };
 
           setOptions(updated);
           onChange(updated);
         }}
+        onKeyDown={({ key }) => {
+          if (onPressEnter != null && key === 'Enter') {
+            onPressEnter();
+          }
+        }}
       />
-    </form>
+    </FormRow>
   );
 };
 

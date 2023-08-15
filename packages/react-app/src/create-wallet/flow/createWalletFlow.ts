@@ -1,7 +1,7 @@
 import { SeedDescription, Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { HDPathAddresses, HDPathIndexes } from '@emeraldwallet/store';
-import { ImportPkType } from '@emeraldwallet/ui';
+import { ImportedPk } from '@emeraldwallet/ui';
 import {
   KeySourceType,
   KeysSource,
@@ -364,7 +364,7 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyImportPk({ json, jsonPassword, password, raw }: ImportPkType): CreateWalletFlow {
+  applyImportPk({ json, jsonPassword, password, raw }: ImportedPk): CreateWalletFlow {
     const copy = this.copy();
 
     if (!isPk(copy.result.type)) {

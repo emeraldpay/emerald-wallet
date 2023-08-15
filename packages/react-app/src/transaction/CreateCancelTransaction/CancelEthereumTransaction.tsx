@@ -93,10 +93,10 @@ interface OwnProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode): Promise<GasPrices>;
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
   signTransaction(tx: EthereumTransaction, entryId?: string, password?: string): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
@@ -104,23 +104,25 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
   ethTx,
   isHardware,
   tx,
-  checkGlobalKey,
   getTopFee,
   goBack,
   lookupAddress,
   signTransaction,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
 
   const mounted = React.useRef(true);
 
-  const [initializing, setInitializing] = React.useState(true);
   const [stage, setStage] = React.useState(Stages.SETUP);
+
+  const [initializing, setInitializing] = React.useState(true);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [fromName, setFromName] = React.useState<string | null>(null);
   const [toName, setToName] = React.useState<string | null>(null);
 
-  const [password, setPassword] = React.useState('');
+  const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
   const [useEip1559, setUseEip1559] = React.useState(ethTx.type === EthereumTransactionType.EIP1559);
@@ -167,13 +169,29 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
     if (isHardware) {
       await signTransaction({ ...ethTx, ...gasPrices }, entryId);
     } else {
-      const correctPassword = await checkGlobalKey(password);
+      if (password == null) {
+        return;
+      }
+
+      setVerifying(true);
+
+      const correctPassword = await verifyGlobalKey(password);
 
       if (correctPassword) {
         await signTransaction({ ...ethTx, ...gasPrices }, entryId, password);
       } else {
         setPasswordError('Incorrect password');
       }
+
+      if (mounted.current) {
+        setVerifying(false);
+      }
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!initializing && !verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
     }
   };
 
@@ -388,7 +406,14 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+              <PasswordInput
+                error={passwordError}
+                minLength={1}
+                placeholder="Enter existing password"
+                showLengthNotice={false}
+                onChange={setPassword}
+                onPressEnter={onPasswordEnter}
+              />
             </FormRow>
           )}
           <FormRow last>
@@ -398,7 +423,7 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
               {!isHardware && (
                 <Button
                   primary
-                  disabled={initializing || password.length === 0}
+                  disabled={initializing || verifying || (password?.length ?? 0) === 0}
                   label="Sign Transaction"
                   onClick={onSignTransaction}
                 />
@@ -415,9 +440,6 @@ export default connect<unknown, DispatchProps, OwnProps, IState>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     getTopFee(blockchain) {
       return dispatch(transaction.actions.getTopFee(blockchain));
     },
@@ -470,6 +492,9 @@ export default connect<unknown, DispatchProps, OwnProps, IState>(
           ),
         );
       }
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(CancelEthereumTransaction);

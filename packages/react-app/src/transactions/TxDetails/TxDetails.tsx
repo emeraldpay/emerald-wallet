@@ -217,7 +217,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
             <FormRow>
               <FormLabel>Modify</FormLabel>
               <ButtonGroup>
-                <Button onClick={() => goToCancelTx(entryId, transaction)} label="Revert Transaction" />
+                <Button onClick={() => goToCancelTx(entryId, transaction)} label="Revoke Transaction" />
                 <Button onClick={() => goToSpeedUpTx(entryId, transaction)} label="Speed Up" />
               </ButtonGroup>
             </FormRow>

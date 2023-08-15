@@ -343,7 +343,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           </IconButton>
           <Menu anchorEl={menuAnchor} open={menuAnchor != null} onClose={onCloseMenu}>
             <MenuItem onClick={() => goToTransaction(entryId, tx)}>Details</MenuItem>
-            {tx.state < State.CONFIRMED && <MenuItem onClick={() => goToCancelTx(entryId, tx)}>Revert</MenuItem>}
+            {tx.state < State.CONFIRMED && <MenuItem onClick={() => goToCancelTx(entryId, tx)}>Revoke</MenuItem>}
             {tx.state < State.CONFIRMED && <MenuItem onClick={() => goToSpeedUpTx(entryId, tx)}>Speed Up</MenuItem>}
           </Menu>
         </div>
