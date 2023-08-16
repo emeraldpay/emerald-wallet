@@ -1,4 +1,4 @@
-import { AddressAllowanceResponse, Publisher } from '@emeraldpay/api';
+import { AddressAllowanceRequest, AddressAllowanceResponse, Publisher } from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import { extractWalletId } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
@@ -27,6 +27,8 @@ interface Subscription {
 function isEqual(first: Subscription, second: Subscription): boolean {
   return first.address === second.address && first.blockchain === second.blockchain && first.entryId === second.entryId;
 }
+
+type AllowanceHandler = (allowance: AddressAllowanceResponse) => void;
 
 const log = Logger.forCategory('AllowanceService');
 
@@ -112,56 +114,67 @@ export class AllowanceService implements Service {
   private subscribeAllowance({ address, blockchain, entryId }: Subscription): void {
     const tokens = this.tokenRegistry.byBlockchain(blockchain);
 
+    const request: AddressAllowanceRequest = {
+      address,
+      chain: blockchainCodeToId(blockchain),
+      contractAddresses: tokens.map(({ address }) => address),
+    };
+
+    const handler = this.processAllowance(entryId, address);
+
+    this.apiAccess.blockchainClient
+      .getAddressAllowance(request)
+      .then((allowances) => allowances.forEach((allowance) => handler(allowance)))
+      .catch((error) => log.error(`Error while requesting for ${address} on ${blockchain} blockchain`, error));
+
     const subscriber = this.apiAccess.blockchainClient
-      .subscribeAddressAllowance({
-        address,
-        chain: blockchainCodeToId(blockchain),
-        contractAddresses: tokens.map(({ address }) => address),
-      })
-      .onData(({ allowance, available, chain, contractAddress, ownerAddress, spenderAddress }) => {
-        const blockchain = blockchainIdToCode(chain);
-
-        const cachedAllowance: PersistentState.CachedAllowance = {
-          blockchain,
-          amount: allowance,
-          owner: ownerAddress,
-          spender: spenderAddress,
-          token: contractAddress,
-        };
-
-        return this.persistentState.allowances
-          .add(extractWalletId(entryId), cachedAllowance, this.cacheTtl)
-          .then(() => {
-            this.balanceService.createSubscription(entryId, blockchain, ownerAddress, contractAddress);
-
-            const blockchainId = blockchainCodeToId(blockchain);
-
-            Promise.all([
-              this.apiAccess.addressClient.describeAddress({ address: ownerAddress, chain: blockchainId }),
-              this.apiAccess.addressClient.describeAddress({ address: spenderAddress, chain: blockchainId }),
-            ]).then(([{ control: ownerControl }, { control: spenderControl }]) =>
-              this.webContents.send(IpcCommands.STORE_DISPATCH, {
-                type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
-                payload: {
-                  allowance: {
-                    address,
-                    allowance,
-                    available,
-                    blockchain,
-                    contractAddress,
-                    ownerAddress,
-                    ownerControl,
-                    spenderAddress,
-                    spenderControl,
-                  },
-                  tokens: this.tokens,
-                },
-              }),
-            );
-          });
-      })
+      .subscribeAddressAllowance(request)
+      .onData(handler)
       .onError((error) => log.error(`Error while subscribing for ${address} on ${blockchain} blockchain`, error));
 
     this.subscribers.set(`${blockchain}:${address}`, subscriber);
+  }
+
+  private processAllowance(entryId: EntryId, address: string): AllowanceHandler {
+    return ({ allowance, available, chain, contractAddress, ownerAddress, spenderAddress }) => {
+      const blockchain = blockchainIdToCode(chain);
+
+      const cachedAllowance: PersistentState.CachedAllowance = {
+        blockchain,
+        amount: allowance,
+        owner: ownerAddress,
+        spender: spenderAddress,
+        token: contractAddress,
+      };
+
+      this.persistentState.allowances.add(extractWalletId(entryId), cachedAllowance, this.cacheTtl).then(() => {
+        this.balanceService.createSubscription(entryId, blockchain, ownerAddress, contractAddress);
+
+        const blockchainId = blockchainCodeToId(blockchain);
+
+        Promise.all([
+          this.apiAccess.addressClient.describeAddress({ address: ownerAddress, chain: blockchainId }),
+          this.apiAccess.addressClient.describeAddress({ address: spenderAddress, chain: blockchainId }),
+        ]).then(([{ control: ownerControl }, { control: spenderControl }]) =>
+          this.webContents.send(IpcCommands.STORE_DISPATCH, {
+            type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
+            payload: {
+              allowance: {
+                address,
+                allowance,
+                available,
+                blockchain,
+                contractAddress,
+                ownerAddress,
+                ownerControl,
+                spenderAddress,
+                spenderControl,
+              },
+              tokens: this.tokens,
+            },
+          }),
+        );
+      });
+    };
   }
 }
