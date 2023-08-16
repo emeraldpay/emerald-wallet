@@ -5,7 +5,7 @@ import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper, T
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../ledger/WaitLedger';
-import SelectCoins from './SelectCoins';
+import SelectBlockchains from './SelectBlockchains';
 
 enum Stages {
   SELECT = 0,
@@ -26,7 +26,8 @@ interface StateProps {
 
 interface DispatchProps {
   onCancel(): void;
-  onCreate(blockchain: BlockchainCode, password: string): void;
+  onCreate(blockchain: BlockchainCode, password?: string): void;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -35,22 +36,68 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
   isHardware,
   onCreate,
   onCancel,
+  verifyGlobalKey,
 }) => {
-  const [selectedBlockchains, setSelectedBlockchains] = React.useState<SelectedBlockchains>(new Set());
+  const mounted = React.useRef(true);
+
   const [stage, setStage] = React.useState(Stages.SELECT);
-  const [password, setPassword] = React.useState('');
+
+  const [selectedBlockchains, setSelectedBlockchains] = React.useState<SelectedBlockchains>(new Set());
+
+  const [verifying, setVerifying] = React.useState(false);
+
+  const [password, setPassword] = React.useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
+
+  const handleSelectBlockchains = (selected: BlockchainCode[]): void =>
+    setSelectedBlockchains(
+      selected.reduce<SelectedBlockchains>((carry, blockchain) => carry.add(blockchain), new Set()),
+    );
+
+  const handlePasswordChange = (value: string): void => setPassword(value);
 
   const handleCreate = (): void =>
     blockchains
       .filter(({ params: { code } }) => !enabledBlockchains.has(code) && selectedBlockchains.has(code))
       .forEach((blockchain) => onCreate(blockchain.params.code, password));
 
-  const handlePasswordChange = (value: string): void => setPassword(value);
+  const handleBackClick = (): void => {
+    setPasswordError(undefined);
+    setStage(Stages.SELECT);
+  };
 
-  const handleSelectBlockchains = (selected: BlockchainCode[]): void =>
-    setSelectedBlockchains(
-      selected.reduce<SelectedBlockchains>((carry, blockchain) => carry.add(blockchain), new Set()),
-    );
+  const handleSaveChanges = async (): Promise<void> => {
+    if (password == null) {
+      return;
+    }
+
+    setPasswordError(undefined);
+    setVerifying(true);
+
+    const correctPassword = await verifyGlobalKey(password);
+
+    if (correctPassword) {
+      handleCreate();
+    } else {
+      setPasswordError('Incorrect password');
+    }
+
+    if (mounted.current) {
+      setVerifying(false);
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await handleSaveChanges();
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const hasSelectedBlockchains = blockchains.some(
     ({ params: { code } }) => !enabledBlockchains.has(code) && selectedBlockchains.has(code),
@@ -72,7 +119,11 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
       />
       <CardContent>
         {stage === Stages.SELECT && (
-          <SelectCoins blockchains={blockchains} enabled={[...enabledBlockchains]} onChange={handleSelectBlockchains} />
+          <SelectBlockchains
+            blockchains={blockchains}
+            enabled={[...enabledBlockchains]}
+            onChange={handleSelectBlockchains}
+          />
         )}
         {stage === Stages.CONFIRM &&
           (isHardware ? (
@@ -80,11 +131,19 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
           ) : (
             <>
               <FormRow>
+                <FormLabel />
                 <Typography variant="h6">Please enter password for the seed</Typography>
               </FormRow>
               <FormRow last>
                 <FormLabel>Seed password</FormLabel>
-                <PasswordInput initialValue={password} minLength={1} onChange={handlePasswordChange} />
+                <PasswordInput
+                  error={passwordError}
+                  minLength={1}
+                  placeholder="Enter existing password"
+                  showLengthNotice={false}
+                  onChange={handlePasswordChange}
+                  onPressEnter={onPasswordEnter}
+                />
               </FormRow>
             </>
           ))}
@@ -101,8 +160,13 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
         <CardActions>
           <ButtonGroup>
             <Button label="Cancel" primary={false} onClick={onCancel} />
-            <Button label="Back" primary={false} onClick={() => setStage(Stages.SELECT)} />
-            <Button disabled={password.length === 0} label="Save changes" primary onClick={handleCreate} />
+            <Button label="Back" primary={false} onClick={handleBackClick} />
+            <Button
+              disabled={verifying || (password?.length ?? 0) === 0}
+              label="Save changes"
+              primary
+              onClick={handleSaveChanges}
+            />
           </ButtonGroup>
         </CardActions>
       )}
@@ -139,8 +203,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     onCancel() {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
     },
-    onCreate(chain: BlockchainCode, password: string) {
-      dispatch(accounts.actions.createHdAccountAction(ownProps.walletId, chain, password));
+    onCreate(blockchain, password) {
+      dispatch(accounts.actions.createHdAccountAction(ownProps.walletId, blockchain, password));
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(SetupBlockchains);

@@ -1,4 +1,4 @@
-import { accounts } from '@emeraldwallet/store';
+import { IState, accounts } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { Grid, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -10,30 +10,56 @@ interface OwnProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
-const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPassword }) => {
-  const [password, setPassword] = React.useState('');
+const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ onPassword, verifyGlobalKey }) => {
+  const mounted = React.useRef(true);
 
+  const [verifying, setVerifying] = React.useState(false);
+
+  const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
-  const onVerifyPassword = React.useCallback(async () => {
-    setPasswordError(undefined);
+  const onVerifyPassword = async (): Promise<void> => {
+    if (password == null) {
+      return;
+    }
 
-    const correctPassword = await checkGlobalKey(password);
+    setPasswordError(undefined);
+    setVerifying(true);
+
+    const correctPassword = await verifyGlobalKey(password);
 
     if (correctPassword) {
       onPassword(password);
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [password]);
+
+    if (mounted.current) {
+      setVerifying(false);
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onVerifyPassword();
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <Grid container>
       <Grid item xs={12}>
-        <Typography style={{ marginBottom: 10 }} variant="h4">Enter your password</Typography>
+        <Typography style={{ marginBottom: 10 }} variant="h4">
+          Enter your password
+        </Typography>
         <Alert severity="info">
           You&apos;re about to save an encrypted copy of the secret phrase (&quot;Mnemonic Phrase&quot;) generated on
           the previous step. Please enter the Emerald Wallet password to save the Seed Phrase!
@@ -42,10 +68,22 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
       <Grid item xs={12}>
         <Grid container alignItems="center" spacing={1}>
           <Grid item xs={10}>
-            <PasswordInput error={passwordError} onChange={setPassword} />
+            <PasswordInput
+              error={passwordError}
+              minLength={1}
+              placeholder="Enter existing password"
+              showLengthNotice={false}
+              onChange={setPassword}
+              onPressEnter={onPasswordEnter}
+            />
           </Grid>
           <Grid item xs={2}>
-            <Button label="Save" primary={true} onClick={onVerifyPassword} />
+            <Button
+              primary
+              disabled={verifying || (password?.length ?? 0) === 0}
+              label="Save"
+              onClick={onVerifyPassword}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -53,11 +91,11 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
   );
 };
 
-export default connect<{}, DispatchProps>(
+export default connect<unknown, DispatchProps, OwnProps, IState>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    checkGlobalKey(password) {
+    verifyGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),

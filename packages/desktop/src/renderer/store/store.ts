@@ -142,7 +142,11 @@ function startSync(): void {
   });
 
   triggers.onceAccountsLoaded(store).then(() => {
-    RemoteCache.get('rates').then((rates) => store.dispatch(settings.actions.setRates(JSON.parse(rates))));
+    RemoteCache.get('rates').then((rates) => {
+      if (rates != null) {
+        store.dispatch(settings.actions.setRates(JSON.parse(rates)));
+      }
+    });
 
     triggers.onceTokenBalancesLoaded(store).then(() => initAllowancesState(api, backendApi, store));
 

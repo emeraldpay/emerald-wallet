@@ -1,22 +1,14 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "lib": [
       "dom",
       "es5",
       "scripthost",
       "es2015.promise"
     ],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "outDir": "lib/",
     "rootDir": "src/",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2021",
     "typeRoots": [
       "./typings",
       "node_modules/@types",

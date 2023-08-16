@@ -49,7 +49,7 @@ const CancelBitcoinTransaction: React.FC<OwnProps> = ({ entryId, isHardware, raw
           <FormRow>
             <FormLabel />
             <Typography>
-              Reverting transaction <span className={styles.hash}>{tx.txId}</span> and returning back{' '}
+              Revoking transaction <span className={styles.hash}>{tx.txId}</span> and returning back{' '}
               {formatAmount(amount)}. With {formatAmount(factory(unsignedTx.fee))} fee applied for reversal.
             </Typography>
           </FormRow>

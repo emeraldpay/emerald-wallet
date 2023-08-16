@@ -70,7 +70,7 @@ const CreateCancelTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   }, []);
 
   return (
-    <Page title="Revert Transaction" leftIcon={<Back onClick={goBack} />}>
+    <Page title="Revoke Transaction" leftIcon={<Back onClick={goBack} />}>
       {blockchainTx == null ? (
         <>
           <StoredTxView tx={storedTx} />

@@ -50,7 +50,7 @@ export { default as FormRow } from './components/common/Form/FormRow';
 export { default as HashIcon } from './components/common/HashIcon';
 export { default as IdentityIcon } from './components/common/IdentityIcon';
 export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';
-export { default as ImportPk, ImportPkType } from './components/accounts/ImportPk';
+export { default as ImportPk, ImportedPk } from './components/accounts/ImportPk';
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { Input } from './components/common/Input';
 export { default as Logo } from './components/common/Logo';

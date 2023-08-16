@@ -3,10 +3,12 @@ import { EthereumAddress, PersistentState, WalletApi } from '@emeraldwallet/core
 import { IState, accounts, tokens } from '@emeraldwallet/store';
 import { Action, Store } from 'redux';
 
-type Balances = {
+interface Balances {
   coinBalances: PersistentState.Balance[];
   tokenBalances: PersistentState.Balance[];
-};
+}
+
+type EntriesByAddress = Record<string, WalletEntry[]>;
 
 export function initBalancesState(api: WalletApi, store: Store<IState>): void {
   const entries = accounts.selectors.allEntries(store.getState());
@@ -57,10 +59,13 @@ export function initBalancesState(api: WalletApi, store: Store<IState>): void {
         { coinBalances: [], tokenBalances: [] },
       );
 
-    const entryByAddress = Object.entries(balanceByIdentifier).reduce<Record<string, WalletEntry[]>>(
+    const entryByAddress = Object.entries(balanceByIdentifier).reduce<EntriesByAddress>(
       (carry, [identifier, balances]) => {
-        return balances.reduce(
-          (balancesCarry, balance) => ({ ...balancesCarry, [balance.address]: entryByIdentifier.get(identifier) }),
+        return balances.reduce<EntriesByAddress>(
+          (balancesCarry, balance) => ({
+            ...balancesCarry,
+            [balance.address]: entryByIdentifier.get(identifier) ?? [],
+          }),
           carry,
         );
       },

@@ -45,58 +45,67 @@ const useStyles = makeStyles(
 );
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   getLegacyItems(): Promise<OddPasswordItem[]>;
   goHome(): Promise<void>;
-  upgradeLegacyItems(globalPassword: string, password: string): Promise<Uuid[]>;
+  upgradeLegacyItems(legacyPassword: string, globalPassword: string): Promise<Uuid[]>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 type PasswordType = OddPasswordItem & { upgraded?: boolean };
 
-const PasswordMigration: React.FC<DispatchProps> = ({ checkGlobalKey, getLegacyItems, goHome, upgradeLegacyItems }) => {
+const PasswordMigration: React.FC<DispatchProps> = ({
+  getLegacyItems,
+  goHome,
+  upgradeLegacyItems,
+  verifyGlobalKey,
+}) => {
   const styles = useStyles();
 
   const [initializing, setInitializing] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [legacyItems, setLegacyItems] = React.useState<PasswordType[]>([]);
 
-  const [globalPassword, setGlobalPassword] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
+  const [globalPassword, setGlobalPassword] = React.useState<string>();
   const [globalPasswordError, setGlobalPasswordError] = React.useState<string>();
-  const [passwordError, setPasswordError] = React.useState<string>();
 
-  const applyPassword = React.useCallback(async () => {
-    setGlobalPasswordError(undefined);
-    setPasswordError(undefined);
+  const [legacyPassword, setLegacyPassword] = React.useState<string>();
+  const [legacyPasswordError, setLegacyPasswordError] = React.useState<string>();
 
-    const correctGlobalPassword = await checkGlobalKey(globalPassword);
-
-    if (!correctGlobalPassword) {
-      setGlobalPasswordError('Incorrect password');
-
+  const applyPassword = async (): Promise<void> => {
+    if (globalPassword == null || legacyPassword == null || legacyPassword.length === 0) {
       return;
     }
 
-    if (password.length === 0) {
-      setPasswordError('Incorrect password');
+    setGlobalPasswordError(undefined);
+    setLegacyPasswordError(undefined);
+
+    setVerifying(true);
+
+    const correctGlobalPassword = await verifyGlobalKey(globalPassword);
+
+    if (!correctGlobalPassword) {
+      setGlobalPasswordError('Incorrect password');
+      setVerifying(false);
 
       return;
     }
 
     setUpgrading(true);
 
-    const upgraded = await upgradeLegacyItems(globalPassword, password);
+    const upgraded = await upgradeLegacyItems(legacyPassword, globalPassword);
 
-    setUpgrading(false);
     setLegacyItems(
       legacyItems.map((item) => ({
         ...item,
         upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
       })),
     );
-  }, [legacyItems, globalPassword, password, checkGlobalKey, upgradeLegacyItems]);
+
+    setUpgrading(false);
+    setVerifying(false);
+  };
 
   React.useEffect(
     () => {
@@ -113,6 +122,9 @@ const PasswordMigration: React.FC<DispatchProps> = ({ checkGlobalKey, getLegacyI
   );
 
   const allItemsUpgraded = legacyItems.reduce((carry, item) => carry && item.upgraded === true, true);
+
+  const processing = initializing || upgrading || verifying;
+  const applyDisabled = processing || (globalPassword?.length ?? 0) === 0 || (legacyPassword?.length ?? 0) === 0;
 
   return (
     <Page title="Setup Global Password">
@@ -133,22 +145,22 @@ const PasswordMigration: React.FC<DispatchProps> = ({ checkGlobalKey, getLegacyI
           </TableRow>
         </TableHead>
         <TableBody>
-          {legacyItems.map((password) => (
-            <TableRow key={password.id}>
-              <TableCell>{password.type === 'key' ? 'Private Key' : 'Seed'}</TableCell>
-              <TableCell>{password.id}</TableCell>
+          {legacyItems.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.type === 'key' ? 'Private Key' : 'Seed'}</TableCell>
+              <TableCell>{item.id}</TableCell>
               <TableCell>
-                {upgrading && !password.upgraded ? (
+                {upgrading && !item.upgraded ? (
                   <div className={styles.status}>
                     <CircularProgress color="primary" className={styles.loader} size="1em" />
                     <span>Migrating...</span>
                   </div>
-                ) : password.upgraded == null ? (
+                ) : item.upgraded == null ? (
                   <div className={styles.status}>
                     <WarningIcon style={{ color: orangeColor['500'] }} />
                     <span>Migration required</span>
                   </div>
-                ) : password.upgraded ? (
+                ) : item.upgraded ? (
                   <div className={styles.status}>
                     <DoneIcon style={{ color: greenColor['500'] }} />
                     <span>Migration successful</span>
@@ -169,23 +181,35 @@ const PasswordMigration: React.FC<DispatchProps> = ({ checkGlobalKey, getLegacyI
         <PasswordInput
           disabled={initializing}
           error={globalPasswordError}
+          minLength={1}
+          placeholder="Enter existing password"
+          showLengthNotice={false}
           onChange={(value) => setGlobalPassword(value)}
         />
       </FormRow>
       <FormRow>
         <FormLabel classes={{ root: styles.label }}>Old password (for any of the items above):</FormLabel>
-        <PasswordInput disabled={initializing} error={passwordError} onChange={(value) => setPassword(value)} />
+        <PasswordInput
+          disabled={initializing}
+          error={legacyPasswordError}
+          minLength={1}
+          placeholder="Enter existing password"
+          showLengthNotice={false}
+          onChange={(value) => setLegacyPassword(value)}
+        />
       </FormRow>
       <FormRow>
         <FormLabel classes={{ root: styles.label }} />
         <ButtonGroup classes={{ container: styles.buttons }}>
           <Button
-            disabled={initializing}
+            disabled={processing}
             label={allItemsUpgraded ? 'Continue' : 'Skip'}
             primary={allItemsUpgraded}
             onClick={goHome}
           />
-          {!allItemsUpgraded && <Button disabled={initializing} label="Apply" primary={true} onClick={applyPassword} />}
+          {!allItemsUpgraded && (
+            <Button disabled={applyDisabled} label="Apply" primary={true} onClick={applyPassword} />
+          )}
         </ButtonGroup>
       </FormRow>
     </Page>
@@ -196,17 +220,17 @@ export default connect<unknown, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     getLegacyItems() {
       return dispatch(accounts.actions.getOddPasswordItems());
     },
     goHome() {
       return dispatch(screen.actions.gotoWalletsScreen());
     },
-    upgradeLegacyItems(globalPassword, password) {
-      return dispatch(accounts.actions.tryUpgradeOddItems(password, globalPassword));
+    upgradeLegacyItems(legacyPassword, globalPassword) {
+      return dispatch(accounts.actions.tryUpgradeOddItems(legacyPassword, globalPassword));
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(PasswordMigration);

@@ -1,17 +1,12 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "composite": true,
-    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": false,
     "jsx": "react",
     "outDir": "lib/",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "rootDir": "src/",
-    "skipLibCheck": true,
-    "sourceMap": true,
     "strict": false,
-    "target": "ES2021",
     "typeRoots": [
       "../../node_modules/@types",
       "node_modules/@types"

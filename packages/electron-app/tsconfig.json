@@ -1,15 +1,8 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "outDir": "lib/",
-    "rootDir": "src/",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2021"
+    "rootDir": "src/"
   },
   "exclude": [
     "node_modules",

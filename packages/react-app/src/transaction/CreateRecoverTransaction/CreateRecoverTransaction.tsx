@@ -42,7 +42,7 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../../ledger/WaitLedger';
 
@@ -109,11 +109,11 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: workflow.CreateEthereumTx, password?: string): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -125,23 +125,27 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   recoverBlockchain,
   tokenDataList,
   wrongBlockchain,
-  checkGlobalKey,
   estimateGas,
   getBalancesByAddress,
   getFees,
   goBack,
   signTransaction,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
 
-  const [initializing, setInitializing] = useState(true);
+  const mounted = React.useRef(true);
+
   const [stage, setStage] = useState(Stages.SETUP);
+
+  const [initializing, setInitializing] = React.useState(true);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [address, setAddress] = React.useState(Object.keys(addresses)[0]);
   const [token, setToken] = React.useState(tokenDataList[0]);
 
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState<string>();
+  const [password, setPassword] = React.useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
 
   const [transaction, setTransaction] = React.useState(
     new workflow.CreateEthereumTx(null, wrongBlockchain.params.code).dump(),
@@ -159,7 +163,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroWei);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroWei);
 
-  const [gasPriceUnit, setGasPriceUnit] = useState(Wei.ZERO.units.base);
+  const [gasPriceUnit, setGasPriceUnit] = React.useState(Wei.ZERO.units.base);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(0);
   const [useStdMaxGasPrice, setUseStdMaxGasPrice] = React.useState(true);
@@ -167,18 +171,15 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(0);
   const [useStdPriorityGasPrice, setUseStdPriorityGasPrice] = React.useState(true);
 
-  const onTokenChange = React.useCallback(
-    ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-      const tokenData = tokenDataList.find((item) => item.symbol === value);
+  const onTokenChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+    const tokenData = tokenDataList.find((item) => item.symbol === value);
 
-      if (tokenData != null) {
-        setToken(tokenData);
-      }
-    },
-    [tokenDataList],
-  );
+    if (tokenData != null) {
+      setToken(tokenData);
+    }
+  };
 
-  const onCreateTransaction = useCallback(async () => {
+  const onCreateTransaction = async (): Promise<void> => {
     if (fromAddress == null) {
       return;
     }
@@ -211,20 +212,9 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     setTransaction(tx.dump());
 
     setStage(Stages.SIGN);
-  }, [
-    address,
-    balanceByToken,
-    eip1559,
-    fromAddress,
-    gasPriceUnit,
-    maxGasPrice,
-    priorityGasPrice,
-    token.symbol,
-    wrongBlockchain,
-    estimateGas,
-  ]);
+  };
 
-  const onSignTransaction = useCallback(async () => {
+  const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
     const tx = workflow.CreateEthereumTx.fromPlain(transaction);
@@ -232,15 +222,31 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     if (isHardware) {
       await signTransaction(tx);
     } else {
-      const correctPassword = await checkGlobalKey(password);
+      if (password == null) {
+        return;
+      }
+
+      setVerifying(true);
+
+      const correctPassword = await verifyGlobalKey(password);
 
       if (correctPassword) {
         await signTransaction(tx, password);
       } else {
         setPasswordError('Incorrect password');
       }
+
+      if (mounted.current) {
+        setVerifying(false);
+      }
     }
-  }, [isHardware, password, transaction, checkGlobalKey, signTransaction]);
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
+    }
+  };
 
   React.useEffect(
     () => {
@@ -497,7 +503,14 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+              <PasswordInput
+                error={passwordError}
+                minLength={1}
+                placeholder="Enter existing password"
+                showLengthNotice={false}
+                onChange={setPassword}
+                onPressEnter={onPasswordEnter}
+              />
             </FormRow>
           )}
           <FormRow last>
@@ -507,7 +520,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               {!isHardware && (
                 <Button
                   label="Sign Transaction"
-                  disabled={password.length === 0}
+                  disabled={verifying || (password?.length ?? 0) === 0}
                   primary={true}
                   onClick={onSignTransaction}
                 />
@@ -603,9 +616,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { entry }) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     estimateGas(blockchain, tx) {
       return dispatch(transaction.actions.estimateGas(blockchain, tx));
     },
@@ -638,6 +648,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           ),
         );
       }
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(CreateRecoverTransaction);

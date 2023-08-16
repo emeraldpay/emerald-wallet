@@ -97,10 +97,10 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode): Promise<GasPrices>;
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
   signTransaction(tx: EthereumTransaction, entryId?: string, password?: string): Promise<void>;
+  verifyGlobalKey(password: string): Promise<boolean>;
 }
 
 const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps> = ({
@@ -109,18 +109,20 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   defaultFee,
   isHardware,
   tx,
-  checkGlobalKey,
   getTopFee,
   goBack,
   lookupAddress,
   signTransaction,
+  verifyGlobalKey,
 }) => {
   const styles = useStyles();
 
   const mounted = React.useRef(true);
 
-  const [initializing, setInitializing] = React.useState(true);
   const [stage, setStage] = React.useState(Stages.SETUP);
+
+  const [initializing, setInitializing] = React.useState(true);
+  const [verifying, setVerifying] = React.useState(false);
 
   const [fromName, setFromName] = React.useState<string | null>(null);
   const [toName, setToName] = React.useState<string | null>(null);
@@ -146,7 +148,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
     txPriorityGasPrice.plus(txPriorityGasPrice.multiply(0.5)),
   );
 
-  const [password, setPassword] = React.useState('');
+  const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
   const onSignTransaction = async (): Promise<void> => {
@@ -177,7 +179,13 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
         entryId,
       );
     } else {
-      const correctPassword = await checkGlobalKey(password);
+      if (password == null) {
+        return;
+      }
+
+      setVerifying(true);
+
+      const correctPassword = await verifyGlobalKey(password);
 
       if (correctPassword) {
         await signTransaction(
@@ -191,6 +199,16 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
       } else {
         setPasswordError('Incorrect password');
       }
+
+      if (mounted.current) {
+        setVerifying(false);
+      }
+    }
+  };
+
+  const onPasswordEnter = async (): Promise<void> => {
+    if (!verifying && (password?.length ?? 0) > 0) {
+      await onSignTransaction();
     }
   };
 
@@ -403,7 +421,14 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
           ) : (
             <FormRow>
               <FormLabel>Password</FormLabel>
-              <PasswordInput error={passwordError} onChange={setPassword} onPressEnter={onSignTransaction} />
+              <PasswordInput
+                error={passwordError}
+                minLength={1}
+                placeholder="Enter existing password"
+                showLengthNotice={false}
+                onChange={setPassword}
+                onPressEnter={onPasswordEnter}
+              />
             </FormRow>
           )}
           <FormRow last>
@@ -413,7 +438,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
               {!isHardware && (
                 <Button
                   primary
-                  disabled={initializing || password.length === 0}
+                  disabled={verifying || (password?.length ?? 0) === 0}
                   label="Sign Transaction"
                   onClick={onSignTransaction}
                 />
@@ -432,9 +457,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    checkGlobalKey(password) {
-      return dispatch(accounts.actions.verifyGlobalKey(password));
-    },
     getTopFee(blockchain) {
       return dispatch(transaction.actions.getTopFee(blockchain));
     },
@@ -492,6 +514,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           ),
         );
       }
+    },
+    verifyGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
     },
   }),
 )(SpeedUpEthereumTransaction);

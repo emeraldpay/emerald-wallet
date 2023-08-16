@@ -15,23 +15,23 @@ export function initAllowancesState(api: WalletApi, backendApi: BackendApi, stor
         );
 
         if (entry != null) {
-          const {
-            address: { value: address },
-          } = entry;
+          const { address } = entry;
 
-          const available = tokens.selectors.selectBalance(state, blockchain, owner, token)?.number.toString() ?? '0';
+          if (address != null) {
+            const available = tokens.selectors.selectBalance(state, blockchain, owner, token)?.number.toString() ?? '0';
 
-          store.dispatch(
-            allowances.actions.initAddressAllowance({
-              address,
-              available,
-              blockchain,
-              allowance: amount,
-              contractAddress: token,
-              ownerAddress: owner,
-              spenderAddress: spender,
-            }) as unknown as Action,
-          );
+            store.dispatch(
+              allowances.actions.initAddressAllowance({
+                available,
+                blockchain,
+                address: address.value,
+                allowance: amount,
+                contractAddress: token,
+                ownerAddress: owner,
+                spenderAddress: spender,
+              }) as unknown as Action,
+            );
+          }
         }
       }),
     ),
