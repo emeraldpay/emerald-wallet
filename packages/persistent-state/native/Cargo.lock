@@ -1352,7 +1352,7 @@ dependencies = [
 
 [[package]]
 name = "persistent-state"
-version = "2.10.0-dev"
+version = "2.10.0"
 dependencies = [
  "bitcoin",
  "chrono",
