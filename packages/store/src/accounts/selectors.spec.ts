@@ -216,8 +216,6 @@ describe('selectTotalBalance', () => {
 
     const prices = withFiatConversion(state, aggregatedAssets);
 
-    console.log(prices);
-
     expect(prices.length).toBe(3);
 
     // ETH = (1.2 + 1.1 + 3) * 256

@@ -7,7 +7,7 @@ import { AllowanceState, moduleName as allowanceModule } from './allowances/type
 import { ApplicationState, moduleName as applicationModule } from './application/types';
 import { BlockchainsState, moduleName as blockchainsModule } from './blockchains/types';
 import { ConnectionState, moduleName as connectionModule } from './connection/types';
-import { IHDPreviewState } from './hdpath-preview/types';
+import { HDPreviewState, moduleName as hdpathPreviewModule } from './hdpath-preview/types';
 import { ScreenState } from './screen/types';
 import { SettingsState } from './settings/types';
 import { TokensState, moduleName as tokensModule } from './tokens/types';
@@ -20,9 +20,9 @@ export interface IState {
   [applicationModule]: ApplicationState;
   [blockchainsModule]: BlockchainsState;
   [connectionModule]: ConnectionState;
+  [hdpathPreviewModule]: HDPreviewState;
   [tokensModule]: TokensState;
   addAccount?: IAddAccountState;
-  hdpathPreview?: IHDPreviewState;
   history: HistoryState;
   screen: ScreenState;
   settings: SettingsState;

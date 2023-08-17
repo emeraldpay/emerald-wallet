@@ -90,6 +90,7 @@ interface OwnProps {
 
 interface StateProps {
   balance?: CurrencyAmount;
+  hasEthereumEntry: boolean;
   wallet?: Wallet;
   walletIcon?: string | null;
   isHardware(wallet: Wallet | undefined): boolean;
@@ -103,6 +104,7 @@ interface DispatchProps {
 
 const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
   balance,
+  hasEthereumEntry,
   wallet,
   walletIcon,
   isHardware,
@@ -223,7 +225,7 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
           <ButtonGroup>
             <Button primary icon={<SendIcon />} label="Send" onClick={gotoSend} />
             <Button primary icon={<ReceiveIcon />} label="Receive" onClick={gotoReceive} />
-            <Button primary icon={<SignIcon />} label="Sign" onClick={gotoSign} />
+            <Button primary disabled={!hasEthereumEntry} icon={<SignIcon />} label="Sign" onClick={gotoSign} />
           </ButtonGroup>
         </div>
         {entriesByBlockchain.map(renderEntry)}
@@ -246,6 +248,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       wallet,
       balance: accounts.selectors.fiatTotalBalance(state, balances),
+      hasEthereumEntry: wallet?.entries.find((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) != null,
       walletIcon: state.accounts.icons[walletId],
       isHardware(wallet) {
         const [account] = wallet?.reserved ?? [];

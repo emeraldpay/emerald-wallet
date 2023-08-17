@@ -25,9 +25,7 @@ type StatusListener = (state: Status) => void;
 interface ConnectionState {
   connectedAt: Date;
   authenticated: boolean;
-  addressConnected: boolean;
   blockchainConnected: boolean;
-  marketConnected: boolean;
   monitoringConnected: boolean;
 }
 
@@ -73,9 +71,7 @@ export class EmeraldApiAccess {
     this.connectionState = {
       connectedAt: new Date(),
       authenticated: false,
-      addressConnected: false,
       blockchainConnected: false,
-      marketConnected: false,
       monitoringConnected: false,
     };
 
@@ -94,18 +90,8 @@ export class EmeraldApiAccess {
       this.verifyConnection();
     });
 
-    this.addressClient.setConnectionListener((status) => {
-      this.connectionState.addressConnected = status === ConnectionStatus.CONNECTED;
-      this.verifyConnection();
-    });
-
     this.blockchainClient.setConnectionListener((status) => {
       this.connectionState.blockchainConnected = status === ConnectionStatus.CONNECTED;
-      this.verifyConnection();
-    });
-
-    this.marketClient.setConnectionListener((status) => {
-      this.connectionState.marketConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
 
@@ -173,8 +159,7 @@ export class EmeraldApiAccess {
   protected verifyConnection(): void {
     const status = this.connectionState;
 
-    const connected =
-      status.authenticated && status.blockchainConnected && status.marketConnected && status.monitoringConnected;
+    const connected = status.authenticated && status.blockchainConnected && status.monitoringConnected;
 
     if (!connected) {
       this.verifyOffline();

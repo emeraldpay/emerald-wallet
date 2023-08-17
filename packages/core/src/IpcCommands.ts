@@ -16,6 +16,7 @@ export enum IpcCommands {
   DESCRIBE_ADDRESS = 'describe-address',
   ESTIMATE_FEE = 'estimate-fee',
   ESTIMATE_TX = 'estimate-tx',
+  GET_BALANCE = 'get-balance',
   GET_BTC_TX = 'get-btc-tx',
   GET_ETH_RECEIPT = 'get-eth-receipt',
   GET_ETH_TX = 'get-eth-tx',

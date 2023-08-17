@@ -94,7 +94,7 @@ export default connect(
         return new Promise((resolve) => dispatch(accounts.actions.generateMnemonic(resolve)));
       },
       onCancel: () => {
-        dispatch(hdpathPreview.actions.clean());
+        dispatch(hdpathPreview.actions.cleanAccount());
         dispatch(screen.actions.gotoWalletsScreen());
       },
       onCreate: (value: Result) => {
@@ -229,7 +229,7 @@ export default connect(
             }),
           );
 
-          dispatch(hdpathPreview.actions.clean());
+          dispatch(hdpathPreview.actions.cleanAccount());
         });
       },
       onError: screen.actions.catchError(dispatch),

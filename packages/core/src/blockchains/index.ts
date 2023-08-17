@@ -14,8 +14,8 @@ export {
   isEthereum,
   ledgerByBlockchain,
 } from './blockchains';
-export { Coin, CoinCode, getCoinAsset } from './coin';
-export { CoinTicker, CoinTickerCode, isEthereumCoinTicker } from './coinTicker';
+export { Coin, CoinCode } from './coin';
+export { CoinTicker, CoinTickerCode } from './coinTicker';
 export {
   DecodedInput,
   DecodedType,

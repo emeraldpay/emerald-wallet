@@ -16,6 +16,7 @@ import * as triggers from './triggers';
 import * as txhistory from './txhistory';
 import * as wallet from './wallet';
 
+export { AccountState, HDPathAddresses, HDPathIndexes } from './hdpath-preview/types';
 export { Allowance, AllowanceType } from './allowances/types';
 export { BackendApiInvoker } from './BackendApiInvoker';
 export {
@@ -31,7 +32,6 @@ export {
 } from './transaction/types';
 export { ConvertedBalance } from './accounts/types';
 export { DefaultFee } from './application/types';
-export { HDPathAddresses, HDPathIndexes, IAddressState } from './hdpath-preview/types';
 export { IState } from './types';
 export { RemoteAddressBook } from './remote-access/AddressBook';
 export { RemoteAllowances } from './remote-access/Allowances';

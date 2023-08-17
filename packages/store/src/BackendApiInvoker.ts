@@ -1,4 +1,5 @@
-import { DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { AnyAsset, DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { AddressBalance } from '@emeraldpay/api/lib/typesBlockchain';
 import {
   BackendApi,
   BitcoinRawTransaction,
@@ -29,6 +30,10 @@ export class BackendApiInvoker implements BackendApi {
 
   estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number> {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_TX, blockchain, tx);
+  }
+
+  getBalance(address: string, asset: AnyAsset, includeUtxo = false): Promise<AddressBalance[]> {
+    return ipcRenderer.invoke(IpcCommands.GET_BALANCE, address, asset, includeUtxo);
   }
 
   getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null> {

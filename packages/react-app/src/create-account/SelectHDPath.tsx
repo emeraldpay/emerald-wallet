@@ -1,7 +1,13 @@
-import { BigAmount } from '@emeraldpay/bigamount';
 import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, HDPath, amountDecoder, formatAmount, isEthereum } from '@emeraldwallet/core';
-import { HDPathIndexes, IAddressState, IState, accounts, hdpathPreview } from '@emeraldwallet/store';
+import {
+  BlockchainCode,
+  Blockchains,
+  HDPath,
+  amountFactory,
+  formatAmountPartial,
+  isEthereum,
+} from '@emeraldwallet/core';
+import { AccountState, HDPathIndexes, IState, accounts, hdpathPreview } from '@emeraldwallet/store';
 import { Address, Table } from '@emeraldwallet/ui';
 import {
   Grid,
@@ -25,6 +31,9 @@ import HDPathCounter from './HDPathCounter';
 
 const useStyles = makeStyles(
   createStyles({
+    activeCell: {
+      width: 80,
+    },
     addressSkeleton: {
       paddingLeft: 4,
       paddingTop: 4,
@@ -52,7 +61,7 @@ interface OwnProps {
 
 interface StateProps {
   disabledAccounts: number[];
-  hdPathDisplay: IAddressState[];
+  hdPathDisplay: AccountState[];
   indexes: HDPathIndexes;
   initialAccountId: number;
   isHardware: boolean;
@@ -79,40 +88,56 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
   const [accountId, setAccountId] = React.useState(initialAccountId);
 
-  const renderAddress = React.useCallback(
-    (value: string | undefined | null, blockchain: BlockchainCode) => {
-      if (value != null && value.length > 0) {
-        return <Address address={value} disableCopy={true} />;
-      }
+  const onAccountChange = ({ account }: HDPath): void => {
+    setAccountId(account);
 
-      if (isHardware) {
-        const appTitle = Blockchains[blockchain].getTitle();
+    onUpdate(account, indexes);
+    onChange(account, indexes);
+  };
 
-        return (
-          <Skeleton className={styles.addressSkeleton} height={20} width={380} variant="text">
-            Open {appTitle} App on Ledger
-          </Skeleton>
-        );
-      }
+  const onIndexChange =
+    (item: AccountState) =>
+    ({ target: { value } }: ChangeEvent<{ value: unknown }>) => {
+      const newIndexes = { ...indexes, [item.blockchain]: parseInt(value as string, 10) };
 
-      return <Skeleton variant="text" width={380} height={12} />;
-    },
-    [isHardware, styles],
-  );
+      onUpdate(accountId, newIndexes);
+      onChange(accountId, newIndexes);
+    };
 
-  const renderBalance = React.useCallback(
-    (item: IAddressState) => {
-      if (item.balance == null || item.balance.length === 0) {
-        return <Skeleton className={styles.balanceSkeleton} height={12} width={80} variant="text" />;
-      }
+  const isActive = ({ balance, blockchain }: AccountState): boolean =>
+    balance != null && amountFactory(blockchain)(balance).isPositive();
 
-      const amountReader = amountDecoder<BigAmount>(item.blockchain);
-      const amount = amountReader(item.balance);
+  const renderAddress = (value: string | undefined | null, blockchain: BlockchainCode): React.ReactNode => {
+    if (value != null && value.length > 0) {
+      return <Address address={value} disableCopy={true} />;
+    }
 
-      return <Typography>{formatAmount(amount)}</Typography>;
-    },
-    [styles],
-  );
+    if (isHardware) {
+      const appTitle = Blockchains[blockchain].getTitle();
+
+      return (
+        <Skeleton className={styles.addressSkeleton} height={20} width={380} variant="text">
+          Open {appTitle} App on Ledger
+        </Skeleton>
+      );
+    }
+
+    return <Skeleton variant="text" width={380} height={12} />;
+  };
+
+  const renderBalance = ({ balance, blockchain }: AccountState): React.ReactNode => {
+    if (balance === null) {
+      return <Typography>&mdash;</Typography>;
+    }
+
+    if (balance === undefined || balance.length === 0) {
+      return <Skeleton className={styles.balanceSkeleton} height={12} width={80} variant="text" />;
+    }
+
+    const [amount] = formatAmountPartial(amountFactory(blockchain)(balance));
+
+    return <Typography>{amount}</Typography>;
+  };
 
   React.useEffect(
     () => {
@@ -125,31 +150,9 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
     [],
   );
 
-  const onAccountChange = (path: HDPath): void => {
-    setAccountId(path.account);
+  let previousItem: AccountState | undefined;
 
-    onUpdate(path.account, indexes);
-    onChange(path.account, indexes);
-  };
-
-  const onIndexChange =
-    (item: IAddressState) =>
-    ({ target: { value } }: ChangeEvent<{ value: unknown }>) => {
-      const newIndexes = { ...indexes, [item.blockchain]: parseInt(value as string, 10) };
-
-      onUpdate(accountId, newIndexes);
-      onChange(accountId, newIndexes);
-    };
-
-  const isActive = (item: IAddressState): boolean => {
-    const amountReader = amountDecoder(item.blockchain);
-
-    return item.balance != null && amountReader(item.balance).isPositive();
-  };
-
-  let previousItem: IAddressState | undefined;
-
-  const isChanged = ({ address, blockchain, hdpath }: IAddressState): boolean => {
+  const isChanged = ({ address, blockchain, hdpath }: AccountState): boolean => {
     if (previousItem == null) {
       return true;
     }
@@ -211,7 +214,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
                   <TableCell>{isChanged(item) ? renderAddress(item.address, item.blockchain) : ''}</TableCell>
                   <TableCell align="right">{renderBalance(item)}</TableCell>
                   <TableCell>{item.asset}</TableCell>
-                  <TableCell>
+                  <TableCell className={styles.activeCell}>
                     <Tooltip title={isActive(item) ? 'You had used this address before' : 'New inactive address'}>
                       {isActive(item) ? <UsedIcon /> : <UnusedIcon className={styles.inactiveCheck} />}
                     </Tooltip>
@@ -265,7 +268,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       hdPathDisplay,
       initialAccountId,
       isHardware,
-      indexes: hdPathDisplay.reduce(
+      indexes: hdPathDisplay.reduce<HDPathIndexes>(
         (carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }),
         {},
       ),
@@ -275,7 +278,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (dispatch: any, { blockchains, seed }) => {
     return {
       onInit() {
-        dispatch(hdpathPreview.actions.init(blockchains, seed));
+        dispatch(hdpathPreview.actions.initAccount(blockchains, seed));
       },
       onUpdate(accountId, indexes) {
         dispatch(hdpathPreview.actions.displayAccount(accountId, indexes));

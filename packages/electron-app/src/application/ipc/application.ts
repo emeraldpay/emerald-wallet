@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import { EstimationMode, isNativeCallError, isNativeCallResponse } from '@emeraldpay/api';
+import { AnyAsset, EstimationMode, isNativeCallError, isNativeCallResponse } from '@emeraldpay/api';
 import {
   BlockchainCode,
   EthereumBasicTransaction,
@@ -34,6 +34,10 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
     app.settings.setTokens(tokens);
   });
 
+  ipcMain.handle(IpcCommands.DESCRIBE_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
+    apiAccess.addressClient.describeAddress({ address, chain: blockchainCodeToId(blockchain) }),
+  );
+
   ipcMain.handle(
     IpcCommands.ESTIMATE_FEE,
     async (event, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
@@ -67,6 +71,26 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
 
   ipcMain.handle(IpcCommands.ESTIMATE_TX, (event, blockchain: BlockchainCode, tx: EthereumBasicTransaction) =>
     app.rpc.chain(blockchain).eth.estimateGas(tx),
+  );
+
+  ipcMain.handle(IpcCommands.GET_BALANCE, (event, address: string, asset: AnyAsset, includeUtxo: boolean) =>
+    apiAccess.blockchainClient.getBalance({ address, asset, includeUtxo }),
+  );
+
+  ipcMain.handle(
+    IpcCommands.GET_BTC_TX,
+    (event, blockchain: BlockchainCode, hash: string) =>
+      new Promise((resolve) =>
+        apiAccess.blockchainClient
+          .nativeCall(blockchainCodeToId(blockchain), [{ id: 0, method: 'getrawtransaction', payload: [hash, true] }])
+          .onData((response) => {
+            if (isNativeCallResponse(response)) {
+              resolve(response.payload);
+            }
+
+            resolve(null);
+          }),
+      ),
   );
 
   ipcMain.handle(IpcCommands.GET_ETH_RECEIPT, (event, blockchain: BlockchainCode, hash: string) =>
@@ -145,24 +169,4 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
       return null;
     }
   });
-
-  ipcMain.handle(
-    IpcCommands.GET_BTC_TX,
-    (event, blockchain: BlockchainCode, hash: string) =>
-      new Promise((resolve) => {
-        apiAccess.blockchainClient
-          .nativeCall(blockchainCodeToId(blockchain), [{ id: 0, method: 'getrawtransaction', payload: [hash, true] }])
-          .onData((response) => {
-            if (isNativeCallResponse(response)) {
-              resolve(response.payload);
-            }
-
-            resolve(null);
-          });
-      }),
-  );
-
-  ipcMain.handle(IpcCommands.DESCRIBE_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
-    apiAccess.addressClient.describeAddress({ address, chain: blockchainCodeToId(blockchain) }),
-  );
 }

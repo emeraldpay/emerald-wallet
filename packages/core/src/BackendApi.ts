@@ -1,4 +1,5 @@
-import { DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { AnyAsset, DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { AddressBalance } from '@emeraldpay/api/lib/typesBlockchain';
 import { BlockchainCode } from './blockchains';
 import { BitcoinRawTransaction } from './transaction/bitcoin';
 import { EthereumBasicTransaction, EthereumRawReceipt, EthereumRawTransaction } from './transaction/ethereum';
@@ -9,6 +10,7 @@ export interface BackendApi {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<any>;
   estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number>;
+  getBalance(address: string, asset: AnyAsset, includeUtxo?: boolean): Promise<AddressBalance[]>;
   getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null>;
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null>;
   getEthTx(blockchain: BlockchainCode, hash: string): Promise<EthereumRawTransaction | null>;

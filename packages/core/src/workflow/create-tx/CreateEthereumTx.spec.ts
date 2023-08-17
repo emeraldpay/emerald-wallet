@@ -1,8 +1,8 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
+import { BlockchainCode } from '../../blockchains';
 import { CreateEthereumTx } from './CreateEthereumTx';
 import { TxDetailsPlain, TxTarget, ValidationResult } from './types';
-import { BlockchainCode } from '../../blockchains';
 
 describe('CreateEthereumTx', () => {
   it('creates tx', () => {
@@ -299,6 +299,7 @@ describe('CreateEthereumTx', () => {
     const dump: TxDetailsPlain = {
       amount: '999580000000500002/WEI',
       amountDecimals: 18,
+      asset: 'ETH',
       blockchain: BlockchainCode.ETH,
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
@@ -306,7 +307,6 @@ describe('CreateEthereumTx', () => {
       priorityGasPrice: '5007000000/WEI',
       target: 1,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
-      tokenSymbol: 'ETH',
       totalEtherBalance: '1000000000057/WEI',
       type: '0x2',
     };
@@ -327,6 +327,7 @@ describe('CreateEthereumTx', () => {
     const dump: TxDetailsPlain = {
       amount: '999580000000500002/WEI',
       amountDecimals: 18,
+      asset: 'ETH',
       blockchain: BlockchainCode.ETH,
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
@@ -334,7 +335,6 @@ describe('CreateEthereumTx', () => {
       priorityGasPrice: '5007000000/WEI',
       target: 0,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
-      tokenSymbol: 'ETH',
       totalEtherBalance: '1000000000057/WEI',
       type: '0x2',
     };
