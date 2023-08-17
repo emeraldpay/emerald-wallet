@@ -31,14 +31,7 @@ interface OwnProps {
   setLastTxId(txId: string | null): void;
 }
 
-const TransactionsList: React.FC<OwnProps> = ({
-  cursor,
-  lastTxId,
-  transactions,
-  walletId,
-  onLoadMore,
-  setLastTxId,
-}) => {
+const TxList: React.FC<OwnProps> = ({ cursor, lastTxId, transactions, walletId, onLoadMore, setLastTxId }) => {
   const styles = useStyles();
 
   const listElement = React.useRef<List | null>(null);
@@ -115,4 +108,4 @@ const TransactionsList: React.FC<OwnProps> = ({
   );
 };
 
-export default TransactionsList;
+export default TxList;
