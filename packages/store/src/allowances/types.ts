@@ -1,6 +1,8 @@
 import { DescribeAddressControl } from '@emeraldpay/api';
 import { BlockchainCode, Token, TokenAmount, TokenData } from '@emeraldwallet/core';
 
+export const moduleName = 'allowance';
+
 export enum AllowanceType {
   ALLOWED_FOR = 'allowedFor',
   APPROVED_BY = 'approvedBy',
@@ -30,8 +32,6 @@ export interface AllowanceState {
     };
   };
 }
-
-export const moduleName = 'allowance';
 
 export enum ActionTypes {
   INIT_ALLOWANCE = 'WALLET/ALLOWANCE/INIT_ALLOWANCE',

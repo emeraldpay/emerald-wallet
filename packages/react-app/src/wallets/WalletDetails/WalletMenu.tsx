@@ -54,7 +54,7 @@ const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
         <SettingsIcon />
       </IconButton>
       <Menu anchorEl={menuElement} open={menuElement != null} onClose={onCloseMenu}>
-        <MenuItem onClick={onSignMessage}>
+        <MenuItem disabled={!hasEthereumEntry} onClick={onSignMessage}>
           <ListItemIcon>
             <SignIcon fontSize="small" />
           </ListItemIcon>

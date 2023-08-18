@@ -1,4 +1,4 @@
-import { IAddressState, IHDPreviewState, isEqualSeed, isNonPartial } from './types';
+import { AccountState, HDPreviewState, isEqualSeed, isNonPartial } from './types';
 
 function replace<T>(input: T[], index: number, value: T): T[] {
   const output = [...input];
@@ -12,7 +12,7 @@ function replace<T>(input: T[], index: number, value: T): T[] {
   return output;
 }
 
-function isSame(actual: IAddressState, query: Partial<IAddressState>): boolean {
+function isSame(actual: AccountState, query: Partial<AccountState>): boolean {
   /**
    * To compare it needs either chain + asset + seed + hd | address
    */
@@ -38,7 +38,7 @@ function isSame(actual: IAddressState, query: Partial<IAddressState>): boolean {
   return query.blockchain === actual.blockchain && query.asset === actual.asset;
 }
 
-export function mergeAddress(state: IHDPreviewState, value: IAddressState | Partial<IAddressState>): IHDPreviewState {
+export function mergeAddress(state: HDPreviewState, value: AccountState | Partial<AccountState>): HDPreviewState {
   const index = state.accounts.findIndex((account) => isSame(account, value));
 
   if (index === -1) {

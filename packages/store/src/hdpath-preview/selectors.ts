@@ -1,25 +1,17 @@
 import { SeedReference, isIdSeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, HDPath } from '@emeraldwallet/core';
-import { Entry, HDPathAddresses, IAddressState, isEqualSeed } from './types';
 import * as accountSelectors from '../accounts/selectors';
 import { IState } from '../types';
+import { AccountState, Entry, HDPathAddresses, isEqualSeed, moduleName } from './types';
 
-export function getByAccount(state: IState, seed: SeedReference, account: number): IAddressState[] {
-  if (!state.hdpathPreview || !state.hdpathPreview.accounts) {
-    return [];
-  }
-
-  return state.hdpathPreview.accounts.filter(
+export function getByAccount(state: IState, seed: SeedReference, account: number): AccountState[] {
+  return state[moduleName].accounts.filter(
     (item) => isEqualSeed(seed, item.seed) && HDPath.parse(item.hdpath).account === account,
   );
 }
 
 export function getLedgerXpub(state: IState, account: string): string | undefined {
-  if (state.hdpathPreview == null) {
-    return undefined;
-  }
-
-  return state.hdpathPreview.accounts.find(
+  return state[moduleName].accounts.find(
     (item) =>
       (isLedger(item.seed) ||
         (isIdSeedReference(item.seed) && accountSelectors.getSeed(state, item.seed.value)?.type === 'ledger')) &&
@@ -27,7 +19,7 @@ export function getLedgerXpub(state: IState, account: string): string | undefine
   )?.address;
 }
 
-function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressState {
+function getByEntry(state: IState, entry: Entry, seed: SeedReference): AccountState {
   let fullHDPath = HDPath.parse(entry.hdpath);
 
   const accountHDPath: HDPath = fullHDPath.asAccount();
@@ -36,7 +28,7 @@ function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressS
     fullHDPath = accountHDPath.forAddress(0, 0);
   }
 
-  const { accounts = [] } = state.hdpathPreview ?? {};
+  const { accounts = [] } = state[moduleName] ?? {};
 
   const existing = accounts.find(
     (item) => item.blockchain === entry.blockchain && item.hdpath === fullHDPath.toString(),
@@ -62,12 +54,12 @@ function getByEntry(state: IState, entry: Entry, seed: SeedReference): IAddressS
   return existing;
 }
 
-export function getCurrentDisplay(state: IState, seed: SeedReference): IAddressState[] {
-  return state.hdpathPreview?.display.entries.map((entry) => getByEntry(state, entry, seed)) ?? [];
+export function getCurrentDisplay(state: IState, seed: SeedReference): AccountState[] {
+  return state[moduleName].display.entries.map((entry) => getByEntry(state, entry, seed)) ?? [];
 }
 
 export function getCurrentAddresses(state: IState): HDPathAddresses {
-  const { accounts = [], display } = state.hdpathPreview ?? {};
+  const { accounts = [], display } = state[moduleName];
   const { entries = [] } = display ?? {};
 
   return entries.reduce((carry, entry) => {

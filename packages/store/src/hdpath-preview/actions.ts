@@ -4,90 +4,40 @@ import { accounts } from '../index';
 import { Dispatched } from '../types';
 import {
   ActionTypes,
+  AddressBalances,
+  CleanAccountAction,
+  DisplayAccountAction,
   HDPathIndexes,
-  IClean,
-  IDisplayAccount,
-  IInit,
-  ILoadAddresses,
-  ISetAddress,
-  ISetBalance,
+  InitAccountAction,
+  LoadAddressesAction,
+  SetAddressesAction,
+  moduleName,
 } from './types';
 
-export function loadAddresses(
-  seed: SeedReference,
-  blockchain: BlockchainCode,
-  account: number,
-  index?: number,
-): ILoadAddresses {
+export function cleanAccount(): CleanAccountAction {
   return {
-    type: ActionTypes.LOAD_ADDRESSES,
-    account,
-    blockchain,
-    index,
-    seed,
-  };
-}
-
-export function setAddresses(
-  seed: SeedReference,
-  blockchain: BlockchainCode,
-  addresses: { [key: string]: string },
-): Dispatched<void, ISetAddress> {
-  return (dispatch, getState) => {
-    const { coinTicker } = Blockchains[blockchain].params;
-
-    const tokenRegistry = new TokenRegistry(getState().application.tokens);
-
-    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
-
-    dispatch({
-      addresses,
-      blockchain,
-      seed,
-      type: ActionTypes.SET_ADDRESS,
-      assets: [coinTicker, ...tokens],
-    });
-  };
-}
-
-export function setBalance(
-  seed: SeedReference,
-  blockchain: BlockchainCode,
-  hdpath: string,
-  address: string,
-  asset: string,
-  balance: string,
-): ISetBalance {
-  return {
-    address,
-    asset,
-    balance,
-    blockchain,
-    hdpath,
-    seed,
-    type: ActionTypes.SET_BALANCE,
+    type: ActionTypes.CLEAN_ACCOUNT,
   };
 }
 
 export function displayAccount(
   account: number,
   indexes?: HDPathIndexes,
-): Dispatched<void, IDisplayAccount | ILoadAddresses> {
+): Dispatched<void, DisplayAccountAction | LoadAddressesAction> {
   return (dispatch, getState, extra) => {
     dispatch({
-      account,
-      indexes,
       type: ActionTypes.DISPLAY_ACCOUNT,
+      payload: { account, indexes },
     });
 
     const state = getState();
 
-    const { seed } = state.hdpathPreview?.display ?? {};
+    const { seed } = state[moduleName].display ?? {};
 
     if (seed != null) {
       const isHardware = accounts.selectors.isHardwareSeed(state, seed);
 
-      const { blockchains = [] } = state.hdpathPreview?.display ?? {};
+      const { blockchains = [] } = state[moduleName].display ?? {};
 
       blockchains.forEach((blockchain) => {
         if (isHardware) {
@@ -119,16 +69,76 @@ export function displayAccount(
   };
 }
 
-export function clean(): IClean {
+export function initAccount(blockchains: BlockchainCode[], seed: SeedReference): InitAccountAction {
   return {
-    type: ActionTypes.CLEAN,
+    type: ActionTypes.INIT_ACCOUNT,
+    payload: { blockchains, seed },
   };
 }
 
-export function init(blockchains: BlockchainCode[], seed: SeedReference): IInit {
+export function loadAddresses(
+  seed: SeedReference,
+  blockchain: BlockchainCode,
+  account: number,
+  index?: number,
+): LoadAddressesAction {
   return {
-    blockchains,
-    seed,
-    type: ActionTypes.INIT,
+    type: ActionTypes.LOAD_ADDRESSES,
+    payload: { account, blockchain, index, seed },
+  };
+}
+
+export function setAddresses(
+  seed: SeedReference,
+  blockchain: BlockchainCode,
+  addresses: { [hdPath: string]: string },
+): Dispatched<void, SetAddressesAction> {
+  return async (dispatch, getState, extra) => {
+    const { coin, coinTicker } = Blockchains[blockchain].params;
+
+    const addressList = Object.values(addresses);
+
+    const balanceResults = await Promise.allSettled(
+      addressList.map((address) =>
+        extra.backendApi.getBalance(address, {
+          blockchain: blockchainCodeToId(blockchain),
+          code: coin,
+        }),
+      ),
+    );
+
+    const balances = balanceResults.reduce<AddressBalances>((carry, result) => {
+      if (result.status === 'rejected') {
+        const addressBalances = addressList.reduce<AddressBalances>(
+          (addressCarry, address) => ({ ...addressCarry, [address]: null }),
+          {},
+        );
+
+        return { ...carry, ...addressBalances };
+      }
+
+      const addressBalances = addressList.reduce<AddressBalances>((carry, address) => {
+        const { balance = null } = result.value.find((item) => item.address === address) ?? {};
+
+        return { ...carry, [address]: balance };
+      }, {});
+
+      return { ...carry, ...addressBalances };
+    }, {});
+
+    const tokenRegistry = new TokenRegistry(getState().application.tokens);
+
+    const tokens = tokenRegistry.getStablecoins(blockchain).map(({ symbol }) => symbol);
+
+    dispatch({
+      type: ActionTypes.SET_ADDRESSES,
+      payload: {
+        addresses,
+        balances,
+        blockchain,
+        seed,
+        assets: [coinTicker, ...tokens],
+      },
+    });
   };
 }

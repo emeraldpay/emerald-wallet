@@ -3,15 +3,14 @@ import { Blockchains, blockchainCodeToId, isBitcoin } from '@emeraldwallet/core'
 import { call, put, takeEvery } from '@redux-saga/core/effects';
 import { Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
-import * as actions from './actions';
-import { ActionTypes, ILoadAddresses } from './types';
+import { setAddresses } from './actions';
+import { ActionTypes, LoadAddressesAction } from './types';
 
 function* loadAddresses(
   vault: IEmeraldVault,
-  { account: accountId, blockchain, seed, index = 0 }: ILoadAddresses,
+  { payload: { account: accountId, blockchain, seed, index = 0 } }: LoadAddressesAction,
 ): SagaIterator {
-  const blockchainDetails = Blockchains[blockchain.toLowerCase()];
-  const baseHdPath = blockchainDetails.params.hdPath.forAccount(accountId).forIndex(index);
+  const baseHdPath = Blockchains[blockchain.toLowerCase()].params.hdPath.forAccount(accountId).forIndex(index);
 
   const hdPaths = [baseHdPath.toString()];
 
@@ -27,7 +26,7 @@ function* loadAddresses(
     console.warn('Failed to get addresses', exception);
   }
 
-  yield put(actions.setAddresses(seed, blockchain, addresses) as unknown as Action);
+  yield put(setAddresses(seed, blockchain, addresses) as unknown as Action);
 }
 
 export function* root(vault: IEmeraldVault): Generator<unknown> {

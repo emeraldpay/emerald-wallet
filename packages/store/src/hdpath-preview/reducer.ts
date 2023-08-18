@@ -1,20 +1,18 @@
 import { Blockchains, Logger, isBitcoin } from '@emeraldwallet/core';
 import {
   ActionTypes,
+  DisplayAccountAction,
   Entry,
-  IAddressState,
-  IDisplayAccount,
-  IHDPreviewAction,
-  IHDPreviewState,
-  IInit,
-  ISetAddress,
-  ISetBalance,
+  HDPreviewActions,
+  HDPreviewState,
+  InitAccountAction,
+  SetAddressesAction,
 } from './types';
 import { mergeAddress } from './utils';
 
 const log = Logger.forCategory('Store::HDPathPreview');
 
-export const INITIAL_STATE: IHDPreviewState = {
+export const INITIAL_STATE: HDPreviewState = {
   accounts: [],
   active: false,
   display: {
@@ -24,70 +22,14 @@ export const INITIAL_STATE: IHDPreviewState = {
   },
 };
 
-function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreviewState {
-  let merged = { ...state };
-
-  Object.entries(action.addresses).forEach(([hdpath, address]) => {
-    action.assets.forEach((asset) => {
-      try {
-        merged = mergeAddress(merged, {
-          address,
-          asset,
-          hdpath,
-          blockchain: action.blockchain,
-          seed: action.seed,
-        });
-      } catch (exception) {
-        if (exception instanceof Error) {
-          log.warn('Failed to set new address:', exception.message);
-        }
-      }
-    });
-  });
-
-  return merged;
-}
-
-function onSetBalance(state: IHDPreviewState, action: ISetBalance): IHDPreviewState {
-  const update: Partial<IAddressState> = {
-    address: action.address,
-    asset: action.asset,
-    balance: action.balance,
-    blockchain: action.blockchain,
-    hdpath: action.hdpath,
-    seed: action.seed,
-  };
-
-  try {
-    return mergeAddress(state, update);
-  } catch (exception) {
-    if (exception instanceof Error) {
-      log.warn('Trying to set balance for unknown address. ' + exception.message);
-    }
-  }
-
-  return state;
-}
-
-function onClean(): IHDPreviewState {
+function onCleanAccount(): HDPreviewState {
   return INITIAL_STATE;
 }
 
-function onInit(state: IHDPreviewState, action: IInit): IHDPreviewState {
-  return {
-    ...state,
-    active: true,
-    display: {
-      ...state.display,
-      blockchains: action.blockchains,
-      seed: action.seed,
-    },
-  };
-}
-
-function onDisplayAccount(state: IHDPreviewState, action: IDisplayAccount): IHDPreviewState {
-  const { account, indexes } = action;
-
+function onDisplayAccount(
+  state: HDPreviewState,
+  { payload: { account, indexes } }: DisplayAccountAction,
+): HDPreviewState {
   const entries: Entry[] = state.display.blockchains.map((blockchain) => {
     const blockchainDetails = Blockchains[blockchain.toLowerCase()];
 
@@ -106,18 +48,51 @@ function onDisplayAccount(state: IHDPreviewState, action: IDisplayAccount): IHDP
   return { ...state, display: { ...state.display, account, entries }, active: true };
 }
 
-export function reducer(state: IHDPreviewState = INITIAL_STATE, action: IHDPreviewAction): IHDPreviewState {
+function onInitAccount(state: HDPreviewState, { payload: { blockchains, seed } }: InitAccountAction): HDPreviewState {
+  return {
+    ...state,
+    active: true,
+    display: {
+      ...state.display,
+      blockchains,
+      seed,
+    },
+  };
+}
+
+function onSetAddresses(
+  state: HDPreviewState,
+  { payload: { addresses, assets, balances, blockchain, seed } }: SetAddressesAction,
+): HDPreviewState {
+  let merged = { ...state };
+
+  Object.entries(addresses).forEach(([hdpath, address]) => {
+    const { [address]: balance } = balances;
+
+    assets.forEach((asset) => {
+      try {
+        merged = mergeAddress(merged, { address, asset, balance, hdpath, blockchain, seed });
+      } catch (exception) {
+        if (exception instanceof Error) {
+          log.warn('Failed to set new address', exception);
+        }
+      }
+    });
+  });
+
+  return merged;
+}
+
+export function reducer(state: HDPreviewState = INITIAL_STATE, action: HDPreviewActions): HDPreviewState {
   switch (action.type) {
-    case ActionTypes.SET_ADDRESS:
-      return onSetAddresses(state, action);
-    case ActionTypes.SET_BALANCE:
-      return onSetBalance(state, action);
-    case ActionTypes.CLEAN:
-      return onClean();
-    case ActionTypes.INIT:
-      return onInit(state, action);
+    case ActionTypes.CLEAN_ACCOUNT:
+      return onCleanAccount();
     case ActionTypes.DISPLAY_ACCOUNT:
       return onDisplayAccount(state, action);
+    case ActionTypes.INIT_ACCOUNT:
+      return onInitAccount(state, action);
+    case ActionTypes.SET_ADDRESSES:
+      return onSetAddresses(state, action);
     default:
       return state;
   }

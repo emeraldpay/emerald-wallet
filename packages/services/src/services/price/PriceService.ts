@@ -44,8 +44,6 @@ export class PriceService implements Service {
 
   start(): void {
     this.listener = this.apiAccess.newPriceListener();
-
-    //
     this.timeout = setTimeout(this.fetch.bind(this), 2 * 1000);
   }
 
@@ -119,8 +117,8 @@ export class PriceService implements Service {
       this.listener?.request(this.from, this.to, (rates) =>
         this.persistentState.cache
           .put('rates', JSON.stringify(rates))
-          .then(() =>
-            this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/SET_RATES', payload: { rates } }),
+          .then(
+            () => this.webContents?.send(IpcCommands.STORE_DISPATCH, { type: 'ACCOUNT/SET_RATES', payload: { rates } }),
           ),
       );
     }

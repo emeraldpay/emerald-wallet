@@ -1,7 +1,7 @@
 import { SeedReference } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { INITIAL_STATE } from './reducer';
-import { IAddressState, IHDPreviewState } from './types';
+import { AccountState, HDPreviewState } from './types';
 import { mergeAddress } from './utils';
 
 describe('updateForAccount', () => {
@@ -9,7 +9,7 @@ describe('updateForAccount', () => {
     type: 'id',
     value: '4701306d-d0f5-4883-81a6-4ba3a12d9349',
   };
-  const update: IAddressState = {
+  const update: AccountState = {
     seed,
     address: '0x3633c7cb94b6fe04bfd22f99706479c4371e2a4b',
     asset: 'ETH',
@@ -27,7 +27,7 @@ describe('updateForAccount', () => {
   });
 
   it('replace address if exists with same hdpath', () => {
-    const state: IHDPreviewState = {
+    const state: HDPreviewState = {
       ...INITIAL_STATE,
       accounts: [
         {
@@ -46,7 +46,7 @@ describe('updateForAccount', () => {
   });
 
   it('keeps other accounts', () => {
-    const state: IHDPreviewState = {
+    const state: HDPreviewState = {
       ...INITIAL_STATE,
       accounts: [
         {
@@ -71,7 +71,7 @@ describe('updateForAccount', () => {
   });
 
   it('merge with balance', () => {
-    const state: IHDPreviewState = {
+    const state: HDPreviewState = {
       ...INITIAL_STATE,
       accounts: [
         {
