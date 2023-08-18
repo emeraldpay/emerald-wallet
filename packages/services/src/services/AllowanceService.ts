@@ -125,7 +125,7 @@ export class AllowanceService implements Service {
     this.apiAccess.blockchainClient
       .getAddressAllowance(request)
       .then((allowances) => allowances.forEach((allowance) => handler(allowance)))
-      .catch((error) => log.error(`Error while requesting for ${address} on ${blockchain} blockchain`, error));
+      .catch((error) => log.error(`Error while getting allowances for ${address} on ${blockchain} blockchain`, error));
 
     const subscriber = this.apiAccess.blockchainClient
       .subscribeAddressAllowance(request)

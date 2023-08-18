@@ -17,8 +17,8 @@ const WalletOptions: React.FC<OwnProps> = ({ onChange, onPressEnter }) => {
       <TextField
         autoFocus
         fullWidth
+        defaultValue={options.label}
         placeholder="Optional"
-        value={options.label}
         onChange={({ target: { value } }) => {
           const updated = { ...options, label: value };
 
