@@ -3713,25 +3713,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/api-node@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@emeraldpay/api-node@npm:0.4.0"
+"@emeraldpay/api-node@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@emeraldpay/api-node@npm:0.4.1"
   dependencies:
-    "@emeraldpay/api": 0.4.0
-    "@grpc/grpc-js": ^1.8.18
+    "@emeraldpay/api": 0.4.1
+    "@grpc/grpc-js": ^1.9.0
     google-protobuf: ^3.21.2
     protobufjs: ^7.2.4
-  checksum: 00a3166dae941eee62974def7a03f776ac27fb87496559f42118d90187c5b21adef82d37ceef41ae7a21494e855712999f594acafb727cbfdcf716733184015f
+  checksum: 67fa2d67fc899aa8a0325b0eee958e2aaf9207d646b7b797302635ebe0af11719e56e6175b6d046dc1b9b0afffe16acf0d8a86f33f2eecc7464bb790e383ac1a
   languageName: node
   linkType: hard
 
-"@emeraldpay/api@npm:0.4.0, @emeraldpay/api@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@emeraldpay/api@npm:0.4.0"
+"@emeraldpay/api@npm:0.4.1, @emeraldpay/api@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@emeraldpay/api@npm:0.4.1"
   dependencies:
     google-protobuf: ^3.21.2
     protobufjs: ^7.2.4
-  checksum: 97ab2441c020b92fd713a6a420fcfbaba0055a8bdd493b06898822b53debbcd5fec9e0393c8229a59087a973cfb1d992056d36dd0a8043c6dfe8097a3726d096
+  checksum: 8e65f0648d505de0872ff50dfa4523147d4482bb2781b9aa98082957614e9ae967c96183ac5399edd3ab3d4d1c1ee6431923d115fc9c28e370bda50160d3c435
   languageName: node
   linkType: hard
 
@@ -3974,8 +3974,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/services@workspace:packages/services"
   dependencies:
-    "@emeraldpay/api": ^0.4.0
-    "@emeraldpay/api-node": ^0.4.0
+    "@emeraldpay/api": ^0.4.1
+    "@emeraldpay/api-node": ^0.4.1
     "@emeraldpay/bigamount": ^0.4.1
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/emerald-vault-core": ^0.11.1
@@ -4409,13 +4409,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.8.18":
-  version: 1.8.18
-  resolution: "@grpc/grpc-js@npm:1.8.18"
+"@grpc/grpc-js@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "@grpc/grpc-js@npm:1.9.0"
   dependencies:
     "@grpc/proto-loader": ^0.7.0
     "@types/node": ">=12.12.47"
-  checksum: 90260dec594f2704d6ac6800d88a8fbbda872cc347d692a8bb88f73ed12035c60dd98c98569c5cfab508f1cdbf380ecc107e32a24f412952a7796148993dfc3a
+  checksum: 32817c84e4b0eedc523b123cbfce935cafedbf33f94f7609931a878dd6945c4d83b4a781a9d7dedbd4fd273a95e8bd3b0de5f6ca920112331e1c3279fa104b3e
   languageName: node
   linkType: hard
 
