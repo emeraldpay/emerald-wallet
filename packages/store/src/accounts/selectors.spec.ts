@@ -1,10 +1,17 @@
 import { Satoshi, Wei, WeiEtc } from '@emeraldpay/bigamount-crypto';
-import { AddressSingle } from '@emeraldpay/emerald-vault-core';
+import {AddressSingle, SeedDescription, Wallet} from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, CurrencyAmount } from '@emeraldwallet/core';
 import { application } from '../index';
 import { SettingsState } from '../settings/types';
 import { IState } from '../types';
-import { aggregateBalances, allAsArray, allBalances, balanceByChain, withFiatConversion } from './selectors';
+import {
+  aggregateBalances,
+  allAsArray,
+  allBalances,
+  balanceByChain,
+  isHardwareEntry,
+  withFiatConversion
+} from './selectors';
 import { moduleName } from './types';
 
 const getAddress: () => AddressSingle = (() => {
@@ -226,3 +233,86 @@ describe('selectTotalBalance', () => {
     expect(prices[2].fiatBalance?.toString()).toBe(CurrencyAmount.create(6150, 'USD').toString());
   });
 });
+
+describe("isHardwareEntry", () => {
+
+  it('for ledger seed', () => {
+    const seed: SeedDescription = {
+      id: "457bab32-10d7-40e0-8935-10f04edcbe9f",
+      createdAt: new Date(),
+      type: "ledger",
+      available: true,
+    }
+    const wallet: Wallet = {
+      createdAt: new Date(),
+      entries: [
+        {
+          id: "e496d27c-42b0-4f8f-9765-83ae3f394259-1",
+          blockchain: 100,
+          address: {
+            type: "single",
+            value: "0x2773a327fd718b21381b7eb138013f303a0cc772",
+          },
+          key: {
+            type: "hd-path",
+            hdPath: "m'/0'",
+            seedId: seed.id!!
+          },
+          createdAt: new Date(),
+        }
+      ],
+      id: "e496d27c-42b0-4f8f-9765-83ae3f394259"
+    };
+
+    const state : IState = {
+      accounts: {
+        seeds: [seed]
+      }
+    } as unknown as IState;
+
+    let act = isHardwareEntry(state, wallet.entries[0]);
+
+    expect(act).toBeTruthy();
+  });
+
+  it('for bytes seed', () => {
+    const seed: SeedDescription = {
+      id: "457bab32-10d7-40e0-8935-10f04edcbe9f",
+      createdAt: new Date(),
+      type: "raw",
+      available: true,
+    }
+    const wallet: Wallet = {
+      createdAt: new Date(),
+      entries: [
+        {
+          id: "e496d27c-42b0-4f8f-9765-83ae3f394259-1",
+          blockchain: 100,
+          address: {
+            type: "single",
+            value: "0x2773a327fd718b21381b7eb138013f303a0cc772",
+          },
+          key: {
+            type: "hd-path",
+            hdPath: "m'/0'",
+            seedId: seed.id!!
+          },
+          createdAt: new Date(),
+        }
+      ],
+      id: "e496d27c-42b0-4f8f-9765-83ae3f394259"
+    };
+
+    const state : IState = {
+      accounts: {
+        seeds: [seed]
+      }
+    } as unknown as IState;
+
+    let act = isHardwareEntry(state, wallet.entries[0]);
+
+    expect(act).toBeFalsy();
+  });
+
+
+})
