@@ -83,6 +83,7 @@ interface StateProps {
   tokenRegistry: TokenRegistry;
   coinTicker: string;
   value?: any;
+  isHardware: boolean;
   getBalance(address: string): WeiAny;
   getBalancesByAddress(address: string, ownerAddress: string | null): string[];
   getEntryByAddress(address: string): WalletEntry | undefined;
@@ -428,21 +429,23 @@ class CreateTransaction extends React.Component<Props, State> {
       return;
     }
 
-    const { tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey } = this.props;
+    const { tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey, isHardware } = this.props;
     const { password, asset } = this.state;
 
-    if (password == null) {
-      return;
-    }
+    // password should be entered only for a standard encrypted seed, but for Ledger it's always empty
+    if (!isHardware) {
+      if (password == null) {
+        return;
+      }
 
-    this.setState({ verifying: true });
+      this.setState({verifying: true});
 
-    const correctPassword = await verifyGlobalKey(password);
+      const correctPassword = await verifyGlobalKey(password);
 
-    if (!correctPassword) {
-      this.setState({ passwordError: 'Incorrect password', verifying: false });
-
-      return;
+      if (!correctPassword) {
+        this.setState({passwordError: 'Incorrect password', verifying: false});
+        return;
+      }
     }
 
     const entry = getEntryByAddress(tx.from);
@@ -456,7 +459,10 @@ class CreateTransaction extends React.Component<Props, State> {
       password: password,
       transaction: tx,
       token: asset,
-    }).catch(() => this.setState({ verifying: false }));
+    }).catch((e) => {
+      console.warn("Error signing transaction", e);
+      this.setState({verifying: false})
+    });
   };
 
   public onMaxClicked(callback: (value: BigAmount) => void): void {
@@ -640,6 +646,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return carry;
     }, new Map());
 
+    const isHardware = accounts.selectors.isHardwareEntry(state, entry) || false;
+
     let amount: BigAmount = zero;
     let asset = initialAsset ?? initialAllowance?.token.address ?? blockchain.params.coinTicker;
 
@@ -655,6 +663,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       coinTicker,
       tokenRegistry,
       getEntryByAddress,
+      isHardware,
       accounts: Object.fromEntries(accountByAddress.entries()),
       blockchain: blockchain.params.code,
       eip1559: blockchain.params.eip1559 ?? false,
@@ -780,7 +789,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               ),
             );
           }
-        }),
+        }).catch(reject),
       );
     },
     verifyGlobalKey(password) {
