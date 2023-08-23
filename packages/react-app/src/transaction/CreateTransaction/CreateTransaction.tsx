@@ -352,7 +352,7 @@ class CreateTransaction extends React.Component<Props, State> {
     this.transaction = tx;
   };
 
-  public onChangeUseEip1559 = (enabled: boolean, max: number, priority: number): void => {
+  public onChangeUseEip1559 = (enabled: boolean, max: WeiAny, priority: WeiAny): void => {
     const { blockchain } = this.props;
 
     const tx = this.transaction;
@@ -361,10 +361,10 @@ class CreateTransaction extends React.Component<Props, State> {
 
     if (enabled) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = factory(max) as WeiAny;
-      tx.priorityGasPrice = factory(priority) as WeiAny;
+      tx.maxGasPrice = max;
+      tx.priorityGasPrice = priority;
     } else {
-      tx.gasPrice = factory(max) as WeiAny;
+      tx.gasPrice = max;
       tx.maxGasPrice = undefined;
       tx.priorityGasPrice = undefined;
     }
@@ -476,17 +476,14 @@ class CreateTransaction extends React.Component<Props, State> {
     this.transaction = tx;
   }
 
-  public onSetMaxGasPrice(price: number, unit: Unit): void {
+  public onSetMaxGasPrice(price: WeiAny): void {
     const tx = this.transaction;
-
-    const factory = amountFactory(tx.blockchain);
-    const gasPrice = BigAmount.createFor(price, factory(0).units, factory, unit);
 
     if (this.state.useEip1559) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = gasPrice as WeiAny;
+      tx.maxGasPrice = price;
     } else {
-      tx.gasPrice = gasPrice as WeiAny;
+      tx.gasPrice = price;
       tx.maxGasPrice = undefined;
     }
 
@@ -495,13 +492,10 @@ class CreateTransaction extends React.Component<Props, State> {
     this.transaction = tx;
   }
 
-  public onSetPriorityGasPrice(price: number, unit: Unit): void {
+  public onSetPriorityGasPrice(price: WeiAny): void {
     const tx = this.transaction;
 
-    const factory = amountFactory(tx.blockchain);
-    const gasPrice = BigAmount.createFor(price, factory(0).units, factory, unit);
-
-    tx.priorityGasPrice = gasPrice as WeiAny;
+    tx.priorityGasPrice = price;
     tx.rebalance();
 
     this.transaction = tx;

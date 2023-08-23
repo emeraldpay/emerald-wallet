@@ -2,6 +2,7 @@ import { Unit } from '@emeraldpay/bigamount';
 import { FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
+import {Wei, WeiAny} from "@emeraldpay/bigamount-crypto";
 
 const useStyles = makeStyles(
   createStyles({
@@ -45,17 +46,17 @@ interface OwnProps {
   supportEip1559: boolean;
   useEip1559: boolean;
   gasPriceUnit: Unit;
-  maxGasPrice: number;
-  stdMaxGasPrice: number;
-  lowMaxGasPrice: number;
-  highMaxGasPrice: number;
-  priorityGasPrice: number;
-  stdPriorityGasPrice: number;
-  lowPriorityGasPrice: number;
-  highPriorityGasPrice: number;
+  maxGasPrice: WeiAny;
+  stdMaxGasPrice: WeiAny;
+  lowMaxGasPrice: WeiAny;
+  highMaxGasPrice: WeiAny;
+  priorityGasPrice: WeiAny;
+  stdPriorityGasPrice: WeiAny;
+  lowPriorityGasPrice: WeiAny;
+  highPriorityGasPrice: WeiAny;
   onUse1559Change(value: boolean): void;
-  onMaxGasPriceChange(value: number): void;
-  onPriorityGasPriceChange(value: number): void;
+  onMaxGasPriceChange(value: WeiAny): void;
+  onPriorityGasPriceChange(value: WeiAny): void;
 }
 
 const EthTxSettings: React.FC<OwnProps> = ({
@@ -92,10 +93,13 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const onCurrentMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
-    const [gasPrice] = Array.isArray(value) ? value : [value];
+  const toWeiInCurrentUnits = (decimal: number): Wei => {
+    return new Wei(decimal, gasPriceUnit)
+  }
 
-    onMaxGasPriceChange(gasPrice);
+  const onCurrentMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+    const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
+    onMaxGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
   };
 
   const onUseStdPriorityGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
@@ -107,9 +111,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
   };
 
   const onCurrentPriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
-    const [gasPrice] = Array.isArray(value) ? value : [value];
-
-    onPriorityGasPriceChange(gasPrice);
+    const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
+    onPriorityGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
   };
 
   return (
@@ -117,9 +120,9 @@ const EthTxSettings: React.FC<OwnProps> = ({
       title={
         <FormRow last>
           <FormLabel>Settings</FormLabel>
-          {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+          {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
           {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
-          {useEip1559 ? ` / ${priorityGasPrice.toFixed(2)} ${gasPriceUnit.toString()} Priority Gas Price` : null}
+          {useEip1559 ? ` / ${priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()} Priority Gas Price` : null}
         </FormRow>
       }
     >
@@ -158,17 +161,17 @@ const EthTxSettings: React.FC<OwnProps> = ({
                   markLabel: styles.gasPriceMarkLabel,
                   valueLabel: styles.gasPriceValueLabel,
                 }}
-                getAriaValueText={() => `${maxGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                getAriaValueText={() => `${maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()}`}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={0.01}
                 marks={[
-                  { value: lowMaxGasPrice, label: 'Slow' },
-                  { value: highMaxGasPrice, label: 'Urgent' },
+                  { value: lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
+                  { value: highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Urgent' },
                 ]}
-                min={lowMaxGasPrice}
-                max={highMaxGasPrice}
-                value={maxGasPrice}
+                min={lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                max={highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                value={maxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                 onChange={onCurrentMaxGasPriceChange}
                 valueLabelFormat={(value) => value.toFixed(2)}
               />
@@ -176,7 +179,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
           )}
           <Box className={styles.gasPriceHelpBox}>
             <FormHelperText className={styles.gasPriceHelp}>
-              {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+              {maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
             </FormHelperText>
           </Box>
         </Box>
@@ -206,17 +209,17 @@ const EthTxSettings: React.FC<OwnProps> = ({
                     markLabel: styles.gasPriceMarkLabel,
                     valueLabel: styles.gasPriceValueLabel,
                   }}
-                  getAriaValueText={() => `${priorityGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                  getAriaValueText={() => `${priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()}`}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   step={0.01}
                   marks={[
-                    { value: lowPriorityGasPrice, label: 'Slow' },
-                    { value: highPriorityGasPrice, label: 'Urgent' },
+                    { value: lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
+                    { value: highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Urgent' },
                   ]}
-                  min={lowPriorityGasPrice}
-                  max={highPriorityGasPrice}
-                  value={priorityGasPrice}
+                  min={lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                  max={highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                  value={priorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                   onChange={onCurrentPriorityGasPriceChange}
                   valueLabelFormat={(value) => value.toFixed(2)}
                 />
@@ -224,7 +227,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
             )}
             <Box className={styles.gasPriceHelpBox}>
               <FormHelperText className={styles.gasPriceHelp}>
-                {priorityGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+                {priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
               </FormHelperText>
             </Box>
           </Box>

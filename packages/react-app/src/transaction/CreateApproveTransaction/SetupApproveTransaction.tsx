@@ -35,6 +35,7 @@ import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
 import { Asset, SelectAsset } from '../../common/SelectAsset';
 import { SelectEntry } from '../../common/SelectEntry';
 import { ToField } from '../../common/ToField';
+import {WeiAny} from "@emeraldpay/bigamount-crypto";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -139,10 +140,10 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
   const [currentToken, setCurrentToken] = React.useState(token);
 
-  const [maxGasPrice, setMaxGasPrice] = React.useState(0);
-  const [priorityGasPrice, setPriorityGasPrice] = React.useState(0);
+  const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0), [currentBlockchain]) as WeiAny;
 
-  const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0), [currentBlockchain]);
+  const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
+  const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
 
   const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
   const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
@@ -199,24 +200,24 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
       if (mounted) {
         const factory = amountFactory(currentBlockchain);
 
-        const newStdMaxGasPrice = factory(avgTail5.max);
-        const newStdPriorityGasPrice = factory(avgTail5.priority);
+        const newStdMaxGasPrice = factory(avgTail5.max) as WeiAny;
+        const newStdPriorityGasPrice = factory(avgTail5.priority) as WeiAny;
 
         setStdMaxGasPrice(newStdMaxGasPrice);
-        setHighMaxGasPrice(factory(avgMiddle.max));
-        setLowMaxGasPrice(factory(avgLast.max));
+        setHighMaxGasPrice(factory(avgMiddle.max) as WeiAny);
+        setLowMaxGasPrice(factory(avgLast.max) as WeiAny);
 
         setStdPriorityGasPrice(newStdPriorityGasPrice);
-        setHighPriorityGasPrice(factory(avgMiddle.priority));
-        setLowPriorityGasPrice(factory(avgLast.priority));
+        setHighPriorityGasPrice(factory(avgMiddle.priority) as WeiAny);
+        setLowPriorityGasPrice(factory(avgLast.priority) as WeiAny);
 
         const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
         setGasPriceUnit(gasPriceOptimalUnit);
         setGasPriceUnits(newStdMaxGasPrice.units);
 
-        setMaxGasPrice(newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
-        setPriorityGasPrice(newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
+        setMaxGasPrice(newStdMaxGasPrice);
+        setPriorityGasPrice(newStdPriorityGasPrice);
       }
     });
 
@@ -322,14 +323,14 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
     const factory = amountFactory(currentBlockchain);
 
-    const gasPrice = BigAmount.createFor(maxGasPrice, gasPriceUnits, factory, gasPriceUnit);
+    const gasPrice = maxGasPrice;
 
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
     if (checked) {
       tx.gasPrice = undefined;
       tx.maxGasPrice = gasPrice;
-      tx.priorityGasPrice = BigAmount.createFor(priorityGasPrice, gasPriceUnits, factory, gasPriceUnit);
+      tx.priorityGasPrice = priorityGasPrice;
     } else {
       tx.gasPrice = gasPrice;
       tx.maxGasPrice = undefined;
@@ -341,12 +342,12 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
     setApproveTx(tx.dump());
   };
 
-  const onMaxGasPriceChange = (price: number): void => {
+  const onMaxGasPriceChange = (price: WeiAny): void => {
     setMaxGasPrice(price);
 
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
-    const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(currentBlockchain), gasPriceUnit);
+    const gasPrice = price;
 
     if (useEip1559) {
       tx.gasPrice = undefined;
@@ -359,12 +360,12 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
     setApproveTx(tx.dump());
   };
 
-  const onPriorityGasPriceChange = (price: number): void => {
+  const onPriorityGasPriceChange = (price: WeiAny): void => {
     setPriorityGasPrice(price);
 
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
-    tx.priorityGasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(currentBlockchain), gasPriceUnit);
+    tx.priorityGasPrice = price;
 
     setApproveTx(tx.dump());
   };
@@ -471,13 +472,13 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         useEip1559={useEip1559}
         gasPriceUnit={gasPriceUnit}
         maxGasPrice={maxGasPrice}
-        stdMaxGasPrice={stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-        lowMaxGasPrice={lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-        highMaxGasPrice={highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+        stdMaxGasPrice={stdMaxGasPrice}
+        lowMaxGasPrice={lowMaxGasPrice}
+        highMaxGasPrice={highMaxGasPrice}
         priorityGasPrice={priorityGasPrice}
-        stdPriorityGasPrice={stdPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-        lowPriorityGasPrice={lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-        highPriorityGasPrice={highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+        stdPriorityGasPrice={stdPriorityGasPrice}
+        lowPriorityGasPrice={lowPriorityGasPrice}
+        highPriorityGasPrice={highPriorityGasPrice}
         onUse1559Change={onUseEip1559Change}
         onMaxGasPriceChange={onMaxGasPriceChange}
         onPriorityGasPriceChange={onPriorityGasPriceChange}
