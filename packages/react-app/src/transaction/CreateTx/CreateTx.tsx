@@ -80,16 +80,16 @@ export interface Props extends WithStyles<typeof styles> {
   onChangeAsset?(tokenSymbol: string): void;
   onChangeGasLimit?(value: string): void;
   onChangeTo(to: string): void;
-  onChangeUseEip1559(value: boolean, max: number, priority: number): void;
+  onChangeUseEip1559(value: boolean, max: WeiAny, priority: WeiAny): void;
   onMaxClicked(callback: (value: BigAmount) => void): void;
-  onSetMaxGasPrice?(value: number, unit: Unit): void;
-  onSetPriorityGasPrice?(value: number, unit: Unit): void;
+  onSetMaxGasPrice?(value: WeiAny): void;
+  onSetPriorityGasPrice?(value: WeiAny): void;
   onSubmit?(): void;
 }
 
 interface State {
-  currentMaxGasPrice: number;
-  currentPriorityGasPrice: number;
+  currentMaxGasPrice: WeiAny;
+  currentPriorityGasPrice: WeiAny;
   useEip1559: boolean;
 }
 
@@ -98,8 +98,8 @@ class CreateTx extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      currentMaxGasPrice: 0,
-      currentPriorityGasPrice: 0,
+      currentMaxGasPrice: amountFactory(props.chain)(0) as WeiAny,
+      currentPriorityGasPrice: amountFactory(props.chain)(0) as WeiAny,
       useEip1559: props.eip1559,
     };
   }
@@ -113,14 +113,14 @@ class CreateTx extends React.Component<Props, State> {
     if (prevMax !== max) {
       const factory = amountFactory(chain);
 
-      const stdMaxGasPrice = factory(max);
-      const stdPriorityGasPrice = factory(priority);
+      const stdMaxGasPrice = factory(max) as WeiAny;
+      const stdPriorityGasPrice = factory(priority) as WeiAny;
 
       const gasPriceUnit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
       this.setState({
-        currentMaxGasPrice: stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
-        currentPriorityGasPrice: stdPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(),
+        currentMaxGasPrice: stdMaxGasPrice,
+        currentPriorityGasPrice: stdPriorityGasPrice,
       });
     }
   }
@@ -198,15 +198,9 @@ class CreateTx extends React.Component<Props, State> {
     const lowPriorityGasPrice = factory(lowGasPrice.priority);
     const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
-    const unit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
-
-    const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(unit).toNumber();
-    const lowMaxGasPriceNumber = lowMaxGasPrice.getNumberByUnit(unit).toNumber();
-    const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(unit).toNumber();
-
-    const highPriorityGasPriceNumber = highPriorityGasPrice.getNumberByUnit(unit).toNumber();
-    const lowPriorityGasPriceNumber = lowPriorityGasPrice.getNumberByUnit(unit).toNumber();
-    const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(unit).toNumber();
+    // make sure unit can cover both priority and actual price. for priority, it's okay to have a decimal value 1/10
+    const unit = stdMaxGasPrice.min(stdPriorityGasPrice.multiply(10)).divide(2)
+      .getOptimalUnit(undefined, undefined, 0);
 
     return (
       <>
@@ -250,13 +244,13 @@ class CreateTx extends React.Component<Props, State> {
           useEip1559={useEip1559}
           gasPriceUnit={unit}
           maxGasPrice={currentMaxGasPrice}
-          stdMaxGasPrice={stdMaxGasPriceNumber}
-          lowMaxGasPrice={lowMaxGasPriceNumber}
-          highMaxGasPrice={highMaxGasPriceNumber}
+          stdMaxGasPrice={stdMaxGasPrice as WeiAny}
+          lowMaxGasPrice={lowMaxGasPrice as WeiAny}
+          highMaxGasPrice={highMaxGasPrice as WeiAny}
           priorityGasPrice={currentPriorityGasPrice}
-          stdPriorityGasPrice={stdPriorityGasPriceNumber}
-          lowPriorityGasPrice={lowPriorityGasPriceNumber}
-          highPriorityGasPrice={highPriorityGasPriceNumber}
+          stdPriorityGasPrice={stdPriorityGasPrice as WeiAny}
+          lowPriorityGasPrice={lowPriorityGasPrice as WeiAny}
+          highPriorityGasPrice={highPriorityGasPrice as WeiAny}
           onUse1559Change={(value) => {
             this.setState({ useEip1559: value });
 
@@ -265,12 +259,12 @@ class CreateTx extends React.Component<Props, State> {
           onMaxGasPriceChange={(value) => {
             this.setState({ currentMaxGasPrice: value });
 
-            onSetMaxGasPrice?.(value, unit);
+            onSetMaxGasPrice?.(value);
           }}
           onPriorityGasPriceChange={(value) => {
             this.setState({ currentPriorityGasPrice: value });
 
-            onSetPriorityGasPrice?.(value, unit);
+            onSetPriorityGasPrice?.(value);
           }}
         />
         <FormRow last>
