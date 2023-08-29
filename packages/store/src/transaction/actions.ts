@@ -57,7 +57,14 @@ function verifySender(expected: string): (txid: string, raw: string, chain: Bloc
   return (txid, raw, chain) =>
     new Promise((resolve, reject) => {
       const { chainId } = Blockchains[chain].params;
-      const tx = EthereumTx.fromRaw(raw, chainId);
+      let tx;
+      try {
+        tx = EthereumTx.fromRaw(raw, chainId);
+      } catch (e) {
+        log.error(`Failed to parse raw tx: ${raw}, chainId: ${chainId}`, e);
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+        return
+      }
 
       if (tx.verifySignature()) {
         log.debug('Tx signature verified');
