@@ -3754,20 +3754,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-core@npm:0.11.1, @emeraldpay/emerald-vault-core@npm:^0.11.1":
-  version: 0.11.1
-  resolution: "@emeraldpay/emerald-vault-core@npm:0.11.1"
-  checksum: b16b29df4f81a5bff8b3051793aa2b5e323da97358cc58a8217aa28a201c86259eb465024670e6140159c8cef18aec7f364fde5995b8d42fa398fff7d31efaaa
+"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/6d6a435f/emeraldpay-emerald-vault-core-v0.12.0-dev.tgz":
+  version: 0.12.0-dev
+  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/6d6a435f/emeraldpay-emerald-vault-core-v0.12.0-dev.tgz"
+  checksum: d91ba9f6e2d03082df6ec6ebafbe5d29ee14b27166c693a1815cda29c0c0df1f4a7a6e7d501f9e8a43c604457a425375b9d2914a1960224d1b303778c56dabdc
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-native@npm:^0.11.1":
-  version: 0.11.1
-  resolution: "@emeraldpay/emerald-vault-native@npm:0.11.1"
+"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/6d6a435f/emeraldpay-emerald-vault-native-v0.12.0-dev.tgz":
+  version: 0.12.0-dev
+  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/6d6a435f/emeraldpay-emerald-vault-native-v0.12.0-dev.tgz"
   dependencies:
-    "@emeraldpay/emerald-vault-core": 0.11.1
+    "@emeraldpay/emerald-vault-core": 0.12.0-dev
     "@emeraldpay/neon-frame": 0.1.1
-  checksum: d8e815ce03dd52e263314db20cbeee41a80e62fb7d90baee2981e50c97a03aff4ad3412c3fa74ae83242c69e69389af3faf58418169a3e104601c96b0233cafc
+  checksum: 3e16b01ea8efcc8ab4cfbe7d1e46ffffd820dd370f258f1f17a279d4b57ed27c22a115079a70e26c0357faf7d0b0770f625253a2acfa1d7288abfda1fef77402
   languageName: node
   linkType: hard
 
