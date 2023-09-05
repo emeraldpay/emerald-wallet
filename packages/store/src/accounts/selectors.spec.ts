@@ -1,5 +1,5 @@
 import { Satoshi, Wei, WeiEtc } from '@emeraldpay/bigamount-crypto';
-import {AddressSingle, SeedDescription, Wallet} from '@emeraldpay/emerald-vault-core';
+import { AddressSingle, SeedDescription, Wallet } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, CurrencyAmount } from '@emeraldwallet/core';
 import { application } from '../index';
 import { SettingsState } from '../settings/types';
@@ -10,7 +10,7 @@ import {
   allBalances,
   balanceByChain,
   isHardwareEntry,
-  withFiatConversion
+  withFiatConversion,
 } from './selectors';
 import { moduleName } from './types';
 
@@ -234,85 +234,84 @@ describe('selectTotalBalance', () => {
   });
 });
 
-describe("isHardwareEntry", () => {
-
+describe('isHardwareEntry', () => {
   it('for ledger seed', () => {
     const seed: SeedDescription = {
-      id: "457bab32-10d7-40e0-8935-10f04edcbe9f",
-      createdAt: new Date(),
-      type: "ledger",
+      id: '457bab32-10d7-40e0-8935-10f04edcbe9f',
+      type: 'ledger',
       available: true,
-    }
+      createdAt: new Date(),
+    };
+
     const wallet: Wallet = {
       createdAt: new Date(),
       entries: [
         {
-          id: "e496d27c-42b0-4f8f-9765-83ae3f394259-1",
+          id: 'e496d27c-42b0-4f8f-9765-83ae3f394259-1',
           blockchain: 100,
           address: {
-            type: "single",
-            value: "0x2773a327fd718b21381b7eb138013f303a0cc772",
+            type: 'single',
+            value: '0x2773a327fd718b21381b7eb138013f303a0cc772',
           },
           key: {
-            type: "hd-path",
+            type: 'hd-path',
             hdPath: "m'/0'",
-            seedId: seed.id!!
+            seedId: seed.id!,
           },
           createdAt: new Date(),
-        }
+        },
       ],
-      id: "e496d27c-42b0-4f8f-9765-83ae3f394259"
+      id: 'e496d27c-42b0-4f8f-9765-83ae3f394259',
     };
 
-    const state : IState = {
+    const state: IState = {
       accounts: {
-        seeds: [seed]
-      }
+        seeds: [seed],
+      },
     } as unknown as IState;
 
-    let act = isHardwareEntry(state, wallet.entries[0]);
+    const act = isHardwareEntry(state, wallet.entries[0]);
 
     expect(act).toBeTruthy();
   });
 
   it('for bytes seed', () => {
     const seed: SeedDescription = {
-      id: "457bab32-10d7-40e0-8935-10f04edcbe9f",
-      createdAt: new Date(),
-      type: "raw",
+      id: '457bab32-10d7-40e0-8935-10f04edcbe9f',
+      type: 'raw',
       available: true,
-    }
+      createdAt: new Date(),
+    };
+
     const wallet: Wallet = {
       createdAt: new Date(),
       entries: [
         {
-          id: "e496d27c-42b0-4f8f-9765-83ae3f394259-1",
+          id: 'e496d27c-42b0-4f8f-9765-83ae3f394259-1',
           blockchain: 100,
           address: {
-            type: "single",
-            value: "0x2773a327fd718b21381b7eb138013f303a0cc772",
+            type: 'single',
+            value: '0x2773a327fd718b21381b7eb138013f303a0cc772',
           },
           key: {
-            type: "hd-path",
+            type: 'hd-path',
             hdPath: "m'/0'",
-            seedId: seed.id!!
+            seedId: seed.id,
           },
           createdAt: new Date(),
-        }
+        },
       ],
-      id: "e496d27c-42b0-4f8f-9765-83ae3f394259"
+      id: 'e496d27c-42b0-4f8f-9765-83ae3f394259',
     };
 
-    const state : IState = {
+    const state: IState = {
       accounts: {
-        seeds: [seed]
-      }
+        seeds: [seed],
+      },
     } as unknown as IState;
 
-    let act = isHardwareEntry(state, wallet.entries[0]);
+    const act = isHardwareEntry(state, wallet.entries[0]);
 
     expect(act).toBeFalsy();
   });
-
-
-})
+});

@@ -1,4 +1,4 @@
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
@@ -97,9 +97,11 @@ class CreateTx extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const zeroAmount = amountFactory(props.chain)(0) as WeiAny;
+
     this.state = {
-      currentMaxGasPrice: amountFactory(props.chain)(0) as WeiAny,
-      currentPriorityGasPrice: amountFactory(props.chain)(0) as WeiAny,
+      currentMaxGasPrice: zeroAmount,
+      currentPriorityGasPrice: zeroAmount,
       useEip1559: props.eip1559,
     };
   }
@@ -115,8 +117,6 @@ class CreateTx extends React.Component<Props, State> {
 
       const stdMaxGasPrice = factory(max) as WeiAny;
       const stdPriorityGasPrice = factory(priority) as WeiAny;
-
-      const gasPriceUnit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
 
       this.setState({
         currentMaxGasPrice: stdMaxGasPrice,
@@ -198,9 +198,8 @@ class CreateTx extends React.Component<Props, State> {
     const lowPriorityGasPrice = factory(lowGasPrice.priority);
     const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
-    // make sure unit can cover both priority and actual price. for priority, it's okay to have a decimal value 1/10
-    const unit = stdMaxGasPrice.min(stdPriorityGasPrice.multiply(10)).divide(2)
-      .getOptimalUnit(undefined, undefined, 0);
+    // Make sure unit can cover both priority and actual price. For priority, it's okay to have a decimal value 1/10.
+    const unit = stdMaxGasPrice.min(stdPriorityGasPrice.multiply(10)).divide(2).getOptimalUnit(undefined, undefined, 0);
 
     return (
       <>
