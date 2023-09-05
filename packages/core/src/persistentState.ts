@@ -457,6 +457,15 @@ export interface Allowances {
    * @param wallet_id
    */
   list(wallet_id?: Uuid): Promise<PageResult<CachedAllowance>>;
+
+  /**
+   * Remove an allowance from the cache for the specified wallet and blockchain
+   *
+   * @param wallet_id target wallet
+   * @param blockchain if set only allowances for that blockchain are removed, otherwise any blockchain is removed
+   * @param min_ts Minimum timestamp (ms), if set only allowances with a timestamp lesser than this value are removed, otherwise any timestamp is removed
+   */
+  remove(wallet_id: Uuid, blockchain?: BlockchainCode, min_ts?: number): Promise<number>;
 }
 
 export interface PersistentState {

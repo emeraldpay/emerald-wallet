@@ -51,6 +51,7 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
 
   cx.export_function("allowances_add", allowances::add)?;
   cx.export_function("allowances_list", allowances::list)?;
+  cx.export_function("allowances_remove", allowances::remove)?;
 
   Ok(())
 }
