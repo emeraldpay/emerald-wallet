@@ -104,7 +104,7 @@ function seedTypeIcon(type: SeedType): React.ReactNode {
     case 'raw':
       return <SecretPhraseIcon color="secondary" fontSize="small" />;
     default:
-      return <></>;
+      return null;
   }
 }
 

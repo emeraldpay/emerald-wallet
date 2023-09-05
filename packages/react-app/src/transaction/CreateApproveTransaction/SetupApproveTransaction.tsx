@@ -1,4 +1,5 @@
 import { BigAmount } from '@emeraldpay/bigamount';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { EntryId, EthereumEntry, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -35,7 +36,6 @@ import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
 import { Asset, SelectAsset } from '../../common/SelectAsset';
 import { SelectEntry } from '../../common/SelectEntry';
 import { ToField } from '../../common/ToField';
-import {WeiAny} from "@emeraldpay/bigamount-crypto";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -115,18 +115,17 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const [currentBlockchain, setCurrentBlockchain] = React.useState(blockchainIdToCode(currentEntry.blockchain));
   const [currentTokens, setCurrentTokens] = React.useState(tokenRegistry.byBlockchain(currentBlockchain));
 
-  let [token] = currentTokens;
-
   const assets = currentTokens.reduce<TokenAsset[]>((carry, { address, symbol }) => {
     const balance = getTokenBalance(currentEntry, address);
 
-    if (balance.isPositive()) {
+    if (balance.isPositive() || address === initialAllowance?.token.address) {
       return [...carry, { address, balance, symbol }];
     }
 
     return carry;
   }, []);
 
+  let [token] = currentTokens;
   let tokenBalance = getTokenBalance(currentEntry, token.address);
 
   if (tokenBalance.isZero()) {
@@ -139,14 +138,14 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   }
 
   const [currentToken, setCurrentToken] = React.useState(token);
+  const [currentTokenBalance, setCurrentTokenBalance] = React.useState(tokenBalance);
 
-  const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0), [currentBlockchain]) as WeiAny;
+  const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0) as WeiAny, [currentBlockchain]);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
 
   const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
-  const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
 
   const [stdMaxGasPrice, setStdMaxGasPrice] = React.useState(zeroAmount);
   const [highMaxGasPrice, setHighMaxGasPrice] = React.useState(zeroAmount);
@@ -211,13 +210,10 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         setHighPriorityGasPrice(factory(avgMiddle.priority) as WeiAny);
         setLowPriorityGasPrice(factory(avgLast.priority) as WeiAny);
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
-
-        setGasPriceUnit(gasPriceOptimalUnit);
-        setGasPriceUnits(newStdMaxGasPrice.units);
-
         setMaxGasPrice(newStdMaxGasPrice);
         setPriorityGasPrice(newStdPriorityGasPrice);
+
+        setGasPriceUnit(newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6));
       }
     });
 
@@ -232,8 +228,10 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
       setCurrentBlockchain(blockchain);
       setCurrentEntry(entry);
-      setCurrentToken(token);
       setCurrentTokens(tokens);
+
+      setCurrentToken(token);
+      setCurrentTokenBalance(getTokenBalance(entry, token.address));
 
       const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
@@ -255,6 +253,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
       const token = tokenRegistry.byAddress(blockchain, contractAddress);
 
       setCurrentToken(token);
+      setCurrentTokenBalance(getTokenBalance(currentEntry, token.address));
 
       const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
@@ -321,18 +320,14 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const onUseEip1559Change = (checked: boolean): void => {
     setUseEip1559(checked);
 
-    const factory = amountFactory(currentBlockchain);
-
-    const gasPrice = maxGasPrice;
-
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
     if (checked) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = gasPrice;
+      tx.maxGasPrice = maxGasPrice;
       tx.priorityGasPrice = priorityGasPrice;
     } else {
-      tx.gasPrice = gasPrice;
+      tx.gasPrice = maxGasPrice;
       tx.maxGasPrice = undefined;
       tx.priorityGasPrice = undefined;
     }
@@ -347,13 +342,11 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
-    const gasPrice = price;
-
     if (useEip1559) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = gasPrice;
+      tx.maxGasPrice = price;
     } else {
-      tx.gasPrice = gasPrice;
+      tx.gasPrice = price;
       tx.maxGasPrice = undefined;
     }
 
@@ -419,14 +412,20 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         <SelectAsset
           asset={currentToken.address}
           assets={assets}
-          balance={tokenBalance}
-          fiatBalance={getTokenFiatBalance(tokenBalance)}
+          balance={currentTokenBalance}
+          disabled={initialAllowance != null}
+          fiatBalance={getTokenFiatBalance(currentTokenBalance)}
           onChangeAsset={onTokenChange}
         />
       </FormRow>
       <FormRow>
         <FormLabel>Spender</FormLabel>
-        <ToField blockchain={approveTx.blockchain} to={approveTx.allowFor} onChange={onToChange} />
+        <ToField
+          blockchain={approveTx.blockchain}
+          disabled={initialAllowance != null}
+          to={approveTx.allowFor}
+          onChange={onToChange}
+        />
       </FormRow>
       <FormRow>
         <FormLabel>Amount</FormLabel>

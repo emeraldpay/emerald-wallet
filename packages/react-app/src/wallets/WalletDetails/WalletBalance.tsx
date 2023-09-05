@@ -175,7 +175,7 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
       }
     }
 
-    return <></>;
+    return null;
   };
 
   return (
@@ -217,9 +217,7 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     {wallet?.reserved?.map(({ accountId }) => `m/x'/x'/${accountId}`).join(', ')}
                   </Typography>
                 </div>
-              ) : (
-                <></>
-              )}
+              ) : null}
             </div>
           </div>
           <ButtonGroup>

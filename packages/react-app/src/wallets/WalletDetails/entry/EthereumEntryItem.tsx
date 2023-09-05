@@ -86,7 +86,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   if (entry.receiveDisabled) {
     if (balance.isZero() || receiveDisabledTokens.length === 0) {
-      return <></>;
+      return null;
     }
 
     return (

@@ -29,6 +29,7 @@ interface OwnProps {
   asset: string;
   assets: Asset[];
   balance?: BigAmount;
+  disabled?: boolean;
   fiatBalance?: BigAmount;
   onChangeAsset?(token: string): void;
 }
@@ -47,12 +48,13 @@ export class SelectAsset extends React.Component<OwnProps & WithStyles<typeof st
   };
 
   public render(): ReactElement {
-    const { asset, assets, balance, classes, fiatBalance } = this.props;
+    const { asset, assets, balance, classes, disabled, fiatBalance } = this.props;
 
     return (
       <>
         <TextField
           select
+          disabled={disabled}
           value={asset}
           onChange={this.onChangeToken}
           SelectProps={{ renderValue: () => this.onRenderValue(asset) }}

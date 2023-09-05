@@ -7,6 +7,7 @@ import AddressBookMenu from './AddressBookMenu';
 
 interface OwnProps {
   blockchain: BlockchainCode;
+  disabled?: boolean;
   to?: string;
   onChange(value: string | undefined): void;
 }
@@ -40,7 +41,11 @@ class ToField extends React.Component<Props, State> {
   }
 
   getRightIcon = (): React.ReactNode => {
-    const { contacts } = this.props;
+    const { contacts, disabled } = this.props;
+
+    if (disabled === true) {
+      return null;
+    }
 
     return <AddressBookMenu contacts={contacts} onChange={(value) => this.onChange(value)} />;
   };
@@ -94,11 +99,13 @@ class ToField extends React.Component<Props, State> {
   };
 
   public render(): React.ReactNode {
+    const { disabled } = this.props;
     const { error, hint, value } = this.state;
 
     return (
       <Input
         errorText={error}
+        disabled={disabled}
         hintText={hint}
         rightIcon={this.getRightIcon()}
         value={value}

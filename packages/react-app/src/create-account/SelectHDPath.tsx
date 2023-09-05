@@ -207,9 +207,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
                       ) : (
                         item.hdpath
                       )
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                   </TableCell>
                   <TableCell>{isChanged(item) ? renderAddress(item.address, item.blockchain) : ''}</TableCell>
                   <TableCell align="right">{renderBalance(item)}</TableCell>

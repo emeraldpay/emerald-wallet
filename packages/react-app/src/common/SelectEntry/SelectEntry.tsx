@@ -35,7 +35,7 @@ const SelectEntry: React.FC<OwnProps & StateProps> = ({ disabled, entries, selec
 
   const renderEntry = (entry: WalletEntry, selected = false): React.ReactNode => {
     if (entry.address == null) {
-      return undefined;
+      return null;
     }
 
     return (

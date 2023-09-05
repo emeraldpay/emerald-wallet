@@ -49,7 +49,7 @@ const BlockchainIcon: React.FC<OwnProps> = ({ blockchain, size }) => {
       return <Typography className={styles.commonIcon}>TBTC</Typography>;
     // Other
     default:
-      return <></>;
+      return null;
   }
 };
 
