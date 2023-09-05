@@ -256,7 +256,7 @@ describe('isHardwareEntry', () => {
           key: {
             type: 'hd-path',
             hdPath: "m'/0'",
-            seedId: seed.id!,
+            seedId: seed.id ?? '',
           },
           createdAt: new Date(),
         },
@@ -296,7 +296,7 @@ describe('isHardwareEntry', () => {
           key: {
             type: 'hd-path',
             hdPath: "m'/0'",
-            seedId: seed.id,
+            seedId: seed.id ?? '',
           },
           createdAt: new Date(),
         },
