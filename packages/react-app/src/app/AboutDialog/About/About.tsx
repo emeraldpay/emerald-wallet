@@ -15,12 +15,14 @@ export const styles: StyleRulesCallback<Theme, OwnProps> = (theme) => ({
   container: {
     padding: 30,
     position: 'relative',
+    zIndex: 0,
   },
   logo: {
     opacity: 0.75,
     position: 'absolute',
     right: -35,
     top: -22,
+    zIndex: -1,
   },
   appName: {
     color: theme.palette.primary.main,

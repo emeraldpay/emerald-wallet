@@ -36,7 +36,7 @@ function isEqual(first: Subscription, second: Subscription): boolean {
 const log = Logger.forCategory('BalanceService');
 
 export class BalanceService implements Service {
-  readonly id = 'BalanceIpcListener';
+  readonly id = 'BalanceService';
 
   private apiAccess: EmeraldApiAccess;
   private ipcMain: IpcMain;
