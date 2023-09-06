@@ -24,7 +24,7 @@ const TxSummary: React.FC<OwnProps> = ({ blockchain, tx: { outputs } }) => {
   const styles = useStyles();
 
   if (outputs.length === 0 || outputs.length > 2) {
-    return <></>;
+    return null;
   }
 
   const amountCreate = amountFactory(blockchain);

@@ -169,7 +169,7 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     <ButtonGroup>
                       <Button
                         primary
-                        label="Reset"
+                        label="Revoke"
                         onClick={() => gotoApprove({ ...item, allowance: token.getAmount(0) })}
                       />
                       <Button primary label="Change" onClick={() => gotoApprove(item)} />

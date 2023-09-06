@@ -15,7 +15,7 @@ interface DispatchProps {
 
 const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, dialogOptions, onClose }) => {
   if (dialog == null) {
-    return <></>;
+    return null;
   }
 
   switch (dialog) {
