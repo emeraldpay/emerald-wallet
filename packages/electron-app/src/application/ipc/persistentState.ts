@@ -28,6 +28,12 @@ export function setupPersistentStateIpc(persistentState: PersistentStateManager)
 
   ipcMain.handle(IpcCommands.ALLOWANCES_LIST, (event, walletId: Uuid) => persistentState.allowances.list(walletId));
 
+  ipcMain.handle(
+    IpcCommands.ALLOWANCES_REMOVE,
+    (event, walletId: Uuid, blockchain?: BlockchainCode, timestamp?: number) =>
+      persistentState.allowances.remove(walletId, blockchain, timestamp),
+  );
+
   ipcMain.handle(IpcCommands.BALANCES_LIST, (event, address: PersistentState.Address | PersistentState.XPub) =>
     persistentState.balances.list(address),
   );

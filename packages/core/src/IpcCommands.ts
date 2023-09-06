@@ -61,6 +61,7 @@ export enum IpcCommands {
   // Allowances
   ALLOWANCES_ADD = 'allowances-add',
   ALLOWANCES_LIST = 'allowances-list',
+  ALLOWANCES_REMOVE = 'allowances-remove',
 
   // Balances
   BALANCES_LIST = 'balances-list',
