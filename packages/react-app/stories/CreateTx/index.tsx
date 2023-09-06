@@ -24,7 +24,7 @@ const backend = new BackendMock();
 
 api.vault.setSeedPassword('b00e3378-40e7-4eca-b287-a5ead2f747d4', 'test');
 
-backend.useBlockchains(['BTC', 'ETC']);
+backend.useBlockchains([BlockchainCode.BTC, BlockchainCode.ETC]);
 
 const ethereumTx = new workflow.CreateEthereumTx({
   amount: new Wei('1.23', 'ETHER'),

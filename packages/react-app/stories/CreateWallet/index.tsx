@@ -12,20 +12,22 @@ import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
 
 const handlers = {
-  onCreate: (value: Result) => {
-    action('Wallet Create')(value);
-    return Promise.resolve('6aacf568-ec33-435f-b234-3668534a7f13');
-  },
-  onError: action('Error'),
   onCancel: action('Cancel'),
-  mnemonicGenerator: () => {
+  onError: action('Error'),
+  mnemonicGenerator() {
     return Promise.resolve(
       'accuse spin gym afraid reunion poverty mango north silk lottery tank bulk' +
         ' hawk sting movie secret copper goose below use pig vintage resource plate',
     );
   },
-  onSaveSeed: (seed: SeedDefinition) => {
+  onCreate(value: Result) {
+    action('Wallet Create')(value);
+
+    return Promise.resolve('6aacf568-ec33-435f-b234-3668534a7f13');
+  },
+  onSaveSeed(seed: SeedDefinition) {
     action('Seed Create')(seed);
+
     return Promise.resolve('6aacf568-ec33-435f-b234-3668534a7f13');
   },
 };
@@ -94,11 +96,27 @@ api.vault.addSeedAddress(
   '0x0000000000000000000000000000000000000000',
 );
 
-backend.useBlockchains(['eth', 'etc', 'btc']);
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'ETH', '150078009050000000');
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'DAI', '250018500000000000000');
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'USDT', '41010000000');
-backend.blockchains['etc'].setBalance('0x75a32a48a215675f822fca1f9d99dadf7c6ec104', 'ETC', '30400000000000000000');
+backend.useBlockchains([BlockchainCode.BTC, BlockchainCode.ETC, BlockchainCode.ETH]);
+backend.blockchains[BlockchainCode.ETC]?.setBalance(
+  '0x75a32a48a215675f822fca1f9d99dadf7c6ec104',
+  'ETC',
+  '30400000000000000000',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'ETH',
+  '150078009050000000',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'DAI',
+  '250018500000000000000',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'USDT',
+  '41010000000',
+);
 
 const blockchains: IBlockchain[] = [
   Blockchains[BlockchainCode.ETC],
@@ -112,17 +130,16 @@ storiesOf('CreateWallet', module)
   .add('empty', () => <CreateWalletWizard seeds={[]} blockchains={blockchains} {...handlers} />)
   .add('single seed', () => {
     const seed: SeedDescription = {
-      createdAt: new Date(),
       id: 'e23378da-d4b2-4843-ae4d-f42888a11b58',
-      available: true,
       type: 'raw',
+      available: true,
+      createdAt: new Date(),
     };
+
     return <CreateWalletWizard seeds={[seed]} blockchains={blockchains} {...handlers} />;
   });
 
 storiesOf('CreateWallet', module)
   .addDecorator(providerForStore(api, backend))
   .addDecorator(withTheme)
-  .add('unlock seed', () => {
-    return <UnlockSeed seedId="6aacf568-ec33-435f-b234-3668534a7f13" onUnlock={action('unlock')} />;
-  });
+  .add('unlock seed', () => <UnlockSeed seedId="6aacf568-ec33-435f-b234-3668534a7f13" onUnlock={action('unlock')} />);

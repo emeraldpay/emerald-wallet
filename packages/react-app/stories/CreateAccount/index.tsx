@@ -35,11 +35,27 @@ api.vault.addSeedAddress(
   '0x2b59a19f1f4de027d039ac3f24e9b73ddf03386f',
 );
 
-backend.useBlockchains(['eth', 'etc']);
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'ETH', '150078009050000000/WEI');
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'DAI', '250018500000000000000/DAI');
-backend.blockchains['eth'].setBalance('0xc4cf138d349ead73f7a93306096a626c40f56653', 'USDT', '41010000000/USDT');
-backend.blockchains['etc'].setBalance('0x75a32a48a215675f822fca1f9d99dadf7c6ec104', 'ETC', '30400000000000000000/WEI');
+backend.useBlockchains([BlockchainCode.ETH, BlockchainCode.ETC]);
+backend.blockchains[BlockchainCode.ETC]?.setBalance(
+  '0x75a32a48a215675f822fca1f9d99dadf7c6ec104',
+  'ETC',
+  '30400000000000000000/WEI',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'ETH',
+  '150078009050000000/WEI',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'DAI',
+  '250018500000000000000/DAI',
+);
+backend.blockchains[BlockchainCode.ETH]?.setBalance(
+  '0xc4cf138d349ead73f7a93306096a626c40f56653',
+  'USDT',
+  '41010000000/USDT',
+);
 
 storiesOf('CreateAccount', module)
   .addDecorator(withTheme)
