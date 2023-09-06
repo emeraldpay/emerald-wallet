@@ -376,12 +376,13 @@ export function isHardwareEntry(state: IState, entry: WalletEntry): boolean | un
   if (entry.key == null) {
     return undefined;
   }
-  if (isSeedPkRef(entry, entry.key)) {
-    return isHardwareSeed(state, {type: 'id', value: entry.key.seedId});
-  }
-  return false
-}
 
+  if (isSeedPkRef(entry, entry.key)) {
+    return isHardwareSeed(state, { type: 'id', value: entry.key.seedId });
+  }
+
+  return false;
+}
 
 export function isLoading(state: IState): boolean {
   return state[moduleName].loading;

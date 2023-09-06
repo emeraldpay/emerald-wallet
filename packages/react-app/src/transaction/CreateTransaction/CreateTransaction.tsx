@@ -1,7 +1,7 @@
 // FIXME Refactor component
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BigAmount, Unit } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
@@ -353,11 +353,7 @@ class CreateTransaction extends React.Component<Props, State> {
   };
 
   public onChangeUseEip1559 = (enabled: boolean, max: WeiAny, priority: WeiAny): void => {
-    const { blockchain } = this.props;
-
     const tx = this.transaction;
-
-    const factory = amountFactory(blockchain);
 
     if (enabled) {
       tx.gasPrice = undefined;
@@ -429,21 +425,22 @@ class CreateTransaction extends React.Component<Props, State> {
       return;
     }
 
-    const { tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey, isHardware } = this.props;
+    const { isHardware, tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey } = this.props;
     const { password, asset } = this.state;
 
-    // password should be entered only for a standard encrypted seed, but for Ledger it's always empty
+    // Password should be entered only for a standard encrypted seed, but for Ledger it's always empty.
     if (!isHardware) {
       if (password == null) {
         return;
       }
 
-      this.setState({verifying: true});
+      this.setState({ verifying: true });
 
       const correctPassword = await verifyGlobalKey(password);
 
       if (!correctPassword) {
-        this.setState({passwordError: 'Incorrect password', verifying: false});
+        this.setState({ passwordError: 'Incorrect password', verifying: false });
+
         return;
       }
     }
@@ -459,9 +456,10 @@ class CreateTransaction extends React.Component<Props, State> {
       password: password,
       transaction: tx,
       token: asset,
-    }).catch((e) => {
-      console.warn("Error signing transaction", e);
-      this.setState({verifying: false})
+    }).catch((exception) => {
+      console.warn('Error signing transaction', exception);
+
+      this.setState({ verifying: false });
     });
   };
 
@@ -640,8 +638,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return carry;
     }, new Map());
 
-    const isHardware = accounts.selectors.isHardwareEntry(state, entry) || false;
-
     let amount: BigAmount = zero;
     let asset = initialAsset ?? initialAllowance?.token.address ?? blockchain.params.coinTicker;
 
@@ -651,13 +647,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       asset = blockchain.params.coinTicker;
     }
 
+    const isHardware = accounts.selectors.isHardwareEntry(state, entry) ?? false;
+
     return {
       amount,
       asset,
       coinTicker,
+      isHardware,
       tokenRegistry,
       getEntryByAddress,
-      isHardware,
       accounts: Object.fromEntries(accountByAddress.entries()),
       blockchain: blockchain.params.code,
       eip1559: blockchain.params.eip1559 ?? false,
@@ -764,26 +762,28 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     signAndSend(tokenRegistry, request) {
       return new Promise((resolve, reject) =>
-        sign(dispatch, ownProps, tokenRegistry, request).then((signed) => {
-          if (signed == null) {
-            reject();
-          } else {
-            resolve();
+        sign(dispatch, ownProps, tokenRegistry, request)
+          .then((signed) => {
+            if (signed == null) {
+              reject();
+            } else {
+              resolve();
 
-            dispatch(
-              screen.actions.gotoScreen(
-                screen.Pages.BROADCAST_TX,
-                {
-                  ...signed,
-                  fee: request.transaction.getFees(),
-                  originalAmount: request.transaction.amount,
-                },
-                null,
-                true,
-              ),
-            );
-          }
-        }).catch(reject),
+              dispatch(
+                screen.actions.gotoScreen(
+                  screen.Pages.BROADCAST_TX,
+                  {
+                    ...signed,
+                    fee: request.transaction.getFees(),
+                    originalAmount: request.transaction.amount,
+                  },
+                  null,
+                  true,
+                ),
+              );
+            }
+          })
+          .catch(reject),
       );
     },
     verifyGlobalKey(password) {

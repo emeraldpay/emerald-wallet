@@ -1,8 +1,8 @@
 import { Unit } from '@emeraldpay/bigamount';
+import { Wei, WeiAny } from '@emeraldpay/bigamount-crypto';
 import { FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
-import {Wei, WeiAny} from "@emeraldpay/bigamount-crypto";
 
 const useStyles = makeStyles(
   createStyles({
@@ -81,6 +81,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const [currentUseStdMaxGasPrice, setCurrentUseStdMaxGasPrice] = React.useState(true);
   const [currentUseStdPriorityGasPrice, setCurrentUseStdPriorityGasPrice] = React.useState(true);
 
+  const toWeiInCurrentUnits = (decimal: number): Wei => new Wei(decimal, gasPriceUnit);
+
   const onCurrentUse1559Change = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
     onUse1559Change(checked);
   };
@@ -93,12 +95,9 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const toWeiInCurrentUnits = (decimal: number): Wei => {
-    return new Wei(decimal, gasPriceUnit)
-  }
-
   const onCurrentMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
+
     onMaxGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
   };
 
@@ -112,17 +111,21 @@ const EthTxSettings: React.FC<OwnProps> = ({
 
   const onCurrentPriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
+
     onPriorityGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
   };
+
+  const maxGasPriceByUnit = maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
+  const priorityGasPriceByUnit = priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
 
   return (
     <FormAccordion
       title={
         <FormRow last>
           <FormLabel>Settings</FormLabel>
-          {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
+          {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
           {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
-          {useEip1559 ? ` / ${priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()} Priority Gas Price` : null}
+          {useEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
         </FormRow>
       }
     >
@@ -161,7 +164,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                   markLabel: styles.gasPriceMarkLabel,
                   valueLabel: styles.gasPriceValueLabel,
                 }}
-                getAriaValueText={() => `${maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()}`}
+                getAriaValueText={() => `${maxGasPriceByUnit} ${gasPriceUnit.toString()}`}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={0.01}
@@ -209,7 +212,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                     markLabel: styles.gasPriceMarkLabel,
                     valueLabel: styles.gasPriceValueLabel,
                   }}
-                  getAriaValueText={() => `${priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} ${gasPriceUnit.toString()}`}
+                  getAriaValueText={() => `${priorityGasPriceByUnit} ${gasPriceUnit.toString()}`}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   step={0.01}
