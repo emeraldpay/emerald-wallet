@@ -2,7 +2,7 @@ import * as url from 'url';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
 import { IpcCommands } from '@emeraldwallet/core';
-import { BrowserWindow, Menu, ipcMain, shell } from 'electron';
+import { BrowserWindow, Menu, app as electronApp, ipcMain, shell } from 'electron';
 import { ElectronLog } from 'electron-log';
 import { Application } from '../application/Application';
 import createMainMenu from './MainMenu';
@@ -92,6 +92,22 @@ export function getMainWindow(
 
     window?.show();
   });
+
+  if (process.platform === 'darwin') {
+    let quitting = false;
+
+    electronApp.on('before-quit', () => {
+      quitting = true;
+    });
+
+    window.on('close', (event) => {
+      if (!quitting) {
+        event.preventDefault();
+
+        window.minimize();
+      }
+    });
+  }
 
   window.on('closed', () => {
     mainWindow = null;
