@@ -20,6 +20,7 @@ import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import * as React from 'react';
 
 interface OwnProps {
+  autoFocus?: boolean;
   disabled?: boolean;
   errorText?: string | null;
   hintText?: string | null;
@@ -38,6 +39,7 @@ interface OwnProps {
 }
 
 export const Input: React.FC<OwnProps> = ({
+  autoFocus,
   disabled,
   errorText,
   hintText,
@@ -79,6 +81,7 @@ export const Input: React.FC<OwnProps> = ({
     <TextField
       {...props}
       fullWidth
+      autoFocus={autoFocus}
       disabled={disabled ?? false}
       inputProps={{ max, min }}
       maxRows={maxRows}

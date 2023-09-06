@@ -34,10 +34,10 @@ enum SettingsTabs {
 
 interface State extends MutableState {
   changePasswordError?: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   globalKeySet: boolean;
-  newPassword: string;
-  oldPassword: string;
+  newPassword?: string;
+  oldPassword?: string;
   tab: SettingsTabs;
 }
 
@@ -46,16 +46,17 @@ export interface Props extends DispatchProps, MutableState, StateProps, WithTran
 }
 
 export class SettingsForm extends React.Component<Props, State> {
+  confirmPasswordClear?(): void;
+  newPasswordClear?(): void;
+  oldPasswordClear?(): void;
+
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      confirmPassword: '',
       currency: this.props.currency.toLowerCase(),
       globalKeySet: false,
       language: this.props.language,
-      newPassword: '',
-      oldPassword: '',
       tab: SettingsTabs.COMMON,
     };
   }
@@ -66,44 +67,60 @@ export class SettingsForm extends React.Component<Props, State> {
     this.setState({ globalKeySet: hasGlobalKey });
   }
 
-  public checkPasswords = (): boolean => {
+  checkPasswords = (): boolean => {
     const { confirmPassword, newPassword, oldPassword } = this.state;
 
-    return confirmPassword.length > 0 && newPassword.length > 0 && oldPassword.length > 0;
+    return (confirmPassword?.length ?? 0) > 0 && (newPassword?.length ?? 0) > 0 && (oldPassword?.length ?? 0) > 0;
   };
 
-  public handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ currency: event.target.value });
   };
 
-  public handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ language: event.target.value });
   };
 
-  public handleSave = async (): Promise<void> => {
+  handleSettingsSave = async (): Promise<void> => {
     await this.props.onSubmit(this.state);
   };
 
-  public handleChange = async (): Promise<void> => {
+  handlePasswordChange = async (): Promise<void> => {
     const { t } = this.props;
     const { confirmPassword, newPassword, oldPassword } = this.state;
 
     this.setState({ changePasswordError: undefined });
 
-    if (newPassword !== oldPassword && newPassword === confirmPassword) {
-      const passwordChanged = await this.props.onChangeGlobalKey(oldPassword, newPassword);
+    if (newPassword == null || oldPassword == null || confirmPassword == null) {
+      return;
+    }
 
-      if (passwordChanged) {
-        this.props.showNotification(t('settings.globalKeyChanged'));
-      } else {
-        this.setState({ changePasswordError: t('settings.globalKeyErrorOccurred') });
-      }
-    } else {
+    if (newPassword === oldPassword || newPassword !== confirmPassword) {
       this.setState({ changePasswordError: t('settings.globalKeyPasswordMismatch') });
+
+      return;
+    }
+
+    const passwordChanged = await this.props.onChangeGlobalKey(oldPassword, newPassword);
+
+    if (passwordChanged) {
+      this.props.showNotification(t('settings.globalKeyChanged'));
+
+      this.setState({
+        confirmPassword: undefined,
+        newPassword: undefined,
+        oldPassword: undefined,
+      });
+
+      this.confirmPasswordClear?.();
+      this.newPasswordClear?.();
+      this.oldPasswordClear?.();
+    } else {
+      this.setState({ changePasswordError: t('settings.globalKeyErrorOccurred') });
     }
   };
 
-  public handleExportSettings = async (): Promise<void> => {
+  handleExportSettings = async (): Promise<void> => {
     const { t, exportVaultFile, showNotification } = this.props;
 
     const result = await exportVaultFile();
@@ -118,7 +135,7 @@ export class SettingsForm extends React.Component<Props, State> {
     }
   };
 
-  public render(): React.ReactNode {
+  render(): React.ReactNode {
     const { classes, goBack, hasWallets, seeds, t, updateSeed } = this.props;
     const { currency, globalKeySet, language } = this.state;
 
@@ -184,7 +201,7 @@ export class SettingsForm extends React.Component<Props, State> {
               </FormRow>
               <FormRow last>
                 <ButtonGroup classes={{ container: classes.buttons }}>
-                  <Button primary={true} label="Save" onClick={this.handleSave} />
+                  <Button primary={true} label="Save" onClick={this.handleSettingsSave} />
                 </ButtonGroup>
               </FormRow>
             </TabPanel>
@@ -200,18 +217,29 @@ export class SettingsForm extends React.Component<Props, State> {
                 <TabPanel className={classes.formBody} value={SettingsTabs.GLOBAL_KEY}>
                   <FormRow>
                     <FormLabel>{t('settings.globalKeyOld')}</FormLabel>
-                    <PasswordInput onChange={(password) => this.setState({ oldPassword: password })} />
+                    <PasswordInput
+                      autoFocus
+                      minLength={1}
+                      placeholder="Enter existing password"
+                      showLengthNotice={false}
+                      clearPassword={(callback) => (this.oldPasswordClear = callback)}
+                      onChange={(password) => this.setState({ oldPassword: password })}
+                    />
                   </FormRow>
                   <FormRow>
                     <FormLabel>{t('settings.globalKeyNew')}</FormLabel>
                     <PasswordInput
                       error={this.state.changePasswordError}
+                      clearPassword={(callback) => (this.newPasswordClear = callback)}
                       onChange={(password) => this.setState({ newPassword: password })}
                     />
                   </FormRow>
                   <FormRow>
                     <FormLabel>{t('settings.globalKeyConfirm')}</FormLabel>
-                    <PasswordInput onChange={(password) => this.setState({ confirmPassword: password })} />
+                    <PasswordInput
+                      clearPassword={(callback) => (this.confirmPasswordClear = callback)}
+                      onChange={(password) => this.setState({ confirmPassword: password })}
+                    />
                   </FormRow>
                   <FormRow last>
                     <ButtonGroup classes={{ container: classes.buttons }}>
@@ -219,7 +247,7 @@ export class SettingsForm extends React.Component<Props, State> {
                         disabled={!this.checkPasswords()}
                         primary={true}
                         label="Change"
-                        onClick={this.handleChange}
+                        onClick={this.handlePasswordChange}
                       />
                     </ButtonGroup>
                   </FormRow>

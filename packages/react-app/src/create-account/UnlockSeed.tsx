@@ -66,6 +66,7 @@ const UnlockSeed: React.FC<OwnProps & DispatchProps> = ({ seedId, onUnlock, veri
           <Grid container alignItems="center" spacing={1}>
             <Grid item xs>
               <PasswordInput
+                autoFocus
                 disabled={verifying}
                 error={passwordError}
                 placeholder="Enter existing password"

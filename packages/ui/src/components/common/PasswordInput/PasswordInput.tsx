@@ -4,21 +4,25 @@ import { ViewVisible as ShowPasswordIcon } from '../../../icons';
 import { Input } from '../Input';
 
 interface OwnProps {
+  autoFocus?: boolean;
   disabled?: boolean;
   error?: string;
   minLength?: number;
   placeholder?: string;
   showLengthNotice?: boolean;
+  clearPassword?(callback: () => void): void;
   onChange(password: string): void;
   onPressEnter?(): void;
 }
 
 const PasswordInput: React.FC<OwnProps> = ({
+  autoFocus,
   disabled,
   error,
   placeholder,
   minLength = 8,
   showLengthNotice = true,
+  clearPassword,
   onChange,
   onPressEnter,
 }) => {
@@ -41,8 +45,13 @@ const PasswordInput: React.FC<OwnProps> = ({
     </IconButton>
   );
 
+  React.useEffect(() => {
+    clearPassword?.(() => setPassword(undefined));
+  }, [clearPassword]);
+
   return (
     <Input
+      autoFocus={autoFocus}
       disabled={disabled}
       errorText={
         error ??
