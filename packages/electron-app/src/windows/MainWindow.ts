@@ -94,18 +94,10 @@ export function getMainWindow(
   });
 
   if (process.platform === 'darwin') {
-    let quitting = false;
-
-    electronApp.on('before-quit', () => {
-      quitting = true;
-    });
-
     window.on('close', (event) => {
-      if (!quitting) {
-        event.preventDefault();
+      event.preventDefault();
 
-        window.minimize();
-      }
+      electronApp.quit();
     });
   }
 
