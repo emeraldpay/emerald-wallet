@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
-import { GasPrices } from '@emeraldwallet/store';
+import { Allowance, GasPrices } from '@emeraldwallet/store';
 import { AccountSelect, Button, ButtonGroup, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { CircularProgress, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
@@ -65,6 +65,7 @@ export interface Props extends WithStyles<typeof styles> {
   eip1559: boolean;
   fiatBalance?: BigAmount;
   highGasPrice: GasPrices;
+  initialAllowance?: Allowance;
   initializing: boolean;
   lowGasPrice: GasPrices;
   stdGasPrice: GasPrices;
@@ -149,6 +150,7 @@ class CreateTx extends React.Component<Props, State> {
       eip1559,
       fiatBalance,
       highGasPrice,
+      initialAllowance,
       initializing,
       lowGasPrice,
       stdGasPrice,
@@ -181,7 +183,7 @@ class CreateTx extends React.Component<Props, State> {
       const key = address ?? symbol;
       const balance = this.getAssetBalance(key);
 
-      if (balance.isPositive()) {
+      if (balance.isPositive() || address === initialAllowance?.token.address) {
         return [...carry, { address, balance, symbol }];
       }
 
