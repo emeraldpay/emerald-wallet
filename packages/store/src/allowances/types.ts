@@ -1,4 +1,4 @@
-import { DescribeAddressControl } from '@emeraldpay/api';
+import { address as AddressApi } from '@emeraldpay/api';
 import { BlockchainCode, Token, TokenAmount, TokenData } from '@emeraldwallet/core';
 
 export const moduleName = 'allowance';
@@ -13,9 +13,9 @@ export interface Allowance {
   available: TokenAmount;
   blockchain: BlockchainCode;
   ownerAddress: string;
-  ownerControl?: DescribeAddressControl;
+  ownerControl?: AddressApi.AddressControl;
   spenderAddress: string;
-  spenderControl?: DescribeAddressControl;
+  spenderControl?: AddressApi.AddressControl;
   token: Token;
   type: AllowanceType;
 }
@@ -49,8 +49,8 @@ export interface AllowanceRaw {
 }
 
 interface AllowanceCommon extends AllowanceRaw {
-  ownerControl?: DescribeAddressControl;
-  spenderControl?: DescribeAddressControl;
+  ownerControl?: AddressApi.AddressControl;
+  spenderControl?: AddressApi.AddressControl;
 }
 
 export interface InitAllowanceAction {

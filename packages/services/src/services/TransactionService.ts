@@ -1,4 +1,4 @@
-import { transaction as ApiTransaction, Publisher } from '@emeraldpay/api';
+import { Publisher, transaction as TransactionApi } from '@emeraldpay/api';
 import { EntryIdOp, IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   Blockchains,
@@ -15,11 +15,11 @@ import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../emerald-client/ApiAccess';
 import { Service } from './ServiceManager';
 
-const { ChangeType: ApiType, Direction: ApiDirection } = ApiTransaction;
+const { ChangeType: ApiType, Direction: ApiDirection } = TransactionApi;
 const { ChangeType: StateType, Direction: StateDirection, State, Status } = PersistentState;
 
 type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
-type TransactionHandler = (tx: ApiTransaction.AddressTxResponse) => void;
+type TransactionHandler = (tx: TransactionApi.AddressTransaction) => void;
 
 const log = Logger.forCategory('TransactionService');
 
@@ -34,7 +34,7 @@ export class TransactionService implements Service {
   private vault: IEmeraldVault;
   private webContents: WebContents;
 
-  private subscribers: Map<string, Publisher<ApiTransaction.AddressTxResponse>> = new Map();
+  private subscribers: Map<string, Publisher<TransactionApi.AddressTransaction>> = new Map();
 
   private readonly restartTimeout = 5;
 
@@ -165,7 +165,7 @@ export class TransactionService implements Service {
           `with ${cursor == null ? 'empty cursor' : `cursor ${cursor}`}...`,
         );
 
-        const request: ApiTransaction.AddressTxRequest = {
+        const request: TransactionApi.GetTransactionsRequest = {
           blockchain,
           address: identifier,
           cursor: cursor ?? undefined,
@@ -174,7 +174,7 @@ export class TransactionService implements Service {
         const handler = this.processTransaction(identifier, blockchain, entryId);
 
         this.apiAccess.transactionClient
-          .getAddressTx(request)
+          .getTransactions(request)
           .onData(handler)
           .onError((error) =>
             log.error(
@@ -185,7 +185,7 @@ export class TransactionService implements Service {
           );
 
         const subscriber = this.apiAccess.transactionClient
-          .subscribeAddressTx(request)
+          .subscribeTransactions(request)
           .onData(handler)
           .onError((error) => log.error(`Error while subscribing for ${identifier} on ${blockchainCode}`, error))
           .finally(() => {

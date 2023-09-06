@@ -1,4 +1,4 @@
-import { AddressAllowanceRequest, AddressAllowanceResponse, Publisher } from '@emeraldpay/api';
+import { Publisher, token as TokenApi } from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import { extractWalletId } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
@@ -28,7 +28,7 @@ function isEqual(first: Subscription, second: Subscription): boolean {
   return first.address === second.address && first.blockchain === second.blockchain && first.entryId === second.entryId;
 }
 
-type AllowanceHandler = (allowance: AddressAllowanceResponse) => void;
+type AllowanceHandler = (allowance: TokenApi.AddressAllowanceAmount) => void;
 
 const log = Logger.forCategory('AllowanceService');
 
@@ -45,7 +45,7 @@ export class AllowanceService implements Service {
   private tokenRegistry: TokenRegistry;
   private webContents: WebContents;
 
-  private subscribers: Map<string, Publisher<AddressAllowanceResponse>> = new Map();
+  private subscribers: Map<string, Publisher<TokenApi.AddressAllowanceAmount>> = new Map();
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -114,21 +114,23 @@ export class AllowanceService implements Service {
   private subscribeAllowance({ address, blockchain, entryId }: Subscription): void {
     const tokens = this.tokenRegistry.byBlockchain(blockchain);
 
-    const request: AddressAllowanceRequest = {
+    const request: TokenApi.AddressAllowanceRequest = {
       address,
-      chain: blockchainCodeToId(blockchain),
+      blockchain: blockchainCodeToId(blockchain),
       contractAddresses: tokens.map(({ address }) => address),
     };
 
     const handler = this.processAllowance(entryId, address);
 
-    this.apiAccess.blockchainClient
-      .getAddressAllowance(request)
-      .then((allowances) => allowances.forEach((allowance) => handler(allowance)))
-      .catch((error) => log.error(`Error while getting allowances for ${address} on ${blockchain} blockchain`, error));
+    this.apiAccess.tokenClient
+      .getAllowanceAmounts(request)
+      .onData(handler)
+      .onError((error) =>
+        log.error(`Error while getting allowances for ${address} on ${blockchain} blockchain`, error),
+      );
 
-    const subscriber = this.apiAccess.blockchainClient
-      .subscribeAddressAllowance(request)
+    const subscriber = this.apiAccess.tokenClient
+      .subscribeAllowanceAmounts(request)
       .onData(handler)
       .onError((error) => log.error(`Error while subscribing for ${address} on ${blockchain} blockchain`, error));
 
@@ -136,25 +138,23 @@ export class AllowanceService implements Service {
   }
 
   private processAllowance(entryId: EntryId, address: string): AllowanceHandler {
-    return ({ allowance, available, chain, contractAddress, ownerAddress, spenderAddress }) => {
-      const blockchain = blockchainIdToCode(chain);
+    return ({ allowance, available, blockchain, contractAddress, ownerAddress, spenderAddress }) => {
+      const blockchainCode = blockchainIdToCode(blockchain);
 
       const cachedAllowance: PersistentState.CachedAllowance = {
-        blockchain,
         amount: allowance,
+        blockchain: blockchainCode,
         owner: ownerAddress,
         spender: spenderAddress,
         token: contractAddress,
       };
 
       this.persistentState.allowances.add(extractWalletId(entryId), cachedAllowance, this.cacheTtl).then(() => {
-        this.balanceService.createSubscription(entryId, blockchain, ownerAddress, contractAddress);
-
-        const blockchainId = blockchainCodeToId(blockchain);
+        this.balanceService.createSubscription(entryId, blockchainCode, ownerAddress, contractAddress);
 
         Promise.all([
-          this.apiAccess.addressClient.describeAddress({ address: ownerAddress, chain: blockchainId }),
-          this.apiAccess.addressClient.describeAddress({ address: spenderAddress, chain: blockchainId }),
+          this.apiAccess.addressClient.describe({ blockchain, address: ownerAddress }),
+          this.apiAccess.addressClient.describe({ blockchain, address: spenderAddress }),
         ]).then(([{ control: ownerControl }, { control: spenderControl }]) =>
           this.webContents.send(IpcCommands.STORE_DISPATCH, {
             type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
@@ -163,12 +163,12 @@ export class AllowanceService implements Service {
                 address,
                 allowance,
                 available,
-                blockchain,
                 contractAddress,
                 ownerAddress,
                 ownerControl,
                 spenderAddress,
                 spenderControl,
+                blockchain: blockchainCode,
               },
               tokens: this.tokens,
             },

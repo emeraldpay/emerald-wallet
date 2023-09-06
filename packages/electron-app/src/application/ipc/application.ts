@@ -35,7 +35,7 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
   });
 
   ipcMain.handle(IpcCommands.DESCRIBE_ADDRESS, (event, blockchain: BlockchainCode, address: string) =>
-    apiAccess.addressClient.describeAddress({ address, chain: blockchainCodeToId(blockchain) }),
+    apiAccess.addressClient.describe({ address, blockchain: blockchainCodeToId(blockchain) }),
   );
 
   ipcMain.handle(
@@ -108,7 +108,7 @@ export function setupApiIpc(app: Application, apiAccess: EmeraldApiAccess): void
   ipcMain.handle(
     IpcCommands.XPUB_LAST_INDEX,
     async (event, blockchain: BlockchainCode, xpub: string, start: number) => {
-      const state = await apiAccess.transactionClient.getXpubState({
+      const state = await apiAccess.addressClient.describeXpub({
         address: { start, xpub },
         blockchain: blockchainCodeToId(blockchain),
       });

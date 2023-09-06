@@ -1,4 +1,4 @@
-import { Publisher, transaction } from '@emeraldpay/api';
+import { Publisher, token as TokenApi } from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -33,7 +33,7 @@ export class TokenService implements Service {
   private tokenRegistry: TokenRegistry;
   private balanceService: BalanceService;
 
-  private subscribers: Map<string, Publisher<transaction.AddressTokenResponse>> = new Map();
+  private subscribers: Map<string, Publisher<TokenApi.AddressToken>> = new Map();
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -96,8 +96,8 @@ export class TokenService implements Service {
   private subscribeTokens({ address, blockchain, entryId }: Subscription): void {
     const tokens = this.tokenRegistry.byBlockchain(blockchain);
 
-    const subscriber = this.apiAccess.transactionClient
-      .subscribeAddressTokens({
+    const subscriber = this.apiAccess.tokenClient
+      .subscribeTokens({
         address,
         blockchain: blockchainCodeToId(blockchain),
         contractAddresses: tokens.filter(({ pinned }) => !pinned).map(({ address }) => address),
