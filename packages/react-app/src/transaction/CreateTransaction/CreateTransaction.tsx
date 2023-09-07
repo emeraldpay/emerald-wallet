@@ -211,7 +211,7 @@ class CreateTransaction extends React.Component<Props, State> {
       tx.totalBalance = totalBalance;
       tx.transferFrom = initialAllowance?.ownerAddress;
 
-      tx.setTotalBalance(getTokenBalance(asset, selectedFromAddress));
+      tx.setTotalBalance(getTokenBalance(asset, selectedFromAddress, initialAllowance?.ownerAddress));
     } else {
       tx = new workflow.CreateEthereumTx(null, blockchain, txType);
 
@@ -510,6 +510,7 @@ class CreateTransaction extends React.Component<Props, State> {
       eip1559,
       tokenRegistry,
       coinTicker,
+      initialAllowance,
       getBalance,
       getBalancesByAddress,
       getFiatBalance,
@@ -529,30 +530,31 @@ class CreateTransaction extends React.Component<Props, State> {
             accounts={accounts}
             asset={asset}
             chain={blockchain}
+            coinTicker={coinTicker}
             eip1559={eip1559}
-            initializing={initializing}
+            fiatBalance={getFiatBalance(asset, tx.from)}
             highGasPrice={highGasPrice}
+            initialAllowance={initialAllowance}
+            initializing={initializing}
             lowGasPrice={lowGasPrice}
             stdGasPrice={stdGasPrice}
-            tx={tx}
-            coinTicker={coinTicker}
-            fiatBalance={getFiatBalance(asset, tx.from)}
             tokenRegistry={tokenRegistry}
+            tx={tx}
             useEip1559={useEip1559}
-            onChangeAccount={this.onChangeAccount}
-            onChangeAsset={this.onChangeAsset}
-            onChangeGasLimit={this.onChangeGasLimit}
-            onChangeAmount={this.onChangeAmount}
-            onChangeTo={this.onChangeTo}
-            onChangeUseEip1559={this.onChangeUseEip1559}
-            onSubmit={this.onSubmitCreateTransaction}
-            onCancel={onCancel}
-            onMaxClicked={this.onMaxClicked}
-            onSetMaxGasPrice={this.onSetMaxGasPrice}
-            onSetPriorityGasPrice={this.onSetPriorityGasPrice}
             getBalance={getBalance}
             getBalancesByAddress={getBalancesByAddress}
             getTokenBalance={getTokenBalance}
+            onCancel={onCancel}
+            onChangeAccount={this.onChangeAccount}
+            onChangeAmount={this.onChangeAmount}
+            onChangeAsset={this.onChangeAsset}
+            onChangeGasLimit={this.onChangeGasLimit}
+            onChangeTo={this.onChangeTo}
+            onChangeUseEip1559={this.onChangeUseEip1559}
+            onMaxClicked={this.onMaxClicked}
+            onSetMaxGasPrice={this.onSetMaxGasPrice}
+            onSetPriorityGasPrice={this.onSetPriorityGasPrice}
+            onSubmit={this.onSubmitCreateTransaction}
           />
         );
       case PAGES.SIGN:
