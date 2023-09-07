@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import { ILogger } from '@emeraldwallet/core';
-import { JsonRpcProvider } from 'ethers';
+import { JsonRpcPayload, JsonRpcProvider, JsonRpcResult } from 'ethers';
 import { Batch, BatchItem, DefaultBatch, RawBatchResponse } from './Batch';
 
 export interface JsonRpc {
@@ -148,7 +148,11 @@ export class EthersJsonRpc extends JsonRpcProvider {
     this.rpc = jsonRpc;
   }
 
-  send(method: string, params: Array<any>): Promise<any> {
-    return this.rpc.call(method, params);
+  _send(payload: JsonRpcPayload | Array<JsonRpcPayload>): Promise<Array<JsonRpcResult>> {
+    const payloads = Array.isArray(payload) ? payload : [payload];
+
+    return Promise.all(
+      payloads.map(async ({ id, method, params }) => ({ id, result: await this.rpc.call(method, params) })),
+    );
   }
 }
