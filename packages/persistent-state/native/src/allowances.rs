@@ -113,3 +113,36 @@ pub fn list<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerE
 
   Ok(())
 }
+
+fn remove_internal(wallet_id: Uuid, blockchain: Option<u32>, min_ts: Option<u64>) -> Result<usize, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_allowance()
+    .remove(wallet_id, blockchain, min_ts)
+    .map_err(StateManagerError::from)
+}
+
+#[neon_frame_fn(channel=3)]
+pub fn remove<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<usize, StateManagerError>) + Send + 'static {
+
+  let wallet_id = args_get_str(cx, 0)
+    .ok_or(StateManagerError::MissingArgument(0, "wallet_id".to_string()))?;
+  let wallet_id = Uuid::parse_str(wallet_id.as_str())
+    .map_err(|_| StateManagerError::InvalidArgument(0, "wallet_id".to_string()))?;
+
+  let blockchain = args_get_str(cx, 1)
+    .map(|v| blockchain_from_code(v))
+    .transpose()
+    .map_err(|_| StateManagerError::InvalidArgument(0, "blockchain".to_string()))?;
+
+  let min_ts = args_get_number(cx, 2)
+    .map(|v| v as u64);
+
+  std::thread::spawn(move || {
+    let result = remove_internal(wallet_id, blockchain, min_ts);
+    handler(result);
+  });
+
+  Ok(())
+}

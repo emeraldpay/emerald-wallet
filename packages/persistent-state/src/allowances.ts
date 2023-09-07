@@ -1,6 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { neonFrameHandlerCall } from '@emeraldpay/neon-frame';
-import { PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
 import { PersistentStateManager } from './api';
 
 export class Allowances implements PersistentState.Allowances {
@@ -16,5 +16,9 @@ export class Allowances implements PersistentState.Allowances {
 
   list(wallet_id?: Uuid): Promise<PersistentState.PageResult<PersistentState.CachedAllowance>> {
     return neonFrameHandlerCall(this.manager.addon, 'allowances_list', [wallet_id]);
+  }
+
+  remove(wallet_id: Uuid, blockchain?: BlockchainCode, min_ts?: number): Promise<number> {
+    return neonFrameHandlerCall(this.manager.addon, 'allowances_remove', [wallet_id, blockchain, min_ts]);
   }
 }
