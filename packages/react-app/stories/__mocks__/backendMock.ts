@@ -1,30 +1,31 @@
-import { DescribeAddressControl, DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { address as AddressApi, AddressBalance, AnyAsset, EstimationMode } from '@emeraldpay/api';
 import {
   BackendApi,
   BitcoinRawTransaction,
   BlockchainCode,
   EthereumRawReceipt,
   EthereumRawTransaction,
+  blockchainIdToCode,
 } from '@emeraldwallet/core';
 
 export class BlockchainMock {
   balances: Record<string, Record<string, string>> = {};
 
-  setBalance(address: string, coin: string, balance: string): void {
-    if (typeof this.balances[address] == 'undefined') {
+  setBalance(address: string, asset: string, balance: string): void {
+    if (this.balances[address] == null) {
       this.balances[address] = {};
     }
 
-    this.balances[address][coin] = balance;
+    this.balances[address][asset] = balance;
   }
 }
 
 export class BackendMock implements BackendApi {
-  readonly blockchains: Record<string, BlockchainMock> = {};
+  readonly blockchains: Partial<Record<BlockchainCode, BlockchainMock>> = {};
 
-  useBlockchains(codes: string[]): void {
-    codes.forEach((code) => {
-      this.blockchains[code.toLowerCase()] = new BlockchainMock();
+  useBlockchains(blockchains: BlockchainCode[]): void {
+    blockchains.forEach((blockchain) => {
+      this.blockchains[blockchain] = new BlockchainMock();
     });
   }
 
@@ -32,12 +33,12 @@ export class BackendMock implements BackendApi {
     return Promise.resolve('');
   }
 
-  describeAddress(blockchain: BlockchainCode, address: string): Promise<DescribeAddressResponse> {
+  describeAddress(blockchain: BlockchainCode, address: string): Promise<AddressApi.DescribeResponse> {
     return Promise.resolve({
       address,
       active: true,
       capabilities: [],
-      control: DescribeAddressControl.PERSON,
+      control: AddressApi.AddressControl.PERSON,
     });
   }
 
@@ -58,28 +59,27 @@ export class BackendMock implements BackendApi {
     return Promise.resolve(0);
   }
 
-  getBalance(blockchain: BlockchainCode, address: string, tokens: string[]): Promise<Record<string, string>> {
-    const state = this.blockchains[blockchain.toLowerCase()];
+  getBalance(address: string, asset: AnyAsset): Promise<AddressBalance[]> {
+    const state = this.blockchains[blockchainIdToCode(asset.blockchain)];
 
-    if (typeof state == 'undefined') {
-      return Promise.resolve({});
+    if (state == null) {
+      return Promise.resolve([]);
     }
 
-    const result: { [key: string]: string } = {};
+    const result: AddressBalance[] = [];
 
-    tokens.forEach((token) => {
-      if (state.balances[address]) {
-        const balance = state.balances[address][token];
+    const { [address]: balances } = state.balances;
 
-        if (balance) {
-          result[token] = balance;
-        } else {
-          result[token] = '0';
-        }
-      } else {
-        result[token] = '0';
-      }
-    });
+    if (balances != null) {
+      Object.keys(balances).forEach((balanceAsset) => {
+        result.push({
+          address,
+          asset,
+          balance: balances[balanceAsset],
+        });
+      });
+    }
+
     return Promise.resolve(result);
   }
 

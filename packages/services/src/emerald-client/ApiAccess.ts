@@ -6,6 +6,7 @@ import {
   CredentialsContext,
   MarketClient,
   MonitoringClient,
+  TokenClient,
   TransactionClient,
   emeraldCredentials,
 } from '@emeraldpay/api-node';
@@ -40,6 +41,7 @@ export class EmeraldApiAccess {
   readonly addressClient: AddressClient;
   readonly blockchainClient: BlockchainClient;
   readonly marketClient: MarketClient;
+  readonly tokenClient: TokenClient;
   readonly transactionClient: TransactionClient;
 
   private status?: Status;
@@ -83,6 +85,7 @@ export class EmeraldApiAccess {
     this.blockchainClient = new BlockchainClient(address, channelCredentials, agents);
     this.marketClient = new MarketClient(address, channelCredentials, agents);
     this.monitoringClient = new MonitoringClient(address, channelCredentials, agents);
+    this.tokenClient = new TokenClient(address, channelCredentials, agents);
     this.transactionClient = new TransactionClient(address, channelCredentials, agents);
 
     this.credentials.setListener((status) => {
@@ -117,6 +120,7 @@ export class EmeraldApiAccess {
     this.blockchainClient.channel.close();
     this.marketClient.channel.close();
     this.monitoringClient.channel.close();
+    this.tokenClient.channel.close();
     this.transactionClient.channel.close();
   }
 

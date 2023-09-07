@@ -1,4 +1,4 @@
-import { AnyAsset, DescribeAddressResponse, EstimationMode } from '@emeraldpay/api';
+import { address as AddressApi, AnyAsset, EstimationMode } from '@emeraldpay/api';
 import { AddressBalance } from '@emeraldpay/api/lib/typesBlockchain';
 import {
   BackendApi,
@@ -19,7 +19,7 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.BROADCAST_TX, blockchain, tx);
   }
 
-  describeAddress(blockchain: BlockchainCode, address: string): Promise<DescribeAddressResponse> {
+  describeAddress(blockchain: BlockchainCode, address: string): Promise<AddressApi.DescribeResponse> {
     return ipcRenderer.invoke(IpcCommands.DESCRIBE_ADDRESS, blockchain, address);
   }
 

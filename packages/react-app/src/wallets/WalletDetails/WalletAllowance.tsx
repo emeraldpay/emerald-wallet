@@ -1,4 +1,4 @@
-import { DescribeAddressControl } from '@emeraldpay/api';
+import { address as AddressApi } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EthereumEntry, Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, MAX_DISPLAY_ALLOWANCE, TokenAmount, formatAmountPartial } from '@emeraldwallet/core';
@@ -154,9 +154,9 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 </div>
                 <div>
                   <div className={styles.allowanceAddress}>
-                    {addressControl === DescribeAddressControl.CONTRACT ? (
+                    {addressControl === AddressApi.AddressControl.CONTRACT ? (
                       <ContractIcon className={styles.allowanceAddressIcon} color="secondary" />
-                    ) : spenderControl === DescribeAddressControl.PERSON ? (
+                    ) : spenderControl === AddressApi.AddressControl.PERSON ? (
                       <PersonIcon className={styles.allowanceAddressIcon} color="secondary" />
                     ) : (
                       <SvgIcon className={styles.allowanceAddressIcon} />
