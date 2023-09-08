@@ -122,7 +122,7 @@ export class AllowanceService implements Service {
 
     const handler = this.processAllowance(entryId, address);
 
-    const timestamp = new Date().getTime() - 10;
+    const timestamp = Date.now() - 10;
 
     let failed = false;
 
@@ -187,7 +187,7 @@ export class AllowanceService implements Service {
                 spenderAddress,
                 spenderControl,
                 blockchain: blockchainCode,
-                timestamp: new Date().getTime(),
+                timestamp: Date.now(),
               },
               tokens: this.tokens,
             },
