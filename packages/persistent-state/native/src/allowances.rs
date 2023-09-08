@@ -14,6 +14,8 @@ pub struct AllowanceJson {
   amount: String,
   owner: String,
   spender: String,
+  #[serde(rename = "timestamp")]
+  ts: Option<u64>,
 }
 
 impl TryFrom<AllowanceJson> for Allowance {
@@ -38,6 +40,7 @@ impl From<Allowance> for AllowanceJson {
       amount: value.amount,
       owner: value.owner,
       spender: value.spender,
+      ts: Some(value.ts),
     }
   }
 }

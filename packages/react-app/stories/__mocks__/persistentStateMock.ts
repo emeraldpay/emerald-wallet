@@ -70,11 +70,47 @@ export class MemoryAllowances {
   }
 
   set(walletId: Uuid, allowance: PersistentState.CachedAllowance, ttl?: number): Promise<void> {
+    setTimeout(() => {
+      const allowances = this.allowances.get(walletId) ?? [];
+
+      this.allowances.set(
+        walletId,
+        allowances.filter(
+          ({ blockchain, owner, spender, token }) =>
+            blockchain !== allowance.blockchain &&
+            owner !== allowance.owner &&
+            spender !== allowance.spender &&
+            token !== allowance.token,
+        ),
+      );
+    }, ttl);
+
     const allowances = this.allowances.get(walletId) ?? [];
 
-    setTimeout(() => this.allowances.set(walletId, [...allowances, allowance]), ttl);
+    this.allowances.set(walletId, [...allowances, allowance]);
 
     return Promise.resolve();
+  }
+
+  remove(walletId: Uuid, blockchain?: BlockchainCode, timestamp?: number): Promise<number> {
+    const allowances = this.allowances.get(walletId) ?? [];
+
+    this.allowances.set(
+      walletId,
+      allowances.filter((allowance) => {
+        if (blockchain == null && timestamp != null) {
+          return (allowance.timestamp ?? 0) < timestamp;
+        }
+
+        if (blockchain != null && timestamp == null) {
+          return allowance.blockchain !== blockchain;
+        }
+
+        return allowance.blockchain !== blockchain && (allowance.timestamp ?? 0) < (timestamp ?? 1);
+      }),
+    );
+
+    return Promise.resolve(0);
   }
 }
 
@@ -239,6 +275,10 @@ export class AllowancesMock implements PersistentState.Allowances {
 
   list(walletId?: Uuid): Promise<PersistentState.PageResult<PersistentState.CachedAllowance>> {
     return this.allowances.list(walletId);
+  }
+
+  remove(walletId: Uuid, blockchain?: BlockchainCode, timestamp?: number): Promise<number> {
+    return this.allowances.remove(walletId, blockchain, timestamp);
   }
 }
 
