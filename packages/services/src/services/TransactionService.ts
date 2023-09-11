@@ -230,7 +230,7 @@ export class TransactionService implements Service {
 
           confirmation = {
             block: { blockId, height, timestamp },
-            blockPos: 0, // TODO Get transaction index inside the block
+            blockPos: tx.txIndexInBlock ?? 0,
             confirmTimestamp: tx.block.timestamp ?? now,
           };
         }

@@ -27,5 +27,9 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "resolutions": {
+    "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/a4a88f2e/emeraldpay-api-v0.4.4-dev.tgz",
+    "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/a4a88f2e/emeraldpay-api-node-v0.4.4-dev.tgz"
+  }
 }

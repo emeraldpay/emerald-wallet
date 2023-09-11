@@ -93,7 +93,11 @@ function onUpdateStoreTransaction(
         }
 
         if (firstConfirmTimestamp === secondConfirmTimestamp) {
-          return first.txId > second.txId ? -1 : 1;
+          if (first.blockPos == null || second.blockPos == null || first.block?.blockId !== second.block?.blockId) {
+            return first.txId > second.txId ? -1 : 1;
+          }
+
+          return first.blockPos > second.blockPos ? -1 : 1;
         }
 
         return firstConfirmTimestamp > secondConfirmTimestamp ? -1 : 1;
