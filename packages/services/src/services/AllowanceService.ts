@@ -122,12 +122,28 @@ export class AllowanceService implements Service {
 
     const handler = this.processAllowance(entryId, address);
 
+    const timestamp = Date.now() - 10;
+
+    let failed = false;
+
     this.apiAccess.tokenClient
       .getAllowanceAmounts(request)
       .onData(handler)
-      .onError((error) =>
-        log.error(`Error while getting allowances for ${address} on ${blockchain} blockchain`, error),
-      );
+      .onError((error) => {
+        log.error(`Error while getting allowances for ${address} on ${blockchain} blockchain`, error);
+
+        failed = true;
+      })
+      .finally(() => {
+        if (!failed) {
+          this.persistentState.allowances.remove(extractWalletId(entryId), blockchain, timestamp).then(() =>
+            this.webContents.send(IpcCommands.STORE_DISPATCH, {
+              type: 'WALLET/ALLOWANCE/REMOVE_ALLOWANCE',
+              payload: { address, blockchain, timestamp },
+            }),
+          );
+        }
+      });
 
     const subscriber = this.apiAccess.tokenClient
       .subscribeAllowanceAmounts(request)
@@ -138,6 +154,8 @@ export class AllowanceService implements Service {
   }
 
   private processAllowance(entryId: EntryId, address: string): AllowanceHandler {
+    const walletId = extractWalletId(entryId);
+
     return ({ allowance, available, blockchain, contractAddress, ownerAddress, spenderAddress }) => {
       const blockchainCode = blockchainIdToCode(blockchain);
 
@@ -149,7 +167,7 @@ export class AllowanceService implements Service {
         token: contractAddress,
       };
 
-      this.persistentState.allowances.add(extractWalletId(entryId), cachedAllowance, this.cacheTtl).then(() => {
+      this.persistentState.allowances.add(walletId, cachedAllowance, this.cacheTtl).then(() => {
         this.balanceService.createSubscription(entryId, blockchainCode, ownerAddress, contractAddress);
 
         Promise.all([
@@ -169,6 +187,7 @@ export class AllowanceService implements Service {
                 spenderAddress,
                 spenderControl,
                 blockchain: blockchainCode,
+                timestamp: Date.now(),
               },
               tokens: this.tokens,
             },

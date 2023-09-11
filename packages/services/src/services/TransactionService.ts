@@ -68,7 +68,7 @@ export class TransactionService implements Service {
   }
 
   start(): void {
-    const now = new Date().getTime();
+    const now = Date.now();
     const lastCursor = this.settings.getLastCursor() ?? 0;
 
     let resetCursors = false;

@@ -17,6 +17,7 @@ export interface Allowance {
   spenderAddress: string;
   spenderControl?: AddressApi.AddressControl;
   token: Token;
+  timestamp: number;
   type: AllowanceType;
 }
 
@@ -35,6 +36,7 @@ export interface AllowanceState {
 
 export enum ActionTypes {
   INIT_ALLOWANCE = 'WALLET/ALLOWANCE/INIT_ALLOWANCE',
+  REMOVE_ALLOWANCE = 'WALLET/ALLOWANCE/REMOVE_ALLOWANCE',
   SET_ALLOWANCE = 'WALLET/ALLOWANCE/SET_ALLOWANCE',
 }
 
@@ -46,6 +48,7 @@ export interface AllowanceRaw {
   contractAddress: string;
   ownerAddress: string;
   spenderAddress: string;
+  timestamp: number;
 }
 
 interface AllowanceCommon extends AllowanceRaw {
@@ -61,6 +64,15 @@ export interface InitAllowanceAction {
   };
 }
 
+export interface RemoveAllowanceAction {
+  type: ActionTypes.REMOVE_ALLOWANCE;
+  payload: {
+    address: string;
+    blockchain: BlockchainCode;
+    timestamp: number;
+  };
+}
+
 export interface SetAllowanceAction {
   type: ActionTypes.SET_ALLOWANCE;
   payload: {
@@ -69,4 +81,4 @@ export interface SetAllowanceAction {
   };
 }
 
-export type AllowanceAction = InitAllowanceAction | SetAllowanceAction;
+export type AllowanceAction = InitAllowanceAction | RemoveAllowanceAction | SetAllowanceAction;

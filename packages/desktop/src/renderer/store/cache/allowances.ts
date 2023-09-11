@@ -9,7 +9,7 @@ export function initAllowancesState(api: WalletApi, backendApi: BackendApi, stor
 
   wallets.forEach(({ entries, id: walletId }) =>
     api.allowances.list(walletId).then(({ items }) =>
-      items.forEach(({ amount, blockchain, owner, spender, token }) => {
+      items.forEach(({ amount, blockchain, owner, spender, token, timestamp = Date.now() }) => {
         const entry = entries.find(
           ({ blockchain: entryBlockchain }) => blockchainIdToCode(entryBlockchain) === blockchain,
         );
@@ -24,6 +24,7 @@ export function initAllowancesState(api: WalletApi, backendApi: BackendApi, stor
               allowances.actions.initAddressAllowance({
                 available,
                 blockchain,
+                timestamp,
                 address: address.value,
                 allowance: amount,
                 contractAddress: token,

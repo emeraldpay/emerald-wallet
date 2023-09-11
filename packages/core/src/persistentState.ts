@@ -254,7 +254,7 @@ export interface AddressbookFilter {
   /**
    * Filter by blockchain.
    */
-  blockchain?: number | undefined;
+  blockchain?: number;
 }
 
 /**
@@ -264,13 +264,13 @@ export interface AddressbookItem {
   address: {
     type: 'plain' | 'xpub';
     address: Address | XPub;
-    currentAddress?: string | undefined;
+    currentAddress?: string;
   };
   blockchain: number;
-  createTimestamp?: Date | undefined;
-  id?: string | undefined;
-  label?: string | undefined;
-  updateTimestamp?: Date | undefined;
+  createTimestamp?: Date;
+  id?: string;
+  label?: string;
+  updateTimestamp?: Date;
 }
 
 export interface Addressbook {
@@ -344,7 +344,7 @@ export interface Balance {
   /**
    * Timestamp when it was cached. Set automatically when added to the persistent state.
    */
-  timestamp?: Date | undefined;
+  timestamp?: Date;
   /**
    * Individual components of the balance for the current address.
    * Must contain only _unspent_ transactions and the total amount MUST equal the main `amount` field of the `Balance`
@@ -353,7 +353,7 @@ export interface Balance {
    *
    * It should be undefined for Ethereum.
    */
-  utxo?: Utxo[] | undefined;
+  utxo?: Utxo[];
 }
 
 /**
@@ -396,7 +396,7 @@ export interface Cache {
    * @param value value (ex. a JSON)
    * @param [ttl_seconds] a Time To Live for that value.
    */
-  put(id: string, value: string, ttl_seconds?: number | undefined): Promise<void>;
+  put(id: string, value: string, ttl_seconds?: number): Promise<void>;
   /**
    * Get known value.
    * Return null if cache has no `value` for the specified `id`.
@@ -436,6 +436,10 @@ export interface CachedAllowance {
    * Token address.
    */
   token: Address;
+  /**
+   * Creation timestamp.
+   */
+  timestamp?: number;
 }
 
 /**

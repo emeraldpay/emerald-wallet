@@ -7,6 +7,7 @@ import {
   AllowanceState,
   AllowanceType,
   InitAllowanceAction,
+  RemoveAllowanceAction,
   SetAllowanceAction,
 } from './types';
 
@@ -26,6 +27,7 @@ function setAllowance(
         ownerControl,
         spenderAddress,
         spenderControl,
+        timestamp,
       },
       tokens,
     },
@@ -51,6 +53,7 @@ function setAllowance(
       ownerControl,
       spenderAddress,
       spenderControl,
+      timestamp,
       token,
       type,
       allowance: token.getAmount(allowance),
@@ -107,10 +110,50 @@ function initAllowance(state: AllowanceState, { payload }: InitAllowanceAction):
   return state;
 }
 
+function removeAllowance(
+  state: AllowanceState,
+  { payload: { address, blockchain, timestamp: removeTimestamp } }: RemoveAllowanceAction,
+): AllowanceState {
+  const allowancesByAddress = state[blockchain]?.[address];
+
+  if (allowancesByAddress == null) {
+    return state;
+  }
+
+  const allowancesByType = Object.keys(allowancesByAddress).reduce((typeCarry, type) => {
+    const allowancesByContract = allowancesByAddress[type as AllowanceType];
+
+    return {
+      ...typeCarry,
+      [type]: Object.keys(allowancesByContract).reduce(
+        (contractCarry, contractAddress) => ({
+          ...contractCarry,
+          [contractAddress]: allowancesByContract[contractAddress].filter(
+            ({ timestamp }) => timestamp < removeTimestamp,
+          ),
+        }),
+        {},
+      ),
+    };
+  }, {});
+
+  return produce(state, (draft) => {
+    draft[blockchain] = {
+      ...draft[blockchain],
+      [address]: {
+        ...draft[blockchain]?.[address],
+        ...allowancesByType,
+      },
+    };
+  });
+}
+
 export function reducer(state = INITIAL_STATE, action: AllowanceAction): AllowanceState {
   switch (action.type) {
     case ActionTypes.INIT_ALLOWANCE:
       return initAllowance(state, action);
+    case ActionTypes.REMOVE_ALLOWANCE:
+      return removeAllowance(state, action);
     case ActionTypes.SET_ALLOWANCE:
       return setAllowance(state, action);
     default:
