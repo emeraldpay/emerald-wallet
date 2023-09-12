@@ -200,9 +200,6 @@ class CreateTx extends React.Component<Props, State> {
     const lowPriorityGasPrice = factory(lowGasPrice.priority);
     const stdPriorityGasPrice = factory(stdGasPrice.priority);
 
-    // Make sure unit can cover both priority and actual price. For priority, it's okay to have a decimal value 1/10.
-    const unit = stdMaxGasPrice.min(stdPriorityGasPrice.multiply(10)).divide(2).getOptimalUnit(undefined, undefined, 0);
-
     return (
       <>
         <FormRow>
@@ -243,7 +240,6 @@ class CreateTx extends React.Component<Props, State> {
           initializing={initializing}
           supportEip1559={eip1559}
           useEip1559={useEip1559}
-          gasPriceUnit={unit}
           maxGasPrice={currentMaxGasPrice}
           stdMaxGasPrice={stdMaxGasPrice as WeiAny}
           lowMaxGasPrice={lowMaxGasPrice as WeiAny}

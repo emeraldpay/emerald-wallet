@@ -1,8 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
   Blockchains,
+  CoinTicker,
   EthereumTransaction,
   EthereumTransactionType,
   Token,
@@ -14,68 +16,17 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
-import {
-  AccountSelect,
-  Back,
-  Button,
-  ButtonGroup,
-  FormAccordion,
-  FormLabel,
-  FormRow,
-  Page,
-  PasswordInput,
-} from '@emeraldwallet/ui';
-import {
-  Box,
-  CircularProgress,
-  FormControlLabel,
-  FormHelperText,
-  Slider,
-  Switch,
-  Typography,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
+import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
+import { CircularProgress, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AmountField } from '../../common/AmountField';
+import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
 import WaitLedger from '../../ledger/WaitLedger';
 
 const useStyles = makeStyles(
   createStyles({
-    inputField: {
-      flexGrow: 5,
-    },
-    gasPriceTypeBox: {
-      float: 'left',
-      height: 40,
-      width: 240,
-    },
-    gasPriceSliderBox: {
-      float: 'left',
-      width: 300,
-    },
-    gasPriceHelpBox: {
-      clear: 'left',
-      width: 500,
-    },
-    gasPriceSlider: {
-      marginBottom: 10,
-      paddingTop: 10,
-      width: 300,
-    },
-    gasPriceHelp: {
-      position: 'initial',
-      paddingLeft: 10,
-    },
-    gasPriceMarkLabel: {
-      fontSize: '0.7em',
-      opacity: 0.8,
-    },
-    gasPriceValueLabel: {
-      fontSize: '0.7em',
-    },
     buttons: {
       display: 'flex',
       justifyContent: 'end',
@@ -97,8 +48,9 @@ interface OwnProps {
 interface StateProps {
   addresses: Record<string, string>;
   blockchain: BlockchainCode;
-  eip1559: boolean;
+  coinTicker: CoinTicker;
   isHardware: boolean;
+  supportEip1559: boolean;
   token: Token;
   getBalance(address?: string): BigAmount;
   getBalancesByAddress(address: string): string[];
@@ -117,11 +69,12 @@ interface DispatchProps {
 const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   addresses,
   blockchain,
+  coinTicker,
   contractAddress,
-  eip1559,
   entry: { address },
-  token,
   isHardware,
+  supportEip1559,
+  token,
   estimateGas,
   getBalance,
   getBalancesByAddress,
@@ -136,9 +89,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
   const mounted = React.useRef(true);
 
-  const coinTicker = React.useMemo(() => Blockchains[blockchain].params.coinTicker, [blockchain]);
-  const zeroAmount = React.useMemo(() => amountFactory(blockchain)(0), [blockchain]);
-
   const [initializing, setInitializing] = React.useState(true);
   const [verifying, setVerifying] = React.useState(false);
 
@@ -151,11 +101,18 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       address: address?.value,
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(address?.value),
-      type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
+      type: supportEip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
     });
 
     return tx.dump();
   });
+
+  const [useEip1559, setUseEip1559] = React.useState(supportEip1559);
+
+  const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
+
+  const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
+  const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
 
   const [stdMaxGasPrice, setStdMaxGasPrice] = React.useState(zeroAmount);
   const [highMaxGasPrice, setHighMaxGasPrice] = React.useState(zeroAmount);
@@ -164,17 +121,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [stdPriorityGasPrice, setStdPriorityGasPrice] = React.useState(zeroAmount);
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroAmount);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroAmount);
-
-  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
-  const [gasPriceUnits, setGasPriceUnits] = React.useState(zeroAmount.units);
-
-  const [maxGasPrice, setMaxGasPrice] = React.useState(0);
-  const [useStdMaxGasPrice, setUseStdMaxGasPrice] = React.useState(true);
-
-  const [priorityGasPrice, setPriorityGasPrice] = React.useState(0);
-  const [useStdPriorityGasPrice, setUseStdPriorityGasPrice] = React.useState(true);
-
-  const [useEip1559, setUseEip1559] = React.useState(eip1559);
 
   const [stage, setStage] = React.useState(Stages.SETUP);
 
@@ -227,16 +173,16 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     setConvertTx(tx.dump());
   };
 
-  const onChangeMaxGasPrice = (price: number): void => {
-    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+  const onMaxGasPriceChange = (price: WeiAny): void => {
+    setMaxGasPrice(price);
 
-    const gasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     if (useEip1559) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = gasPrice;
+      tx.maxGasPrice = price;
     } else {
-      tx.gasPrice = gasPrice;
+      tx.gasPrice = price;
       tx.maxGasPrice = undefined;
     }
 
@@ -245,10 +191,12 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     setConvertTx(tx.dump());
   };
 
-  const onChangePriorityGasPrice = (price: number): void => {
+  const onPriorityGasPriceChange = (price: WeiAny): void => {
+    setPriorityGasPrice(price);
+
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-    tx.priorityGasPrice = BigAmount.createFor(price, gasPriceUnits, amountFactory(blockchain), gasPriceUnit);
+    tx.priorityGasPrice = price;
     tx.rebalance();
 
     setConvertTx(tx.dump());
@@ -298,19 +246,17 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     }
   };
 
-  const onUseEip1559Change = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>): void => {
-    const factory = amountFactory(blockchain);
-
-    const gasPrice = BigAmount.createFor(maxGasPrice, gasPriceUnits, factory, gasPriceUnit);
+  const onUseEip1559Change = (checked: boolean): void => {
+    setUseEip1559(checked);
 
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     if (checked) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = gasPrice;
-      tx.priorityGasPrice = BigAmount.createFor(priorityGasPrice, gasPriceUnits, factory, gasPriceUnit);
+      tx.maxGasPrice = maxGasPrice;
+      tx.priorityGasPrice = maxGasPrice;
     } else {
-      tx.gasPrice = gasPrice;
+      tx.gasPrice = maxGasPrice;
       tx.maxGasPrice = undefined;
       tx.priorityGasPrice = undefined;
     }
@@ -318,54 +264,46 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
 
     setConvertTx(tx.dump());
-    setUseEip1559(checked);
   };
 
   React.useEffect(
     () => {
-      (async (): Promise<void> => {
-        const fees = await getFees(blockchain);
+      getFees(blockchain).then(({ avgLast, avgMiddle, avgTail5 }) => {
+        if (mounted.current) {
+          const factory = amountFactory(blockchain);
 
-        const { avgLast, avgMiddle, avgTail5 } = fees;
+          const newStdMaxGasPrice = factory(avgTail5.max) as WeiAny;
+          const newStdPriorityGasPrice = factory(avgTail5.priority) as WeiAny;
 
-        const factory = amountFactory(blockchain);
+          setStdMaxGasPrice(newStdMaxGasPrice);
+          setHighMaxGasPrice(factory(avgMiddle.max) as WeiAny);
+          setLowMaxGasPrice(factory(avgLast.max) as WeiAny);
 
-        const newStdMaxGasPrice = factory(avgTail5.max);
-        const newStdPriorityGasPrice = factory(avgTail5.priority);
+          setStdPriorityGasPrice(newStdPriorityGasPrice);
+          setHighPriorityGasPrice(factory(avgMiddle.priority) as WeiAny);
+          setLowPriorityGasPrice(factory(avgLast.priority) as WeiAny);
 
-        setStdMaxGasPrice(newStdMaxGasPrice);
-        setHighMaxGasPrice(factory(avgMiddle.max));
-        setLowMaxGasPrice(factory(avgLast.max));
+          setMaxGasPrice(newStdMaxGasPrice);
+          setPriorityGasPrice(newStdPriorityGasPrice);
 
-        setStdPriorityGasPrice(newStdPriorityGasPrice);
-        setHighPriorityGasPrice(factory(avgMiddle.priority));
-        setLowPriorityGasPrice(factory(avgLast.priority));
+          const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
-        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
+          if (supportEip1559) {
+            tx.gasPrice = undefined;
+            tx.maxGasPrice = newStdMaxGasPrice;
+            tx.priorityGasPrice = newStdPriorityGasPrice;
+          } else {
+            tx.gasPrice = newStdMaxGasPrice;
+            tx.maxGasPrice = undefined;
+            tx.priorityGasPrice = undefined;
+          }
 
-        setGasPriceUnit(gasPriceOptimalUnit);
-        setGasPriceUnits(newStdMaxGasPrice.units);
+          tx.rebalance();
 
-        setMaxGasPrice(newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
-        setPriorityGasPrice(newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber());
-
-        const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
-        if (eip1559) {
-          tx.gasPrice = undefined;
-          tx.maxGasPrice = newStdMaxGasPrice;
-          tx.priorityGasPrice = newStdPriorityGasPrice;
-        } else {
-          tx.gasPrice = newStdMaxGasPrice;
-          tx.maxGasPrice = undefined;
-          tx.priorityGasPrice = undefined;
+          setConvertTx(tx.dump());
+          setInitializing(false);
         }
-
-        tx.rebalance();
-
-        setConvertTx(tx.dump());
-        setInitializing(false);
-      })();
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -400,16 +338,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   }, []);
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
-  const gasPriceOptimalUnit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 6);
-
-  const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-  const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-  const lowMaxGasPriceNumber = lowMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-
-  const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-  const highPriorityGasPriceNumber = highPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-  const lowPriorityGasPriceNumber = lowPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
   return (
     <Page title="Create Convert Transaction" leftIcon={<Back onClick={goBack} />}>
@@ -446,148 +374,22 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               onMaxClick={onClickMaxAmount}
             />
           </FormRow>
-          <FormAccordion
-            title={
-              <FormRow last>
-                <FormLabel>Settings</FormLabel>
-                {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPrice.toFixed(2)} {gasPriceOptimalUnit.toString()}
-                {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
-                {useEip1559
-                  ? ` / ${priorityGasPrice.toFixed(2)} ${gasPriceOptimalUnit.toString()} Priority Gas Price`
-                  : null}
-              </FormRow>
-            }
-          >
-            <FormRow>
-              <FormLabel>Use EIP-1559</FormLabel>
-              <FormControlLabel
-                control={
-                  <Switch checked={useEip1559} color="primary" disabled={initializing} onChange={onUseEip1559Change} />
-                }
-                label={useEip1559 ? 'Enabled' : 'Disabled'}
-              />
-            </FormRow>
-            <FormRow>
-              <FormLabel top>{useEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-              <Box className={styles.inputField}>
-                <Box className={styles.gasPriceTypeBox}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={useStdMaxGasPrice}
-                        color="primary"
-                        disabled={initializing}
-                        onChange={(event): void => {
-                          const checked = event.target.checked;
-
-                          if (checked) {
-                            setMaxGasPrice(stdMaxGasPriceNumber);
-                            onChangeMaxGasPrice(stdMaxGasPriceNumber);
-                          }
-
-                          setUseStdMaxGasPrice(checked);
-                        }}
-                      />
-                    }
-                    label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
-                  />
-                </Box>
-                {!useStdMaxGasPrice && (
-                  <Box className={styles.gasPriceSliderBox}>
-                    <Slider
-                      aria-labelledby="discrete-slider"
-                      classes={{
-                        markLabel: styles.gasPriceMarkLabel,
-                        valueLabel: styles.gasPriceValueLabel,
-                      }}
-                      className={styles.gasPriceSlider}
-                      marks={[
-                        { value: lowMaxGasPriceNumber, label: 'Slow' },
-                        { value: highMaxGasPriceNumber, label: 'Urgent' },
-                      ]}
-                      max={highMaxGasPriceNumber}
-                      min={lowMaxGasPriceNumber}
-                      step={0.01}
-                      value={maxGasPrice}
-                      valueLabelDisplay="auto"
-                      getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
-                      onChange={(event, value): void => {
-                        setMaxGasPrice(value as number);
-                        onChangeMaxGasPrice(value as number);
-                      }}
-                      valueLabelFormat={(value): string => value.toFixed(2)}
-                    />
-                  </Box>
-                )}
-                <Box className={styles.gasPriceHelpBox}>
-                  <FormHelperText className={styles.gasPriceHelp}>
-                    {maxGasPrice.toFixed(2)} {gasPriceUnits.toString()}
-                  </FormHelperText>
-                </Box>
-              </Box>
-            </FormRow>
-            {useEip1559 && (
-              <FormRow>
-                <FormLabel top>Priority gas price</FormLabel>
-                <Box className={styles.inputField}>
-                  <Box className={styles.gasPriceTypeBox}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={useStdPriorityGasPrice}
-                          color="primary"
-                          disabled={initializing}
-                          onChange={(event): void => {
-                            const checked = event.target.checked;
-
-                            if (checked) {
-                              setPriorityGasPrice(stdPriorityGasPriceNumber);
-                              onChangePriorityGasPrice(stdPriorityGasPriceNumber);
-                            }
-
-                            setUseStdPriorityGasPrice(checked);
-                          }}
-                        />
-                      }
-                      label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
-                    />
-                  </Box>
-                  {!useStdPriorityGasPrice && (
-                    <Box className={styles.gasPriceSliderBox}>
-                      <Slider
-                        aria-labelledby="discrete-slider"
-                        classes={{
-                          markLabel: styles.gasPriceMarkLabel,
-                          valueLabel: styles.gasPriceValueLabel,
-                        }}
-                        className={styles.gasPriceSlider}
-                        marks={[
-                          { value: lowPriorityGasPriceNumber, label: 'Slow' },
-                          { value: highPriorityGasPriceNumber, label: 'Urgent' },
-                        ]}
-                        max={highPriorityGasPriceNumber}
-                        min={lowPriorityGasPriceNumber}
-                        step={0.01}
-                        value={priorityGasPrice}
-                        valueLabelDisplay="auto"
-                        getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnits.toString()}`}
-                        onChange={(event, value): void => {
-                          setPriorityGasPrice(value as number);
-                          onChangePriorityGasPrice(value as number);
-                        }}
-                        valueLabelFormat={(value): string => value.toFixed(2)}
-                      />
-                    </Box>
-                  )}
-                  <Box className={styles.gasPriceHelpBox}>
-                    <FormHelperText className={styles.gasPriceHelp}>
-                      {priorityGasPrice.toFixed(2)} {gasPriceUnits.toString()}
-                    </FormHelperText>
-                  </Box>
-                </Box>
-              </FormRow>
-            )}
-          </FormAccordion>
+          <EthTxSettings
+            initializing={initializing}
+            supportEip1559={supportEip1559}
+            useEip1559={useEip1559}
+            maxGasPrice={maxGasPrice}
+            stdMaxGasPrice={stdMaxGasPrice}
+            lowMaxGasPrice={lowMaxGasPrice}
+            highMaxGasPrice={highMaxGasPrice}
+            priorityGasPrice={priorityGasPrice}
+            stdPriorityGasPrice={stdPriorityGasPrice}
+            lowPriorityGasPrice={lowPriorityGasPrice}
+            highPriorityGasPrice={highPriorityGasPrice}
+            onUse1559Change={onUseEip1559Change}
+            onMaxGasPriceChange={onMaxGasPriceChange}
+            onPriorityGasPriceChange={onPriorityGasPriceChange}
+          />
           <FormRow classes={{ container: styles.buttons }}>
             <FormLabel />
             <ButtonGroup classes={{ container: styles.buttons }}>
@@ -653,11 +455,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const tokenRegistry = new TokenRegistry(state.application.tokens);
 
     const blockchain = blockchainIdToCode(entry.blockchain);
-
     const token = tokenRegistry.byAddress(blockchain, contractAddress);
+    const zeroAmount = amountFactory(blockchain)(0);
 
-    const factory = amountFactory(blockchain);
-    const zero = factory(0);
+    const { coinTicker, eip1559: supportEip1559 = false } = Blockchains[blockchain].params;
 
     let isHardware = false;
 
@@ -684,21 +485,22 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       addresses,
       blockchain,
+      coinTicker,
       isHardware,
+      supportEip1559,
       token,
-      eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
         if (address == null) {
-          return zero;
+          return zeroAmount;
         }
 
         const entryByAddress = accounts.selectors.findAccountByAddress(state, address, blockchain);
 
         if (entryByAddress == null || !isEthereumEntry(entryByAddress)) {
-          return zero;
+          return zeroAmount;
         }
 
-        return accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
+        return accounts.selectors.getBalance(state, entryByAddress.id, zeroAmount) ?? zeroAmount;
       },
       getBalancesByAddress(address) {
         const entryByAddress = accounts.selectors.findAccountByAddress(state, address, blockchain);
@@ -709,7 +511,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         const tokenZero = token.getAmount(0);
 
-        const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
+        const balance = accounts.selectors.getBalance(state, entryByAddress.id, zeroAmount) ?? zeroAmount;
         const tokenBalance = tokens.selectors.selectBalance(state, blockchain, address, token.address) ?? tokenZero;
 
         return [balance, tokenBalance].map((amount) => formatAmount(amount));
