@@ -1,5 +1,5 @@
-import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { IState, screen, txhistory } from '@emeraldwallet/store';
+import { Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { IState, accounts, screen, txhistory } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
 import { Divider, IconButton, Paper, Tab, Toolbar, Tooltip, createStyles, makeStyles } from '@material-ui/core';
 import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon } from '@material-ui/icons';
@@ -16,7 +16,7 @@ import WalletTitle from './WalletTitle';
 
 export enum WalletTabs {
   BALANCE = '0',
-  ALLOWANCE = '1',
+  ALLOWANCES = '1',
   ADDRESSES = '2',
   TRANSACTIONS = '3',
 }
@@ -79,6 +79,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  hasEthereumEntry: boolean;
   hasOtherWallets: boolean;
 }
 
@@ -90,6 +91,7 @@ interface DispatchProps {
 }
 
 const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  hasEthereumEntry,
   hasOtherWallets,
   initialTab,
   walletId,
@@ -121,13 +123,13 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   return (
     <div
       className={styles.container}
-      style={{ height: [WalletTabs.ALLOWANCE, WalletTabs.TRANSACTIONS].includes(tab) ? '100%' : 'auto' }}
+      style={{ height: [WalletTabs.ALLOWANCES, WalletTabs.TRANSACTIONS].includes(tab) ? '100%' : 'auto' }}
     >
       <TabContext value={tab}>
         <div className={styles.tabs}>
           <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
             <Tab label="Balance" value={WalletTabs.BALANCE} />
-            <Tab label="Allowance" value={WalletTabs.ALLOWANCE} />
+            {hasEthereumEntry && <Tab label="Allowances" value={WalletTabs.ALLOWANCES} />}
             <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
             <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
           </TabList>
@@ -164,9 +166,11 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
           <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.BALANCE}>
             <WalletBalance walletId={walletId} />
           </TabPanel>
-          <TabPanel className={styles.tabPanel} value={WalletTabs.ALLOWANCE}>
-            <WalletAllowance walletId={walletId} />
-          </TabPanel>
+          {hasEthereumEntry && (
+            <TabPanel className={styles.tabPanel} value={WalletTabs.ALLOWANCES}>
+              <WalletAllowance walletId={walletId} />
+            </TabPanel>
+          )}
           <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.ADDRESSES}>
             <Addresses walletId={walletId} />
           </TabPanel>
@@ -180,7 +184,14 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state) => ({ hasOtherWallets: state.accounts.wallets.length > 1 }),
+  (state, { walletId }) => {
+    const wallet = accounts.selectors.findWallet(state, walletId);
+
+    return {
+      hasEthereumEntry: wallet?.entries.find((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) != null,
+      hasOtherWallets: state.accounts.wallets.length > 1,
+    };
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { walletId }) => ({
     gotoReceive() {
