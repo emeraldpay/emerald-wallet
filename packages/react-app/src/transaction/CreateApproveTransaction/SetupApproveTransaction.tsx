@@ -140,12 +140,14 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const [currentToken, setCurrentToken] = React.useState(token);
   const [currentTokenBalance, setCurrentTokenBalance] = React.useState(tokenBalance);
 
-  const zeroAmount = React.useMemo(() => amountFactory(currentBlockchain)(0) as WeiAny, [currentBlockchain]);
+  const { eip1559: supportEip1559 = false } = Blockchains[currentBlockchain].params;
+
+  const [useEip1559, setUseEip1559] = React.useState(supportEip1559);
+
+  const zeroAmount = amountFactory(currentBlockchain)(0) as WeiAny;
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
-
-  const [gasPriceUnit, setGasPriceUnit] = React.useState(zeroAmount.getOptimalUnit(undefined, undefined, 6));
 
   const [stdMaxGasPrice, setStdMaxGasPrice] = React.useState(zeroAmount);
   const [highMaxGasPrice, setHighMaxGasPrice] = React.useState(zeroAmount);
@@ -156,10 +158,6 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const [stdPriorityGasPrice, setStdPriorityGasPrice] = React.useState(zeroAmount);
   const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroAmount);
   const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroAmount);
-
-  const supportEip1559 = Blockchains[currentBlockchain].params.eip1559 ?? false;
-
-  const [useEip1559, setUseEip1559] = React.useState(supportEip1559);
 
   const [approveTx, setApproveTx] = React.useState(() => {
     const { value: address } = currentEntry.address ?? {};
@@ -196,7 +194,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
   const fetchFees = (): Promise<void> =>
     getFees(currentBlockchain).then(({ avgLast, avgMiddle, avgTail5 }) => {
-      if (mounted) {
+      if (mounted.current) {
         const factory = amountFactory(currentBlockchain);
 
         const newStdMaxGasPrice = factory(avgTail5.max) as WeiAny;
@@ -212,8 +210,6 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
         setMaxGasPrice(newStdMaxGasPrice);
         setPriorityGasPrice(newStdPriorityGasPrice);
-
-        setGasPriceUnit(newStdMaxGasPrice.getOptimalUnit(undefined, undefined, 6));
       }
     });
 
@@ -469,7 +465,6 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         initializing={initializing}
         supportEip1559={supportEip1559}
         useEip1559={useEip1559}
-        gasPriceUnit={gasPriceUnit}
         maxGasPrice={maxGasPrice}
         stdMaxGasPrice={stdMaxGasPrice}
         lowMaxGasPrice={lowMaxGasPrice}

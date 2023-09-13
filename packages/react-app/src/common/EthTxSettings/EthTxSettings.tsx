@@ -45,7 +45,6 @@ interface OwnProps {
   initializing: boolean;
   supportEip1559: boolean;
   useEip1559: boolean;
-  gasPriceUnit: Unit;
   maxGasPrice: WeiAny;
   stdMaxGasPrice: WeiAny;
   lowMaxGasPrice: WeiAny;
@@ -63,7 +62,6 @@ const EthTxSettings: React.FC<OwnProps> = ({
   initializing,
   supportEip1559,
   useEip1559,
-  gasPriceUnit,
   maxGasPrice,
   stdMaxGasPrice,
   lowMaxGasPrice,
@@ -78,16 +76,29 @@ const EthTxSettings: React.FC<OwnProps> = ({
 }) => {
   const styles = useStyles();
 
+  let gasPriceUnit: Unit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 0);
+
+  if (supportEip1559) {
+    /**
+     * Make sure unit can cover both priority and actual price.
+     * For priority, it's okay to have a decimal value 1/10.
+     */
+    gasPriceUnit = stdMaxGasPrice
+      .min(stdPriorityGasPrice.multiply(10))
+      .divide(2)
+      .getOptimalUnit(undefined, undefined, 0);
+  }
+
   const [currentUseStdMaxGasPrice, setCurrentUseStdMaxGasPrice] = React.useState(true);
   const [currentUseStdPriorityGasPrice, setCurrentUseStdPriorityGasPrice] = React.useState(true);
 
   const toWeiInCurrentUnits = (decimal: number): Wei => new Wei(decimal, gasPriceUnit);
 
-  const onCurrentUse1559Change = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
+  const handleUse1559Change = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
     onUse1559Change(checked);
   };
 
-  const onUseStdMaxGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
+  const handleUseStdMaxGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
     setCurrentUseStdMaxGasPrice(checked);
 
     if (checked) {
@@ -95,13 +106,13 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const onCurrentMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+  const handleMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
     onMaxGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
   };
 
-  const onUseStdPriorityGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
+  const handleUseStdPriorityGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
     setCurrentUseStdPriorityGasPrice(checked);
 
     if (checked) {
@@ -109,7 +120,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const onCurrentPriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+  const handlePriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
     onPriorityGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
@@ -134,7 +145,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
           <FormLabel>Use EIP-1559</FormLabel>
           <FormControlLabel
             control={
-              <Switch checked={useEip1559} color="primary" disabled={initializing} onChange={onCurrentUse1559Change} />
+              <Switch checked={useEip1559} color="primary" disabled={initializing} onChange={handleUse1559Change} />
             }
             label={useEip1559 ? 'Enabled' : 'Disabled'}
           />
@@ -149,7 +160,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                 <Switch
                   checked={currentUseStdMaxGasPrice}
                   disabled={initializing}
-                  onChange={onUseStdMaxGasPriceChange}
+                  onChange={handleUseStdMaxGasPriceChange}
                   color="primary"
                 />
               }
@@ -175,7 +186,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                 min={lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                 max={highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                 value={maxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-                onChange={onCurrentMaxGasPriceChange}
+                onChange={handleMaxGasPriceChange}
                 valueLabelFormat={(value) => value.toFixed(2)}
               />
             </Box>
@@ -197,7 +208,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                   <Switch
                     checked={currentUseStdPriorityGasPrice}
                     disabled={initializing}
-                    onChange={onUseStdPriorityGasPriceChange}
+                    onChange={handleUseStdPriorityGasPriceChange}
                     color="primary"
                   />
                 }
@@ -223,7 +234,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                   min={lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                   max={highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                   value={priorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
-                  onChange={onCurrentPriorityGasPriceChange}
+                  onChange={handlePriorityGasPriceChange}
                   valueLabelFormat={(value) => value.toFixed(2)}
                 />
               </Box>
