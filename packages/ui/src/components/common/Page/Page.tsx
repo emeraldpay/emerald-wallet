@@ -54,7 +54,7 @@ interface OwnProps {
   title: React.ReactNode;
 }
 
-const getIconWithButton = (icon?: React.ReactElement): React.ReactNode => {
+const getIconWithButton = (icon?: React.ReactElement): React.ReactElement => {
   if (icon == null) {
     return <div />;
   }

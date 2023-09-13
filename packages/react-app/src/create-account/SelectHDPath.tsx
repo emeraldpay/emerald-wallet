@@ -107,7 +107,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const isActive = ({ balance, blockchain }: AccountState): boolean =>
     balance != null && amountFactory(blockchain)(balance).isPositive();
 
-  const renderAddress = (value: string | undefined | null, blockchain: BlockchainCode): React.ReactNode => {
+  const renderAddress = (value: string | undefined | null, blockchain: BlockchainCode): React.ReactElement => {
     if (value != null && value.length > 0) {
       return <Address address={value} disableCopy={true} />;
     }
@@ -125,7 +125,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
     return <Skeleton variant="text" width={380} height={12} />;
   };
 
-  const renderBalance = ({ balance, blockchain }: AccountState): React.ReactNode => {
+  const renderBalance = ({ balance, blockchain }: AccountState): React.ReactElement => {
     if (balance === null) {
       return <Typography>&mdash;</Typography>;
     }

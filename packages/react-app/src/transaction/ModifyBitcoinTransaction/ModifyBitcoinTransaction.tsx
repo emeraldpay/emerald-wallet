@@ -84,7 +84,7 @@ interface OwnProps {
   rawTx: BitcoinRawTransaction;
   tx: StoredTransaction;
   goBack(): void;
-  renderNotice(tx: StoredTransaction, unsignedTx: UnsignedBitcoinTx): React.ReactNode;
+  renderNotice(tx: StoredTransaction, unsignedTx: UnsignedBitcoinTx): React.ReactElement;
 }
 
 interface DispatchProps {

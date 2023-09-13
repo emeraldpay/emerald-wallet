@@ -249,7 +249,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
     </Stepper>
   );
 
-  let controls: React.ReactNode;
+  let controls: React.ReactElement;
 
   if (page.code === STEP_CODE.CREATING || page.code === STEP_CODE.CREATED) {
     controls = (

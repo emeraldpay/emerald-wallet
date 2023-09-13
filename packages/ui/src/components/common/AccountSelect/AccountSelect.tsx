@@ -82,7 +82,7 @@ export class AccountSelect extends React.Component<OwnProps, StateProps> {
     return Object.entries(accounts).map(([key, account]) => {
       const { address, ownerAddress = null } = typeof account === 'string' ? { address: account } : account;
 
-      let description: React.ReactNode;
+      let description: React.ReactElement;
 
       if (ownerAddress != null) {
         description = (
@@ -122,7 +122,7 @@ export class AccountSelect extends React.Component<OwnProps, StateProps> {
 
     const { address, ownerAddress = null } = typeof selected === 'string' ? { address: selected } : selected;
 
-    let description: React.ReactNode;
+    let description: React.ReactElement;
 
     if (ownerAddress != null) {
       description = (
