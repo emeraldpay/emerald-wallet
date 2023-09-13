@@ -15,6 +15,7 @@ import {
   formatAmount,
   workflow,
 } from '@emeraldwallet/core';
+import { ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { CircularProgress, Typography, createStyles, makeStyles } from '@material-ui/core';
@@ -89,6 +90,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const mounted = React.useRef(true);
 
   const [initializing, setInitializing] = React.useState(true);
+  const [preparing, setPreparing] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
 
   const [convertable, setConvertable] = React.useState<string>(coinTicker);
@@ -223,6 +225,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   };
 
   const onCreateTransaction = async (): Promise<void> => {
+    setPreparing(true);
+
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     tx.gas = await estimateGas(tx.build());
@@ -230,6 +234,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
     setConvertTx(tx.dump());
     setStage(Stages.SIGN);
+
+    setPreparing(false);
   };
 
   const onSignTransaction = async (): Promise<void> => {
@@ -386,7 +392,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing || currentTx.amount.isZero()}
+                disabled={initializing || preparing || currentTx.validate() !== ValidationResult.OK}
                 label="Create Transaction"
                 onClick={onCreateTransaction}
               />

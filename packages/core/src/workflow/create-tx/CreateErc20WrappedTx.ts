@@ -2,7 +2,7 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode, Token, TokenAmount, TokenData, amountFactory, wrapTokenAbi } from '../../blockchains';
 import { Contract } from '../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
-import { TxTarget } from './types';
+import { TxTarget, ValidationResult } from './types';
 
 export interface Erc20WrappedTxDetails {
   address?: string;
@@ -20,17 +20,17 @@ export interface Erc20WrappedTxDetails {
 }
 
 export class CreateErc20WrappedTx {
-  public address?: string;
-  public amount: BigAmount;
-  public blockchain: BlockchainCode;
-  public gas: number;
-  public gasPrice?: BigAmount;
-  public maxGasPrice?: BigAmount;
-  public priorityGasPrice?: BigAmount;
-  public target: TxTarget;
-  public totalBalance: BigAmount;
-  public totalTokenBalance: TokenAmount;
-  public type: EthereumTransactionType;
+  address?: string;
+  amount: BigAmount;
+  blockchain: BlockchainCode;
+  gas: number;
+  gasPrice?: BigAmount;
+  maxGasPrice?: BigAmount;
+  priorityGasPrice?: BigAmount;
+  target: TxTarget;
+  totalBalance: BigAmount;
+  totalTokenBalance: TokenAmount;
+  type: EthereumTransactionType;
 
   private readonly token: Token;
   private readonly zeroAmount: BigAmount;
@@ -60,11 +60,11 @@ export class CreateErc20WrappedTx {
     this.zeroAmount = zeroAmount;
   }
 
-  public static fromPlain(details: Erc20WrappedTxDetails): CreateErc20WrappedTx {
+  static fromPlain(details: Erc20WrappedTxDetails): CreateErc20WrappedTx {
     return new CreateErc20WrappedTx(details);
   }
 
-  public build(): EthereumTransaction {
+  build(): EthereumTransaction {
     const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, totalBalance, type, address = '' } = this;
 
     const isDeposit = amount.units.equals(totalBalance.units);
@@ -87,7 +87,7 @@ export class CreateErc20WrappedTx {
     };
   }
 
-  public dump(): Erc20WrappedTxDetails {
+  dump(): Erc20WrappedTxDetails {
     return {
       address: this.address,
       amount: this.amount,
@@ -104,13 +104,13 @@ export class CreateErc20WrappedTx {
     };
   }
 
-  public getFees(): BigAmount {
+  getFees(): BigAmount {
     const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }
 
-  public rebalance(): void {
+  rebalance(): void {
     if (this.target === TxTarget.SEND_ALL) {
       if (this.amount.units.equals(this.totalBalance.units)) {
         const amount = this.totalBalance.minus(this.getFees());
@@ -122,5 +122,23 @@ export class CreateErc20WrappedTx {
         this.amount = this.totalTokenBalance;
       }
     }
+  }
+
+  validate(): ValidationResult {
+    if (this.amount.isZero()) {
+      return ValidationResult.NO_AMOUNT;
+    }
+
+    if (this.amount.units.equals(this.totalBalance.units)) {
+      const total = this.amount.plus(this.getFees());
+
+      if (total.isGreaterThan(this.totalBalance)) {
+        return ValidationResult.INSUFFICIENT_FUNDS;
+      }
+    } else if (this.amount.isGreaterThan(this.totalTokenBalance)) {
+      return ValidationResult.INSUFFICIENT_TOKEN_FUNDS;
+    }
+
+    return ValidationResult.OK;
   }
 }
