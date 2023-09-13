@@ -1,5 +1,5 @@
-import { Unit } from '@emeraldpay/bigamount';
-import { Wei, WeiAny } from '@emeraldpay/bigamount-crypto';
+import { CreateAmount, Unit } from '@emeraldpay/bigamount';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
@@ -42,6 +42,7 @@ const useStyles = makeStyles(
 );
 
 interface OwnProps {
+  factory: CreateAmount<WeiAny>;
   initializing: boolean;
   supportEip1559: boolean;
   useEip1559: boolean;
@@ -59,6 +60,7 @@ interface OwnProps {
 }
 
 const EthTxSettings: React.FC<OwnProps> = ({
+  factory,
   initializing,
   supportEip1559,
   useEip1559,
@@ -92,7 +94,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const [currentUseStdMaxGasPrice, setCurrentUseStdMaxGasPrice] = React.useState(true);
   const [currentUseStdPriorityGasPrice, setCurrentUseStdPriorityGasPrice] = React.useState(true);
 
-  const toWeiInCurrentUnits = (decimal: number): Wei => new Wei(decimal, gasPriceUnit);
+  const toWei = (decimal: number): WeiAny => WeiAny.createFor(decimal, stdMaxGasPrice.units, factory, gasPriceUnit);
 
   const handleUse1559Change = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
     onUse1559Change(checked);
@@ -109,7 +111,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const handleMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
-    onMaxGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
+    onMaxGasPriceChange(toWei(gasPriceDecimal));
   };
 
   const handleUseStdPriorityGasPriceChange = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
@@ -123,7 +125,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const handlePriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
-    onPriorityGasPriceChange(toWeiInCurrentUnits(gasPriceDecimal));
+    onPriorityGasPriceChange(toWei(gasPriceDecimal));
   };
 
   const maxGasPriceByUnit = maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);

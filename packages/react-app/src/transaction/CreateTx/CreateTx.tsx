@@ -1,4 +1,4 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumAddress, TokenRegistry, amountFactory, workflow } from '@emeraldwallet/core';
 import { Allowance, GasPrices } from '@emeraldwallet/store';
@@ -190,7 +190,7 @@ class CreateTx extends React.Component<Props, State> {
       return carry;
     }, []);
 
-    const factory = amountFactory(chain);
+    const factory = amountFactory(chain) as CreateAmount<WeiAny>;
 
     const highMaxGasPrice = factory(highGasPrice.max);
     const lowMaxGasPrice = factory(lowGasPrice.max);
@@ -237,6 +237,7 @@ class CreateTx extends React.Component<Props, State> {
           />
         </FormRow>
         <EthTxSettings
+          factory={factory}
           initializing={initializing}
           supportEip1559={eip1559}
           useEip1559={useEip1559}
