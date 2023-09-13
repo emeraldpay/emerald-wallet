@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) =>
     balance: {
       color: theme.palette.secondary.main,
       float: 'left',
-      paddingRight: 10,
+      marginRight: 10,
     },
     balanceRoot: {
       display: 'inline',
