@@ -1,4 +1,4 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
@@ -15,6 +15,7 @@ import {
   formatAmount,
   workflow,
 } from '@emeraldwallet/core';
+import { ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { CircularProgress, Typography, createStyles, makeStyles } from '@material-ui/core';
@@ -70,7 +71,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   addresses,
   blockchain,
   coinTicker,
-  contractAddress,
   entry: { address },
   isHardware,
   supportEip1559,
@@ -90,6 +90,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const mounted = React.useRef(true);
 
   const [initializing, setInitializing] = React.useState(true);
+  const [preparing, setPreparing] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
 
   const [convertable, setConvertable] = React.useState<string>(coinTicker);
@@ -109,7 +110,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
   const [useEip1559, setUseEip1559] = React.useState(supportEip1559);
 
-  const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
+  const factory = amountFactory(blockchain) as CreateAmount<WeiAny>;
+  const zeroAmount = factory(0);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
@@ -127,8 +129,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [password, setPassword] = React.useState<string>();
   const [passwordError, setPasswordError] = React.useState<string>();
 
-  const oldAmount = React.useRef(convertTx.amount);
-
   const onChangeConvertable = (event: React.MouseEvent<HTMLElement>, value: string): void => {
     const converting = value ?? convertable;
 
@@ -136,7 +136,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
     const { number: amount } = tx.amount;
 
-    tx.amount = converting === coinTicker ? amountFactory(blockchain)(amount) : token.getAmount(amount);
+    tx.amount = converting === coinTicker ? factory(amount) : token.getAmount(amount);
     tx.target = workflow.TxTarget.MANUAL;
     tx.rebalance();
 
@@ -164,11 +164,33 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     setConvertTx(tx.dump());
   };
 
-  const onClickMaxAmount = (): void => {
+  const onClickMaxAmount = (callback: (value: BigAmount) => void): void => {
     const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 
     tx.target = workflow.TxTarget.SEND_ALL;
     tx.rebalance();
+
+    callback(tx.amount);
+
+    setConvertTx(tx.dump());
+  };
+
+  const onUseEip1559Change = (checked: boolean): void => {
+    setUseEip1559(checked);
+
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+
+    if (checked) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = maxGasPrice;
+      tx.priorityGasPrice = maxGasPrice;
+    } else {
+      tx.gasPrice = maxGasPrice;
+      tx.maxGasPrice = undefined;
+      tx.priorityGasPrice = undefined;
+    }
+
+    tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
 
     setConvertTx(tx.dump());
   };
@@ -200,6 +222,20 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     tx.rebalance();
 
     setConvertTx(tx.dump());
+  };
+
+  const onCreateTransaction = async (): Promise<void> => {
+    setPreparing(true);
+
+    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
+
+    tx.gas = await estimateGas(tx.build());
+    tx.rebalance();
+
+    setConvertTx(tx.dump());
+    setStage(Stages.SIGN);
+
+    setPreparing(false);
   };
 
   const onSignTransaction = async (): Promise<void> => {
@@ -246,32 +282,10 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     }
   };
 
-  const onUseEip1559Change = (checked: boolean): void => {
-    setUseEip1559(checked);
-
-    const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
-    if (checked) {
-      tx.gasPrice = undefined;
-      tx.maxGasPrice = maxGasPrice;
-      tx.priorityGasPrice = maxGasPrice;
-    } else {
-      tx.gasPrice = maxGasPrice;
-      tx.maxGasPrice = undefined;
-      tx.priorityGasPrice = undefined;
-    }
-
-    tx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
-
-    setConvertTx(tx.dump());
-  };
-
   React.useEffect(
     () => {
       getFees(blockchain).then(({ avgLast, avgMiddle, avgTail5 }) => {
         if (mounted.current) {
-          const factory = amountFactory(blockchain);
-
           const newStdMaxGasPrice = factory(avgTail5.max) as WeiAny;
           const newStdPriorityGasPrice = factory(avgTail5.priority) as WeiAny;
 
@@ -308,28 +322,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-
-  React.useEffect(() => {
-    if (oldAmount.current == null || convertTx.amount?.equals(oldAmount.current) === false) {
-      oldAmount.current = convertTx.amount;
-
-      const total =
-        convertTx.totalBalance != null && convertTx.amount?.units.equals(convertTx.totalBalance.units) === true
-          ? convertTx.totalBalance
-          : convertTx.totalTokenBalance;
-
-      if (total?.number != null && convertTx.amount?.number.isLessThanOrEqualTo(total.number) === true) {
-        (async (): Promise<void> => {
-          const tx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
-
-          tx.gas = await estimateGas(tx.build());
-          tx.rebalance();
-
-          setConvertTx(tx.dump());
-        })();
-      }
-    }
-  }, [blockchain, contractAddress, convertable, convertTx, estimateGas]);
 
   React.useEffect(() => {
     return () => {
@@ -375,6 +367,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
             />
           </FormRow>
           <EthTxSettings
+            factory={factory}
             initializing={initializing}
             supportEip1559={supportEip1559}
             useEip1559={useEip1559}
@@ -399,9 +392,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing || currentTx.amount.isZero()}
+                disabled={initializing || preparing || currentTx.validate() !== ValidationResult.OK}
                 label="Create Transaction"
-                onClick={(): void => setStage(Stages.SIGN)}
+                onClick={onCreateTransaction}
               />
             </ButtonGroup>
           </FormRow>

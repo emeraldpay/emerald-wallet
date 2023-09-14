@@ -1,4 +1,4 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { EntryId, EthereumEntry, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
@@ -144,7 +144,8 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
   const [useEip1559, setUseEip1559] = React.useState(supportEip1559);
 
-  const zeroAmount = amountFactory(currentBlockchain)(0) as WeiAny;
+  const factory = amountFactory(currentBlockchain) as CreateAmount<WeiAny>;
+  const zeroAmount = factory(0);
 
   const [maxGasPrice, setMaxGasPrice] = React.useState(zeroAmount);
   const [priorityGasPrice, setPriorityGasPrice] = React.useState(zeroAmount);
@@ -195,8 +196,6 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const fetchFees = (): Promise<void> =>
     getFees(currentBlockchain).then(({ avgLast, avgMiddle, avgTail5 }) => {
       if (mounted.current) {
-        const factory = amountFactory(currentBlockchain);
-
         const newStdMaxGasPrice = factory(avgTail5.max) as WeiAny;
         const newStdPriorityGasPrice = factory(avgTail5.priority) as WeiAny;
 
@@ -462,6 +461,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
         </FormRow>
       )}
       <EthTxSettings
+        factory={factory}
         initializing={initializing}
         supportEip1559={supportEip1559}
         useEip1559={useEip1559}
