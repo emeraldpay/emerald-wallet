@@ -3,40 +3,52 @@ import { getStandardUnits } from './asset';
 
 type ApproxZeroHandler = (approxZero: boolean) => void;
 
-function prepareFormatter(
-  amount: BigAmount,
-  decimals: number,
-  showApproxZero = false,
-  onApproxZero?: ApproxZeroHandler,
-): FormatterBuilder {
+interface FormatterOptions {
+  adjustUnit?: boolean;
+  showApproxZero?: boolean;
+  onApproxZero?: ApproxZeroHandler;
+}
+
+function prepareFormatter(amount: BigAmount, decimals: number, options?: FormatterOptions): FormatterBuilder {
   const formatter = new FormatterBuilder();
 
-  const units = getStandardUnits(amount);
+  const { adjustUnit = true, showApproxZero = false } = options ?? {};
 
-  if (showApproxZero) {
-    formatter.when(
-      () => {
-        const unit = amount.getOptimalUnit(undefined, units, decimals);
-        const value = amount.getNumberByUnit(unit).multipliedBy(10 ** decimals);
+  if (adjustUnit || showApproxZero) {
+    const units = getStandardUnits(amount);
 
-        const approxZero = value.gt(0) && value.lt(1);
+    if (adjustUnit) {
+      formatter.when(Predicates.ZERO, (whenTrue, whenFalse): void => {
+        whenTrue.useTopUnit();
+        whenFalse.useOptimalUnit(undefined, units, decimals);
+      });
+    }
 
-        onApproxZero?.(approxZero);
+    if (showApproxZero) {
+      formatter.when(
+        () => {
+          const unit = amount.getOptimalUnit(undefined, units, decimals);
+          const value = amount.getNumberByUnit(unit).multipliedBy(10 ** decimals);
 
-        return approxZero;
-      },
-      (whenTrue) => whenTrue.append('≈'),
-    );
+          const approxZero = value.gt(0) && value.lt(1);
+
+          options?.onApproxZero?.(approxZero);
+
+          return approxZero;
+        },
+        (whenTrue) => whenTrue.append('≈'),
+      );
+    }
   }
 
-  return formatter.when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-    whenTrue.useTopUnit();
-    whenFalse.useOptimalUnit(undefined, units, decimals);
-  });
+  return formatter;
 }
 
 export function formatAmount(amount: BigAmount, decimals = 3): string {
-  const formatter = prepareFormatter(amount, decimals, true).number(decimals, true).append(' ').unitCode();
+  const formatter = prepareFormatter(amount, decimals, { showApproxZero: true })
+    .number(decimals, true)
+    .append(' ')
+    .unitCode();
 
   return formatter.build().format(amount);
 }
@@ -44,21 +56,26 @@ export function formatAmount(amount: BigAmount, decimals = 3): string {
 export function formatAmountPartial(amount: BigAmount, decimals = 3): [string, string, boolean] {
   let approxZero = false;
 
-  const onApproxZero: ApproxZeroHandler = (hasZeros) => {
-    approxZero = hasZeros;
+  const options: FormatterOptions = {
+    showApproxZero: true,
+    onApproxZero(hasZeros) {
+      approxZero = hasZeros;
+    },
   };
 
-  const valueFormatter = prepareFormatter(amount, decimals, true, onApproxZero).number(decimals, true);
+  const valueFormatter = prepareFormatter(amount, decimals, options).number(decimals, true);
   const unitFormatter = prepareFormatter(amount, decimals).unitCode();
 
   return [valueFormatter.build().format(amount), unitFormatter.build().format(amount), approxZero];
 }
 
 export function formatAmountValue(amount: BigAmount, decimals = 9): string {
-  const formatter = prepareFormatter(amount, decimals, false).number(decimals, true, undefined, {
-    decimalSeparator: '.',
-    groupSeparator: '',
-  });
+  const formatter = prepareFormatter(amount, decimals, { adjustUnit: false })
+    .useTopUnit()
+    .number(decimals, true, undefined, {
+      decimalSeparator: '.',
+      groupSeparator: '',
+    });
 
   return formatter.build().format(amount);
 }

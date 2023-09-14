@@ -1,20 +1,8 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { EthereumAddress, formatAmount } from '@emeraldwallet/core';
-import { ListItemText, MenuItem, StyleRules, TextField, Theme, createStyles } from '@material-ui/core';
+import { EthereumAddress, formatAmount, formatAmountPartial } from '@emeraldwallet/core';
+import { ListItemText, MenuItem, StyleRulesCallback, TextField, Theme, Tooltip, createStyles } from '@material-ui/core';
 import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import { ReactElement } from 'react';
-
-const styles = (theme: Theme): StyleRules =>
-  createStyles({
-    balance: {
-      color: theme.palette && theme.palette.text.secondary,
-      wordSpacing: '3px',
-      letterSpacing: '1px',
-      fontWeight: 200,
-      paddingLeft: '20px',
-    },
-  });
 
 export interface CommonAsset {
   address?: string;
@@ -25,7 +13,7 @@ export interface Asset extends CommonAsset {
   balance: BigAmount;
 }
 
-interface OwnProps {
+interface Props {
   asset: string;
   assets: Asset[];
   balance?: BigAmount;
@@ -34,21 +22,61 @@ interface OwnProps {
   onChangeAsset?(token: string): void;
 }
 
-export class SelectAsset extends React.Component<OwnProps & WithStyles<typeof styles>> {
+const styles: StyleRulesCallback<Theme, Props> = (theme) =>
+  createStyles({
+    balance: {
+      color: theme.palette.text.secondary,
+      fontWeight: 200,
+      letterSpacing: 1,
+      paddingLeft: 20,
+      wordSpacing: 3,
+    },
+    tooltip: { cursor: 'help' },
+  });
+
+export class SelectAsset extends React.Component<Props & WithStyles<typeof styles>> {
   onChangeToken = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
     this.props.onChangeAsset?.(value);
   };
 
-  onRenderValue = (value: string): string => {
-    if (EthereumAddress.isValid(value)) {
-      return this.props.assets.find(({ address }) => address === value)?.symbol ?? value;
+  renderAsset = (asset: string): string => {
+    if (EthereumAddress.isValid(asset)) {
+      return this.props.assets.find(({ address }) => address === asset)?.symbol ?? asset;
     }
 
-    return value;
+    return asset;
   };
 
-  public render(): ReactElement {
-    const { asset, assets, balance, classes, disabled, fiatBalance } = this.props;
+  renderBalance = (): React.ReactNode => {
+    const { balance, classes, fiatBalance } = this.props;
+
+    if (balance == null) {
+      if (fiatBalance == null) {
+        return null;
+      }
+
+      return formatAmount(fiatBalance);
+    }
+
+    const [balanceValue, balanceUnit, approxZero] = formatAmountPartial(balance);
+
+    return (
+      <div className={classes.balance} data-testid="balance">
+        {approxZero ? (
+          <Tooltip className={classes.tooltip} title={balance.toString()}>
+            <span>{balanceValue}</span>
+          </Tooltip>
+        ) : (
+          balanceValue
+        )}{' '}
+        {balanceUnit}
+        {fiatBalance == null ? null : ` / ${formatAmount(fiatBalance)}`}
+      </div>
+    );
+  };
+
+  render(): React.ReactNode {
+    const { asset, assets, disabled } = this.props;
 
     return (
       <>
@@ -57,9 +85,9 @@ export class SelectAsset extends React.Component<OwnProps & WithStyles<typeof st
           disabled={disabled}
           value={asset}
           onChange={this.onChangeToken}
-          SelectProps={{ renderValue: () => this.onRenderValue(asset) }}
+          SelectProps={{ renderValue: () => this.renderAsset(asset) }}
         >
-          {assets?.map(({ address, symbol, balance: assetBalance }) => {
+          {assets.map(({ address, symbol, balance: assetBalance }) => {
             const key = address ?? symbol;
 
             return (
@@ -69,10 +97,7 @@ export class SelectAsset extends React.Component<OwnProps & WithStyles<typeof st
             );
           })}
         </TextField>
-        <div className={classes.balance} data-testid="balance">
-          {balance == null ? null : formatAmount(balance)}
-          {fiatBalance == null ? null : `${balance == null ? '' : ' /'} ${formatAmount(fiatBalance)}`}
-        </div>
+        {this.renderBalance()}
       </>
     );
   }
