@@ -39,6 +39,7 @@ const PasswordInput: React.FC<OwnProps> = ({
     <IconButton
       color={showPassword ? 'primary' : undefined}
       size="small"
+      tabIndex={-1}
       onClick={() => setShowPassword(!showPassword)}
     >
       <ShowPasswordIcon fontSize="small" />
