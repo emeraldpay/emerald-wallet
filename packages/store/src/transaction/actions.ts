@@ -37,7 +37,7 @@ import BigNumber from 'bignumber.js';
 import { findEntry, findWalletByEntryId, zeroAmountFor } from '../accounts/selectors';
 import { GasPriceType, IState, application } from '../index';
 import { Pages } from '../screen';
-import { catchError, gotoScreen, showError } from '../screen/actions';
+import { gotoScreen, showError } from '../screen/actions';
 import { IErrorAction, IOpenAction } from '../screen/types';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
@@ -138,14 +138,14 @@ export function signTransaction(
         .then(withNonce(transaction))
         .then(callSignTx)
         .catch((error) => {
-          catchError(dispatch)(error);
+          dispatch(showError(error));
 
           return undefined;
         });
     }
 
     return callSignTx(transaction).catch((error) => {
-      catchError(dispatch)(error);
+      dispatch(showError(error));
 
       return undefined;
     });

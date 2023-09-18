@@ -137,15 +137,3 @@ export function closeError(): IErrorAction {
     error: null,
   };
 }
-
-export function dispatchRpcError(dispatch: any) {
-  return () => {
-    dispatch(showNotification('Remote server connection failure', 'warning', 2));
-  };
-}
-
-export function catchError(dispatch: any): (err: Error) => void {
-  return (err: Error) => {
-    dispatch(showError(err));
-  };
-}

@@ -15,6 +15,8 @@ import {
   PasswordInput,
   Table,
 } from '@emeraldwallet/ui';
+import { hashMessage } from '@ethersproject/hash';
+import { recoverAddress } from '@ethersproject/transactions';
 import {
   Chip,
   Menu,
@@ -100,6 +102,7 @@ interface StateProps {
 interface DispatchPros {
   goBack(): void;
   goShowMessage(message: SignedMessage, text: string): void;
+  showError(message: string): void;
   signMessage(entryId: string, message: string, type: MessageType, password?: string): Promise<SignedMessage>;
   verifyGlobalKey(password: string): Promise<boolean>;
 }
@@ -110,6 +113,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
   getSeed,
   goBack,
   goShowMessage,
+  showError,
   signMessage,
   verifyGlobalKey,
 }) => {
@@ -185,10 +189,18 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
   const onVerifyBack = (): void => setStage(Stages.SETUP);
   const onVerifyNext = (): void => setStage(Stages.SIGN);
 
+  const verifyMessage = ({ address, signature }: SignedMessage): boolean => {
+    return address.toLowerCase() === recoverAddress(hashMessage(messageText), signature).toLowerCase();
+  };
+
   const onLedgerConnected = async (): Promise<void> => {
     const signed = await signMessage(selectedAddress.entryId, messageText, messageType);
 
-    goShowMessage(signed, messageText);
+    if (verifyMessage(signed)) {
+      goShowMessage(signed, messageText);
+    } else {
+      showError('Signature has incorrect signer address');
+    }
   };
 
   const onSignMessage = async (): Promise<void> => {
@@ -204,7 +216,11 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     if (correctPassword) {
       const signed = await signMessage(selectedAddress.entryId, messageText, messageType, password);
 
-      goShowMessage(signed, messageText);
+      if (verifyMessage(signed)) {
+        goShowMessage(signed, messageText);
+      } else {
+        showError('Signature has incorrect signer address');
+      }
     } else {
       setPasswordError('Incorrect password');
     }
@@ -479,6 +495,9 @@ export default connect<StateProps, DispatchPros, OwnProps, IState>(
     },
     goShowMessage(message, text) {
       dispatch(screen.actions.gotoScreen(screen.Pages.SHOW_MESSAGE, { message, text, walletId }));
+    },
+    showError(message) {
+      dispatch(screen.actions.showError(new Error(message)));
     },
     signMessage(entryId, message, type, password) {
       return dispatch(

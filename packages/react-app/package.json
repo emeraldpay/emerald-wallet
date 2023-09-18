@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.9",
+    "@ethersproject/hash": "^5.7.0",
+    "@ethersproject/transactions": "^5.7.0",
     "@emeraldpay/bigamount": "^0.4.1",
     "@emeraldpay/bigamount-crypto": "^0.4.1",
     "@emeraldpay/emerald-vault-core": "^0.12.0",

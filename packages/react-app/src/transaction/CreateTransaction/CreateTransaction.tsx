@@ -1,5 +1,4 @@
 // FIXME Refactor component
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
@@ -102,7 +101,7 @@ interface DispatchProps {
   estimateGas(tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   onCancel(): void;
-  signAndSend(tokenRegistry: TokenRegistry, request: Request): Promise<void>;
+  signAndSend(request: Request): Promise<void>;
   verifyGlobalKey(password: string): Promise<boolean>;
 }
 
@@ -425,7 +424,7 @@ class CreateTransaction extends React.Component<Props, State> {
       return;
     }
 
-    const { isHardware, tokenRegistry, getEntryByAddress, signAndSend, verifyGlobalKey } = this.props;
+    const { isHardware, getEntryByAddress, signAndSend, verifyGlobalKey } = this.props;
     const { password, asset } = this.state;
 
     // Password should be entered only for a standard encrypted seed, but for Ledger it's always empty.
@@ -451,7 +450,7 @@ class CreateTransaction extends React.Component<Props, State> {
       return;
     }
 
-    signAndSend(tokenRegistry, {
+    signAndSend({
       entryId: entry.id,
       password: password,
       transaction: tx,
@@ -585,23 +584,6 @@ class CreateTransaction extends React.Component<Props, State> {
       </Page>
     );
   }
-}
-
-function sign(
-  dispatch: any,
-  ownProps: OwnProps,
-  tokenRegistry: TokenRegistry,
-  { entryId, password, transaction: tx }: Request,
-): Promise<SignData | null> {
-  const { from, to } = tx;
-
-  if (to == null || from == null) {
-    console.warn('Invalid tx', from, to);
-
-    return Promise.resolve(null);
-  }
-
-  return dispatch(transaction.actions.signTransaction(entryId, tx.build(), password));
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
@@ -752,6 +734,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       },
     };
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
     estimateGas(tx) {
       return dispatch(transaction.actions.estimateGas(blockchainIdToCode(ownProps.entry.blockchain), tx));
@@ -762,31 +745,36 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     onCancel() {
       dispatch(screen.actions.goBack());
     },
-    signAndSend(tokenRegistry, request) {
-      return new Promise((resolve, reject) =>
-        sign(dispatch, ownProps, tokenRegistry, request)
-          .then((signed) => {
-            if (signed == null) {
-              reject();
-            } else {
-              resolve();
+    async signAndSend(request) {
+      const { entryId, password, transaction: tx } = request;
+      const { from, to } = tx;
 
-              dispatch(
-                screen.actions.gotoScreen(
-                  screen.Pages.BROADCAST_TX,
-                  {
-                    ...signed,
-                    fee: request.transaction.getFees(),
-                    originalAmount: request.transaction.amount,
-                  },
-                  null,
-                  true,
-                ),
-              );
-            }
-          })
-          .catch(reject),
+      if (to == null || from == null) {
+        console.warn('Invalid tx', from, to);
+
+        return;
+      }
+
+      const signed: SignData | null = await dispatch(
+        transaction.actions.signTransaction(entryId, tx.build(), password),
       );
+
+      if (signed == null) {
+        return;
+      } else {
+        dispatch(
+          screen.actions.gotoScreen(
+            screen.Pages.BROADCAST_TX,
+            {
+              ...signed,
+              fee: request.transaction.getFees(),
+              originalAmount: request.transaction.amount,
+            },
+            null,
+            true,
+          ),
+        );
+      }
     },
     verifyGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
