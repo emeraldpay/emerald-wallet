@@ -15,7 +15,7 @@ jobs:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
+        os: ['windows-latest', 'macos-latest', 'ubuntu-latest']
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code
@@ -51,6 +51,10 @@ jobs:
         run: sudo apt update
         if: runner.os == 'Linux'
 
+      - name: Install system libs (Linux)
+        run: sudo apt install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
+        if: runner.os == 'Linux'
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -65,13 +69,6 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-
-      - name: Install system libs (Linux)
-        run: sudo apt install libcurl4 libudev-dev libusb-1.0-0-dev xvfb
-        if: runner.os == 'Linux'
-
-      - name: Install global packages
-        run: npm install -g codecov
 
       - name: Install dependencies
         run: yarn install
