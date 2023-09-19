@@ -174,9 +174,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
     if (mnemonicPreview.current != null) {
       const { current: element } = mnemonicPreview;
 
-      const elementsByColumn = Math.ceil(mnemonicParts.length / CANVAS_COLUMNS);
-
-      element.height = elementsByColumn * CANVAS_LINE_HEIGHT + CANVAS_PADDING_TOP * 2;
+      element.height = Math.ceil(mnemonicParts.length / CANVAS_COLUMNS) * CANVAS_LINE_HEIGHT + CANVAS_PADDING_TOP * 2;
       element.width = element.parentElement.clientWidth;
 
       const context = element.getContext('2d');
@@ -187,22 +185,22 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
       const columnWidth = Math.ceil((element.parentElement.clientWidth - CANVAS_PADDING_LEFT * 2) / CANVAS_COLUMNS);
 
       let columnCounter = 0;
-      let columnIndex = 0;
+      let columnPartIndex = 0;
 
       mnemonicParts.forEach((part, index) => {
-        if (columnIndex >= elementsByColumn) {
-          columnCounter += 1;
-          columnIndex = 0;
+        const partCount = index + 1;
+
+        if (columnCounter >= CANVAS_COLUMNS) {
+          columnCounter = 0;
+          columnPartIndex += 1;
         }
 
         const x = CANVAS_PADDING_LEFT + columnWidth * columnCounter;
-        const y = CANVAS_PADDING_TOP + CANVAS_LINE_HEIGHT * (columnIndex + 1);
+        const y = CANVAS_PADDING_TOP + CANVAS_LINE_HEIGHT * (columnPartIndex + 1);
 
-        const count = index + 1;
+        columnCounter += 1;
 
-        context.fillText(`${count < 10 ? ` ${count}` : count}. ${part}`, x, y, columnWidth);
-
-        columnIndex += 1;
+        context.fillText(`${partCount < 10 ? ` ${partCount}` : partCount}. ${part}`, x, y, columnWidth);
       });
     }
   }, [confirming, mnemonic]);
