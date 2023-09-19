@@ -16,11 +16,11 @@ limitations under the License.
 */
 
 import { createTheme } from '@material-ui/core';
-import 'typeface-inter';
-import 'typeface-roboto-mono';
 import createSpacing from '@material-ui/core/styles/createSpacing';
 import * as React from 'react';
 import colors from './colors';
+import '@fontsource/inter';
+import '@fontsource/roboto-mono';
 
 const spacing = 10;
 

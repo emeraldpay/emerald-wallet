@@ -95,7 +95,7 @@
       "<rootDir>/jest.setup.ts"
     ],
     "moduleNameMapper": {
-      "typeface-.*$": "identity-obj-proxy"
+      "^@fontsource/.+$": "identity-obj-proxy"
     },
     "transform": {
       ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",

@@ -1,15 +1,6 @@
-import { Button, Grid, TextField, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Grid, TextField, Typography } from '@material-ui/core';
 import * as React from 'react';
-import PasswordInput from './PasswordInput';
-
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      marginTop: 20,
-    },
-  }),
-);
+import PasswordInput from '../PasswordInput/PasswordInput';
 
 interface OwnProps {
   buttonLabel?: string;
@@ -22,17 +13,15 @@ interface OwnProps {
 const ConfirmedPasswordInput: React.FC<OwnProps> = ({
   helperText,
   minLength,
-  onChange,
   buttonLabel = 'Enter',
   disabled = false,
+  onChange,
 }) => {
-  const styles = useStyles();
-
   const [password, setPassword] = React.useState('');
   const [confirmation, setConfirmation] = React.useState('');
 
   return (
-    <Grid container alignItems="center" className={styles.container} spacing={1}>
+    <Grid container alignItems="center" spacing={1}>
       <Grid item xs={4}>
         <PasswordInput onChange={setPassword} disabled={disabled} minLength={minLength} />
       </Grid>

@@ -3,44 +3,25 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { ConfirmedPasswordInput } from '../../../index';
+import { Theme } from '../../..';
+import { ButtonGroup } from '../../common/ButtonGroup';
+import ConfirmedPasswordInput from '../../common/PasswordConfirmedInput';
+
+const CANVAS_COLUMNS = 6 as const;
+const CANVAS_FONT_SIZE = 18 as const;
+const CANVAS_LINE_HEIGHT = 20 as const;
+const CANVAS_PADDING_LEFT = 20 as const;
+const CANVAS_PADDING_TOP = 20 as const;
 
 const useStyles = makeStyles(
   createStyles({
-    controls: {
-      padding: '25px 0 0 20px',
-      alignItems: 'center',
+    alertButton: {
+      whiteSpace: 'nowrap',
     },
-    mnemonic: {
-      fontSize: '0.9em',
-      border: '1px solid #f0f0f0',
-      padding: '20px 20px',
-      margin: '10px 0px',
-      backgroundColor: '#f0faff',
-    },
-    mnemonicEmpty: {
-      textAlign: 'center',
-    },
-    button: {
-      width: '220px',
-      margin: '5px',
-    },
-    wordIndex: {
-      display: 'inline-block',
-      width: '24px',
-      opacity: '75%',
-      fontSize: '0.8em',
-    },
-    writeMessage: {
-      width: '600px',
-      float: 'left',
-    },
-    writeButtons: {
-      width: '200px',
-      float: 'left',
-    },
-    confirmButtons: {
-      padding: '16px',
+    buttons: {
+      display: 'flex',
+      justifyContent: 'end',
+      width: '100%',
     },
     mnemonicGrid: {
       boxSizing: 'border-box',
@@ -69,6 +50,13 @@ const useStyles = makeStyles(
       flex: '1 0 auto',
       textAlign: 'center',
     },
+    mnemonicPreview: {
+      backgroundColor: '#f0faff',
+      border: '1px solid #f0f0f0',
+    },
+    mnemonicPreviewCanvas: {
+      display: 'block',
+    },
   }),
 );
 
@@ -87,8 +75,10 @@ interface MnemonicSelectedPartType extends MnemonicRandomPartType {
   chosen?: boolean;
 }
 
-const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
+const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   const styles = useStyles();
+
+  const mnemonicPreview = React.useRef<HTMLCanvasElement | undefined>();
 
   const [mnemonic, setMnemonic] = React.useState('');
 
@@ -102,23 +92,29 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   const hasMnemonic = typeof mnemonic === 'string' && mnemonic.length > 0;
   const confirmed = hasMnemonic && confirmation.toLowerCase().replace(/\s+/g, ' ').trim() === mnemonic.toLowerCase();
 
-  let passwordField;
+  let passwordField: React.ReactNode;
 
   if (expectPassword) {
     if (password && password.length > 0) {
       passwordField = (
-        <Alert severity="success">
+        <Alert
+          action={
+            <Button
+              className={styles.alertButton}
+              color="inherit"
+              disabled={done}
+              variant="outlined"
+              onClick={() => {
+                setPassword('');
+                setExpectPassword(false);
+              }}
+            >
+              Reset
+            </Button>
+          }
+          severity="success"
+        >
           Phrase protection password is set.
-          <Button
-            variant="text"
-            disabled={done}
-            onClick={() => {
-              setPassword('');
-              setExpectPassword(false);
-            }}
-          >
-            Reset
-          </Button>
         </Alert>
       );
     } else {
@@ -134,27 +130,38 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
     }
   } else {
     passwordField = (
-      <Alert severity="info">
+      <Alert
+        action={
+          <Button
+            className={styles.alertButton}
+            color="inherit"
+            disabled={done}
+            variant="outlined"
+            onClick={() => setExpectPassword(true)}
+          >
+            Set Passphrase
+          </Button>
+        }
+        severity="info"
+      >
         You may set an additional passphrase to your secret phrase.
-        <Button variant="text" disabled={done} onClick={() => setExpectPassword(true)}>
-          Set Passphrase
-        </Button>
       </Alert>
     );
   }
 
-  let content;
+  let content: React.ReactNode;
   let title: string;
 
   const [mnemonicRandomParts, setMnemonicRandomParts] = React.useState<MnemonicRandomPartType[]>([]);
   const [mnemonicSelectedParts, setMnemonicSelectedParts] = React.useState<MnemonicSelectedPartType[]>([]);
 
   React.useEffect(() => {
-    let mnemonicParts: MnemonicRandomPartType[] = [];
+    const mnemonicParts = mnemonic.split(' ');
+
+    let mnemonicRandomParts: MnemonicRandomPartType[] = [];
 
     if (confirming) {
-      mnemonicParts = mnemonic
-        .split(' ')
+      mnemonicRandomParts = mnemonicParts
         .map((part) => ({ sort: Math.random(), part }))
         .sort((first, second) => first.sort - second.sort)
         .map(({ part }, index) => ({ id: index, name: part }));
@@ -162,7 +169,42 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
       setMnemonicSelectedParts([]);
     }
 
-    setMnemonicRandomParts(mnemonicParts);
+    setMnemonicRandomParts(mnemonicRandomParts);
+
+    if (mnemonicPreview.current != null) {
+      const { current: element } = mnemonicPreview;
+
+      const elementsByColumn = Math.ceil(mnemonicParts.length / CANVAS_COLUMNS);
+
+      element.height = elementsByColumn * CANVAS_LINE_HEIGHT + CANVAS_PADDING_TOP * 2;
+      element.width = element.parentElement.clientWidth;
+
+      const context = element.getContext('2d');
+
+      context.font = `${CANVAS_FONT_SIZE}px/${CANVAS_LINE_HEIGHT}px ${Theme.monotype.fontFamily}`;
+      context.textBaseline = 'bottom';
+
+      const columnWidth = Math.ceil((element.parentElement.clientWidth - CANVAS_PADDING_LEFT * 2) / CANVAS_COLUMNS);
+
+      let columnCounter = 0;
+      let columnIndex = 0;
+
+      mnemonicParts.forEach((part, index) => {
+        if (columnIndex >= elementsByColumn) {
+          columnCounter += 1;
+          columnIndex = 0;
+        }
+
+        const x = CANVAS_PADDING_LEFT + columnWidth * columnCounter;
+        const y = CANVAS_PADDING_TOP + CANVAS_LINE_HEIGHT * (columnIndex + 1);
+
+        const count = index + 1;
+
+        context.fillText(`${count < 10 ? ` ${count}` : count}. ${part}`, x, y, columnWidth);
+
+        columnIndex += 1;
+      });
+    }
   }, [confirming, mnemonic]);
 
   React.useEffect(() => {
@@ -212,25 +254,37 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
             )}
           </div>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={10}>
           {passwordField}
         </Grid>
-        <Grid item className={styles.confirmButtons} xs={3}>
-          <Button
-            disabled={!confirmed || done}
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              onContinue(mnemonic, password.length > 0 ? password : undefined);
+        <Grid item xs={2}>
+          <ButtonGroup classes={{ container: styles.buttons }}>
+            <Button
+              color="secondary"
+              disabled={done}
+              variant="contained"
+              onClick={() => {
+                setConfirming(false);
 
-              setDone(true);
-            }}
-          >
-            Confirm
-          </Button>
-          <Button variant="text" disabled={done} onClick={() => setConfirming(false)}>
-            Cancel
-          </Button>
+                setPassword('');
+                setExpectPassword(false);
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              disabled={!confirmed || done}
+              color="primary"
+              variant="contained"
+              onClick={() => {
+                onContinue(mnemonic, password.length > 0 ? password : undefined);
+
+                setDone(true);
+              }}
+            >
+              Confirm
+            </Button>
+          </ButtonGroup>
         </Grid>
       </Grid>
     );
@@ -238,72 +292,64 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
     title = 'Create secret "mnemonic" phrase';
 
     if (hasMnemonic) {
-      const words = mnemonic.split(' ').map((word, i) => (
-        <Grid key={`word-${i}`} item xs={3}>
-          <Typography variant="body2">
-            <span className={styles.wordIndex}>{i + 1}.</span> {word}
-          </Typography>
-        </Grid>
-      ));
-
-      const message = (
-        <Box>
-          <Alert severity="error">
-            <Box className={styles.writeMessage}>
-              Please write the phrase (&quot;Mnemonic Phrase&quot;) and keep it in a safe place. Never tell it to
-              anyone. Don&apos;t enter it anywhere online. It&apos;s the key to spend your funds. If you lose this
-              phrase, you will not be able to recover your account.
-            </Box>
-            <Box className={styles.writeButtons}>
-              <Button
-                disabled={done}
-                className={styles.button}
-                color="primary"
-                variant="contained"
-                onClick={() => setConfirming(true)}
-              >
-                Yes, I wrote it down
-              </Button>
-            </Box>
-          </Alert>
-        </Box>
-      );
-
       content = (
-        <Grid container className={styles.mnemonic}>
-          {words}
-          <Grid item xs={8} />
-          <Grid item xs={4}>
+        <>
+          <Box mb={2}>
+            <div className={styles.mnemonicPreview}>
+              <canvas className={styles.mnemonicPreviewCanvas} ref={mnemonicPreview} />
+            </div>
+          </Box>
+          <Box display="flex" justifyContent="end" mb={2}>
             <Button
-              className={styles.button}
               color="primary"
-              variant="text"
+              variant="contained"
               onClick={() => onGenerate().then(setMnemonic).catch(console.error)}
             >
               Generate New
             </Button>
-          </Grid>
-          <Grid item xs={12}>
-            {message}
-          </Grid>
-        </Grid>
+          </Box>
+          <Box>
+            <Alert
+              action={
+                <Button
+                  className={styles.alertButton}
+                  color="inherit"
+                  disabled={done}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => setConfirming(true)}
+                >
+                  Yes, I wrote it down
+                </Button>
+              }
+              severity="warning"
+            >
+              Please write the phrase (&quot;Mnemonic Phrase&quot;) and keep it in a safe place. Never tell it to
+              anyone. Don&apos;t enter it anywhere online. It&apos;s the key to spend your funds. If you lose this
+              phrase, you will not be able to recover your account.
+            </Alert>
+          </Box>
+        </>
       );
     } else {
       content = (
-        <Box className={styles.mnemonic + ' ' + styles.mnemonicEmpty}>
-          <Typography>
-            Click &quot;Generate Phrase&quot; to create a new secret phrase that will be a key to spend your
-            cryptocurrencies.
-          </Typography>
-          <Button
-            className={styles.button}
-            color="primary"
-            variant="text"
-            onClick={() => onGenerate().then(setMnemonic).catch(console.error)}
-          >
-            Generate Phrase
-          </Button>
-        </Box>
+        <>
+          <Box mb={2}>
+            <Alert severity="info">
+              Click &quot;Generate Phrase&quot; to create a new secret phrase that will be a key to spend your
+              cryptocurrencies.
+            </Alert>
+          </Box>
+          <Box display="flex" justifyContent="end">
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => onGenerate().then(setMnemonic).catch(console.error)}
+            >
+              Generate Phrase
+            </Button>
+          </Box>
+        </>
       );
     }
   }
@@ -311,7 +357,9 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <Typography variant="h6">{title}</Typography>
+        <Box mb={2}>
+          <Typography variant="h6">{title}</Typography>
+        </Box>
       </Grid>
       <Grid item xs={12}>
         {content}
@@ -320,4 +368,4 @@ const Component: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   );
 };
 
-export default Component;
+export default NewMnemonic;
