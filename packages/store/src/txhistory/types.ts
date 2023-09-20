@@ -63,6 +63,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   changes: StoredTransactionChange[];
 
   readonly block?: PersistentState.BlockRef | null;
+  readonly blockPos?: number;
   readonly blockchain: number;
   readonly confirmTimestamp?: Date | null;
   readonly meta: PersistentState.TxMetaItem | null;
@@ -83,6 +84,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
 
     if (PersistentState.isConfirmed(tx)) {
       this.block = tx.block;
+      this.blockPos = tx.blockPos;
       this.confirmTimestamp = tx.confirmTimestamp;
     }
 

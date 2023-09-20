@@ -152,7 +152,7 @@ export type ConfirmedTransaction = UnconfirmedTransaction & TransactionConfirmat
 export type Transaction = UnconfirmedTransaction | ConfirmedTransaction;
 
 export function isConfirmed(tx: Transaction): tx is ConfirmedTransaction {
-  return typeof tx === 'object' && Object.keys(tx).indexOf('block') >= 0;
+  return typeof tx === 'object' && 'block' in tx && tx.block != null;
 }
 
 /**
