@@ -5,7 +5,7 @@ import {
   CurrencyAmount,
   PersistentState,
   blockchainIdToCode,
-  formatAmount,
+  formatAmountPartial,
   formatFiatAmount,
 } from '@emeraldwallet/core';
 import {
@@ -19,7 +19,16 @@ import {
   txhistory,
 } from '@emeraldwallet/store';
 import { BlockchainAvatar, HashIcon } from '@emeraldwallet/ui';
-import { IconButton, InputAdornment, Menu, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
+import {
+  IconButton,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  TextField,
+  Tooltip,
+  createStyles,
+  makeStyles,
+} from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
@@ -363,36 +372,50 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
             return [...carry, new Change(change, wallet, walletIcons)];
           }, [])
-          .map((change, index) => (
-            <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
-              <div className={styles.changeItemCoin}>
-                {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue, 6)}
-              </div>
-              <div className={styles.changeItemAmount}>
-                {change.walletInstance.id === walletId ? (
-                  <div />
-                ) : (
-                  <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.walletInstance.id)}>
-                    {change.icon == null ? (
-                      <HashIcon
-                        className={styles.changeItemAmountWalletIcon}
-                        size={24}
-                        value={`WALLET/${change.walletInstance.id}`}
-                      />
-                    ) : (
-                      <img
-                        alt="Wallet Icon"
-                        className={styles.changeItemAmountWalletIconImage}
-                        src={`data:image/png;base64,${change.icon}`}
-                      />
-                    )}
-                    {change.walletInstance.name}
+          .map((change, index) => {
+            const [amountValue, amountUnit, approxZero] = formatAmountPartial(change.amountValue, 6);
+
+            return (
+              <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
+                <div className={styles.changeItemCoin}>
+                  <span>{change.direction === Direction.EARN ? '+' : '-'}&nbsp;</span>
+                  {approxZero ? (
+                    <Tooltip title={change.amountValue.toString()}>
+                      <span>{amountValue}</span>
+                    </Tooltip>
+                  ) : (
+                    amountValue
+                  )}{' '}
+                  {amountUnit}
+                </div>
+                <div className={styles.changeItemAmount}>
+                  {change.walletInstance.id === walletId ? (
+                    <div />
+                  ) : (
+                    <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.walletInstance.id)}>
+                      {change.icon == null ? (
+                        <HashIcon
+                          className={styles.changeItemAmountWalletIcon}
+                          size={24}
+                          value={`WALLET/${change.walletInstance.id}`}
+                        />
+                      ) : (
+                        <img
+                          alt="Wallet Icon"
+                          className={styles.changeItemAmountWalletIconImage}
+                          src={`data:image/png;base64,${change.icon}`}
+                        />
+                      )}
+                      {change.walletInstance.name}
+                    </div>
+                  )}
+                  <div className={styles.changeItemAmountFiat}>
+                    {formatFiatAmount(getFiatValue(change.amountValue))}
                   </div>
-                )}
-                <div className={styles.changeItemAmountFiat}>{formatFiatAmount(getFiatValue(change.amountValue))}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
     </div>
   );

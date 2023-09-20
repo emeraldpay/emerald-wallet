@@ -2,7 +2,6 @@ import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Pages } from '@emeraldwallet/store/lib/screen';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
-import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -105,7 +104,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
   );
 };
 
-export default connect<StateProps, DispatchProps, OwnProps, IState>(
+export default connect<StateProps, DispatchProps, unknown, IState>(
   (state) => ({
     hasWallets: state.accounts.wallets.length > 0,
   }),
