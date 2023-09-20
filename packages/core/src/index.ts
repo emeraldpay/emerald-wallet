@@ -68,6 +68,12 @@ export { SettingsManager, SettingsOptions, SettingsStore } from './settings';
 export { Versions } from './versions';
 export { WalletApi } from './WalletApi';
 export { blockchains, config, utils, workflow };
-export { formatAmount, formatAmountPartial, formatFiatAmount, formatFiatAmountPartial } from './format';
+export {
+  formatAmount,
+  formatAmountPartial,
+  formatAmountValue,
+  formatFiatAmount,
+  formatFiatAmountPartial,
+} from './format';
 export { getStandardUnits } from './asset';
 export { quantitiesToHex, toBigNumber, toHex, toNumber } from './convert';

@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) =>
       borderTop: `1px solid ${theme.palette.divider}`,
       padding: theme.spacing(2),
     },
+    tooltip: {
+      cursor: 'help',
+    },
   }),
 );
 
@@ -134,22 +137,20 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 </div>
                 <div className={styles.allowanceAmount}>
                   <Typography color="textPrimary" variant="subtitle1">
-                    <Tooltip title={`${allowanceValue} ${allowanceUnit}`}>
+                    <Tooltip className={styles.tooltip} title={allowance.toString()}>
                       {allowance.number.isGreaterThanOrEqualTo(MAX_DISPLAY_ALLOWANCE) ? (
-                        <span>&infin; {allowanceUnit}</span>
+                        <span>&infin;</span>
                       ) : (
-                        <span>
-                          <span className={styles.allowanceAmountValue}>{allowanceValue}</span> {allowanceUnit}
-                        </span>
+                        <span className={styles.allowanceAmountValue}>{allowanceValue}</span>
                       )}
-                    </Tooltip>
+                    </Tooltip>{' '}
+                    {allowanceUnit}
                   </Typography>
                   <Typography variant="caption">
-                    <Tooltip title={`${availableValue} ${availableUnit}`}>
-                      <span>
-                        <span className={styles.allowanceAmountValue}>{availableValue}</span> {availableUnit}
-                      </span>
-                    </Tooltip>
+                    <Tooltip className={styles.tooltip} title={available.toString()}>
+                      <span className={styles.allowanceAmountValue}>{availableValue}</span>
+                    </Tooltip>{' '}
+                    {availableUnit}
                   </Typography>
                 </div>
                 <div>
@@ -241,7 +242,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         screen.actions.gotoScreen(
           screen.Pages.CREATE_TX_APPROVE,
           { initialAllowance, walletId },
-          { tab: WalletTabs.ALLOWANCE },
+          { tab: WalletTabs.ALLOWANCES },
           true,
         ),
       );

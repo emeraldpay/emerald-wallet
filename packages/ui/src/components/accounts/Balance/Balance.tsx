@@ -1,13 +1,13 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
-import { getStandardUnits } from '@emeraldwallet/core';
-import { IconButton, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { BigAmount } from '@emeraldpay/bigamount';
+import { formatAmountPartial } from '@emeraldwallet/core';
+import { IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { Sync } from '@material-ui/icons';
 import { ClassNameMap } from '@material-ui/styles';
 import classNames from 'classnames';
 import * as React from 'react';
 
 export interface OwnProps {
-  balance?: BigAmount;
+  balance: BigAmount;
   classes?: Partial<ClassNameMap<'root' | 'coin' | 'coinBalance' | 'coinSymbol'>>;
   decimals?: number;
   onConvert?(): void;
@@ -27,30 +27,18 @@ const useStyles = makeStyles(
     coinSymbol: {
       paddingLeft: 5,
     },
+    tooltip: {
+      cursor: 'help',
+    },
   }),
 );
 
 const Balance: React.FC<OwnProps> = ({ balance, classes = {}, decimals = 3, onConvert }) => {
   const styles = useStyles();
 
-  const formatBalance = React.useCallback(
-    (balance: BigAmount) => {
-      const units = getStandardUnits(balance);
+  const [balanceValue, balanceUnit, approxZero] = formatAmountPartial(balance, decimals);
 
-      const formatSelector = (whenTrue: FormatterBuilder, whenFalse: FormatterBuilder): void => {
-        whenTrue.useTopUnit();
-        whenFalse.useOptimalUnit(undefined, units, 3);
-      };
-
-      const coinFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).number(decimals, true).build();
-      const unitFormatter = new FormatterBuilder().when(Predicates.ZERO, formatSelector).unitCode().build();
-
-      return [coinFormatter.format(balance), unitFormatter.format(balance)];
-    },
-    [decimals],
-  );
-
-  const [coinBalance, balanceUnit] = formatBalance(balance);
+  const renderBalanceValue = (): React.ReactElement => <span className={classes?.coinBalance}>{balanceValue}</span>;
 
   return (
     <div className={`${styles.root} ${classes?.root}`}>
@@ -60,8 +48,14 @@ const Balance: React.FC<OwnProps> = ({ balance, classes = {}, decimals = 3, onCo
         </IconButton>
       )}
       <Typography className={classNames(styles.coin, classes?.coin)}>
-        <span className={classes?.coinBalance}>{balance == null ? '-' : coinBalance}</span>
-        <span className={classNames(styles.coinSymbol, classes?.coinSymbol)}>{balance == null ? '' : balanceUnit}</span>
+        {approxZero ? (
+          <Tooltip className={styles.tooltip} title={balance.toString()}>
+            {renderBalanceValue()}
+          </Tooltip>
+        ) : (
+          renderBalanceValue()
+        )}
+        <span className={classNames(styles.coinSymbol, classes?.coinSymbol)}>{balanceUnit}</span>
       </Typography>
     </div>
   );

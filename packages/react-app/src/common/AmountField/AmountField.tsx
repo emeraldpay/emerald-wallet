@@ -1,4 +1,5 @@
-import { BigAmount, FormatterBuilder, Units } from '@emeraldpay/bigamount';
+import { BigAmount, Units } from '@emeraldpay/bigamount';
+import { formatAmountValue } from '@emeraldwallet/core';
 import { Button, Input } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -18,14 +19,6 @@ interface DispatchProps {
   onClear(): void;
 }
 
-const formatter = new FormatterBuilder()
-  .useTopUnit()
-  .number(6, true, undefined, {
-    decimalSeparator: '.',
-    groupSeparator: '',
-  })
-  .build();
-
 const AmountField: React.FC<OwnProps & DispatchProps> = ({
   amount,
   maxAmount,
@@ -39,9 +32,9 @@ const AmountField: React.FC<OwnProps & DispatchProps> = ({
 }) => {
   const changed = React.useRef(false);
 
-  const [currentAmount, setCurrentAmount] = React.useState(amount == null ? '0' : formatter.format(amount));
+  const [currentAmount, setCurrentAmount] = React.useState(amount == null ? '0' : formatAmountValue(amount));
   const [currentMaxAmount, setCurrentMaxAmount] = React.useState(
-    maxAmount == null ? null : formatter.format(maxAmount),
+    maxAmount == null ? null : formatAmountValue(maxAmount),
   );
 
   const [errorText, setErrorText] = React.useState<string | null>(null);
@@ -93,7 +86,7 @@ const AmountField: React.FC<OwnProps & DispatchProps> = ({
 
   const handleMaxClick = (): void => {
     onMaxClick((value) => {
-      const newAmount = formatter.format(value);
+      const newAmount = formatAmountValue(value);
 
       changed.current = true;
 
@@ -106,7 +99,7 @@ const AmountField: React.FC<OwnProps & DispatchProps> = ({
 
   React.useEffect(() => {
     if (!changed.current && amount != null) {
-      const newAmount = formatter.format(amount);
+      const newAmount = formatAmountValue(amount);
 
       if (newAmount !== currentAmount) {
         setCurrentAmount(newAmount);

@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/persistent-state",
-  "version": "2.10.0",
+  "version": "2.11.0-dev",
   "main": "lib/index.js",
   "author": "Emerald Team",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.12.0",
     "@emeraldpay/neon-frame": "^0.1.1",
-    "@emeraldwallet/core": "2.10.0"
+    "@emeraldwallet/core": "2.11.0-dev"
   },
   "devDependencies": {
     "cargo-cp-artifact": "^0.1.8",
