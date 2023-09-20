@@ -241,7 +241,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         screen.actions.gotoScreen(
           screen.Pages.CREATE_TX_APPROVE,
           { initialAllowance, walletId },
-          { tab: WalletTabs.ALLOWANCE },
+          { tab: WalletTabs.ALLOWANCES },
           true,
         ),
       );
