@@ -64,7 +64,7 @@ export class Settings implements SettingsManager {
     return this.settings.store;
   }
 
-  toJSON(): string {
-    return JSON.stringify(this.settings.store);
+  toJSON(replacer?: (key: string, value: unknown) => unknown): string {
+    return JSON.stringify(this.settings.store, replacer);
   }
 }

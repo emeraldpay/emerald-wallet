@@ -1,11 +1,9 @@
-import { IpcCommands, Logger, SettingsOptions, TokenData, Versions } from '@emeraldwallet/core';
+import { IpcCommands, SettingsOptions, TokenData, Versions } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { txhistory } from '../index';
 import { UpdateTxTokensAction } from '../txhistory/types';
 import { Dispatched } from '../types';
 import { ActionTypes, ConnectingAction, OptionsAction, TokensAction } from './types';
-
-const log = Logger.forCategory('Store::Application');
 
 export function agreeOnTerms(version?: string): Dispatched {
   return async (dispatch) => {
@@ -32,8 +30,6 @@ export function getVersions(): Dispatched<Versions> {
 export function readConfig(): Dispatched {
   return async (dispatch) => {
     const config = await ipcRenderer.invoke(IpcCommands.GET_APP_SETTINGS);
-
-    log.debug(`Got app settings from electron: ${config}`);
 
     dispatch({
       type: ActionTypes.CONFIG,

@@ -50,11 +50,17 @@ if (isDevelopMode || isVerifyMode) {
   logger.debug('Start in production mode');
 }
 
+function settingsJsonReplacer(key: string, value: unknown): unknown {
+  return key === 'tokens' && Array.isArray(value) && value.length > 10
+    ? value.slice(0, 5).concat(value.slice(-5))
+    : value;
+}
+
 app.on('ready', () => {
   const settings = new Settings();
 
   logger.info('Api Mode:', apiMode.id);
-  logger.info('Settings:', settings.toJSON());
+  logger.info('Settings:', settings.toJSON(settingsJsonReplacer));
   logger.info('User data:', app.getPath('userData'));
 
   const versions: Versions = {
