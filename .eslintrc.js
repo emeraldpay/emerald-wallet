@@ -30,6 +30,7 @@ module.exports = {
         allowExpressions: true,
       },
     ],
+    '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': 'off',
     'import/namespace': 'off',
     'import/no-named-as-default': 'off',
@@ -68,6 +69,9 @@ module.exports = {
       typescript: {
         alwaysTryTypes: true,
       },
+    },
+    react: {
+      version: '16',
     },
   },
 };

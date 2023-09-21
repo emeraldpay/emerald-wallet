@@ -77,7 +77,27 @@ function listenElectron(): void {
   log.debug('Running launcher listener for Redux');
 
   ipcRenderer.on(IpcCommands.STORE_DISPATCH, (event, action) => {
-    log.debug(`Got action from IPC: ${JSON.stringify(action)}`);
+    const { type = 'UNKNOWN', ...payload } = action;
+
+    let json: string | undefined;
+
+    if (Object.keys(payload).length > 0) {
+      json = JSON.stringify(payload, (key, value) => {
+        if (Array.isArray(value) && value.length > 10) {
+          return value.slice(0, 5).concat(value.slice(-5));
+        }
+
+        if (typeof value === 'string' && value.length > 1024) {
+          return `${value.slice(0, 512)}...${value.slice(-512)}`;
+        }
+
+        return value;
+      });
+    }
+
+    log.debug(
+      `Got action "${type}" from IPC with${json == null ? 'out' : ''} payload${json == null ? '' : `: ${json}`}`,
+    );
 
     store.dispatch(action);
   });

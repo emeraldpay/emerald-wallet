@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "start:dev",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/desktop",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "runtimeArgs": ["."]
+    }
+  ]
+}
