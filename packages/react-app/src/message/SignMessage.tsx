@@ -220,7 +220,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     }
   };
 
-  const renderAddress = (signAddress: SignAddress): React.ReactNode => {
+  const renderAddress = (signAddress: SignAddress): React.ReactElement => {
     const { address, entryId } = signAddress;
 
     const onClick = (): void => {
