@@ -27,7 +27,7 @@ import {
   blockchainIdToCode,
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { dispatchRpcError } from '../screen/actions';
+import { showError } from '../screen/actions';
 import { Dispatched } from '../types';
 import {
   AccountBalance,
@@ -247,7 +247,7 @@ export function importPk(blockchain: BlockchainCode, pk: string, password: strin
 
 export function generateMnemonic(handler?: (value: string) => void): Dispatched {
   return (dispatch, getState, extra) => {
-    extra.api.vault.generateMnemonic(24).then(handler).catch(dispatchRpcError(dispatch));
+    extra.api.vault.generateMnemonic(24).then(handler).catch(showError);
   };
 }
 
@@ -266,7 +266,7 @@ export function setSeedsAction(seeds: SeedDescription[]): SetSeedsAction {
 
 export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): Dispatched {
   return (dispatch, getState, extra) => {
-    extra.api.vault.importSeed(seed).then(handler).catch(dispatchRpcError(dispatch));
+    extra.api.vault.importSeed(seed).then(handler).catch(showError);
   };
 }
 
