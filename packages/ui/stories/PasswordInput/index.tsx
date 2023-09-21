@@ -1,8 +1,8 @@
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
+import ConfirmedPasswordInput from '../../src/components/common/PasswordConfirmedInput';
 import PasswordInput from '../../src/components/common/PasswordInput';
-import ConfirmedPasswordInput from '../../src/components/common/PasswordInput/ConfirmedPasswordInput';
 
 storiesOf('PasswordInput', module)
   .add('default', () => <PasswordInput onChange={action('onChange')} />)

@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src data: https:">
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src data: https:" />
+    <link rel="preload" as="font" href="fonts/inter-latin-400-normal.woff2" type="font/woff2" />
+    <link rel="preload" as="font" href="fonts/roboto-mono-latin-400-normal.woff2" type="font/woff2" />
     <title>Emerald Wallet</title>
     <style>
       html,
@@ -12,19 +14,21 @@
       }
 
       body {
-        -webkit-print-color-adjust: exact;
         font-family: Inter, serif;
         margin-left: 0;
         margin-right: 0;
         margin-top: 0;
+        print-color-adjust: exact;
       }
 
       @media print {
-        body, .application {
+        body,
+        .application {
           background-color: #fff !important;
         }
 
-        .no-print, .no-print * {
+        .no-print,
+        .no-print * {
           display: none !important;
         }
       }

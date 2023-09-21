@@ -4034,6 +4034,8 @@ __metadata:
     "@emeraldpay/bigamount-crypto": ^0.4.1
     "@emeraldpay/hashicon": 0.5.1
     "@emeraldwallet/core": 2.11.0-dev
+    "@fontsource/inter": ^5.0.8
+    "@fontsource/roboto-mono": ^5.0.8
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": 4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
@@ -4069,8 +4071,6 @@ __metadata:
     ts-jest: ^29.1.1
     ts-loader: ^9.4.4
     ts-node: ^10.9.1
-    typeface-inter: ^3.18.1
-    typeface-roboto-mono: ^1.1.13
     typescript: ^5.1.6
     webpack: 5.74.0
   languageName: unknown
@@ -4384,6 +4384,20 @@ __metadata:
     "@ethersproject/properties": ^5.7.0
     "@ethersproject/strings": ^5.7.0
   checksum: 7028c47103f82fd2e2c197ce0eecfacaa9180ffeec7de7845b1f4f9b19d84081b7a48227aaddde05a4aaa526af574a9a0ce01cc0fc75e3e371f84b38b5b16b2b
+  languageName: node
+  linkType: hard
+
+"@fontsource/inter@npm:^5.0.8":
+  version: 5.0.8
+  resolution: "@fontsource/inter@npm:5.0.8"
+  checksum: d67def08f86681ca21d7ee771fc94b05bd6073f4ccc130f619bb94252b37cda1a9796f0c9991bb7be723f292b6deb014049546be5961bcd5185b439b12ed7d63
+  languageName: node
+  linkType: hard
+
+"@fontsource/roboto-mono@npm:^5.0.8":
+  version: 5.0.8
+  resolution: "@fontsource/roboto-mono@npm:5.0.8"
+  checksum: 9f0078c116f2d5d2ed9fb29b56129820f08091e052bd3befa6fb82fe7f6755c2f6f3f80fdedd37c1a27de0f2613ed0ca03257ab9d0e8c283e572986b88317c54
   languageName: node
   linkType: hard
 
@@ -24004,20 +24018,6 @@ __metadata:
   version: 0.0.6
   resolution: "typedarray@npm:0.0.6"
   checksum: 33b39f3d0e8463985eeaeeacc3cb2e28bc3dfaf2a5ed219628c0b629d5d7b810b0eb2165f9f607c34871d5daa92ba1dc69f49051cf7d578b4cbd26c340b9d1b1
-  languageName: node
-  linkType: hard
-
-"typeface-inter@npm:^3.18.1":
-  version: 3.18.1
-  resolution: "typeface-inter@npm:3.18.1"
-  checksum: 7a31415cdb420f84b63e4ce2e1974e004f2d7c7b5cf2f693356c49e67fe9e947e2ee5f7b57844073873b9cbafd4c68ed36462a95e2b22cff696541327ae0db11
-  languageName: node
-  linkType: hard
-
-"typeface-roboto-mono@npm:^1.1.13":
-  version: 1.1.13
-  resolution: "typeface-roboto-mono@npm:1.1.13"
-  checksum: e6f2e02508d4e34fcf93ad162cee6d935ce2020789b3ca732983e400a60bf2ef687d41296fac90604e71629d20560480cfcf11ba112a26af8673f5f135e50a8f
   languageName: node
   linkType: hard
 
