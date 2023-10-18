@@ -36,7 +36,7 @@ function prepareFormatter(amount: BigAmount, decimals: number, options?: Formatt
 
           return approxZero;
         },
-        (whenTrue) => whenTrue.append('≈'),
+        (whenTrue) => whenTrue.append('~'),
       );
     }
   }
