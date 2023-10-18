@@ -28,6 +28,7 @@ import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransact
 import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
 import CreateTransaction from '../../../transaction/CreateTransaction';
 import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
+import CreateTransactionNew from '../../../transaction/CreateTransactionNew';
 import WalletInfo from '../../../wallets/WalletInfo';
 import GlobalKey from '../../vault/GlobalKey';
 import ImportVault from '../../vault/ImportVault';
@@ -69,6 +70,8 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <BroadcastTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
       return <SelectAccount walletId={screenItem} />;
+    case screen.Pages.CREATE_TX_NEW:
+      return <CreateTransactionNew {...screenItem} />;
     case screen.Pages.CREATE_TX_APPROVE:
       return <CreateApproveTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:

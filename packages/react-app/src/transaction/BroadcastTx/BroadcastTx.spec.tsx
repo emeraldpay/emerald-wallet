@@ -4,17 +4,18 @@ import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import '@testing-library/jest-dom/extend-expect';
 import { render } from '@testing-library/react';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createTestStore } from '../../testStore';
 import BroadcastTx from './BroadcastTx';
 
 describe('BroadcastTx', () => {
+  const factory = amountFactory(BlockchainCode.Goerli);
+
   const data: BroadcastData = {
     blockchain: BlockchainCode.Goerli,
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
-    fee: amountFactory(BlockchainCode.Goerli)(1 ** 18),
+    fee: factory('1000000000000000000'),
     signed:
       '0x02f8720580845a288bce8502d16b842682520894e7f129f88b57e902cb18ba' +
       'eecd43f17449419ae287b1a2bc2ec5000080c001a056663c0965287c9e0e92d6' +
@@ -25,12 +26,12 @@ describe('BroadcastTx', () => {
       data: '',
       from: '0x65a60f440ed54910d91a0634a45a2294cc807095',
       gas: 21000,
-      maxGasPrice: new BigNumber('10000000000'),
-      nonce: '0x0',
-      priorityGasPrice: new BigNumber('1000000000'),
+      maxGasPrice: factory('10000000000'),
+      nonce: 0,
+      priorityGasPrice: factory('1000000000'),
       to: '0xe7f129f88b57e902cb18baeecd43f17449419ae2',
       type: EthereumTransactionType.EIP1559,
-      value: new BigNumber('50000000000000000'),
+      value: factory('50000000000000000'),
     },
     txId: '0xc9c924dd7f4ffe61d653718b204d6aae514736db227fdb0297b76cd8f3f1f203',
   };

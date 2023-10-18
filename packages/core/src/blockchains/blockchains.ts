@@ -157,7 +157,11 @@ export function isBitcoin(code: BlockchainCode): boolean {
 
 export const WEIS_GOERLI = new Units([
   new Unit(0, 'Goerli Wei', 'WeiG'),
+  new Unit(3, 'Goerli Kwei', 'KWeiG'),
+  new Unit(6, 'Goerli Mwei', 'MWeiG'),
   new Unit(9, 'Goerli Gwei', 'GWeiG'),
+  new Unit(12, 'Goerli Microether', 'μETG'),
+  new Unit(15, 'Goerli Milliether', 'mETG'),
   new Unit(18, 'Goerli Ether', 'ETG'),
 ]);
 

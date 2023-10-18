@@ -1,9 +1,7 @@
 import BigNumber from 'bignumber.js';
 import * as convert from './convert';
 
-const {
-  toNumber, toHex, toBigNumber, quantitiesToHex,
-} = convert;
+const { toNumber, toHex, toBigNumber } = convert;
 
 test('toNumber should convert hex string to number', () => {
   expect(toNumber('0x01')).toBe(1);
@@ -20,29 +18,17 @@ test('toNumber should convert number to number', () => {
 });
 
 test('toNumber should accept empty', () => {
-  // @ts-ignore
   expect(toNumber(null)).toBe(0);
-  // @ts-ignore
   expect(toNumber(undefined)).toBe(0);
-
-  // @ts-ignore
   expect(toNumber(null, -1)).toBe(-1);
-  // @ts-ignore
   expect(toNumber(undefined, 10)).toBe(10);
-});
-
-describe('quantitiesToHex', () => {
-  it('converts without leading zeros', () => {
-    expect(quantitiesToHex(1024)).toEqual('0x400');
-    expect(quantitiesToHex(0)).toEqual('0x0');
-  });
 });
 
 describe('toHex', () => {
   it('convert decimal number to hex', () => {
-    expect(toHex(10000000000)).toEqual('0x02540be400');
+    expect(toHex(10000000000)).toEqual('0x2540be400');
     expect(toHex('21000')).toEqual('0x5208');
-    expect(toHex('100000000000000000000')).toEqual('0x056bc75e2d63100000');
+    expect(toHex('100000000000000000000')).toEqual('0x56bc75e2d63100000');
   });
 
   it('convert BigNumber to hex', () => {
@@ -50,7 +36,7 @@ describe('toHex', () => {
   });
 
   it('convert hex to hex', () => {
-    expect(toHex('0x01')).toEqual('0x01');
+    expect(toHex('0x1')).toEqual('0x1');
   });
 });
 

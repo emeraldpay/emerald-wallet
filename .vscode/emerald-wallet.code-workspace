@@ -1,0 +1,82 @@
+{
+  "extensions": {
+    "recommendations": [
+      "christian-kohler.npm-intellisense",
+      "dbaeumer.vscode-eslint",
+      "editorconfig.editorconfig",
+      "esbenp.prettier-vscode",
+      "orta.vscode-jest",
+      "rust-lang.rust-analyzer",
+      "serayuzgur.crates",
+      "tamasfe.even-better-toml",
+      "visualstudioexptteam.vscodeintellicode"
+    ]
+  },
+  "folders": [
+    {
+      "name": "emerald-wallet",
+      "path": ".."
+    },
+    {
+      "name": "@emeraldwallet/core",
+      "path": "../packages/core"
+    },
+    {
+      "name": "@emeraldwallet/desktop",
+      "path": "../packages/desktop"
+    },
+    {
+      "name": "@emeraldwallet/electron-app",
+      "path": "../packages/electron-app"
+    },
+    {
+      "name": "@emeraldwallet/persistent-state",
+      "path": "../packages/persistent-state"
+    },
+    {
+      "name": "@emeraldwallet/persistent-state/native",
+      "path": "../packages/persistent-state/native"
+    },
+    {
+      "name": "@emeraldwallet/react-app",
+      "path": "../packages/react-app"
+    },
+    {
+      "name": "@emeraldwallet/services",
+      "path": "../packages/services"
+    },
+    {
+      "name": "@emeraldwallet/store",
+      "path": "../packages/store"
+    },
+    {
+      "name": "@emeraldwallet/ui",
+      "path": "../packages/ui"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "jest.disabledWorkspaceFolders": [
+      "emerald-wallet",
+      "@emeraldwallet/electron-app",
+      "@emeraldwallet/persistent-state/native"
+    ],
+    "npm.packageManager": "yarn",
+    "search.exclude": {
+      "**/.emerald-dev": true,
+      "**/.tests": true,
+      "**/app": true,
+      "**/lib": true,
+      "**/node_modules": true,
+      "**/target": true,
+      "*.tsbuildinfo": true,
+      "yarn.lock": true
+    },
+    "[rust]": {
+      "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    }
+  }
+}

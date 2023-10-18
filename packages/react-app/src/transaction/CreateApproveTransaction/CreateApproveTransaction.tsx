@@ -1,5 +1,6 @@
 import { EthereumEntry, Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
+  EthereumTransactionType,
   MAX_DISPLAY_ALLOWANCE,
   TokenRegistry,
   amountFactory,
@@ -258,14 +259,16 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
 
       if (signed != null) {
-        const zeroAmount = amountFactory(blockchainIdToCode(entry.blockchain))(0);
+        const gasPrice =
+          (tx.type === EthereumTransactionType.EIP1559 ? tx.maxGasPrice : tx.gasPrice) ??
+          amountFactory(tx.blockchain)(0);
 
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (tx.maxGasPrice ?? tx.gasPrice ?? zeroAmount).multiply(tx.gas),
+              fee: gasPrice.multiply(tx.gas),
             },
             null,
             true,

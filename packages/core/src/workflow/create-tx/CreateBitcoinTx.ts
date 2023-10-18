@@ -1,4 +1,4 @@
-import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
 import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, InputUtxo, amountDecoder, amountFactory, blockchainIdToCode } from '../../blockchains';
 import { TxTarget, ValidationResult } from './types';
@@ -92,7 +92,6 @@ export class CreateBitcoinTx implements BitcoinTx {
 
   private readonly amountDecoder: (value: string) => BigAmount;
   private readonly amountFactory: CreateAmount<BigAmount>;
-  private readonly amountUnits: Units;
   private readonly blockchain: BlockchainCode;
   private readonly utxo: InputUtxo[];
   private readonly zero: BigAmount;
@@ -110,7 +109,6 @@ export class CreateBitcoinTx implements BitcoinTx {
     this.amountFactory = amountFactory(this.blockchain);
 
     this.zero = this.amountFactory(0);
-    this.amountUnits = this.zero.units;
 
     this.vkbPrice = this.amountFactory(DEFAULT_VKB_FEE);
   }

@@ -128,11 +128,13 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
   const [useEip1559, setUseEip1559] = React.useState(ethTx.type === EthereumTransactionType.EIP1559);
 
   const factory = React.useMemo(() => amountFactory(ethTx.blockchain), [ethTx.blockchain]);
+  const zeroAmount = React.useMemo(() => factory(0), [factory]);
 
-  const txGasPrice = factory(ethTx.maxGasPrice ?? ethTx.gasPrice ?? 0);
+  const txGasPrice =
+    (ethTx.type === EthereumTransactionType.EIP1559 ? ethTx.maxGasPrice : ethTx.gasPrice) ?? zeroAmount;
   const txGasPriceUnit = txGasPrice.getOptimalUnit();
 
-  const txPriorityGasPrice = factory(ethTx.priorityGasPrice ?? 0);
+  const txPriorityGasPrice = ethTx.priorityGasPrice ?? zeroAmount;
 
   const lowGasPrice = txGasPrice.plus(txGasPrice.multiply(0.1)).getNumberByUnit(txGasPriceUnit).toNumber();
   const lowPriorityGasPrice = txPriorityGasPrice.getNumberByUnit(txGasPriceUnit).toNumber();
@@ -150,10 +152,8 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
   const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
-    const zeroAmount = factory(0);
-
-    const newGasPrice = BigAmount.createFor(gasPrice, zeroAmount.units, factory, txGasPriceUnit).number;
-    const newPriorityGasPrice = BigAmount.createFor(priorityGasPrice, zeroAmount.units, factory, txGasPriceUnit).number;
+    const newGasPrice = BigAmount.createFor(gasPrice, zeroAmount.units, factory, txGasPriceUnit);
+    const newPriorityGasPrice = BigAmount.createFor(priorityGasPrice, zeroAmount.units, factory, txGasPriceUnit);
 
     let gasPrices: Pick<EthereumTransaction, 'gasPrice' | 'maxGasPrice' | 'priorityGasPrice'>;
 
@@ -281,7 +281,7 @@ const CancelEthereumTransaction: React.FC<DispatchProps & OwnProps> = ({
           )}
           <FormRow>
             <FormLabel>Amount</FormLabel>
-            {formatAmount(factory(ethTx.value))}
+            {formatAmount(ethTx.value)}
           </FormRow>
           <FormAccordion
             title={
@@ -451,15 +451,19 @@ export default connect<unknown, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      let gasPrice: Wei | undefined;
-      let maxGasPrice: Wei | undefined;
-      let priorityGasPrice: Wei | undefined;
+      const zeroAmount = amountFactory(tx.blockchain)(0);
+
+      let gasPrices: Pick<EthereumTransaction, 'gasPrice' | 'maxGasPrice' | 'priorityGasPrice'>;
 
       if (tx.type === EthereumTransactionType.EIP1559) {
-        maxGasPrice = new Wei(tx.maxGasPrice ?? tx.gasPrice ?? 0);
-        priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
+        gasPrices = {
+          maxGasPrice: tx.maxGasPrice ?? zeroAmount,
+          priorityGasPrice: tx.priorityGasPrice ?? zeroAmount,
+        };
       } else {
-        gasPrice = new Wei(tx.maxGasPrice ?? tx.gasPrice ?? 0);
+        gasPrices = {
+          gasPrice: tx.gasPrice ?? zeroAmount,
+        };
       }
 
       const signed: SignData | undefined = await dispatch(
@@ -467,24 +471,24 @@ export default connect<unknown, DispatchProps, OwnProps, IState>(
           entryId,
           {
             ...tx,
+            ...gasPrices,
             data: '',
             gas: DEFAULT_GAS_LIMIT,
-            gasPrice: gasPrice?.number,
-            maxGasPrice: maxGasPrice?.number,
-            priorityGasPrice: priorityGasPrice?.number,
-            value: amountFactory(tx.blockchain)(0).number,
+            value: zeroAmount,
           },
           password,
         ),
       );
 
       if (signed != null) {
+        const gasPrice = (tx.type === EthereumTransactionType.EIP1559 ? tx.maxGasPrice : tx.gasPrice) ?? zeroAmount;
+
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(DEFAULT_GAS_LIMIT),
+              fee: gasPrice.multiply(DEFAULT_GAS_LIMIT),
               originalAmount: Wei.ZERO,
             },
             null,

@@ -1,5 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
+import BigNumber from 'bignumber.js';
 import { DisplayErc20Tx, DisplayTx } from '..';
 import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../../blockchains';
 import { Contract } from '../../Contract';
@@ -136,12 +137,9 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
 
     const zeroAmount = amountFactory(details.blockchain)(0) as WeiAny;
 
-    if (details.type === EthereumTransactionType.EIP1559) {
-      this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
-      this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
-    } else {
-      this.gasPrice = details.gasPrice ?? zeroAmount;
-    }
+    this.gasPrice = details.gasPrice ?? zeroAmount;
+    this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
+    this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
 
     this.tokenRegistry = tokenRegistry;
 
@@ -161,8 +159,14 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     return this.asset;
   }
 
-  public setAmount(amount: BigAmount): void {
-    this.amount = amount;
+  public setAmount(amount: BigAmount | BigNumber): void {
+    if (BigAmount.is(amount)) {
+      this.amount = amount;
+    } else {
+      const { units } = this.amount;
+
+      this.amount = new BigAmount(1, units).multiply(units.top.multiplier).multiply(amount);
+    }
   }
 
   public getChange(): BigAmount | null {
@@ -174,7 +178,8 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   }
 
   public getFees(): WeiAny {
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }
@@ -206,9 +211,9 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
   }
 
   public build(): EthereumTransaction {
-    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+    const { blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
 
-    const value = amount.number.toFixed();
+    const value = this.amount.number.toFixed();
 
     const data =
       this.transferFrom == null
@@ -220,12 +225,12 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
       data,
       from,
       gas,
+      gasPrice,
+      maxGasPrice,
+      priorityGasPrice,
       type,
-      gasPrice: gasPrice?.number,
-      maxGasPrice: maxGasPrice?.number,
-      priorityGasPrice: priorityGasPrice?.number,
       to: this.token.address,
-      value: this.zeroAmount.number,
+      value: this.zeroAmount,
     };
   }
 
@@ -273,7 +278,9 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
 
   public debug(): string {
     const change = this.getChange();
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return (
       `Send ${this.from} -> ${this.to} of ${JSON.stringify(this.amount)} ` +

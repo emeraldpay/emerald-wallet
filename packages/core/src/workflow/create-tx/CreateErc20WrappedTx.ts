@@ -49,12 +49,9 @@ export class CreateErc20WrappedTx {
     this.totalTokenBalance = details.totalTokenBalance;
     this.type = details.type;
 
-    if (details.type === EthereumTransactionType.EIP1559) {
-      this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
-      this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
-    } else {
-      this.gasPrice = details.gasPrice ?? zeroAmount;
-    }
+    this.gasPrice = details.gasPrice ?? zeroAmount;
+    this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
+    this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
 
     this.token = new Token(details.token);
     this.zeroAmount = zeroAmount;
@@ -65,9 +62,9 @@ export class CreateErc20WrappedTx {
   }
 
   build(): EthereumTransaction {
-    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, totalBalance, type, address = '' } = this;
+    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, type, address: from = '' } = this;
 
-    const isDeposit = amount.units.equals(totalBalance.units);
+    const isDeposit = amount.units.equals(this.totalBalance.units);
 
     const data = isDeposit
       ? this.tokenContract.functionToData('deposit', {})
@@ -78,12 +75,12 @@ export class CreateErc20WrappedTx {
       data,
       gas,
       type,
-      from: address,
-      gasPrice: gasPrice?.number,
-      maxGasPrice: maxGasPrice?.number,
-      priorityGasPrice: priorityGasPrice?.number,
+      from,
+      gasPrice,
+      maxGasPrice,
+      priorityGasPrice,
       to: this.token.address,
-      value: isDeposit ? amount.number : this.zeroAmount.number,
+      value: isDeposit ? amount : this.zeroAmount,
     };
   }
 
@@ -105,7 +102,8 @@ export class CreateErc20WrappedTx {
   }
 
   getFees(): BigAmount {
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }

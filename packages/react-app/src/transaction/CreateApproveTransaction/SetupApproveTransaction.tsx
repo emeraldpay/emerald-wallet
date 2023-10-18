@@ -32,7 +32,7 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AmountField } from '../../common/AmountField';
-import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
+import { EthTxSettings } from '../../common/EthTxSettings';
 import { Asset, SelectAsset } from '../../common/SelectAsset';
 import { SelectEntry } from '../../common/SelectEntry';
 import { ToField } from '../../common/ToField';
@@ -400,7 +400,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
     <>
       <FormRow>
         <FormLabel>From</FormLabel>
-        <SelectEntry entries={entries} disabled={initializing} selected={currentEntry} onSelect={onEntrySelect} />
+        <SelectEntry entries={entries} disabled={initializing} selectedEntry={currentEntry} onSelect={onEntrySelect} />
       </FormRow>
       <FormRow>
         <FormLabel>Token</FormLabel>

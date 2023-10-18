@@ -81,12 +81,9 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
 
     this.zeroAmount = amountFactory(details.blockchain)(0);
 
-    if (this.type === EthereumTransactionType.EIP1559) {
-      this.maxGasPrice = details.maxGasPrice ?? this.zeroAmount;
-      this.priorityGasPrice = details.priorityGasPrice ?? this.zeroAmount;
-    } else {
-      this.gasPrice = details.gasPrice ?? this.zeroAmount;
-    }
+    this.gasPrice = details.gasPrice ?? this.zeroAmount;
+    this.maxGasPrice = details.maxGasPrice ?? this.zeroAmount;
+    this.priorityGasPrice = details.priorityGasPrice ?? this.zeroAmount;
   }
 
   static fromPlain(details: Erc20ApproveTxDetails): CreateErc20ApproveTx {
@@ -126,34 +123,24 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
   }
 
   build(): EthereumTransaction {
-    const {
-      amount,
+    const { blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, type, allowFor = '', approveBy = '' } = this;
+
+    const data = this.tokenContract.functionToData('approve', {
+      _spender: allowFor,
+      _amount: this.amount.number.toFixed(),
+    });
+
+    return {
       blockchain,
+      data,
       gas,
       gasPrice,
       maxGasPrice,
       priorityGasPrice,
       type,
-      allowFor = '',
-      approveBy = '',
-    } = this;
-
-    const data = this.tokenContract.functionToData('approve', {
-      _spender: allowFor,
-      _amount: amount.number.toFixed(),
-    });
-
-    return {
-      blockchain,
-      gas,
-      data,
-      type,
       from: approveBy,
-      gasPrice: gasPrice?.number,
-      maxGasPrice: maxGasPrice?.number,
-      priorityGasPrice: priorityGasPrice?.number,
-      to: this._token.address,
-      value: this.zeroAmount.number,
+      to: this.token.address,
+      value: this.zeroAmount,
     };
   }
 
@@ -176,7 +163,8 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
   }
 
   getFees(): BigAmount {
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }

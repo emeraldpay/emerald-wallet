@@ -33,7 +33,7 @@
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
     "@types/redux-logger": "^3.0.9",
-    "electron": "22.3.9",
+    "electron": "22.3.27",
     "jest": "^29.6.2",
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.1",

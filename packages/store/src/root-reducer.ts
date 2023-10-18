@@ -12,6 +12,7 @@ import {
   screen,
   settings,
   tokens,
+  txStash,
   txhistory,
 } from './';
 
@@ -23,6 +24,7 @@ export const rootReducer = combineReducers<IState>({
   [connection.moduleName]: connection.reducer,
   [screen.moduleName]: screen.reducer,
   [tokens.moduleName]: tokens.reducer,
+  [txStash.moduleName]: txStash.reducer,
   addAccount: addAccount.reducer,
   blockchains: blockchains.reducer,
   hdpathPreview: hdpathPreview.reducer,

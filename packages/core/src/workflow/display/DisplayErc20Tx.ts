@@ -2,6 +2,7 @@ import { FormatterBuilder, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { CreateERC20Tx } from '..';
 import { TokenRegistry } from '../../blockchains';
+import { EthereumTransactionType } from '../../transaction/ethereum';
 import { DisplayTx } from './DisplayTx';
 
 const formatter = new FormatterBuilder().useTopUnit().number(6, true).build();
@@ -44,7 +45,9 @@ export class DisplayErc20Tx implements DisplayTx {
   topUnit(): Unit {
     const { transaction } = this;
 
-    const gasPrice = transaction.maxGasPrice ?? transaction.gasPrice ?? Wei.ZERO;
+    const gasPrice =
+      (transaction.type === EthereumTransactionType.EIP1559 ? transaction.maxGasPrice : transaction.gasPrice) ??
+      Wei.ZERO;
 
     return gasPrice.units.top;
   }

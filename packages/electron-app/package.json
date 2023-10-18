@@ -27,7 +27,7 @@
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
     "@types/uuid": "^9.0.2",
-    "electron": "22.3.9",
+    "electron": "22.3.27",
     "jest": "^29.6.2",
     "neon-cli": "^0.10.1",
     "rimraf": "^5.0.1",

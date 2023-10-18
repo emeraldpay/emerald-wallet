@@ -17,6 +17,7 @@ limitations under the License.
 import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import { WithStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Pen3 as EditIcon } from '../../../icons';
@@ -72,7 +73,6 @@ interface OwnProps {
   addressProps?: Record<string, unknown>;
   addressWidth?: number | string;
   balances?: string[];
-  classes: Record<keyof typeof styles, string>;
   description?: React.ReactNode;
   disabled?: boolean;
   editable?: boolean;
@@ -83,7 +83,7 @@ interface OwnProps {
   onEditClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
-export class Account extends React.PureComponent<OwnProps> {
+class Account extends React.PureComponent<OwnProps & WithStyles<typeof styles>> {
   public static defaultProps = {
     addressWidth: 'auto',
     disabled: false,

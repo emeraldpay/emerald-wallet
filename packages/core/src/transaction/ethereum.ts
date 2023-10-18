@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode } from '../blockchains';
 
 export const DEFAULT_GAS_LIMIT = 21000 as const;
@@ -46,16 +46,16 @@ export interface EthereumTransaction {
   blockchain: BlockchainCode;
   blockNumber?: number;
   from: string;
-  gas: number | string;
-  gasPrice?: string | BigNumber;
-  maxGasPrice?: string | BigNumber;
-  priorityGasPrice?: string | BigNumber;
+  gas: number;
+  gasPrice?: BigAmount;
+  maxGasPrice?: BigAmount;
+  priorityGasPrice?: BigAmount;
   hash?: string;
   data?: string;
-  nonce?: number | string;
+  nonce?: number;
   to?: string;
   type: EthereumTransactionType;
-  value: string | BigNumber;
+  value: BigAmount;
 }
 
 export interface EthereumRawReceipt {

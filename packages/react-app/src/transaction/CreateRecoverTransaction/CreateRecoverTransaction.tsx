@@ -11,6 +11,7 @@ import {
   TokenAmount,
   TokenData,
   TokenRegistry,
+  amountFactory,
   blockchainIdToCode,
   formatAmount,
   workflow,
@@ -635,12 +636,16 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
 
       if (signed != null) {
+        const gasPrice =
+          (tx.type === EthereumTransactionType.EIP1559 ? tx.maxGasPrice : tx.gasPrice) ??
+          amountFactory(tx.blockchain)(0);
+
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO).multiply(tx.gas),
+              fee: gasPrice.multiply(tx.gas),
               originalAmount: tx.amount,
             },
             null,
