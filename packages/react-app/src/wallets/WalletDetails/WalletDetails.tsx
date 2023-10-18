@@ -106,6 +106,20 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
   const [tab, setTab] = React.useState(initialTab ?? WalletTabs.BALANCE);
 
+  const renderTabs = (): React.ReactNode => {
+    const tabs = [<Tab key={WalletTabs.BALANCE} label="Balance" value={WalletTabs.BALANCE} />];
+
+    if (hasEthereumEntry) {
+      tabs.push(<Tab key={WalletTabs.ALLOWANCES} label="Allowances" value={WalletTabs.ALLOWANCES} />);
+    }
+
+    return [
+      ...tabs,
+      <Tab key={WalletTabs.ADDRESSES} label="Addresses" value={WalletTabs.ADDRESSES} />,
+      <Tab key={WalletTabs.TRANSACTIONS} label="Transactions" value={WalletTabs.TRANSACTIONS} />,
+    ];
+  };
+
   React.useEffect(() => {
     if (currentWallet.current !== walletId) {
       currentWallet.current = walletId;
@@ -128,10 +142,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
       <TabContext value={tab}>
         <div className={styles.tabs}>
           <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
-            <Tab label="Balance" value={WalletTabs.BALANCE} />
-            {hasEthereumEntry && <Tab label="Allowances" value={WalletTabs.ALLOWANCES} />}
-            <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
-            <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
+            {renderTabs()}
           </TabList>
           <WalletMenu walletId={walletId} />
         </div>
