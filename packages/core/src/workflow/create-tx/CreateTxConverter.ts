@@ -117,7 +117,7 @@ export class CreateTxConverter {
         newCreateTx.from = entry.address?.value;
         newCreateTx.to = createTx.to;
 
-        if (blockchain === createTx.blockchain) {
+        if (blockchain === createTx.blockchain && (createTx.gasPrice?.isPositive() ?? false)) {
           newCreateTx.gasPrice = createTx.gasPrice;
           newCreateTx.maxGasPrice = createTx.maxGasPrice;
           newCreateTx.priorityGasPrice = createTx.priorityGasPrice;
@@ -164,6 +164,14 @@ export class CreateTxConverter {
           createTx.totalTokenBalance = this.getBalance(entry, asset, createTx.transferFrom);
         } else {
           createTx.totalBalance = this.getBalance(entry, asset) as WeiAny;
+        }
+
+        if (createTx.target === TxTarget.SEND_ALL && !createTx.rebalance()) {
+          createTx.target = TxTarget.MANUAL;
+
+          createTx.amount = CreateTxConverter.isErc20CreateTx(createTx, tokenRegistry)
+            ? tokenRegistry.byAddress(blockchain, createTx.getAsset()).getAmount(0)
+            : amountFactory(blockchain)(0);
         }
       }
     }
