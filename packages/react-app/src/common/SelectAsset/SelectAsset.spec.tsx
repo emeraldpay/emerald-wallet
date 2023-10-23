@@ -23,7 +23,7 @@ describe('SelectAsset', () => {
   it('should not crash without onChange handler', () => {
     const wrapper = shallow<SelectAssetBase>(<SelectAssetBase asset="ETC" assets={assets} classes={{}} />);
 
-    wrapper.instance().onChangeToken({ target: { value: 'ETC' } } as React.ChangeEvent<HTMLInputElement>);
+    wrapper.instance().handleAssetChange({ target: { value: 'ETC' } } as React.ChangeEvent<HTMLInputElement>);
   });
 
   it('should render total balance', async () => {

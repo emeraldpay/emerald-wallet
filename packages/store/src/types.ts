@@ -12,6 +12,7 @@ import { ScreenState } from './screen/types';
 import { SettingsState } from './settings/types';
 import { TokensState, moduleName as tokensModule } from './tokens/types';
 import { HistoryState } from './txhistory/types';
+import { TxStashState, moduleName as txStashModule } from './txstash/types';
 
 export interface IState {
   [accountsModule]: AccountsState;
@@ -22,6 +23,7 @@ export interface IState {
   [connectionModule]: ConnectionState;
   [hdpathPreviewModule]: HDPreviewState;
   [tokensModule]: TokensState;
+  [txStashModule]: TxStashState;
   addAccount?: IAddAccountState;
   history: HistoryState;
   screen: ScreenState;

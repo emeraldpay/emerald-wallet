@@ -8,13 +8,11 @@ import {
   formatAmount,
 } from '@emeraldwallet/core';
 import {
-  DefaultFee,
   GasPrices,
   IState,
   SignData,
   StoredTransaction,
   accounts,
-  application,
   blockchains,
   screen,
   transaction,
@@ -92,10 +90,6 @@ interface OwnProps {
   goBack(): void;
 }
 
-interface StateProps {
-  defaultFee: DefaultFee | undefined;
-}
-
 interface DispatchProps {
   getTopFee(blockchain: BlockchainCode): Promise<GasPrices>;
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
@@ -103,10 +97,9 @@ interface DispatchProps {
   verifyGlobalKey(password: string): Promise<boolean>;
 }
 
-const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps> = ({
+const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps> = ({
   entryId,
   ethTx,
-  defaultFee,
   isHardware,
   tx,
   getTopFee,
@@ -128,8 +121,10 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   const [toName, setToName] = React.useState<string | null>(null);
 
   const factory = React.useMemo(() => amountFactory(ethTx.blockchain), [ethTx.blockchain]);
+  const zeroAmount = React.useMemo(() => factory(0), [factory]);
 
-  const txGasPrice = factory(ethTx.maxGasPrice ?? ethTx.gasPrice ?? defaultFee?.std ?? 0);
+  const txGasPrice =
+    (ethTx.type === EthereumTransactionType.EIP1559 ? ethTx.maxGasPrice : ethTx.gasPrice) ?? zeroAmount;
   const txGasPriceUnit = txGasPrice.getOptimalUnit(undefined, undefined, 6);
 
   const [useEip1559, setUseEip1559] = React.useState(ethTx.type === EthereumTransactionType.EIP1559);
@@ -139,7 +134,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   const [maxGasPrice, setMaxGasPrice] = React.useState(minGasPriceNumber);
   const [highMaxGasPrice, setHighMaxGasPrice] = React.useState<BigAmount>(txGasPrice.plus(txGasPrice.multiply(0.5)));
 
-  const txPriorityGasPrice = factory(ethTx.priorityGasPrice ?? 0);
+  const txPriorityGasPrice = ethTx.priorityGasPrice ?? zeroAmount;
 
   const minPriorityGasPriceNumber = txPriorityGasPrice.getNumberByUnit(txGasPriceUnit).toNumber();
 
@@ -154,10 +149,8 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
-    const zeroAmount = factory(0);
-
-    const newGasPrice = BigAmount.createFor(maxGasPrice, zeroAmount.units, factory, txGasPriceUnit).number;
-    const newPriorityGasPrice = BigAmount.createFor(priorityGasPrice, zeroAmount.units, factory, txGasPriceUnit).number;
+    const newGasPrice = BigAmount.createFor(maxGasPrice, zeroAmount.units, factory, txGasPriceUnit);
+    const newPriorityGasPrice = BigAmount.createFor(priorityGasPrice, zeroAmount.units, factory, txGasPriceUnit);
 
     let gasPrices: Pick<EthereumTransaction, 'gasPrice' | 'maxGasPrice' | 'priorityGasPrice'>;
 
@@ -296,7 +289,7 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
           )}
           <FormRow>
             <FormLabel>Amount</FormLabel>
-            {formatAmount(factory(ethTx.value))}
+            {formatAmount(ethTx.value)}
           </FormRow>
           <FormAccordion
             title={
@@ -451,10 +444,8 @@ const SpeedUpEthereumTransaction: React.FC<OwnProps & DispatchProps & StateProps
   );
 };
 
-export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, { ethTx: { blockchain } }) => ({
-    defaultFee: application.selectors.getDefaultFee(state, blockchain),
-  }),
+export default connect<unknown, DispatchProps, OwnProps, IState>(
+  null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     getTopFee(blockchain) {
@@ -471,43 +462,35 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      const factory = amountFactory(tx.blockchain);
+      const zeroAmount = amountFactory(tx.blockchain)(0);
 
-      let gasPrice: BigAmount | undefined;
-      let maxGasPrice: BigAmount | undefined;
-      let priorityGasPrice: BigAmount | undefined;
+      let gasPrices: Pick<EthereumTransaction, 'gasPrice' | 'maxGasPrice' | 'priorityGasPrice'>;
 
       if (tx.type === EthereumTransactionType.EIP1559) {
-        maxGasPrice = factory(tx.maxGasPrice ?? 0);
-        priorityGasPrice = factory(tx.priorityGasPrice ?? 0);
+        gasPrices = {
+          maxGasPrice: tx.maxGasPrice ?? zeroAmount,
+          priorityGasPrice: tx.priorityGasPrice ?? zeroAmount,
+        };
       } else {
-        gasPrice = factory(tx.gasPrice ?? 0);
+        gasPrices = {
+          gasPrice: tx.gasPrice ?? zeroAmount,
+        };
       }
 
-      const gas = parseInt(tx.gas.toString(), 10);
-      const value = factory(tx.value);
-
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(
-          entryId,
-          {
-            ...tx,
-            gasPrice: gasPrice?.number,
-            maxGasPrice: maxGasPrice?.number,
-            priorityGasPrice: priorityGasPrice?.number,
-          },
-          password,
-        ),
+        transaction.actions.signTransaction(entryId, { ...tx, ...gasPrices }, password),
       );
 
       if (signed != null) {
+        const gasPrice = (tx.type === EthereumTransactionType.EIP1559 ? tx.maxGasPrice : tx.gasPrice) ?? zeroAmount;
+
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (maxGasPrice ?? gasPrice ?? factory(0)).multiply(gas),
-              originalAmount: value,
+              fee: gasPrice.multiply(tx.gas),
+              originalAmount: tx.value,
             },
             null,
             true,

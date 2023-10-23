@@ -16,6 +16,10 @@ export function getFeeTtl<T = number | undefined>(state: IState, blockchain: Blo
   return state[moduleName].options[`fee_ttl.${blockchainCodeToId(blockchain)}`] as T;
 }
 
+export function getFeeRangeTtl<T = number | undefined>(state: IState, blockchain: BlockchainCode): T {
+  return state[moduleName].options[`fee_range_ttl.${blockchainCodeToId(blockchain)}`] as T;
+}
+
 export function getLedgerMinVersion<T = string | undefined>(state: IState, blockchain: BlockchainCode): T {
   return state[moduleName].options[`ledger_min_version.${blockchainCodeToId(blockchain)}`] as T;
 }

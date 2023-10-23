@@ -1,5 +1,5 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { EthereumAddress, formatAmount, formatAmountPartial } from '@emeraldwallet/core';
+import { CurrencyAmount, EthereumAddress, formatAmount, formatAmountPartial } from '@emeraldwallet/core';
 import { ListItemText, MenuItem, StyleRulesCallback, TextField, Theme, Tooltip, createStyles } from '@material-ui/core';
 import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -18,8 +18,8 @@ interface Props {
   assets: Asset[];
   balance?: BigAmount;
   disabled?: boolean;
-  fiatBalance?: BigAmount;
-  onChangeAsset?(token: string): void;
+  fiatBalance?: CurrencyAmount;
+  onChangeAsset?(asset: string): void;
 }
 
 const styles: StyleRulesCallback<Theme, Props> = (theme) =>
@@ -35,7 +35,7 @@ const styles: StyleRulesCallback<Theme, Props> = (theme) =>
   });
 
 export class SelectAsset extends React.Component<Props & WithStyles<typeof styles>> {
-  onChangeToken = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+  handleAssetChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
     this.props.onChangeAsset?.(value);
   };
 
@@ -84,7 +84,7 @@ export class SelectAsset extends React.Component<Props & WithStyles<typeof style
           select
           disabled={disabled}
           value={asset}
-          onChange={this.onChangeToken}
+          onChange={this.handleAssetChange}
           SelectProps={{ renderValue: () => this.renderAsset(asset) }}
         >
           {assets.map(({ address, symbol, balance: assetBalance }) => {

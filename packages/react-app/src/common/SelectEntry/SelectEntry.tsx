@@ -1,90 +1,193 @@
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { amountFactory, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
-import { IState, accounts, tokens } from '@emeraldwallet/store';
-import { Account } from '@emeraldwallet/ui';
-import { Menu, MenuItem } from '@material-ui/core';
+import { IState, TokenBalanceBelong, accounts, allowances, tokens } from '@emeraldwallet/store';
+import { Account, Monospace } from '@emeraldwallet/ui';
+import { Menu, MenuItem, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
 interface OwnProps {
   disabled?: boolean;
   entries: WalletEntry[];
-  selected: WalletEntry;
-  onSelect(entry: WalletEntry): void;
+  ownerAddress?: string | null;
+  selectedEntry: WalletEntry;
+  withAllowances?: boolean;
+  onSelect(entry: WalletEntry, ownerAddress?: string): void;
+}
+
+interface EntryAllowances {
+  [entryId: string]: string[];
 }
 
 interface StateProps {
-  getBalances(entry: WalletEntry): string[];
+  entryAllowances: EntryAllowances;
+  getBalances(entry: WalletEntry, ownerAddress?: string): string[];
 }
 
-const SelectEntry: React.FC<OwnProps & StateProps> = ({ disabled, entries, selected, getBalances, onSelect }) => {
+const SelectEntry: React.FC<OwnProps & StateProps> = ({
+  disabled,
+  entries,
+  entryAllowances,
+  ownerAddress,
+  selectedEntry,
+  getBalances,
+  onSelect,
+}) => {
   const [menuElement, setMenuElement] = React.useState<HTMLDivElement | null>(null);
 
-  const onOpenMenu = ({ currentTarget }: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-    setMenuElement(currentTarget);
-  };
-
-  const onCloseMenu = (): void => {
+  const handleMenuClose = (): void => {
     setMenuElement(null);
   };
 
-  const onEntryClick = (entry: WalletEntry): void => {
-    onSelect(entry);
-    onCloseMenu();
+  const handleEntrySelect = (entry: WalletEntry, ownerAddress?: string): void => {
+    onSelect(entry, ownerAddress);
+    handleMenuClose();
   };
 
-  const renderEntry = (entry: WalletEntry, selected = false): React.ReactNode => {
-    if (entry.address == null) {
-      return null;
+  const renderSelectedEntry = (): React.ReactElement => {
+    if (selectedEntry.address == null) {
+      return <Typography>Please select from entry...</Typography>;
+    }
+
+    let description: React.ReactElement | undefined;
+
+    if (ownerAddress != null) {
+      const { [selectedEntry.id]: allowances = [] } = entryAllowances;
+
+      if (allowances.includes(ownerAddress)) {
+        description = (
+          <>
+            Owner <Monospace text={ownerAddress} />
+          </>
+        );
+      }
     }
 
     return (
       <Account
-        address={entry.address.value}
+        address={selectedEntry.address.value}
         addressProps={{ hideCopy: true }}
         addressWidth={450}
-        balances={selected ? undefined : getBalances(entry)}
+        description={description}
         disabled={disabled}
         identity={true}
-        onClick={selected ? onOpenMenu : () => onEntryClick(entry)}
+        onClick={({ currentTarget }) => setMenuElement(currentTarget)}
       />
     );
   };
 
+  const renderAccounts = (): React.ReactNode => {
+    return entries.map((entry) => {
+      if (entry.address == null) {
+        return undefined;
+      }
+
+      const accounts: React.ReactElement[] = [
+        <MenuItem
+          key={`${entry.blockchain}:${entry.address.value}`}
+          selected={ownerAddress == null && entry.id === selectedEntry.id}
+        >
+          <Account
+            key={entry.address.value}
+            address={entry.address.value}
+            addressProps={{ hideCopy: true }}
+            addressWidth={450}
+            balances={getBalances(entry)}
+            disabled={disabled}
+            identity={true}
+            onClick={() => handleEntrySelect(entry)}
+          />
+        </MenuItem>,
+      ];
+
+      const { [entry.id]: allowances = [] } = entryAllowances;
+
+      allowances.forEach((allowanceAddress) => {
+        if (entry.address != null) {
+          accounts.push(
+            <MenuItem
+              key={`${entry.blockchain}:${entry.address.value}:${allowanceAddress}`}
+              selected={allowanceAddress === ownerAddress && entry.id === selectedEntry.id}
+            >
+              <Account
+                key={`${entry.address.value}:${allowanceAddress}`}
+                address={entry.address.value}
+                addressProps={{ hideCopy: true }}
+                addressWidth={450}
+                balances={getBalances(entry, allowanceAddress)}
+                disabled={disabled}
+                description={
+                  <>
+                    Owner <Monospace text={allowanceAddress} />
+                  </>
+                }
+                identity={true}
+                onClick={() => handleEntrySelect(entry, allowanceAddress)}
+              />
+            </MenuItem>,
+          );
+        }
+      });
+
+      return accounts;
+    });
+  };
+
   return (
     <>
-      {renderEntry(selected, true)}
-      <Menu anchorEl={menuElement} open={menuElement != null} onClose={onCloseMenu}>
-        {entries.map((entry) => {
-          if (entry.address == null) {
-            return undefined;
-          }
-
-          return (
-            <MenuItem key={`${entry.blockchain}:${entry.address.value}`} selected={entry.id === selected.id}>
-              {renderEntry(entry)}
-            </MenuItem>
-          );
-        })}
+      {renderSelectedEntry()}
+      <Menu anchorEl={menuElement} open={menuElement != null} onClose={handleMenuClose}>
+        {renderAccounts()}
       </Menu>
     </>
   );
 };
 
-export default connect<StateProps, unknown, OwnProps, IState>((state) => ({
-  getBalances(entry) {
-    const blockchain = blockchainIdToCode(entry.blockchain);
+export default connect<StateProps, unknown, OwnProps, IState>(
+  (state, { entries, ownerAddress, withAllowances = false }) => {
+    let entryAllowances: EntryAllowances = {};
 
-    const balance = accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0));
+    if (ownerAddress != null || withAllowances !== false) {
+      entryAllowances = entries.reduce<EntryAllowances>((carry, entry) => {
+        if (entry.address != null && isEthereumEntry(entry)) {
+          const { value: address } = entry.address;
 
-    if (isEthereumEntry(entry) && entry.address != null) {
-      const tokenBalances = tokens.selectors.selectBalances(state, blockchain, entry.address.value);
+          allowances.selectors
+            .getEntryAllowances(state, entry)
+            .filter(({ spenderAddress }) => spenderAddress.toLowerCase() === address.toLowerCase())
+            .forEach(({ ownerAddress }) => {
+              if (carry[entry.id] == null) {
+                carry[entry.id] = [ownerAddress];
+              } else {
+                carry[entry.id].push(ownerAddress);
+              }
+            });
+        }
 
-      return [balance, ...tokenBalances.filter((tokenBalance) => tokenBalance.isPositive())].map((amount) =>
-        formatAmount(amount),
-      );
+        return carry;
+      }, {});
     }
 
-    return [balance].map((amount) => formatAmount(amount));
+    return {
+      entryAllowances,
+      getBalances(entry, ownerAddress) {
+        const blockchain = blockchainIdToCode(entry.blockchain);
+
+        const balance = accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0));
+
+        if (isEthereumEntry(entry) && entry.address != null) {
+          const tokenBalances = tokens.selectors.selectBalances(state, blockchain, entry.address.value, {
+            belonging: ownerAddress == null ? TokenBalanceBelong.OWN : TokenBalanceBelong.ALLOWED,
+            belongsTo: ownerAddress,
+          });
+
+          return [balance, ...tokenBalances.filter((tokenBalance) => tokenBalance.isPositive())].map((amount) =>
+            formatAmount(amount),
+          );
+        }
+
+        return [balance].map((amount) => formatAmount(amount));
+      },
+    };
   },
-}))(SelectEntry);
+)(SelectEntry);

@@ -14,6 +14,7 @@ import * as tokens from './tokens';
 import * as transaction from './transaction';
 import * as triggers from './triggers';
 import * as txhistory from './txhistory';
+import * as txStash from './txstash';
 import * as wallet from './wallet';
 
 export { AccountState, HDPathAddresses, HDPathIndexes } from './hdpath-preview/types';
@@ -31,6 +32,7 @@ export {
   SignHandler,
 } from './transaction/types';
 export { ConvertedBalance } from './accounts/types';
+export { CreateTxStage, FeeState, Signed } from './txstash/types';
 export { DefaultFee } from './application/types';
 export { IState } from './types';
 export { RemoteAddressBook } from './remote-access/AddressBook';
@@ -57,6 +59,7 @@ export {
   tokens,
   transaction,
   triggers,
+  txStash,
   txhistory,
   wallet,
 };

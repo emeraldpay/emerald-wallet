@@ -1,5 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
+import BigNumber from 'bignumber.js';
 import { DisplayEtherTx, DisplayTx } from '..';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../blockchains';
 import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../transaction/ethereum';
@@ -99,12 +100,9 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     this.totalBalance = details.totalBalance;
     this.type = details.type;
 
-    if (details.type === EthereumTransactionType.EIP1559) {
-      this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
-      this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
-    } else {
-      this.gasPrice = details.gasPrice ?? zeroAmount;
-    }
+    this.gasPrice = details.gasPrice ?? zeroAmount;
+    this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
+    this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
 
     this.zeroAmount = zeroAmount;
   }
@@ -117,8 +115,14 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
     return this.amount;
   }
 
-  public setAmount(amount: WeiAny): void {
-    this.amount = amount;
+  public setAmount(amount: WeiAny | BigNumber): void {
+    if (WeiAny.is(amount)) {
+      this.amount = amount;
+    } else {
+      const { units } = this.amount;
+
+      this.amount = new WeiAny(1, units).multiply(units.top.multiplier).multiply(amount);
+    }
   }
 
   public getAsset(): string {
@@ -134,7 +138,8 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
   }
 
   public getFees(): WeiAny {
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return gasPrice.multiply(this.gas);
   }
@@ -160,19 +165,9 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
   }
 
   public build(): EthereumTransaction {
-    const { amount, blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+    const { blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, amount: value, from = '' } = this;
 
-    return {
-      blockchain,
-      from,
-      gas,
-      to,
-      type,
-      gasPrice: gasPrice?.number,
-      maxGasPrice: maxGasPrice?.number,
-      priorityGasPrice: priorityGasPrice?.number,
-      value: amount.number,
-    };
+    return { blockchain, from, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, value };
   }
 
   public display(): DisplayTx {
@@ -233,7 +228,9 @@ export class CreateEthereumTx implements TxDetails, Tx<BigAmount> {
 
   public debug(): string {
     const change = this.getChange();
-    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? this.zeroAmount;
+
+    const gasPrice =
+      (this.type === EthereumTransactionType.EIP1559 ? this.maxGasPrice : this.gasPrice) ?? this.zeroAmount;
 
     return (
       `Send ${this.from} -> ${this.to} of ${this.amount.toString()} ` +

@@ -131,14 +131,19 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const maxGasPriceByUnit = maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
   const priorityGasPriceByUnit = priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
 
+  const showEip1559 = supportEip1559 && useEip1559;
+
+  const showMaxRange = lowMaxGasPrice.isPositive() && highMaxGasPrice.isPositive();
+  const showPriorityRange = lowPriorityGasPrice.isPositive() && highPriorityGasPrice.isPositive();
+
   return (
     <FormAccordion
       title={
         <FormRow last>
           <FormLabel>Settings</FormLabel>
-          {useEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
-          {useEip1559 ? ' Max Gas Price' : ' Gas Price'}
-          {useEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
+          {showEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
+          {showEip1559 ? ' Max Gas Price' : ' Gas Price'}
+          {showEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
         </FormRow>
       }
     >
@@ -154,14 +159,14 @@ const EthTxSettings: React.FC<OwnProps> = ({
         </FormRow>
       )}
       <FormRow>
-        <FormLabel top>{useEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
+        <FormLabel top>{showEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
         <Box className={styles.inputField}>
           <Box className={styles.gasPriceTypeBox}>
             <FormControlLabel
               control={
                 <Switch
                   checked={currentUseStdMaxGasPrice}
-                  disabled={initializing}
+                  disabled={initializing && !showMaxRange}
                   onChange={handleUseStdMaxGasPriceChange}
                   color="primary"
                 />
@@ -169,7 +174,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
               label={currentUseStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
             />
           </Box>
-          {!currentUseStdMaxGasPrice && (
+          {!currentUseStdMaxGasPrice && showMaxRange && (
             <Box className={styles.gasPriceSliderBox}>
               <Slider
                 className={styles.gasPriceSlider}
@@ -177,17 +182,15 @@ const EthTxSettings: React.FC<OwnProps> = ({
                   markLabel: styles.gasPriceMarkLabel,
                   valueLabel: styles.gasPriceValueLabel,
                 }}
-                getAriaValueText={() => `${maxGasPriceByUnit} ${gasPriceUnit.toString()}`}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="auto"
-                step={0.01}
                 marks={[
                   { value: lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
                   { value: highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Urgent' },
                 ]}
                 min={lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                 max={highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                step={0.01}
                 value={maxGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                valueLabelDisplay="auto"
                 onChange={handleMaxGasPriceChange}
                 valueLabelFormat={(value) => value.toFixed(2)}
               />
@@ -195,12 +198,12 @@ const EthTxSettings: React.FC<OwnProps> = ({
           )}
           <Box className={styles.gasPriceHelpBox}>
             <FormHelperText className={styles.gasPriceHelp}>
-              {maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
+              {maxGasPriceByUnit} {gasPriceUnit.toString()}
             </FormHelperText>
           </Box>
         </Box>
       </FormRow>
-      {useEip1559 && (
+      {showEip1559 && (
         <FormRow>
           <FormLabel top>Priority gas price</FormLabel>
           <Box className={styles.inputField}>
@@ -209,7 +212,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                 control={
                   <Switch
                     checked={currentUseStdPriorityGasPrice}
-                    disabled={initializing}
+                    disabled={initializing && !showPriorityRange}
                     onChange={handleUseStdPriorityGasPriceChange}
                     color="primary"
                   />
@@ -217,7 +220,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
                 label={currentUseStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
               />
             </Box>
-            {!currentUseStdPriorityGasPrice && (
+            {!currentUseStdPriorityGasPrice && showPriorityRange && (
               <Box className={styles.gasPriceSliderBox}>
                 <Slider
                   className={styles.gasPriceSlider}
@@ -225,17 +228,15 @@ const EthTxSettings: React.FC<OwnProps> = ({
                     markLabel: styles.gasPriceMarkLabel,
                     valueLabel: styles.gasPriceValueLabel,
                   }}
-                  getAriaValueText={() => `${priorityGasPriceByUnit} ${gasPriceUnit.toString()}`}
-                  aria-labelledby="discrete-slider"
-                  valueLabelDisplay="auto"
-                  step={0.01}
                   marks={[
                     { value: lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
                     { value: highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Urgent' },
                   ]}
                   min={lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
                   max={highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                  step={0.01}
                   value={priorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber()}
+                  valueLabelDisplay="auto"
                   onChange={handlePriorityGasPriceChange}
                   valueLabelFormat={(value) => value.toFixed(2)}
                 />
@@ -243,7 +244,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
             )}
             <Box className={styles.gasPriceHelpBox}>
               <FormHelperText className={styles.gasPriceHelp}>
-                {priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2)} {gasPriceUnit.toString()}
+                {priorityGasPriceByUnit} {gasPriceUnit.toString()}
               </FormHelperText>
             </Box>
           </Box>

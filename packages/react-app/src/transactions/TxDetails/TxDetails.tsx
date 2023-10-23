@@ -185,23 +185,22 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
           )}
           {ethTx != null && (
             <>
-              {ethTx.gasPrice != null && (
-                <FormRow>
-                  <FormLabel>Gas Price</FormLabel>
-                  <Typography>{formatAmount(new Wei(ethTx.gasPrice))}</Typography>
-                </FormRow>
-              )}
-              {ethTx.type === EthereumTransactionType.EIP1559 && (
+              {ethTx.type === EthereumTransactionType.EIP1559 ? (
                 <>
                   <FormRow>
                     <FormLabel>Max Gas Price</FormLabel>
-                    <Typography>{formatAmount(new Wei(ethTx.maxGasPrice ?? 0))}</Typography>
+                    <Typography>{formatAmount(ethTx.maxGasPrice ?? Wei.ZERO)}</Typography>
                   </FormRow>
                   <FormRow>
                     <FormLabel>Priority Gas Price</FormLabel>
-                    <Typography>{formatAmount(new Wei(ethTx.priorityGasPrice ?? 0))}</Typography>
+                    <Typography>{formatAmount(ethTx.priorityGasPrice ?? Wei.ZERO)}</Typography>
                   </FormRow>
                 </>
+              ) : (
+                <FormRow>
+                  <FormLabel>Gas Price</FormLabel>
+                  <Typography>{formatAmount(ethTx.gasPrice ?? Wei.ZERO)}</Typography>
+                </FormRow>
               )}
               <FormRow>
                 <FormLabel>Nonce</FormLabel>

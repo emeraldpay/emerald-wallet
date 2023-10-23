@@ -174,6 +174,6 @@ describe('CreateErc20ApproveTx', () => {
       type: EthereumTransactionType.EIP1559,
     });
 
-    expect(tx.build().data.length).toBeGreaterThan(2);
+    expect(tx.build().data?.length).toBeGreaterThan(2);
   });
 });

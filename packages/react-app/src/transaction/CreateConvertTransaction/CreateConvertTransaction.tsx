@@ -23,7 +23,7 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AmountField } from '../../common/AmountField';
-import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
+import { EthTxSettings } from '../../common/EthTxSettings';
 import WaitLedger from '../../ledger/WaitLedger';
 
 const useStyles = makeStyles(
@@ -546,15 +546,16 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
 
       if (signed != null) {
-        const blockchainCode = blockchainIdToCode(entry.blockchain);
-        const zeroAmount = amountFactory(blockchainCode)(0);
+        const gasPrice =
+          (tx.type === EthereumTransactionType.EIP1559 ? tx.maxGasPrice : tx.gasPrice) ??
+          amountFactory(blockchainIdToCode(entry.blockchain))(0);
 
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.BROADCAST_TX,
             {
               ...signed,
-              fee: (tx.maxGasPrice ?? tx.gasPrice ?? zeroAmount).multiply(tx.gas),
+              fee: gasPrice.multiply(tx.gas),
               originalAmount: tx.amount,
               tokenAmount: token.getAmount(tx.amount.number),
             },

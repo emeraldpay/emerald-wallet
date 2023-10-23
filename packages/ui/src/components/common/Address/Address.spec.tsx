@@ -16,39 +16,29 @@ limitations under the License.
 
 import Typography from '@material-ui/core/Typography';
 import { ThemeProvider } from '@material-ui/styles';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import * as React from 'react';
 import { Theme } from '../../../index';
 import Address from './Address';
 
 describe('Address', () => {
   it('shows address', () => {
-    const accountAddr = mount(
+    const component = mount(
       <ThemeProvider theme={Theme}>
         <Address address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
       </ThemeProvider>,
     );
 
-    expect(accountAddr.find(Typography).props().children).toEqual('0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98');
-  });
-
-  it('has showCheck == false by default', () => {
-    const accountAddr = shallow(
-      <ThemeProvider theme={Theme}>
-        <Address address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
-      </ThemeProvider>,
-    );
-
-    expect(accountAddr.props().showCheck).toBeFalsy();
+    expect(component.find(Typography).props().children).toEqual('0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98');
   });
 
   it('shows sanitized hex', () => {
-    const accountAddr = mount(
+    const component = mount(
       <ThemeProvider theme={Theme}>
         <Address address="FBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" shortened={true} />
       </ThemeProvider>,
     );
 
-    expect(accountAddr.find(Typography).props().className).toContain('shortenedAddress');
+    expect(component.find(Typography).props().className).toContain('shortenedAddress');
   });
 });

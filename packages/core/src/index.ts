@@ -76,4 +76,4 @@ export {
   formatFiatAmountPartial,
 } from './format';
 export { getStandardUnits } from './asset';
-export { quantitiesToHex, toBigNumber, toHex, toNumber } from './convert';
+export { toBigNumber, toHex, toNumber } from './convert';

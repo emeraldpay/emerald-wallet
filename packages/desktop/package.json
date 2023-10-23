@@ -69,7 +69,6 @@
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
     "@babel/runtime": "^7.22.6",
-    "@kayahr/jest-electron-runner": "^29.7.0",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
     "@types/semver": "^7.5.0",
@@ -77,7 +76,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "copyfiles": "^2.4.1",
     "css-loader": "^6.8.1",
-    "electron": "22.3.9",
+    "electron": "22.3.27",
     "electron-builder": "^24.6.3",
     "jest": "^29.6.2",
     "node-notifier-cli": "^2.0.0",
@@ -159,7 +158,6 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "runner": "@kayahr/jest-electron-runner/main",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/app"

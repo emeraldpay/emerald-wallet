@@ -6,7 +6,7 @@ import { AccountSelect, Button, ButtonGroup, FormLabel, FormRow } from '@emerald
 import { CircularProgress, WithStyles, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { AmountField } from '../../common/AmountField';
-import EthTxSettings from '../../common/EthTxSettings/EthTxSettings';
+import { EthTxSettings } from '../../common/EthTxSettings';
 import { Asset, CommonAsset, SelectAsset } from '../../common/SelectAsset';
 import { ToField } from '../../common/ToField';
 

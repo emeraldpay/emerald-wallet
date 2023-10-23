@@ -97,7 +97,7 @@ describe('CreateErc20Tx', () => {
     tx.amount = daiToken.getAmount(100);
 
     expect(tx.getChange()).toBeDefined();
-    expect(tx.getChange().equals(daiToken.getAmount(0))).toBeTruthy();
+    expect(tx.getChange()?.equals(daiToken.getAmount(0))).toBeTruthy();
   });
 
   it('has change', () => {
@@ -109,7 +109,7 @@ describe('CreateErc20Tx', () => {
     tx.amount = daiToken.getAmount(50);
 
     expect(tx.getChange()).toBeDefined();
-    expect(tx.getChange().equals(daiToken.getAmount(50))).toBeTruthy();
+    expect(tx.getChange()?.equals(daiToken.getAmount(50))).toBeTruthy();
   });
 
   it('change is null if total not set', () => {
@@ -243,7 +243,6 @@ describe('CreateErc20Tx', () => {
       amountDecimals: 8,
       asset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       blockchain: BlockchainCode.ETH,
-      erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
       maxGasPrice: '10007000000/WEI',
@@ -259,7 +258,7 @@ describe('CreateErc20Tx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057', 'WEI'));
-    expect(tx.totalTokenBalance.equals(daiToken.getAmount('2000000000015'))).toBeTruthy();
+    expect(tx.totalTokenBalance?.equals(daiToken.getAmount('2000000000015'))).toBeTruthy();
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
     expect(tx.amount.equals(daiToken.getAmount('999580000000500002'))).toBeTruthy();

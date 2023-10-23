@@ -1,32 +1,34 @@
 import BigNumber from 'bignumber.js';
 
+type Numeric = number | string | null | undefined;
+
 /**
- * Convert hex string to number
- *
- * @param value
- * @param defaultValue
- * @returns {number}
+ * Convert hex to number
  */
-export function toNumber(value: string | number, defaultValue = 0): number {
-  if (!value) {
+export function toNumber(hex: Numeric, defaultValue = 0): number {
+  if (hex == null) {
     return defaultValue;
   }
 
-  if (typeof value === 'number') {
-    return value;
+  if (typeof hex === 'number') {
+    return hex;
   }
 
-  if (value === '0x') {
+  if (hex === '0x') {
     return 0;
   }
 
-  return parseInt(value.substring(2), 16);
+  return parseInt(hex, 16);
 }
 
 /**
  * Converts number, string or hex string into BigNumber
  */
-export function toBigNumber(value: BigNumber | number | string): BigNumber {
+export function toBigNumber(value: BigNumber | Numeric, defaultValue = new BigNumber(0)): BigNumber {
+  if (value == null) {
+    return defaultValue;
+  }
+
   if (value instanceof BigNumber) {
     return value;
   }
@@ -36,20 +38,27 @@ export function toBigNumber(value: BigNumber | number | string): BigNumber {
       return new BigNumber(0);
     }
 
-    if (value.substring(0, 2) === '0x') {
-      return new BigNumber(value.substring(2), 16);
-    }
+    return new BigNumber(value, 16);
   }
 
   return new BigNumber(value, 10);
 }
 
-export function toHex(val: number | string | BigNumber): string {
-  const hex = new BigNumber(val).toString(16);
+/**
+ * Converts number, string or BigNumber into hex string
+ */
+export function toHex(value: BigNumber | Numeric, defaultValue = '0x'): string {
+  if (value == null) {
+    return defaultValue;
+  }
 
-  return `0x${hex.length % 2 !== 0 ? `0${hex}` : hex}`;
-}
+  let hex: string;
 
-export function quantitiesToHex(val: number | string): string {
-  return `0x${new BigNumber(val).toString(16)}`;
+  if (BigNumber.isBigNumber(value)) {
+    hex = value.toString(16);
+  } else {
+    hex = new BigNumber(value).toString(16);
+  }
+
+  return `0x${hex}`;
 }
