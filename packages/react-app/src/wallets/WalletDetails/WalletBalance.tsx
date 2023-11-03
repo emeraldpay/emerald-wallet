@@ -264,7 +264,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, walletId));
     },
     gotoSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, walletId, null, true));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, { walletId }, null, true));
     },
     gotoSign() {
       dispatch(screen.actions.gotoScreen(screen.Pages.SIGN_MESSAGE, walletId));

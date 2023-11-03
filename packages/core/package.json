@@ -21,6 +21,7 @@
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bignumber": "^5.7.0",
     "bignumber.js": "8.0.2",
+    "bitcoinjs-lib": "^6.1.0",
     "ethereumjs-util": "^7.1.5",
     "jsonschema": "^1.4.1"
   },

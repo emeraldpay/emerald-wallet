@@ -1,22 +1,16 @@
-import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { SignedTx, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, workflow } from '@emeraldwallet/core';
 
 export const moduleName = 'txStash';
 
-export enum CreateTxStage {
-  SETUP = 'setup',
-  SIGN = 'sign',
-  BROADCAST = 'broadcast',
-}
-
-export type GasPriceType = number | string;
-export type GasPrice<T = GasPriceType> = Record<'max' | 'priority', T>;
-
-export const DEFAULT_GAS_PRICE: GasPrice = { max: 0, priority: 0 } as const;
 export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
 
+export type FeeRange = workflow.BitcoinFeeRange | workflow.EthereumFeeRange<string>;
+export type GasPrice<T = string> = Record<'max' | 'priority', T>;
+export type GetFee = (blockchain: BlockchainCode) => Promise<void>;
+
 interface LastFee {
-  range: workflow.FeeRange<GasPriceType>;
+  range: FeeRange;
   timestamp: number;
 }
 
@@ -24,24 +18,27 @@ interface BlockchainFee {
   [blockchain: string]: LastFee | undefined;
 }
 
-export interface Signed {
-  raw: string;
-  txId: string;
+export enum CreateTxStage {
+  SETUP = 'setup',
+  SIGN = 'sign',
+  BROADCAST = 'broadcast',
 }
 
 export interface TxStashState {
   asset?: string;
   entry?: WalletEntry;
+  changeAddress?: string;
   fee?: BlockchainFee;
   ownerAddress?: string;
-  signed?: Signed;
+  signed?: SignedTx;
   stage: CreateTxStage;
-  transaction?: workflow.TxDetailsPlain;
+  transaction?: workflow.AnyPlainTx;
 }
 
 export enum ActionTypes {
   RESET = 'TX_STASH/RESET',
   SET_ASSET = 'TX_STASH/SET_ASSET',
+  SET_CHANGE_ADDRESS = 'TX_STASH/SET_CHANGE_ADDRESS',
   SET_ENTRY = 'TX_STASH/SET_ENTRY',
   SET_FEE_LOADING = 'TX_STASH/SET_FEE_LOADING',
   SET_FEE_RANGE = 'TX_STASH/SET_FEE_RANGE',
@@ -58,6 +55,13 @@ export interface SetAssetAction {
   type: ActionTypes.SET_ASSET;
   payload: {
     asset: string;
+  };
+}
+
+export interface SetChangeAddressAction {
+  type: ActionTypes.SET_CHANGE_ADDRESS;
+  payload: {
+    changeAddress: string;
   };
 }
 
@@ -80,14 +84,14 @@ export interface SetFeeRangeAction {
   type: ActionTypes.SET_FEE_RANGE;
   payload: {
     blockchain: BlockchainCode;
-    range: workflow.FeeRange<GasPriceType>;
+    range: FeeRange;
   };
 }
 
 export interface SetSignedAction {
   type: ActionTypes.SET_SIGNED;
   payload: {
-    signed: Signed;
+    signed: SignedTx;
   };
 }
 
@@ -101,13 +105,14 @@ export interface SetStageAction {
 export interface SetTransactionAction {
   type: ActionTypes.SET_TRANSACTION;
   payload: {
-    transaction: workflow.TxDetailsPlain;
+    transaction: workflow.AnyPlainTx;
   };
 }
 
 export type TxStashAction =
   | ResetAction
   | SetAssetAction
+  | SetChangeAddressAction
   | SetEntryAction
   | SetFeeLoadingAction
   | SetFeeRangeAction
@@ -115,12 +120,12 @@ export type TxStashAction =
   | SetStageAction
   | SetTransactionAction;
 
-export interface FeeState<T> {
-  loading: boolean;
-  range: workflow.FeeRange<T>;
-}
-
-export interface TxOriginState {
+export interface EntryState {
   entry?: WalletEntry;
   ownerAddress?: string;
+}
+
+export interface FeeState {
+  loading: boolean;
+  range: workflow.FeeRange;
 }

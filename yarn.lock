@@ -3794,6 +3794,7 @@ __metadata:
     "@types/jest": ^29.5.3
     "@types/node": ^20.4.5
     bignumber.js: 8.0.2
+    bitcoinjs-lib: ^6.1.0
     ethereumjs-util: ^7.1.5
     jest: ^29.6.2
     jsonschema: ^1.4.1
@@ -9067,10 +9068,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:8.0.2, bignumber.js@npm:^8.0.2":
+"bignumber.js@npm:8.0.2":
   version: 8.0.2
   resolution: "bignumber.js@npm:8.0.2"
   checksum: bef57bc46f03da46848330e75eb32fd1ec645bae03a350fc1fa5a0e72f0897c5d3aa1d2a1493f44bf4bdb1eceff3b3675e01fd1accbf0dd598570c16ca5b8df7
+  languageName: node
+  linkType: hard
+
+"bignumber.js@npm:^8.0.2":
+  version: 8.1.1
+  resolution: "bignumber.js@npm:8.1.1"
+  checksum: 71544348507cd16c2c152699a8e5146964d9cf4f46108075bcd16a964dffb3963256259fc6ffc9753b4d33dfd0cf863a6b564103a3a20e10002f12a1902e8075
   languageName: node
   linkType: hard
 

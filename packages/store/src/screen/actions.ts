@@ -1,8 +1,9 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
 import { SnackbarCloseReason } from '@material-ui/core';
 import { AnyAction } from 'redux';
-import { accounts } from '../index';
-import { IState } from '../types';
+import { StoredTransaction, accounts } from '../index';
+import { Dispatched } from '../types';
+import { WrappedError } from '../WrappedError';
 import {
   ActionTypes,
   Dialogs,
@@ -18,7 +19,18 @@ import {
 
 const hashRegExp = new RegExp('^(0x)?[a-z0-9A-Z]+$');
 
-export function gotoScreen(screen: string | Pages, item: any = null, restore: any = null, ignore = false): IOpenAction {
+export function goBack(): IGoBackAction {
+  return {
+    type: ActionTypes.GO_BACK,
+  };
+}
+
+export function gotoScreen(
+  screen: string | Pages,
+  item: unknown = null,
+  restore: unknown = null,
+  ignore = false,
+): IOpenAction {
   return {
     type: ActionTypes.OPEN,
     ignore,
@@ -28,8 +40,8 @@ export function gotoScreen(screen: string | Pages, item: any = null, restore: an
   };
 }
 
-export function gotoWalletsScreen() {
-  return async (dispatch: any, getState: () => IState) => {
+export function gotoWalletsScreen(): Dispatched {
+  return async (dispatch, getState) => {
     const state = getState();
 
     const isLoading = accounts.selectors.isLoading(state);
@@ -59,36 +71,6 @@ export function gotoWalletsScreen() {
 
       dispatch(gotoScreen(nextPage, walletId));
     }
-  };
-}
-
-export function goBack(): IGoBackAction {
-  return {
-    type: ActionTypes.GO_BACK,
-  };
-}
-
-export function showNotification(
-  message: string,
-  messageType?: 'info' | 'success' | 'warning' | 'error',
-  duration?: number,
-  buttonText?: string,
-  onButtonClick?: AnyAction,
-): IShowNotificationAction {
-  return {
-    type: ActionTypes.NOTIFICATION_SHOW,
-    duration,
-    message,
-    messageType,
-    buttonText,
-    onButtonClick,
-  };
-}
-
-export function closeNotification(reason: SnackbarCloseReason | 'manual'): ICloseNotificationAction {
-  return {
-    type: ActionTypes.NOTIFICATION_CLOSE,
-    reason,
   };
 }
 
@@ -124,10 +106,10 @@ export function closeDialog(): IDialogAction {
   };
 }
 
-export function showError(error: Error): IErrorAction {
+export function showError(error: Error, transaction?: StoredTransaction): IErrorAction {
   return {
     type: ActionTypes.ERROR,
-    error,
+    error: new WrappedError(error, transaction),
   };
 }
 
@@ -135,5 +117,29 @@ export function closeError(): IErrorAction {
   return {
     type: ActionTypes.ERROR,
     error: null,
+  };
+}
+
+export function showNotification(
+  message: string,
+  messageType?: 'info' | 'success' | 'warning' | 'error',
+  duration?: number,
+  buttonText?: string,
+  onButtonClick?: AnyAction,
+): IShowNotificationAction {
+  return {
+    type: ActionTypes.NOTIFICATION_SHOW,
+    duration,
+    message,
+    messageType,
+    buttonText,
+    onButtonClick,
+  };
+}
+
+export function closeNotification(reason: SnackbarCloseReason | 'manual'): ICloseNotificationAction {
+  return {
+    type: ActionTypes.NOTIFICATION_CLOSE,
+    reason,
   };
 }

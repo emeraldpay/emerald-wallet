@@ -11,7 +11,7 @@ import { Back, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import StoredTxView from '../StoredTxView';
+import { StoredTxView } from '../../common/StoredTxView';
 import SpeedUpBitcoinTransaction from './SpeedUpBitcoinTransaction';
 import SpeedUpEthereumTransaction from './SpeedUpEthereumTransaction';
 

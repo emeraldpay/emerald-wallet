@@ -79,9 +79,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return { balance, blockchainCode, fiatBalance };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: Dispatch<any>, { entry }) => ({
+  (dispatch: Dispatch<any>, { entry, walletId }) => ({
     gotoSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, entry.id, null, true));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, { walletId, entryId: entry.id }, null, true));
     },
   }),
 )(BitcoinEntryItem);

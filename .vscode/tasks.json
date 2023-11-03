@@ -3,9 +3,24 @@
   "tasks": [
     {
       "type": "npm",
-      "group": "build",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
       "label": "build:dev",
       "script": "build:dev"
+    },
+    {
+      "type": "npm",
+      "group": "build",
+      "label": "build:native",
+      "script": "build:native"
+    },
+    {
+      "type": "npm",
+      "group": "build",
+      "label": "clean",
+      "script": "clean"
     },
     {
       "type": "npm",

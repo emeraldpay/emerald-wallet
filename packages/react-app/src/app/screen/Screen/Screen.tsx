@@ -3,33 +3,28 @@ import { IState, screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import AddContact from '../../../address-book/AddContact';
+import AddressBook from '../../../address-book/ContactList';
 import EditContact from '../../../address-book/EditContact';
 import AddHDAddress from '../../../create-account/AddHDAddress';
 import SetupBlockchains from '../../../create-account/SetupBlockchains';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
-import {
-  AddContact,
-  ContactList as AddressBook,
-  BroadcastTx,
-  Home,
-  Settings,
-  TxDetails,
-  WalletDetails,
-  Welcome,
-} from '../../../index';
 import ShowMessage from '../../../message/ShowMessage';
 import SignMessage from '../../../message/SignMessage';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
+import Settings from '../../../settings/Settings';
+import { BroadcastEthTx } from '../../../transaction/BroadcastEthTx';
 import CreateApproveTransaction from '../../../transaction/CreateApproveTransaction';
-import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction';
 import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
 import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
-import CreateTransaction from '../../../transaction/CreateTransaction';
-import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
-import CreateTransactionNew from '../../../transaction/CreateTransactionNew';
+import { CreateTransaction } from '../../../transaction/CreateTransaction';
+import TxDetails from '../../../transactions/TxDetails';
+import WalletDetails from '../../../wallets/WalletDetails';
 import WalletInfo from '../../../wallets/WalletInfo';
+import Home from '../../layout/Home';
+import Welcome from '../../onboarding/Welcome';
 import GlobalKey from '../../vault/GlobalKey';
 import ImportVault from '../../vault/ImportVault';
 import PasswordMigration from '../../vault/PasswordMigration';
@@ -67,21 +62,15 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
     case screen.Pages.BROADCAST_TX:
-      return <BroadcastTx data={screenItem} />;
+      return <BroadcastEthTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
-      return <SelectAccount walletId={screenItem} />;
-    case screen.Pages.CREATE_TX_NEW:
-      return <CreateTransactionNew {...screenItem} />;
+      return <CreateTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_APPROVE:
       return <CreateApproveTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
       return <CreateConvertTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_BITCOIN:
-      return <CreateBitcoinTransaction source={screenItem} />;
     case screen.Pages.CREATE_TX_CANCEL:
       return <CreateCancelTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_ETHEREUM:
-      return <CreateTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_SPEED_UP:
       return <CreateSpeedUpTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:

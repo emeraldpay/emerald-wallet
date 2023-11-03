@@ -2,6 +2,7 @@ import {
   ActionTypes,
   CreateTxStage,
   SetAssetAction,
+  SetChangeAddressAction,
   SetEntryAction,
   SetFeeLoadingAction,
   SetFeeRangeAction,
@@ -20,6 +21,10 @@ function reset({ fee }: TxStashState): TxStashState {
 
 function setAsset(state: TxStashState, { payload: { asset } }: SetAssetAction): TxStashState {
   return { ...state, asset };
+}
+
+function setChangeAddress(state: TxStashState, { payload: { changeAddress } }: SetChangeAddressAction): TxStashState {
+  return { ...state, changeAddress };
 }
 
 function setEntry(state: TxStashState, { payload: { entry, ownerAddress } }: SetEntryAction): TxStashState {
@@ -64,6 +69,8 @@ export function reducer(state = INITIAL_STATE, action: TxStashAction): TxStashSt
       return reset(state);
     case ActionTypes.SET_ASSET:
       return setAsset(state, action);
+    case ActionTypes.SET_CHANGE_ADDRESS:
+      return setChangeAddress(state, action);
     case ActionTypes.SET_ENTRY:
       return setEntry(state, action);
     case ActionTypes.SET_FEE_LOADING:

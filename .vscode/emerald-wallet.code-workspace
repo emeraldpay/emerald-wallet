@@ -68,7 +68,9 @@
     "search.exclude": {
       "**/.emerald-dev": true,
       "**/.tests": true,
+      "**/.yarn": true,
       "**/app": true,
+      "**/coverage": true,
       "**/lib": true,
       "**/node_modules": true,
       "**/target": true,

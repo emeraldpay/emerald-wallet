@@ -1,8 +1,8 @@
 import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { GasPriceType, IState } from '../index';
+import { IState } from '../index';
 import { ApplicationMessage, DefaultFee, moduleName } from './types';
 
-export function getDefaultFee<T = GasPriceType>(state: IState, blockchain: BlockchainCode): DefaultFee<T> | undefined {
+export function getDefaultFee<T>(state: IState, blockchain: BlockchainCode): DefaultFee<T> | undefined {
   const defaultFee = state[moduleName].options[`default_fee.${blockchainCodeToId(blockchain)}`] as string | undefined;
 
   if (defaultFee == null) {

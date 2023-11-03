@@ -16,7 +16,7 @@ import { Address, Back, Balance, Button, ButtonGroup, FormLabel, FormRow, Page }
 import { TextField, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import StoredTxView from '../../transaction/StoredTxView/StoredTxView';
+import { StoredTxView } from '../../common/StoredTxView';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
