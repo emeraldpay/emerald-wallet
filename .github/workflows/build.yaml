@@ -28,6 +28,11 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Auth GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_ARTIFACTS_KEY }}
+
       # on Windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (Windows)
         uses: google-github-actions/setup-gcloud@v1
@@ -35,16 +40,12 @@ jobs:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
-          export_default_credentials: true
         if: runner.os == 'Windows'
 
       - name: Setup GCP (non Windows)
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_ARTIFACTS_KEY }}
-          export_default_credentials: true
         if: runner.os != 'Windows'
 
       - name: Update apt index (Linux)
