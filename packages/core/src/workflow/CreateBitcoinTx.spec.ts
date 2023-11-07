@@ -377,7 +377,7 @@ describe('CreateBitcoinTx', () => {
     const create = new CreateBitcoinTx({
       blockchain: BlockchainCode.BTC,
       entryId: basicEntryId,
-      changeAddress: 'addrchange',
+      changeAddress: 'addrChange',
       utxo: [{ txid: '1', vout: 0, value: new Satoshi(112233).encode(), address: 'addr1' }],
     });
 

@@ -12,7 +12,7 @@ const MAX_SEQUENCE = 0xffffffff as const;
  * @see https://bitcoinfees.net
  * @see https://www.buybitcoinworldwide.com/fee-calculator
  */
-const DEFAULT_VKB_FEE = 1024 as const;
+export const DEFAULT_VKB_FEE = 1024 as const;
 
 export interface BitcoinTxDetails {
   amount?: SatoshiAny;

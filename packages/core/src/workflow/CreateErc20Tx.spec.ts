@@ -21,13 +21,14 @@ describe('CreateErc20Tx', () => {
   it('creates tx', () => {
     const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
 
-    expect(tx.validate()).toBe(ValidationResult.NO_FROM);
+    expect(tx.validate()).toBe(ValidationResult.NO_AMOUNT);
     expect(tx.target).toBe(TxTarget.MANUAL);
     expect(tx.amount.number.toString()).toBe('0');
   });
 
   it('invalid without from', () => {
     const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
+    tx.amount = daiToken.getAmount(1);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.from = undefined;
 
@@ -36,6 +37,7 @@ describe('CreateErc20Tx', () => {
 
   it('invalid without balance', () => {
     const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
+    tx.amount = daiToken.getAmount(1);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalBalance = undefined;
 
@@ -44,6 +46,7 @@ describe('CreateErc20Tx', () => {
 
   it('invalid without token balance', () => {
     const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
+    tx.amount = daiToken.getAmount(1);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
     tx.totalTokenBalance = undefined;
 
@@ -52,6 +55,7 @@ describe('CreateErc20Tx', () => {
 
   it('invalid without to', () => {
     const tx = new CreateERC20Tx(tokenRegistry, '0x6B175474E89094C44Da98b954EedeAC495271d0F', BlockchainCode.ETH);
+    tx.amount = daiToken.getAmount(1);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', Wei.fromEther(1), daiToken.getAmount(100));
 
     expect(tx.validate()).toBe(ValidationResult.NO_TO);

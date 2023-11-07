@@ -777,8 +777,10 @@ export function restoreBtcTx(
     const outputAmount = rawTx.vout.reduce((carry, { value }) => carry.plus(fromBitcoin(value)), zeroAmount);
 
     restoredTx.amount = fromBitcoin(amount);
-    restoredTx.feePrice = restoredTx.estimateVkbPrice(inputAmount.minus(outputAmount));
     restoredTx.to = address;
+
+    // Fee price assign should be after any other assignments because depends on their values
+    restoredTx.feePrice = restoredTx.estimateVkbPrice(inputAmount.minus(outputAmount));
 
     return restoredTx;
   };

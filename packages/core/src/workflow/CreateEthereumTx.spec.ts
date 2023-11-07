@@ -8,20 +8,22 @@ describe('CreateEthereumTx', () => {
   it('creates tx', () => {
     const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
 
-    expect(tx.validate()).toBe(ValidationResult.NO_FROM);
-    expect(tx.target).toBe(TxTarget.MANUAL);
+    expect(tx.validate()).toBe(ValidationResult.NO_AMOUNT);
     expect(tx.amount.equals(Wei.ZERO)).toBeTruthy();
+    expect(tx.target).toBe(TxTarget.MANUAL);
   });
 
   it('fails to validated if set only from', () => {
     const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
-    tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
+    tx.setAmount(new Wei(1, 'ETHER'));
+    tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(2, 'ETHER'));
 
     expect(tx.validate()).toBe(ValidationResult.NO_TO);
   });
 
   it('fails to validated if set only to', () => {
     const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    tx.amount = new Wei(1, 'ETHER');
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
 
     expect(tx.validate()).toBe(ValidationResult.NO_FROM);
@@ -29,6 +31,7 @@ describe('CreateEthereumTx', () => {
 
   it('validates is set from/to', () => {
     const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    tx.amount = new Wei(1, 'ETHER');
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
 
