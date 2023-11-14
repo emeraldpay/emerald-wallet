@@ -4,6 +4,21 @@
     {
       "type": "npm",
       "group": "build",
+      "label": "clean",
+      "script": "clean"
+    },
+    {
+      "type": "npm",
+      "group": "build",
+      "label": "build:native",
+      "script": "build:native"
+    },
+    {
+      "type": "npm",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
       "label": "build:dev",
       "script": "build:dev"
     },

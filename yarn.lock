@@ -3726,22 +3726,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/bigamount-crypto@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@emeraldpay/bigamount-crypto@npm:0.4.1"
+"@emeraldpay/bigamount-crypto@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@emeraldpay/bigamount-crypto@npm:0.4.2"
   dependencies:
-    "@emeraldpay/bigamount": 0.4.1
-    bignumber.js: ^8.0.2
-  checksum: 6439bcad412b46cc2d5cc2fa4ff82d4f7ec8afa358266732ca039c66c7d0e53e12eecfffe8c5891bd8e9dffd95958d7003691fc023d5e2b43190576a65c653e4
+    "@emeraldpay/bigamount": 0.4.2
+    bignumber.js: 8.0.2
+  checksum: ebd1fffa65adfd1ae7066721203ad38f7612fc82d566847a9303083f88424e3afeeb70d9610d84f4da4cd9567466c08b76c07d96f0300d5afea5372577b1e8f4
   languageName: node
   linkType: hard
 
-"@emeraldpay/bigamount@npm:0.4.1, @emeraldpay/bigamount@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@emeraldpay/bigamount@npm:0.4.1"
+"@emeraldpay/bigamount@npm:0.4.2, @emeraldpay/bigamount@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@emeraldpay/bigamount@npm:0.4.2"
   dependencies:
-    bignumber.js: ^8.0.2
-  checksum: 7f2fe42b4854b049b1444d08a35c5a7d07231365c970a2aacaa635ed5759457ba73795b4c62f16fb4073aff72aa7c56ff52bc766d9124cf7e60b1b1f9de637a6
+    bignumber.js: 8.0.2
+  checksum: 95065380a92ea80d81e0d4a0212df43c45ef0c821094366ca8a8dc66612fcc207ae7b57557cc1a2ce27efa2b1d62b231988817656831b2de7ec5d633c2d3cb33
   languageName: node
   linkType: hard
 
@@ -3784,8 +3784,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/core@workspace:packages/core"
   dependencies:
-    "@emeraldpay/bigamount": ^0.4.1
-    "@emeraldpay/bigamount-crypto": ^0.4.1
+    "@emeraldpay/bigamount": ^0.4.2
+    "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/emerald-vault-core": ^0.12.0
     "@ethereumjs/common": ^3.1.2
     "@ethereumjs/tx": ^4.1.2
@@ -3794,6 +3794,7 @@ __metadata:
     "@types/jest": ^29.5.3
     "@types/node": ^20.4.5
     bignumber.js: 8.0.2
+    bitcoinjs-lib: ^6.1.0
     ethereumjs-util: ^7.1.5
     jest: ^29.6.2
     jsonschema: ^1.4.1
@@ -3894,8 +3895,8 @@ __metadata:
   dependencies:
     "@babel/core": ^7.22.9
     "@electron/remote": ^2.0.9
-    "@emeraldpay/bigamount": ^0.4.1
-    "@emeraldpay/bigamount-crypto": ^0.4.1
+    "@emeraldpay/bigamount": ^0.4.2
+    "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/emerald-vault-core": ^0.12.0
     "@emeraldwallet/core": 2.11.0-dev
     "@emeraldwallet/store": 2.11.0-dev
@@ -3969,8 +3970,8 @@ __metadata:
   dependencies:
     "@emeraldpay/api": ^0.4.3
     "@emeraldpay/api-node": ^0.4.3
-    "@emeraldpay/bigamount": ^0.4.1
-    "@emeraldpay/bigamount-crypto": ^0.4.1
+    "@emeraldpay/bigamount": ^0.4.2
+    "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/emerald-vault-core": ^0.12.0
     "@emeraldwallet/core": 2.11.0-dev
     "@grpc/grpc-js": ^1.8.14
@@ -3991,8 +3992,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/store@workspace:packages/store"
   dependencies:
-    "@emeraldpay/bigamount": ^0.4.1
-    "@emeraldpay/bigamount-crypto": ^0.4.1
+    "@emeraldpay/bigamount": ^0.4.2
+    "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/emerald-vault-core": ^0.12.0
     "@emeraldwallet/core": 2.11.0-dev
     "@types/color-hash": ^1.0.2
@@ -4021,8 +4022,8 @@ __metadata:
   resolution: "@emeraldwallet/ui@workspace:packages/ui"
   dependencies:
     "@babel/core": ^7.22.9
-    "@emeraldpay/bigamount": ^0.4.1
-    "@emeraldpay/bigamount-crypto": ^0.4.1
+    "@emeraldpay/bigamount": ^0.4.2
+    "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/hashicon": 0.5.1
     "@emeraldwallet/core": 2.11.0-dev
     "@fontsource/inter": ^5.0.13
@@ -9067,7 +9068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:8.0.2, bignumber.js@npm:^8.0.2":
+"bignumber.js@npm:8.0.2":
   version: 8.0.2
   resolution: "bignumber.js@npm:8.0.2"
   checksum: bef57bc46f03da46848330e75eb32fd1ec645bae03a350fc1fa5a0e72f0897c5d3aa1d2a1493f44bf4bdb1eceff3b3675e01fd1accbf0dd598570c16ca5b8df7

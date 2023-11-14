@@ -542,7 +542,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(entryId, tx.build(), password),
+        transaction.actions.signEthereumTransaction(entryId, tx.build(), password),
       );
 
       if (signed != null) {

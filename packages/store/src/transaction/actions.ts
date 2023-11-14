@@ -1,5 +1,6 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
+import { Satoshi } from '@emeraldpay/bigamount-crypto';
 import {
   BitcoinEntry,
   EntryId,
@@ -37,14 +38,13 @@ import {
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { IState, application } from '..';
-import { findEntry, findWalletByEntryId, zeroAmountFor } from '../accounts/selectors';
+import { findEntry, findWalletByEntryId } from '../accounts/selectors';
 import { Pages } from '../screen';
 import { gotoScreen, showError } from '../screen/actions';
 import { IErrorAction, IOpenAction } from '../screen/types';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction, UpdateStoredTxAction } from '../txhistory/types';
 import { Dispatched } from '../types';
-import { WrappedError } from '../WrappedError';
 import {
   BroadcastData,
   DEFAULT_FEE,
@@ -60,146 +60,6 @@ import {
 const { Direction, ChangeType, State, Status } = PersistentState;
 
 const log = Logger.forCategory('Store::Transaction');
-
-function verifySender(expected: string): (txid: string, raw: string, chain: BlockchainCode) => Promise<SignedTx> {
-  return (txid, raw, chain) =>
-    new Promise((resolve, reject) => {
-      const { chainId } = Blockchains[chain].params;
-
-      let tx;
-
-      try {
-        tx = EthereumTx.fromRaw(raw, chainId);
-      } catch (exception) {
-        log.error(`Failed to parse raw tx: ${raw}, chainId: ${chainId}`, exception);
-
-        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
-
-        return;
-      }
-
-      if (tx.verifySignature()) {
-        log.debug('Tx signature verified');
-
-        if (!tx.getSenderAddress().equals(new EthereumAddress(expected))) {
-          log.error(`WRONG SENDER: ${tx.getSenderAddress().toString()} != ${expected}`);
-
-          reject(new Error('Emerald Vault returned signature from wrong Sender'));
-        } else {
-          resolve({ raw, txid });
-        }
-      } else {
-        log.error(`Invalid signature: ${raw}`);
-
-        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
-      }
-    });
-}
-
-function signTx(
-  entryId: string,
-  tx: EthereumTransaction,
-  vault: IEmeraldVault,
-  password: string | undefined,
-): Promise<SignedTx> {
-  log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${tx.blockchain} blockchain`);
-
-  let gasPrices:
-    | Pick<UnsignedBasicEthereumTx, 'gasPrice'>
-    | Pick<UnsignedEIP1559EthereumTx, 'maxGasPrice' | 'priorityGasPrice'>;
-
-  if (tx.type === EthereumTransactionType.EIP1559) {
-    gasPrices = {
-      maxGasPrice: tx.maxGasPrice?.number.toString() ?? '0',
-      priorityGasPrice: tx.priorityGasPrice?.number.toString() ?? '0',
-    };
-  } else {
-    gasPrices = {
-      gasPrice: tx.gasPrice?.number.toString() ?? '0',
-    };
-  }
-
-  const unsignedTx: UnsignedTx = {
-    ...gasPrices,
-    data: tx.data,
-    from: tx.from,
-    gas: tx.gas,
-    nonce: tx.nonce ?? 0,
-    to: tx.to,
-    value: tx.value.number.toString(),
-  };
-
-  return vault.signTx(entryId, unsignedTx, password);
-}
-
-export function signTransaction(
-  entryId: string,
-  transaction: EthereumTransaction,
-  password: string | undefined,
-): Dispatched<SignData | undefined> {
-  return (dispatch, getState, extra) => {
-    const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
-      signTx(entryId, tx, extra.api.vault, password)
-        .then(({ raw, txid }) => verifySender(tx.from)(txid, raw, tx.blockchain))
-        .then(({ raw: signed, txid: txId }) => ({ entryId, signed, tx, txId, blockchain: tx.blockchain }));
-
-    if (transaction.nonce == null) {
-      return extra.backendApi
-        .getNonce(transaction.blockchain, transaction.from)
-        .then((nonce) => callSignTx({ ...transaction, nonce }))
-        .catch((error) => {
-          dispatch(showError(error));
-
-          return undefined;
-        });
-    }
-
-    return callSignTx(transaction).catch((error) => {
-      dispatch(showError(error));
-
-      return undefined;
-    });
-  };
-}
-
-export function signBitcoinTransaction(
-  entryId: EntryId,
-  tx: UnsignedBitcoinTx,
-  password: string | undefined,
-  handler: SignHandler,
-): Dispatched {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return async (dispatch: any, getState, extra) => {
-    try {
-      const { raw, txid } = await extra.api.vault.signTx(entryId, tx, password);
-
-      const entry = findEntry(getState(), entryId);
-
-      if (entry != null && isBitcoinEntry(entry)) {
-        const changeXPub = entry.xpub.find(({ role }) => role === 'change');
-
-        if (changeXPub != null) {
-          const index = await extra.api.xPubPos.getNext(changeXPub.xpub);
-          const [{ address: changeAddress }] = await extra.api.vault.listEntryAddresses(entryId, 'change', index, 1);
-
-          const output = tx.outputs.find(({ address }) => address === changeAddress);
-
-          if (output != null) {
-            await extra.api.xPubPos.setCurrentAddressAt(changeXPub.xpub, index);
-          }
-        }
-      }
-
-      handler(txid, raw);
-    } catch (exception) {
-      if (exception instanceof Error) {
-        dispatch(showError(new WrappedError(exception)));
-      }
-
-      handler(null, null);
-    }
-  };
-}
 
 export function broadcastTx({
   blockchain,
@@ -334,9 +194,16 @@ export function broadcastTx({
       if (exception instanceof Error) {
         const transaction = getState().history.transactions.find((tx) => tx.txId === txId);
 
-        dispatch(showError(new WrappedError(exception, transaction)));
+        dispatch(showError(exception, transaction));
       }
     }
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Dispatched<any> {
+  return (dispatch, getState, extra) => {
+    return extra.backendApi.estimateFee(blockchain, blocks, mode);
   };
 }
 
@@ -358,13 +225,6 @@ export function estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction)
     }
 
     return extra.backendApi.estimateTxCost(blockchain, basicTx);
-  };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Dispatched<any> {
-  return (dispatch, getState, extra) => {
-    return extra.backendApi.estimateFee(blockchain, blocks, mode);
   };
 }
 
@@ -491,36 +351,15 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPric
   };
 }
 
-export function getTopFee(blockchain: BlockchainCode): Dispatched<GasPrices> {
+export function getBtcTx(blockchain: BlockchainCode, hash: string): Dispatched<BitcoinRawTransaction | null> {
   return async (dispatch, getState, extra) => {
-    let avgTop: GasPrices = await extra.backendApi.estimateFee(blockchain, 128, 'avgTop');
+    const rawTx = await extra.backendApi.getBtcTx(blockchain, hash);
 
-    if (avgTop == null) {
-      avgTop = await extra.backendApi.estimateFee(blockchain, 128, 'avgMiddle');
+    if (rawTx == null) {
+      return null;
     }
 
-    const defaultFee = application.selectors.getDefaultFee(getState(), blockchain);
-
-    const defaults: GasPrices = {
-      max: defaultFee?.max ?? '0',
-      priority: defaultFee?.priority_max ?? '0',
-    };
-
-    if (avgTop == null) {
-      const cachedFee = await extra.api.cache.get(`fee.${blockchain}`);
-
-      if (cachedFee == null) {
-        return defaults;
-      }
-
-      try {
-        ({ avgTop } = JSON.parse(cachedFee));
-      } catch (exception) {
-        // Nothing
-      }
-    }
-
-    return avgTop ?? defaults;
+    return rawTx;
   };
 }
 
@@ -541,18 +380,6 @@ export function getEthReceipt(blockchain: BlockchainCode, hash: string): Dispatc
       status: parseInt(rawReceipt.status, 16),
       transactionIndex: parseInt(rawReceipt.transactionIndex, 16),
     };
-  };
-}
-
-export function getBtcTx(blockchain: BlockchainCode, hash: string): Dispatched<BitcoinRawTransaction | null> {
-  return async (dispatch, getState, extra) => {
-    const rawTx = await extra.backendApi.getBtcTx(blockchain, hash);
-
-    if (rawTx == null) {
-      return null;
-    }
-
-    return rawTx;
   };
 }
 
@@ -584,8 +411,41 @@ export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<E
   };
 }
 
-export function setXPubCurrentIndex(xpub: string, position: number): Dispatched {
-  return (dispatch, getState, extra) => extra.api.xPubPos.setCurrentAddressAt(xpub, position);
+export function getNonce(blockchain: BlockchainCode, from: string): Dispatched<number> {
+  return (dispatch, getState, extra) => extra.backendApi.getNonce(blockchain, from);
+}
+
+export function getTopFee(blockchain: BlockchainCode): Dispatched<GasPrices> {
+  return async (dispatch, getState, extra) => {
+    let avgTop: GasPrices = await extra.backendApi.estimateFee(blockchain, 128, 'avgTop');
+
+    if (avgTop == null) {
+      avgTop = await extra.backendApi.estimateFee(blockchain, 128, 'avgMiddle');
+    }
+
+    const defaultFee = application.selectors.getDefaultFee<string>(getState(), blockchain);
+
+    const defaults: GasPrices = {
+      max: defaultFee?.max ?? '0',
+      priority: defaultFee?.priority_max ?? '0',
+    };
+
+    if (avgTop == null) {
+      const cachedFee = await extra.api.cache.get(`fee.${blockchain}`);
+
+      if (cachedFee == null) {
+        return defaults;
+      }
+
+      try {
+        ({ avgTop } = JSON.parse(cachedFee));
+      } catch (exception) {
+        // Nothing
+      }
+    }
+
+    return avgTop ?? defaults;
+  };
 }
 
 export function getXPubLastIndex(
@@ -594,6 +454,160 @@ export function getXPubLastIndex(
   start: number,
 ): Dispatched<number | undefined> {
   return (dispatch, getState, extra) => extra.backendApi.getXPubLastIndex(blockchain, xpub, start);
+}
+
+export function setXPubCurrentIndex(xpub: string, position: number): Dispatched {
+  return (dispatch, getState, extra) => extra.api.xPubPos.setCurrentAddressAt(xpub, position);
+}
+
+/**
+ * @deprecated Should be replaced by unified logic in new UI
+ */
+export function signBitcoinTransaction(
+  entryId: EntryId,
+  tx: UnsignedBitcoinTx,
+  password: string | undefined,
+  handler: SignHandler,
+): Dispatched {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return async (dispatch: any, getState, extra) => {
+    try {
+      const { raw, txid } = await extra.api.vault.signTx(entryId, tx, password);
+
+      const entry = findEntry(getState(), entryId);
+
+      if (entry != null && isBitcoinEntry(entry)) {
+        const changeXPub = entry.xpub.find(({ role }) => role === 'change');
+
+        if (changeXPub != null) {
+          const index = await extra.api.xPubPos.getNext(changeXPub.xpub);
+          const [{ address: changeAddress }] = await extra.api.vault.listEntryAddresses(entryId, 'change', index, 1);
+
+          const output = tx.outputs.find(({ address }) => address === changeAddress);
+
+          if (output != null) {
+            await extra.api.xPubPos.setCurrentAddressAt(changeXPub.xpub, index);
+          }
+        }
+      }
+
+      handler(txid, raw);
+    } catch (exception) {
+      if (exception instanceof Error) {
+        dispatch(showError(exception));
+      }
+
+      handler(null, null);
+    }
+  };
+}
+
+function signEthTx(
+  entryId: string,
+  tx: EthereumTransaction,
+  vault: IEmeraldVault,
+  password: string | undefined,
+): Promise<SignedTx> {
+  log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${tx.blockchain} blockchain`);
+
+  let gasPrices:
+    | Pick<UnsignedBasicEthereumTx, 'gasPrice'>
+    | Pick<UnsignedEIP1559EthereumTx, 'maxGasPrice' | 'priorityGasPrice'>;
+
+  if (tx.type === EthereumTransactionType.EIP1559) {
+    gasPrices = {
+      maxGasPrice: tx.maxGasPrice?.number.toString() ?? '0',
+      priorityGasPrice: tx.priorityGasPrice?.number.toString() ?? '0',
+    };
+  } else {
+    gasPrices = {
+      gasPrice: tx.gasPrice?.number.toString() ?? '0',
+    };
+  }
+
+  const unsignedTx: UnsignedTx = {
+    ...gasPrices,
+    data: tx.data,
+    from: tx.from,
+    gas: tx.gas,
+    nonce: tx.nonce ?? 0,
+    to: tx.to,
+    value: tx.value.number.toString(),
+  };
+
+  return vault.signTx(entryId, unsignedTx, password);
+}
+
+function verifySender(expected: string): (txid: string, raw: string, chain: BlockchainCode) => Promise<SignedTx> {
+  return (txid, raw, chain) =>
+    new Promise((resolve, reject) => {
+      const { chainId } = Blockchains[chain].params;
+
+      let tx;
+
+      try {
+        tx = EthereumTx.fromRaw(raw, chainId);
+      } catch (exception) {
+        log.error(`Failed to parse raw tx: ${raw}, chainId: ${chainId}`, exception);
+
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+
+        return;
+      }
+
+      if (tx.verifySignature()) {
+        log.debug('Tx signature verified');
+
+        if (!tx.getSenderAddress().equals(new EthereumAddress(expected))) {
+          log.error(`WRONG SENDER: ${tx.getSenderAddress().toString()} != ${expected}`);
+
+          reject(new Error('Emerald Vault returned signature from wrong Sender'));
+        } else {
+          resolve({ raw, txid });
+        }
+      } else {
+        log.error(`Invalid signature: ${raw}`);
+
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+      }
+    });
+}
+
+/**
+ * @deprecated Should be replaced by unified logic in new UI
+ */
+export function signEthereumTransaction(
+  entryId: string,
+  transaction: EthereumTransaction,
+  password: string | undefined,
+): Dispatched<SignData | undefined> {
+  return (dispatch, getState, extra) => {
+    const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
+      signEthTx(entryId, tx, extra.api.vault, password)
+        .then(({ raw, txid }) => verifySender(tx.from)(txid, raw, tx.blockchain))
+        .then(({ raw: signed, txid: txId }) => ({ entryId, signed, tx, txId, blockchain: tx.blockchain }));
+
+    if (transaction.nonce == null) {
+      return extra.backendApi
+        .getNonce(transaction.blockchain, transaction.from)
+        .then((nonce) => callSignTx({ ...transaction, nonce }))
+        .catch((error) => {
+          dispatch(showError(error));
+
+          return undefined;
+        });
+    }
+
+    return callSignTx(transaction).catch((error) => {
+      dispatch(showError(error));
+
+      return undefined;
+    });
+  };
+}
+
+export function signTx(unsiged: UnsignedTx, entryId: EntryId, password?: string): Dispatched<SignedTx> {
+  return (dispatch, getState, extra) => extra.api.vault.signTx(entryId, unsiged, password);
 }
 
 function getBtcTxEntries(state: IState, tx: StoredTransaction): BitcoinEntry[] {
@@ -678,7 +692,7 @@ export function restoreBtcTx(
 
     const blockchainCode = blockchainIdToCode(tx.blockchain);
 
-    const factory = amountFactory(blockchainCode);
+    const factory = amountFactory(blockchainCode) as CreateAmount<Satoshi>;
 
     const { restUtxo, txUtxo } = extractUtxo(balances.flat(), rawTx.vin, factory);
 
@@ -745,19 +759,27 @@ export function restoreBtcTx(
 
     const TxClass = cancel ? workflow.CreateBitcoinCancelTx : workflow.CreateBitcoinTx;
 
-    const restoredTx = new TxClass(entry, changeAddress, [...txUtxo, ...restUtxo]);
+    const restoredTx = new TxClass({
+      changeAddress,
+      blockchain: blockchainIdToCode(entry.blockchain),
+      entryId: entry.id,
+      utxo: [...txUtxo, ...restUtxo],
+    });
 
-    const decoder = amountDecoder(blockchainCode);
-    const zeroAmount = zeroAmountFor(blockchainCode);
+    const decoder = amountDecoder<Satoshi>(blockchainCode);
 
-    const fromBitcoin = (value: number): BigAmount =>
+    const zeroAmount = factory(0);
+
+    const fromBitcoin = (value: number): Satoshi =>
       factory(1).multiply(zeroAmount.units.top.multiplier).multiply(value);
 
     const inputAmount = txUtxo.reduce((carry, { value }) => carry.plus(decoder(value)), zeroAmount);
     const outputAmount = rawTx.vout.reduce((carry, { value }) => carry.plus(fromBitcoin(value)), zeroAmount);
 
-    restoredTx.toAddress = address;
-    restoredTx.requiredAmount = fromBitcoin(amount);
+    restoredTx.amount = fromBitcoin(amount);
+    restoredTx.to = address;
+
+    // Fee price assign should be after any other assignments because depends on their values
     restoredTx.feePrice = restoredTx.estimateVkbPrice(inputAmount.minus(outputAmount));
 
     return restoredTx;

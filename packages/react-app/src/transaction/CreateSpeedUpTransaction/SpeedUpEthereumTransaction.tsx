@@ -31,8 +31,8 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { StoredTxView } from '../../common/StoredTxView';
 import WaitLedger from '../../ledger/WaitLedger';
-import StoredTxView from '../StoredTxView';
 
 const useStyles = makeStyles(
   createStyles({
@@ -478,7 +478,7 @@ export default connect<unknown, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(entryId, { ...tx, ...gasPrices }, password),
+        transaction.actions.signEthereumTransaction(entryId, { ...tx, ...gasPrices }, password),
       );
 
       if (signed != null) {

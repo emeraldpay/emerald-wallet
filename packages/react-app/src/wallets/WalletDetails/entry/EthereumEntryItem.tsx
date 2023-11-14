@@ -256,7 +256,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return { balance, blockchainCode, fiatBalance, tokenBalances };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: Dispatch<any>, { entries: [entry] }) => ({
+  (dispatch: Dispatch<any>, { entries: [entry], walletId }) => ({
     gotoConvert(contractAddress) {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, contractAddress }, null, true));
     },
@@ -264,7 +264,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
     },
     gotoSend(asset) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry, initialAsset: asset }, null, true));
+      dispatch(
+        screen.actions.gotoScreen(
+          screen.Pages.CREATE_TX,
+          { walletId, entryId: entry.id, initialAsset: asset },
+          null,
+          true,
+        ),
+      );
     },
   }),
 )(EthereumEntryItem);

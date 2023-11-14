@@ -1,25 +1,42 @@
-import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
-import { BlockchainCode, amountFactory, workflow } from '@emeraldwallet/core';
+import { CreateAmount } from '@emeraldpay/bigamount';
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
+import { SignedTx } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, amountFactory, isBitcoin, workflow } from '@emeraldwallet/core';
 import { IState } from '../types';
-import { CreateTxStage, FeeState, Signed, TxOriginState } from './types';
+import { CreateTxStage, EntryState, FeeState } from './types';
 
 export function getAsset(state: IState): string | undefined {
   return state.txStash.asset;
 }
 
-export function getEntry(state: IState): TxOriginState {
+export function getChangeAddress(state: IState): string | undefined {
+  return state.txStash.changeAddress;
+}
+
+export function getEntry(state: IState): EntryState {
   const { entry, ownerAddress } = state.txStash;
 
   return { entry, ownerAddress };
 }
 
-export function getFee<T extends BigAmount>(state: IState, blockchain: BlockchainCode): FeeState<T> {
+export function getFee(state: IState, blockchain: BlockchainCode): FeeState {
   const { range } = state.txStash.fee?.[blockchain] ?? {};
 
-  const factory = amountFactory(blockchain) as CreateAmount<T>;
+  if (isBitcoin(blockchain)) {
+    if (range == null || workflow.CreateTxConverter.isEthereumFeeRange(range)) {
+      return {
+        loading: true,
+        range: { std: 0, min: 0, max: 0 },
+      };
+    }
+
+    return { range, loading: false };
+  }
+
+  const factory = amountFactory(blockchain) as CreateAmount<WeiAny>;
   const zeroAmount = factory(0);
 
-  if (range == null) {
+  if (range == null || workflow.CreateTxConverter.isBitcoinFeeRange(range)) {
     return {
       loading: true,
       range: {
@@ -46,7 +63,7 @@ export function getFee<T extends BigAmount>(state: IState, blockchain: Blockchai
   };
 }
 
-export function getSigned(state: IState): Signed | undefined {
+export function getSigned(state: IState): SignedTx | undefined {
   return state.txStash.signed;
 }
 
@@ -54,6 +71,6 @@ export function getStage(state: IState): CreateTxStage {
   return state.txStash.stage;
 }
 
-export function getTransaction(state: IState): workflow.TxDetailsPlain | undefined {
+export function getTransaction(state: IState): workflow.AnyPlainTx | undefined {
   return state.txStash.transaction;
 }

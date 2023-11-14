@@ -255,7 +255,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const signed: SignData | undefined = await dispatch(
-        transaction.actions.signTransaction(entry.id, tx.build(), password),
+        transaction.actions.signEthereumTransaction(entry.id, tx.build(), password),
       );
 
       if (signed != null) {

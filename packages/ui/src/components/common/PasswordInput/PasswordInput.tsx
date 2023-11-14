@@ -7,6 +7,7 @@ interface OwnProps {
   autoFocus?: boolean;
   disabled?: boolean;
   error?: string;
+  initialValue?: string;
   minLength?: number;
   placeholder?: string;
   showLengthNotice?: boolean;
@@ -19,6 +20,7 @@ const PasswordInput: React.FC<OwnProps> = ({
   autoFocus,
   disabled,
   error,
+  initialValue,
   placeholder,
   minLength = 8,
   showLengthNotice = true,
@@ -26,7 +28,7 @@ const PasswordInput: React.FC<OwnProps> = ({
   onChange,
   onPressEnter,
 }) => {
-  const [password, setPassword] = React.useState<string>();
+  const [password, setPassword] = React.useState(initialValue);
   const [showPassword, setShowPassword] = React.useState(false);
 
   const onPasswordChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {

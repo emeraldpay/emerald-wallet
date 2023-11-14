@@ -84,7 +84,7 @@ interface StateProps {
 
 interface DispatchProps {
   gotoApprove(initialAllowance?: Allowance): void;
-  gotoTransfer(entries: EthereumEntry[], address: string, initialAllowance: Allowance): void;
+  gotoTransfer(entries: EthereumEntry[], address: string, allowance: Allowance): void;
 }
 
 const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -247,11 +247,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ),
       );
     },
-    gotoTransfer(entries, address, initialAllowance) {
+    gotoTransfer(entries, address, allowance) {
       const entry = entries.find((entry) => entry.address?.value === address);
 
       if (entry != null) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, { entry, initialAllowance }, null, true));
+        dispatch(
+          screen.actions.gotoScreen(screen.Pages.CREATE_TX, { allowance, walletId, entryId: entry.id }, null, true),
+        );
       }
     },
   }),

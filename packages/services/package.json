@@ -15,8 +15,8 @@
   "dependencies": {
     "@emeraldpay/api": "^0.4.3",
     "@emeraldpay/api-node": "^0.4.3",
-    "@emeraldpay/bigamount": "^0.4.1",
-    "@emeraldpay/bigamount-crypto": "^0.4.1",
+    "@emeraldpay/bigamount": "^0.4.2",
+    "@emeraldpay/bigamount-crypto": "^0.4.2",
     "@emeraldpay/emerald-vault-core": "^0.12.0",
     "@emeraldwallet/core": "2.11.0-dev",
     "@grpc/grpc-js": "^1.8.14",

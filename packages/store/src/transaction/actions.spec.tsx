@@ -202,7 +202,7 @@ describe('transaction actions', () => {
       ]),
     );
 
+    expect(restoredTx.amount.toString()).toEqual(new Satoshi(1000).toString());
     expect(restoredTx.fees.toString()).toEqual(new Satoshi(208).toString());
-    expect(restoredTx.requiredAmount.toString()).toEqual(new Satoshi(1000).toString());
   });
 });

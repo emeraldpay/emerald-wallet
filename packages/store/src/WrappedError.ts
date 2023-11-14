@@ -17,6 +17,7 @@ export class WrappedError extends Error {
 
     switch (unwrappedMessage) {
       case '200: CryptoFailed(WrongKey)':
+      case '200: Failed to sign: CryptoFailed(WrongKey)':
         super("You've entered an invalid password. Please double check your password and try again.");
         break;
       case 'nonce too low':

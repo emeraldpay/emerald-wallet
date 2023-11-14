@@ -3,6 +3,7 @@ import {
   BitcoinRawTransaction,
   BlockchainCode,
   PersistentState,
+  amountFactory,
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
@@ -21,9 +22,9 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { BtcConfirm } from '../../common/BtcConfirm';
+import { StoredTxView } from '../../common/StoredTxView';
 import WaitLedger from '../../ledger/WaitLedger';
-import Confirm from '../CreateBitcoinTransaction/Confirm';
-import StoredTxView from '../StoredTxView';
 
 const { ChangeType, Direction, State } = PersistentState;
 
@@ -162,7 +163,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
 
     if (restoredTx != null) {
       if (isHardware) {
-        signTransaction(restoredTx.create(), (txId, signed) => {
+        signTransaction(restoredTx.build(), (txId, signed) => {
           setSignedTxId(txId);
           setSignedRawTx(signed);
 
@@ -179,7 +180,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
 
         if (correctPassword) {
           signTransaction(
-            restoredTx.create(),
+            restoredTx.build(),
             (txId, signed) => {
               setSignedTxId(txId);
               setSignedRawTx(signed);
@@ -212,7 +213,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
       Promise.all([restoreBtcTx(isCancel), getTopFee(blockchainCode)])
         .then(([btcTx, { max: currentMaxFee }]) => {
           if (mounted.current) {
-            const { vkbPrice } = btcTx;
+            const vkbPrice = amountFactory(blockchainCode)(btcTx.vkbPrice);
 
             const minimalFee = vkbPrice.plus(vkbPrice.multiply(0.1)).number.toNumber();
 
@@ -294,7 +295,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                       className={styles.feeSlider}
                       classes={{ markLabel: styles.feeMarkLabel }}
                       defaultValue={minFeePrice}
-                      getAriaValueText={(value) => restoredTx.estimateFees(value).toString()}
+                      getAriaValueText={(value) => restoredTx.getFees(value).toString()}
                       aria-labelledby="discrete-slider"
                       valueLabelDisplay="auto"
                       step={1}
@@ -310,9 +311,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                   </Box>
                 )}
                 <Box className={styles.feeHelpBox}>
-                  <FormHelperText className={styles.feeHelp}>
-                    {restoredTx.estimateFees(feePrice).toString()}
-                  </FormHelperText>
+                  <FormHelperText className={styles.feeHelp}>{restoredTx.getFees(feePrice).toString()}</FormHelperText>
                 </Box>
               </Box>
             </FormRow>
@@ -338,7 +337,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
         <>
           {stage === Stages.SIGN && (
             <>
-              {renderNotice(tx, restoredTx.create())}
+              {renderNotice(tx, restoredTx.build())}
               {isHardware ? (
                 <WaitLedger fullSize blockchain={blockchainCode} onConnected={() => onSignTransaction()} />
               ) : (
@@ -371,7 +370,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
             </>
           )}
           {stage === Stages.CONFIRM && entryId != null && signedRawTx != null && signedTxId != null && (
-            <Confirm
+            <BtcConfirm
               blockchain={blockchainCode}
               disabled={tx.state > State.SUBMITTED}
               entryId={entryId}
@@ -380,9 +379,9 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                 broadcastTransaction({
                   entryId,
                   blockchain: blockchainCode,
-                  fee: restoredTx.estimateFees(feePrice),
+                  fee: restoredTx.getFees(feePrice),
                   signed: signedRawTx,
-                  tx: restoredTx.create(),
+                  tx: restoredTx.build(),
                   txId: signedTxId,
                 })
               }

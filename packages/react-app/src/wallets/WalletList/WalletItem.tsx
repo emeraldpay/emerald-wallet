@@ -174,7 +174,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     onSend(event) {
       event.stopPropagation();
 
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_NEW, { walletId: wallet.id }, null, true));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, { walletId: wallet.id }, null, true));
     },
   }),
 )(WalletItem);

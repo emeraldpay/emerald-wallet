@@ -331,6 +331,15 @@ export function addEntryToWallet(walletId: Uuid, entry: AddEntry): Dispatched<st
   return (dispatch, getState, extra) => extra.api.vault.addEntry(walletId, entry);
 }
 
+export function listEntryAddresses(
+  entryId: EntryId,
+  role: AddressRole,
+  start: number,
+  limit: number,
+): Dispatched<CurrentAddress[]> {
+  return (dispatch, getState, extra) => extra.api.vault.listEntryAddresses(entryId, role, start, limit);
+}
+
 export function listSeedAddresses(
   seed: Uuid | SeedReference | SeedDefinition,
   blockchain: number,

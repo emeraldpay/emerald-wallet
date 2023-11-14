@@ -1,5 +1,5 @@
 import { BigAmount, CreateAmount, Unit, Units } from '@emeraldpay/bigamount';
-import { Satoshi, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
+import { Satoshi, SatoshiAny, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { LedgerApp } from '@emeraldpay/emerald-vault-core';
 import { Bitcoin } from './Bitcoin';
 import { Coin } from './coin';
@@ -165,7 +165,13 @@ export const WEIS_GOERLI = new Units([
   new Unit(18, 'Goerli Ether', 'ETG'),
 ]);
 
-export const SATOSHIS_TEST = new Units([new Unit(0, 'Test Satoshi', 'tsat'), new Unit(8, 'Test Bitcoin', 'TESTBTC')]);
+export const SATOSHIS_TEST = new Units([
+  new Unit(0, 'Test Satoshi', 'tsat'),
+  new Unit(1, 'Test Finney', 'tfin'),
+  new Unit(2, 'Test bit', 'tμBTC'),
+  new Unit(5, 'Test millibit', 'tmBTC'),
+  new Unit(8, 'Test Bitcoin', 'TestBTC'),
+]);
 
 export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
   switch (code) {
@@ -178,7 +184,7 @@ export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
     case BlockchainCode.Goerli:
       return (value) => new WeiAny(value, WEIS_GOERLI);
     case BlockchainCode.TestBTC:
-      return (value) => new BigAmount(value, SATOSHIS_TEST);
+      return (value) => new SatoshiAny(value, SATOSHIS_TEST);
     default:
       throw new Error(`Unsupported blockchain: ${code}`);
   }
