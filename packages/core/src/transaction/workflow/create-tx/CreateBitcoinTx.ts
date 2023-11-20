@@ -1,9 +1,9 @@
 import { CreateAmount } from '@emeraldpay/bigamount';
-import { SatoshiAny } from '@emeraldpay/bigamount-crypto'; // TODO SatoshiAnyAny
+import { SatoshiAny } from '@emeraldpay/bigamount-crypto';
 import { EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import BigNumber from 'bignumber.js';
-import { BlockchainCode, InputUtxo, amountDecoder, amountFactory } from '../blockchains';
-import { BitcoinPlainTx, TxTarget, ValidationResult } from './types';
+import { BlockchainCode, InputUtxo, amountDecoder, amountFactory } from '../../../blockchains';
+import { BitcoinPlainTx, CommonTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 
 const DEFAULT_SEQUENCE = 0xfffffff0 as const;
 const MAX_SEQUENCE = 0xffffffff as const;
@@ -35,15 +35,16 @@ export interface BitcoinTxMetric {
   weightOf(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): number;
 }
 
-interface CommonBitcoinTx {
+interface CommonBitcoinTx extends CommonTx {
   readonly changeAddress?: string;
   readonly entryId: EntryId;
   readonly tx: BitcoinTxDetails;
   metric: BitcoinTxMetric;
   vkbPrice: number;
   build(): UnsignedBitcoinTx;
-  estimateVkbPrice(price: SatoshiAny): number;
-  getFees(price: number): SatoshiAny;
+  dump(): BitcoinPlainTx;
+  estimateVkbPrice(fee: SatoshiAny): number;
+  getFees(): SatoshiAny;
   rebalance(): boolean;
   totalUtxo(utxo: InputUtxo[]): SatoshiAny;
   validate(): ValidationResult;
@@ -88,10 +89,11 @@ export interface BitcoinTxOrigin {
   blockchain: BlockchainCode;
   changeAddress?: string;
   entryId: EntryId;
-  utxo: InputUtxo[];
 }
 
 export class CreateBitcoinTx implements BitcoinTx {
+  meta = { type: TxMetaType.BITCOIN_TRANSFER };
+
   readonly tx: BitcoinTxDetails;
 
   readonly blockchain: BlockchainCode;
@@ -107,7 +109,7 @@ export class CreateBitcoinTx implements BitcoinTx {
 
   private readonly zero: SatoshiAny;
 
-  constructor({ blockchain, changeAddress, entryId, utxo }: BitcoinTxOrigin) {
+  constructor({ blockchain, changeAddress, entryId }: BitcoinTxOrigin, utxo: InputUtxo[]) {
     this.tx = { from: [], target: TxTarget.MANUAL };
 
     this.blockchain = blockchain;
@@ -123,7 +125,7 @@ export class CreateBitcoinTx implements BitcoinTx {
   }
 
   static fromPlain(origin: BitcoinTxOrigin, plain: BitcoinPlainTx): CreateBitcoinTx {
-    const tx = new CreateBitcoinTx(origin);
+    const tx = new CreateBitcoinTx(origin, plain.utxo);
 
     const decoder = amountDecoder<SatoshiAny>(origin.blockchain);
 
@@ -243,9 +245,12 @@ export class CreateBitcoinTx implements BitcoinTx {
     return {
       amount: this.amount.encode(),
       blockchain: this.blockchain,
+      changeAddress: this.changeAddress,
+      meta: { type: this.meta.type },
       target: this.tx.target,
       vkbPrice: this.vkbPrice,
       to: this.tx.to,
+      utxo: this.utxo,
     };
   }
 

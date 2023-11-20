@@ -38,22 +38,18 @@ export class EthereumTransferFlow extends TransferFlow {
   }
 
   private renderFee(): React.ReactElement {
-    const { createTx, fee } = this.data;
+    const {
+      createTx,
+      fee: { loading, range },
+    } = this.data;
 
-    if (!workflow.CreateTxConverter.isEthereumFeeRange(fee.range)) {
+    if (!workflow.isEthereumFeeRange(range)) {
       throw new Error('Bitcoin transaction or fee provided for Ethereum transaction');
     }
 
     const { setTransaction } = this.handler;
 
-    return (
-      <EthereumFee
-        createTx={createTx}
-        feeRange={fee.range}
-        initializing={fee.loading}
-        setTransaction={setTransaction}
-      />
-    );
+    return <EthereumFee createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {

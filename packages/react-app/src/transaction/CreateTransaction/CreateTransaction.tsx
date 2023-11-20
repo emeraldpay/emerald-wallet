@@ -1,5 +1,5 @@
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { Allowance, CreateTxStage, IState, screen, txStash } from '@emeraldwallet/store';
+import { Allowance, CreateTxStage, IState, StoredTransaction, TxAction, screen, txStash } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -8,10 +8,12 @@ import { SetupTransaction } from './SetupTransaction';
 import { SignTransaction } from './SignTransaction';
 
 interface OwnProps {
-  allowance?: Allowance;
-  asset?: string;
+  action?: TxAction;
   entryId?: EntryId;
-  walletId: Uuid;
+  initialAllowance?: Allowance;
+  initialAsset?: string;
+  storedTx?: StoredTransaction;
+  walletId?: Uuid;
 }
 
 interface StateProps {

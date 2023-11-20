@@ -5,9 +5,15 @@ export const moduleName = 'txStash';
 
 export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
 
+export enum TxAction {
+  CANCEL,
+  CONVERT,
+  RECOVERY,
+  SPEED_UP,
+  TRANSFER,
+}
+
 export type FeeRange = workflow.BitcoinFeeRange | workflow.EthereumFeeRange<string>;
-export type GasPrice<T = string> = Record<'max' | 'priority', T>;
-export type GetFee = (blockchain: BlockchainCode) => Promise<void>;
 
 interface LastFee {
   range: FeeRange;
@@ -19,20 +25,22 @@ interface BlockchainFee {
 }
 
 export enum CreateTxStage {
-  SETUP = 'setup',
-  SIGN = 'sign',
-  BROADCAST = 'broadcast',
+  SETUP,
+  SIGN,
+  BROADCAST,
 }
 
 export interface TxStashState {
   asset?: string;
-  entry?: WalletEntry;
   changeAddress?: string;
+  entry?: WalletEntry;
   fee?: BlockchainFee;
   ownerAddress?: string;
+  preparing: boolean;
   signed?: SignedTx;
   stage: CreateTxStage;
   transaction?: workflow.AnyPlainTx;
+  transactionFee?: FeeRange;
 }
 
 export enum ActionTypes {
@@ -42,9 +50,11 @@ export enum ActionTypes {
   SET_ENTRY = 'TX_STASH/SET_ENTRY',
   SET_FEE_LOADING = 'TX_STASH/SET_FEE_LOADING',
   SET_FEE_RANGE = 'TX_STASH/SET_FEE_RANGE',
+  SET_PREPARING = 'TX_STASH/SET_PREPARING',
   SET_SIGNED = 'TX_STASH/SET_SIGNED',
   SET_STAGE = 'TX_STASH/SET_STAGE',
   SET_TRANSACTION = 'TX_STASH/SET_TRANSACTION',
+  SET_TRANSACTION_FEE = 'TX_STASH/SET_TRANSACTION_FEE',
 }
 
 export interface ResetAction {
@@ -88,6 +98,13 @@ export interface SetFeeRangeAction {
   };
 }
 
+export interface SetPreparingAction {
+  type: ActionTypes.SET_PREPARING;
+  payload: {
+    preparing: boolean;
+  };
+}
+
 export interface SetSignedAction {
   type: ActionTypes.SET_SIGNED;
   payload: {
@@ -109,6 +126,13 @@ export interface SetTransactionAction {
   };
 }
 
+export interface SetTransactionFeeAction {
+  type: ActionTypes.SET_TRANSACTION_FEE;
+  payload: {
+    transactionFee: FeeRange;
+  };
+}
+
 export type TxStashAction =
   | ResetAction
   | SetAssetAction
@@ -116,9 +140,11 @@ export type TxStashAction =
   | SetEntryAction
   | SetFeeLoadingAction
   | SetFeeRangeAction
+  | SetPreparingAction
   | SetSignedAction
   | SetStageAction
-  | SetTransactionAction;
+  | SetTransactionAction
+  | SetTransactionFeeAction;
 
 export interface EntryState {
   entry?: WalletEntry;

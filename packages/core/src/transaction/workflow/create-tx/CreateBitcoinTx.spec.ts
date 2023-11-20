@@ -1,7 +1,7 @@
 import { SATOSHIS, Satoshi } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, InputUtxo, amountFactory } from '../blockchains';
+import { BlockchainCode, InputUtxo, amountFactory } from '../../../blockchains';
+import { TxTarget, ValidationResult } from '../types';
 import { BitcoinTxMetric, BitcoinTxOutput, CreateBitcoinTx, convertWUToVB } from './CreateBitcoinTx';
-import { TxTarget, ValidationResult } from './types';
 
 const basicEntryId = 'f76416d7-3510-4d80-85df-52e7222e56df-1';
 const restoreEntryId = '2a19e023-f119-4dab-b2cb-4b3e73fa32c9-1';
@@ -35,23 +35,27 @@ class TestMetric implements BitcoinTxMetric {
 const defaultMetric = new TestMetric(120, 80);
 
 describe('CreateBitcoinTx', () => {
-  const defaultBitcoin = new CreateBitcoinTx({
-    blockchain: BlockchainCode.BTC,
-    entryId: basicEntryId,
-    changeAddress: 'addrchange',
-    utxo: [],
-  });
+  const defaultBitcoin = new CreateBitcoinTx(
+    {
+      blockchain: BlockchainCode.BTC,
+      entryId: basicEntryId,
+      changeAddress: 'addrchange',
+    },
+    [],
+  );
 
   defaultBitcoin.metric = defaultMetric;
   defaultBitcoin.feePrice = 100;
 
   it('create', () => {
-    const act = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [],
-    });
+    const act = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [],
+    );
 
     expect(act).toBeDefined();
     expect(act.totalToSpend).toBeDefined();
@@ -87,16 +91,18 @@ describe('CreateBitcoinTx', () => {
     ).toBe(Satoshi.fromBitcoin(0.5 + 0.61 + 0.756).toString()));
 
   it('rebalance when have enough', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'ADDR' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'ADDR' },
         { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -130,16 +136,18 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('rebalance when less that enough', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.5).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: 'addr2' },
         { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'addr3' },
       ],
-    });
+    );
 
     create.amount = Satoshi.fromBitcoin(2);
     create.to = 'addrTo';
@@ -160,17 +168,19 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('rebalance when no change', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr2' },
         { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr3' },
         { txid: '4', vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: 'addr4' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -197,15 +207,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('rebalance with send all target', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -221,15 +233,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('simple fee', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -242,15 +256,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('fee when not enough', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -261,15 +277,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('update fee', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -287,15 +305,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('estimate fees', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     create.metric = defaultMetric;
 
@@ -317,15 +337,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('estimate price', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 1, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     tx.amount = Satoshi.fromBitcoin(0.08);
     tx.metric = defaultMetric;
@@ -338,48 +360,56 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('total available', () => {
-    let create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [{ txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' }],
-    });
+    let create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [{ txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' }],
+    );
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.05).toString());
 
-    create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.1).toString());
 
-    create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'addr1' },
         { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.06).encode(), address: 'addr2' },
         { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.07).encode(), address: 'addr3' },
       ],
-    });
+    );
 
     expect(create.totalAvailable.toString()).toBe(Satoshi.fromBitcoin(0.18).toString());
   });
 
   it('creates unsigned', () => {
-    const create = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrChange',
-      utxo: [{ txid: '1', vout: 0, value: new Satoshi(112233).encode(), address: 'addr1' }],
-    });
+    const create = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrChange',
+      },
+      [{ txid: '1', vout: 0, value: new Satoshi(112233).encode(), address: 'addr1' }],
+    );
 
     create.metric = defaultMetric;
 
@@ -415,11 +445,13 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates restored', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: restoreEntryId,
-      changeAddress: 'tb1q8grga8c48wa4dsevt0v0gcl6378rfljj6vrz0u',
-      utxo: [
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: restoreEntryId,
+        changeAddress: 'tb1q8grga8c48wa4dsevt0v0gcl6378rfljj6vrz0u',
+      },
+      [
         {
           address: 'tb1qjg445dvh6krr6gtmuh4eqgua372vxaf4q07nv9',
           txid: 'fd53023c4a9627c26c5d930f3149890b2eecf4261f409bd1a340454b7dede244',
@@ -427,7 +459,7 @@ describe('CreateBitcoinTx', () => {
           vout: 0,
         },
       ],
-    });
+    );
 
     tx.amount = new Satoshi(1000);
     tx.feePrice = 1067;
@@ -441,12 +473,14 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with zero fee', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [{ txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' }],
-    });
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [{ txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' }],
+    );
 
     tx.amount = new Satoshi(1000);
     tx.feePrice = 0;
@@ -460,15 +494,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with enough inputs for fee', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
         { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     tx.amount = new Satoshi(1000);
     tx.feePrice = 1024;
@@ -482,15 +518,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates with inputs amount equals required amount and zero fee', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
         { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     tx.to = 'addrTo';
     tx.amount = new Satoshi(2000);
@@ -504,15 +542,17 @@ describe('CreateBitcoinTx', () => {
   });
 
   it('creates cancel transaction', () => {
-    const tx = new CreateBitcoinTx({
-      blockchain: BlockchainCode.BTC,
-      entryId: basicEntryId,
-      changeAddress: 'addrchange',
-      utxo: [
+    const tx = new CreateBitcoinTx(
+      {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      },
+      [
         { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
         { txid: '2', vout: 1, value: new Satoshi(1000).encode(), address: 'addr2' },
       ],
-    });
+    );
 
     tx.amount = new Satoshi(1000);
     tx.feePrice = 1024;

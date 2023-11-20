@@ -11,7 +11,7 @@ describe('tx stash selectors', () => {
 
     expect(fee.loading).toBeTruthy();
 
-    if (workflow.CreateTxConverter.isBitcoinFeeRange(fee.range)) {
+    if (workflow.isBitcoinFeeRange(fee.range)) {
       expect(fee.range.std).toEqual(0);
       expect(fee.range.min).toEqual(0);
       expect(fee.range.max).toEqual(0);
@@ -27,7 +27,7 @@ describe('tx stash selectors', () => {
 
     expect(fee.loading).toBeTruthy();
 
-    if (workflow.CreateTxConverter.isEthereumFeeRange(fee.range)) {
+    if (workflow.isEthereumFeeRange(fee.range)) {
       expect(fee.range.stdMaxGasPrice.equals(zeroAmount)).toBeTruthy();
       expect(fee.range.lowMaxGasPrice.equals(zeroAmount)).toBeTruthy();
       expect(fee.range.highMaxGasPrice.equals(zeroAmount)).toBeTruthy();
@@ -50,6 +50,7 @@ describe('tx stash selectors', () => {
             timestamp: Date.now(),
           },
         },
+        preparing: true,
         stage: CreateTxStage.SETUP,
       },
     };
@@ -58,7 +59,7 @@ describe('tx stash selectors', () => {
 
     expect(fee.loading).toBeFalsy();
 
-    if (workflow.CreateTxConverter.isBitcoinFeeRange(fee.range)) {
+    if (workflow.isBitcoinFeeRange(fee.range)) {
       expect(fee.range.std).toEqual(2048);
       expect(fee.range.min).toEqual(1024);
       expect(fee.range.max).toEqual(3096);
@@ -84,6 +85,7 @@ describe('tx stash selectors', () => {
             timestamp: Date.now(),
           },
         },
+        preparing: true,
         stage: CreateTxStage.SETUP,
       },
     };
@@ -92,7 +94,7 @@ describe('tx stash selectors', () => {
 
     expect(fee.loading).toBeFalsy();
 
-    if (workflow.CreateTxConverter.isEthereumFeeRange(fee.range)) {
+    if (workflow.isEthereumFeeRange(fee.range)) {
       expect(fee.range.stdMaxGasPrice.equals(someAmount)).toBeTruthy();
       expect(fee.range.lowMaxGasPrice.equals(someAmount)).toBeTruthy();
       expect(fee.range.highMaxGasPrice.equals(someAmount)).toBeTruthy();

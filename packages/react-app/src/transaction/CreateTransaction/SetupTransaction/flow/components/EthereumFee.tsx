@@ -7,11 +7,11 @@ import { EthTxSettings } from '../../../../../common/EthTxSettings';
 interface OwnProps {
   createTx: workflow.AnyEthereumCreateTx;
   feeRange: workflow.EthereumFeeRange;
-  initializing: boolean;
+  initializing?: boolean;
   setTransaction(transaction: workflow.AnyPlainTx): void;
 }
 
-export const EthereumFee: React.FC<OwnProps> = ({ createTx, feeRange, initializing, setTransaction }) => {
+export const EthereumFee: React.FC<OwnProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
   const factory = React.useMemo(
     () => amountFactory(createTx.blockchain) as CreateAmount<WeiAny>,
     [createTx.blockchain],

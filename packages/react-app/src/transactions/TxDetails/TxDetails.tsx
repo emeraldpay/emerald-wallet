@@ -11,7 +11,7 @@ import {
   formatAmount,
   isEthereum,
 } from '@emeraldwallet/core';
-import { IState, StoredTransaction, blockchains, screen, transaction, txhistory } from '@emeraldwallet/store';
+import { IState, StoredTransaction, TxAction, blockchains, screen, transaction, txhistory } from '@emeraldwallet/store';
 import { Address, Back, Balance, Button, ButtonGroup, FormLabel, FormRow, Page } from '@emeraldwallet/ui';
 import { TextField, Typography, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
@@ -248,8 +248,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    goToCancelTx(entryId, tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, { entryId, tx }, null, true));
+    goToCancelTx(entryId, storedTx) {
+      dispatch(gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.CANCEL }, null, true));
     },
     goToDashboard() {
       dispatch(gotoWalletsScreen());

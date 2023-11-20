@@ -1,6 +1,6 @@
 import { SignedTx, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { TokenRegistry, workflow } from '@emeraldwallet/core';
-import { BroadcastData, IState, accounts, transaction, txStash } from '@emeraldwallet/store';
+import { BroadcastData, IState, transaction, txStash } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Display } from './display';
@@ -17,7 +17,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  broadcastTx(data: BroadcastData): void;
+  broadcastTx(data: BroadcastData): Promise<void>;
 }
 
 const BroadcastTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -61,13 +61,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       entry,
       signed,
       tokenRegistry,
-      createTx: workflow.CreateTxConverter.fromPlainTx(
+      createTx: workflow.fromPlainTx(
         tx,
         {
           entryId,
           blockchain: tx.blockchain,
           changeAddress: txStash.selectors.getChangeAddress(state),
-          utxo: accounts.selectors.getUtxo(state, entryId),
         },
         tokenRegistry,
       ),
@@ -76,7 +75,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     broadcastTx(data) {
-      dispatch(transaction.actions.broadcastTx(data));
+      return dispatch(transaction.actions.broadcastTx(data));
     },
   }),
 )(BroadcastTransaction);

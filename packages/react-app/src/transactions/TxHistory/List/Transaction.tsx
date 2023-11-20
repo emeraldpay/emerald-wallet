@@ -12,6 +12,7 @@ import {
   IState,
   StoredTransaction,
   StoredTransactionChange,
+  TxAction,
   accounts,
   blockchains,
   screen,
@@ -447,8 +448,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    goToCancelTx(entryId, tx) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CANCEL, { entryId, tx }, null, true));
+    goToCancelTx(entryId, storedTx) {
+      dispatch(
+        screen.actions.gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.CANCEL }, null, true),
+      );
     },
     goToSpeedUpTx(entryId, tx) {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, { entryId, tx }, null, true));

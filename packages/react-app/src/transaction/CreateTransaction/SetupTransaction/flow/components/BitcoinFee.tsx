@@ -45,11 +45,11 @@ const useStyles = makeStyles(
 interface OwnProps {
   createTx: workflow.CreateBitcoinTx;
   feeRange: workflow.BitcoinFeeRange;
-  initializing: boolean;
+  initializing?: boolean;
   setTransaction(transaction: workflow.AnyPlainTx): void;
 }
 
-export const BitcoinFee: React.FC<OwnProps> = ({ createTx, feeRange, initializing, setTransaction }) => {
+export const BitcoinFee: React.FC<OwnProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
   const styles = useStyles();
 
   const [useStdFee, setUseStdFee] = React.useState(true);

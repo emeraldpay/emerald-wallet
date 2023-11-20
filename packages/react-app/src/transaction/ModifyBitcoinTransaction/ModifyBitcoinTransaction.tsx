@@ -7,7 +7,6 @@ import {
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
-import { ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import { BroadcastData, GasPrices, SignHandler, StoredTransaction, accounts, transaction } from '@emeraldwallet/store';
 import { Address, Balance, Button, ButtonGroup, FormLabel, FormRow, PasswordInput } from '@emeraldwallet/ui';
 import {
@@ -122,7 +121,6 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
 
   const [useStdFee, setUseStdFee] = React.useState(true);
 
-  const [feePrice, setFeePrice] = React.useState(0);
   const [minFeePrice, setMinFeePrice] = React.useState(0);
   const [maxFeePrice, setMaxFeePrice] = React.useState(0);
 
@@ -150,8 +148,6 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
     if (restoredTx != null) {
       restoredTx.feePrice = value;
     }
-
-    setFeePrice(value);
   };
 
   const onSignTransaction = async (): Promise<void> => {
@@ -223,7 +219,6 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
               maximalFee = currentMaxFee;
             }
 
-            setFeePrice(minimalFee);
             setMinFeePrice(minimalFee);
             setMaxFeePrice(maximalFee);
 
@@ -295,8 +290,6 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                       className={styles.feeSlider}
                       classes={{ markLabel: styles.feeMarkLabel }}
                       defaultValue={minFeePrice}
-                      getAriaValueText={(value) => restoredTx.getFees(value).toString()}
-                      aria-labelledby="discrete-slider"
                       valueLabelDisplay="auto"
                       step={1}
                       marks={[
@@ -311,7 +304,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                   </Box>
                 )}
                 <Box className={styles.feeHelpBox}>
-                  <FormHelperText className={styles.feeHelp}>{restoredTx.getFees(feePrice).toString()}</FormHelperText>
+                  <FormHelperText className={styles.feeHelp}>{restoredTx.getFees().toString()}</FormHelperText>
                 </Box>
               </Box>
             </FormRow>
@@ -325,7 +318,9 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing || restoredTx?.validate() !== ValidationResult.OK || tx.state > State.SUBMITTED}
+                disabled={
+                  initializing || restoredTx?.validate() !== workflow.ValidationResult.OK || tx.state > State.SUBMITTED
+                }
                 label="Create Transaction"
                 onClick={() => setStage(Stages.SIGN)}
               />
@@ -379,7 +374,7 @@ const ModifyBitcoinTransaction: React.FC<OwnProps & DispatchProps> = ({
                 broadcastTransaction({
                   entryId,
                   blockchain: blockchainCode,
-                  fee: restoredTx.getFees(feePrice),
+                  fee: restoredTx.getFees(),
                   signed: signedRawTx,
                   tx: restoredTx.build(),
                   txId: signedTxId,

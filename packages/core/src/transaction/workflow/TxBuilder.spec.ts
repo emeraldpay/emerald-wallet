@@ -1,13 +1,14 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Satoshi, Wei } from '@emeraldpay/bigamount-crypto';
 import { BitcoinEntry, EthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { InputUtxo, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '../blockchains';
-import { DEFAULT_GAS_LIMIT, EthereumTransactionType } from '../transaction/ethereum';
-import { DEFAULT_VKB_FEE } from './CreateBitcoinTx';
-import { CreateTxConverter, FeeRange } from './CreateTxConverter';
-import { TxTarget, isBitcoinCreateTx, isErc20CreateTx, isEthereumCreateTx } from './types';
+import { InputUtxo, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '../../blockchains';
+import { DEFAULT_GAS_LIMIT, EthereumTransactionType } from '../ethereum';
+import { DEFAULT_VKB_FEE } from './create-tx/CreateBitcoinTx';
+import { isAnyBitcoinCreateTx, isErc20CreateTx, isEthereumCreateTx } from './create-tx/types';
+import { TxBuilder } from './TxBuilder';
+import { FeeRange, TxTarget } from './types';
 
-describe('CreateTxConverter', () => {
+describe('TxBuilder', () => {
   const tokenData: TokenData = {
     name: 'Wrapped Ether',
     blockchain: 100,
@@ -173,7 +174,7 @@ describe('CreateTxConverter', () => {
   }
 
   it('create initial BTC tx', () => {
-    const { createTx } = new CreateTxConverter(
+    const { createTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'BTC',
@@ -186,7 +187,7 @@ describe('CreateTxConverter', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isBitcoinCreateTx(createTx);
+    const isCorrectCreateTx = isAnyBitcoinCreateTx(createTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -202,7 +203,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('create initial ETH tx', () => {
-    const { createTx } = new CreateTxConverter(
+    const { createTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETH',
@@ -235,7 +236,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('create initial ERC20 tx', () => {
-    const { createTx } = new CreateTxConverter(
+    const { createTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: tokenData.address,
@@ -273,7 +274,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('create initial ETC tx', () => {
-    const { createTx } = new CreateTxConverter(
+    const { createTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETC',
@@ -306,7 +307,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('create initial ERC20 tx with allowance', () => {
-    const { createTx } = new CreateTxConverter(
+    const { createTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         ownerAddress: ethOwnerAddress,
@@ -346,7 +347,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change asset from ETH to ERC20 token', () => {
-    const { createTx: ethCreateTx } = new CreateTxConverter(
+    const { createTx: ethCreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETH',
@@ -367,7 +368,7 @@ describe('CreateTxConverter', () => {
       ethCreateTx.amount = new Wei(1);
       ethCreateTx.to = ethToAddress;
 
-      const { createTx: erc20CreateTx } = new CreateTxConverter(
+      const { createTx: erc20CreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: tokenData.address,
@@ -408,7 +409,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change asset from ETH to ERC20 token with max amount', () => {
-    const { createTx: ethCreateTx } = new CreateTxConverter(
+    const { createTx: ethCreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETH',
@@ -431,7 +432,7 @@ describe('CreateTxConverter', () => {
       ethCreateTx.target = TxTarget.SEND_ALL;
       ethCreateTx.rebalance();
 
-      const { createTx: erc20CreateTx } = new CreateTxConverter(
+      const { createTx: erc20CreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: tokenData.address,
@@ -472,7 +473,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change asset from ERC20 token to ETH with max amount', () => {
-    const { createTx: erc20CreateTx } = new CreateTxConverter(
+    const { createTx: erc20CreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: tokenData.address,
@@ -495,7 +496,7 @@ describe('CreateTxConverter', () => {
       erc20CreateTx.target = TxTarget.SEND_ALL;
       erc20CreateTx.rebalance();
 
-      const { createTx: ethCreateTx } = new CreateTxConverter(
+      const { createTx: ethCreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: 'ETH',
@@ -535,7 +536,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change entry from BTC to ETH', () => {
-    const { createTx: btcCreateTx } = new CreateTxConverter(
+    const { createTx: btcCreateTx } = new TxBuilder(
       {
         asset: 'BTC',
         entry: btcEntry,
@@ -548,7 +549,7 @@ describe('CreateTxConverter', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isBitcoinCreateTx(btcCreateTx);
+    const isCorrectCreateTx = isAnyBitcoinCreateTx(btcCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -556,7 +557,7 @@ describe('CreateTxConverter', () => {
       btcCreateTx.amount = new Satoshi(1);
       btcCreateTx.to = btcToAddress;
 
-      const { createTx: ethCreateTx } = new CreateTxConverter(
+      const { createTx: ethCreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: 'ETH',
@@ -592,7 +593,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change entry from ETH to BTC', () => {
-    const { createTx: ethCreateTx } = new CreateTxConverter(
+    const { createTx: ethCreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETH',
@@ -613,7 +614,7 @@ describe('CreateTxConverter', () => {
       ethCreateTx.amount = new Wei(1);
       ethCreateTx.to = ethToAddress;
 
-      const { createTx: btcCreateTx } = new CreateTxConverter(
+      const { createTx: btcCreateTx } = new TxBuilder(
         {
           asset: 'BTC',
           entry: btcEntry,
@@ -627,7 +628,7 @@ describe('CreateTxConverter', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isBitcoinCreateTx(btcCreateTx);
+      const isConvertedCreateTx = isAnyBitcoinCreateTx(btcCreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -645,7 +646,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change entry from ETH to ETC', () => {
-    const { createTx: ethCreateTx } = new CreateTxConverter(
+    const { createTx: ethCreateTx } = new TxBuilder(
       {
         asset: 'ETH',
         entry: ethEntry1,
@@ -666,7 +667,7 @@ describe('CreateTxConverter', () => {
       ethCreateTx.amount = new Wei(1);
       ethCreateTx.to = ethToAddress;
 
-      const { createTx: etcCreateTx } = new CreateTxConverter(
+      const { createTx: etcCreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: 'ETC',
@@ -702,7 +703,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('change entry from ETH to other ETH', () => {
-    const { createTx: eth1CreateTx } = new CreateTxConverter(
+    const { createTx: eth1CreateTx } = new TxBuilder(
       {
         asset: 'ETH',
         entry: ethEntry1,
@@ -723,7 +724,7 @@ describe('CreateTxConverter', () => {
       eth1CreateTx.amount = new Wei(1);
       eth1CreateTx.to = ethToAddress;
 
-      const { createTx: eth2CreateTx } = new CreateTxConverter(
+      const { createTx: eth2CreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: 'ETH',
@@ -759,7 +760,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('restore ETH tx', () => {
-    const { createTx: ethCreateTx } = new CreateTxConverter(
+    const { createTx: ethCreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: 'ETH',
@@ -782,7 +783,7 @@ describe('CreateTxConverter', () => {
       ethCreateTx.target = TxTarget.SEND_ALL;
       ethCreateTx.rebalance();
 
-      const { createTx: restoredEthCreateTx } = new CreateTxConverter(
+      const { createTx: restoredEthCreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: 'ETH',
@@ -820,7 +821,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('restore ERC20 tx', () => {
-    const { createTx: erc20CreateTx } = new CreateTxConverter(
+    const { createTx: erc20CreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: tokenData.address,
@@ -843,7 +844,7 @@ describe('CreateTxConverter', () => {
       erc20CreateTx.target = TxTarget.SEND_ALL;
       erc20CreateTx.rebalance();
 
-      const { createTx: restoredErc20CreateTx } = new CreateTxConverter(
+      const { createTx: restoredErc20CreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           asset: tokenData.address,
@@ -884,7 +885,7 @@ describe('CreateTxConverter', () => {
   });
 
   it('restore ERC20 tx with allowance', () => {
-    const { createTx: erc20CreateTx } = new CreateTxConverter(
+    const { createTx: erc20CreateTx } = new TxBuilder(
       {
         feeRange: ethFeeRange,
         asset: tokenData.address,
@@ -907,7 +908,7 @@ describe('CreateTxConverter', () => {
       erc20CreateTx.target = TxTarget.SEND_ALL;
       erc20CreateTx.rebalance();
 
-      const { createTx: restoredErc20CreateTx } = new CreateTxConverter(
+      const { createTx: restoredErc20CreateTx } = new TxBuilder(
         {
           feeRange: ethFeeRange,
           ownerAddress: ethOwnerAddress,

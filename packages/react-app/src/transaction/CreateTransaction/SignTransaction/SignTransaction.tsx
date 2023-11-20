@@ -44,13 +44,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const { entry } = txStash.selectors.getEntry(state);
 
     if (entry == null) {
-      throw new Error('Entry not provided!');
+      throw new Error('Entry not provided');
     }
 
     const tx = txStash.selectors.getTransaction(state);
 
     if (tx == null) {
-      throw new Error('Transaction not provided!');
+      throw new Error('Transaction not provided');
     }
 
     const tokenRegistry = new TokenRegistry(state.application.tokens);
@@ -59,13 +59,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     return {
       entry,
-      createTx: workflow.CreateTxConverter.fromPlainTx(
+      createTx: workflow.fromPlainTx(
         tx,
         {
           entryId,
           blockchain: tx.blockchain,
           changeAddress: txStash.selectors.getChangeAddress(state),
-          utxo: accounts.selectors.getUtxo(state, entryId),
         },
         tokenRegistry,
       ),

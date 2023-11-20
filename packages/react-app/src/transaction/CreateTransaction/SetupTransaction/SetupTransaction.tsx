@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { BitcoinEntry, EntryId, Uuid, WalletEntry, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
+import { EntryId, EntryIdOp, Uuid, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import {
-  BlockchainCode,
   Blockchains,
   CurrencyAmount,
   TokenRegistry,
@@ -14,22 +13,27 @@ import {
   CreateTxStage,
   FeeState,
   IState,
+  StoredTransaction,
   TokenBalanceBelong,
+  TxAction,
   accounts,
   settings,
   tokens,
   txStash,
 } from '@emeraldwallet/store';
+import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Asset } from '../../../common/SelectAsset';
 import { Flow } from './flow';
 
 interface OwnProps {
+  action?: TxAction;
   entryId?: EntryId;
   initialAllowance?: Allowance;
   initialAsset?: string;
-  walletId: Uuid;
+  storedTx?: StoredTransaction;
+  walletId?: Uuid;
   onCancel(): void;
 }
 
@@ -37,66 +41,52 @@ interface StateProps {
   asset: string;
   assets: Asset[];
   createTx: workflow.AnyCreateTx;
-  entry: WalletEntry;
   entries: WalletEntry[];
+  entry: WalletEntry;
   fee: FeeState;
+  isPreparing: boolean;
   ownerAddress?: string;
   tokenRegistry: TokenRegistry;
+  transactionFee?: workflow.FeeRange;
   getBalance(entry: WalletEntry, asset: string, ownerAddress?: string): BigAmount;
   getFiatBalance(asset: string): CurrencyAmount | undefined;
 }
 
 interface DispatchProps {
-  getChangeAddress(entry: BitcoinEntry): Promise<string>;
-  getFee(blockchain: BlockchainCode): void;
+  prepareTransaction(action: TxAction, entry: WalletEntry, storedTx?: StoredTransaction): void;
   setAsset(asset: string): void;
-  setChangeAddress(changeAddress: string): void;
   setEntry(entry: WalletEntry, ownerAddress?: string): void;
   setStage(stage: CreateTxStage): void;
   setTransaction(tx: workflow.AnyPlainTx): void;
 }
 
 const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  action = TxAction.TRANSFER,
   asset,
   assets,
   createTx,
-  entry,
   entries,
+  entry,
   fee,
+  isPreparing,
   ownerAddress,
+  storedTx,
   tokenRegistry,
+  transactionFee,
   getBalance,
-  getChangeAddress,
-  getFee,
   getFiatBalance,
   onCancel,
+  prepareTransaction,
   setAsset,
-  setChangeAddress,
   setEntry,
   setStage,
   setTransaction,
 }) => {
   const mounted = React.useRef(true);
 
-  const { flow } = new Flow(
-    { asset, assets, createTx, entry, entries, fee, ownerAddress, tokenRegistry },
-    { getBalance, getFiatBalance },
-    { onCancel, setAsset, setEntry, setTransaction, setStage },
-  );
-
   React.useEffect(() => {
-    getFee(createTx.blockchain);
-  }, [createTx.blockchain, getFee]);
-
-  React.useEffect(() => {
-    if (isBitcoinEntry(entry)) {
-      getChangeAddress(entry).then((changeAddress) => {
-        if (mounted.current) {
-          setChangeAddress(changeAddress);
-        }
-      });
-    }
-  }, [entry, getChangeAddress, setChangeAddress]);
+    prepareTransaction(action, entry, storedTx);
+  }, [action, entry, storedTx, prepareTransaction]);
 
   React.useEffect(() => {
     return () => {
@@ -104,15 +94,45 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     };
   }, []);
 
+  if (isPreparing) {
+    return (
+      <Grid container alignItems="center" justifyContent="center">
+        <Grid item>
+          <Box pr={2}>
+            <CircularProgress />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5">Loading...</Typography>
+          <Typography>Please wait while transaction being prepared.</Typography>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  const { flow } = new Flow(
+    { asset, assets, createTx, entry, entries, fee, ownerAddress, storedTx, tokenRegistry, transactionFee },
+    { getBalance, getFiatBalance },
+    { onCancel, setAsset, setEntry, setTransaction, setStage },
+  );
+
   return flow.render();
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { entryId, initialAllowance, initialAsset, walletId }) => {
+    if (walletId == null) {
+      if (entryId == null) {
+        throw new Error('Wallet id or entry id should be provided');
+      }
+
+      walletId = EntryIdOp.of(entryId).extractWalletId();
+    }
+
     const entries = accounts.selectors.findWallet(state, walletId)?.entries.filter((entry) => !entry.receiveDisabled);
 
     if (entries == null || entries.length === 0) {
-      throw new Error('Something went wrong while getting entries from wallet.');
+      throw new Error('Something went wrong while getting entries from wallet');
     }
 
     const { entry: originEntry, ownerAddress = initialAllowance?.ownerAddress } = txStash.selectors.getEntry(state);
@@ -179,7 +199,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const fee = txStash.selectors.getFee(state, blockchain);
     const tx = txStash.selectors.getTransaction(state);
 
-    const { createTx } = new workflow.CreateTxConverter(
+    const { createTx } = new workflow.TxBuilder(
       { asset, changeAddress, entry, ownerAddress, feeRange: fee.range, transaction: tx },
       {
         getBalance,
@@ -190,15 +210,20 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       tokenRegistry,
     );
 
+    const isPreparing = txStash.selectors.isPreparing(state);
+    const transactionFee = txStash.selectors.getTransactionFee(state, blockchain);
+
     return {
       asset,
       assets,
       createTx,
-      entry,
       entries,
+      entry,
       fee,
+      isPreparing,
       ownerAddress,
       tokenRegistry,
+      transactionFee,
       getBalance,
       getFiatBalance(asset) {
         const balance = getBalance(entry, asset);
@@ -218,23 +243,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    async getChangeAddress(entry) {
-      const [{ address: changeAddress }] = await Promise.all(
-        entry.xpub
-          .filter(({ role }) => role === 'change')
-          .map(({ role, xpub }) => dispatch(accounts.actions.getXPubPositionalAddress(entry.id, xpub, role))),
-      );
-
-      return changeAddress;
-    },
-    getFee(blockchain) {
-      dispatch(txStash.actions.getFee(blockchain));
+    prepareTransaction(action, entry, storedTx) {
+      dispatch(txStash.actions.prepareTransaction(action, entry, storedTx));
     },
     setAsset(asset) {
       dispatch(txStash.actions.setAsset(asset));
-    },
-    setChangeAddress(changeAddress) {
-      dispatch(txStash.actions.setChangeAddress(changeAddress));
     },
     setEntry(entry, ownerAddress) {
       dispatch(txStash.actions.setEntry(entry, ownerAddress));

@@ -83,7 +83,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  gotoApprove(initialAllowance?: Allowance): void;
+  gotoApprove(allowance?: Allowance): void;
   gotoTransfer(entries: EthereumEntry[], address: string, allowance: Allowance): void;
 }
 
@@ -247,12 +247,17 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ),
       );
     },
-    gotoTransfer(entries, address, allowance) {
+    gotoTransfer(entries, address, initialAllowance) {
       const entry = entries.find((entry) => entry.address?.value === address);
 
       if (entry != null) {
         dispatch(
-          screen.actions.gotoScreen(screen.Pages.CREATE_TX, { allowance, walletId, entryId: entry.id }, null, true),
+          screen.actions.gotoScreen(
+            screen.Pages.CREATE_TX,
+            { initialAllowance, walletId, entryId: entry.id },
+            null,
+            true,
+          ),
         );
       }
     },

@@ -1,10 +1,11 @@
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
-import { BlockchainCode, amountDecoder, amountFactory } from '../blockchains';
-import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../transaction/ethereum';
-import { EthereumPlainTx, EthereumTx, TxTarget, ValidationResult } from './types';
+import { BlockchainCode, amountDecoder, amountFactory } from '../../../blockchains';
+import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
+import { CommonTx, EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { EthereumTx } from './types';
 
-export interface TxDetails {
+export interface TxDetails extends CommonTx {
   amount: WeiAny;
   blockchain: BlockchainCode;
   from?: string;
@@ -20,6 +21,7 @@ export interface TxDetails {
 
 const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
   gas: DEFAULT_GAS_LIMIT,
+  meta: { type: TxMetaType.ETHEREUM_TRANSFER },
   target: TxTarget.MANUAL,
 };
 
@@ -33,6 +35,7 @@ function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
     gas: plain.gas,
     gasPrice: plain.gasPrice == null ? undefined : (decoder(plain.gasPrice) as WeiAny),
     maxGasPrice: plain.maxGasPrice == null ? undefined : decoder(plain.maxGasPrice),
+    meta: plain.meta,
     priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: plain.target,
     to: plain.to,
@@ -50,6 +53,7 @@ function toPlainDetails(tx: TxDetails): EthereumPlainTx {
     gas: tx.gas,
     gasPrice: tx.gasPrice?.encode(),
     maxGasPrice: tx.maxGasPrice?.encode(),
+    meta: tx.meta,
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
@@ -59,6 +63,8 @@ function toPlainDetails(tx: TxDetails): EthereumPlainTx {
 }
 
 export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
+  meta = { type: TxMetaType.ETHEREUM_TRANSFER };
+
   public amount: WeiAny;
   public blockchain: BlockchainCode;
   public from?: string;

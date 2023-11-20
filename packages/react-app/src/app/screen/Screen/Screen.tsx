@@ -15,7 +15,6 @@ import ReceiveScreen from '../../../receive/ReceiveScreen';
 import Settings from '../../../settings/Settings';
 import { BroadcastEthTx } from '../../../transaction/BroadcastEthTx';
 import CreateApproveTransaction from '../../../transaction/CreateApproveTransaction';
-import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
 import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
@@ -69,8 +68,6 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <CreateApproveTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
       return <CreateConvertTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_CANCEL:
-      return <CreateCancelTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_SPEED_UP:
       return <CreateSpeedUpTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:

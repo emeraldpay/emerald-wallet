@@ -8,7 +8,7 @@ export class Display {
   constructor(data: Data<workflow.AnyCreateTx>, dataProvider: DataProvider, handler: Handler) {
     const { createTx } = data;
 
-    if (workflow.isBitcoinCreateTx(createTx)) {
+    if (workflow.isAnyBitcoinCreateTx(createTx)) {
       this._display = new BitcoinDisplay({ ...data, createTx }, dataProvider, handler);
     } else {
       this._display = new EthereumDisplay({ ...data, createTx }, dataProvider, handler);
