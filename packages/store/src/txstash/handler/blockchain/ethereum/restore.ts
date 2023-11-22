@@ -6,6 +6,7 @@ import {
   amountFactory,
   blockchainIdToCode,
   decodeData,
+  toBigNumber,
   workflow,
 } from '@emeraldwallet/core';
 import { setPreparing, setTransaction } from '../../../actions';
@@ -13,8 +14,8 @@ import { EntryHandler } from '../../types';
 import { getFee } from './fee';
 
 const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
-  ({ entry, metaType }, { dispatch, getState, extra }) =>
-  async (storedTx) => {
+  ({ entry, metaType, storedTx }, { dispatch, getState, extra }) =>
+  async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
 
@@ -56,9 +57,9 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
           blockchain,
           from,
           type,
-          amount: dataAmount?.toString() ?? value,
+          amount: factory(toBigNumber(dataAmount?.toString() ?? value)).encode(),
           gas: parseInt(gas, 16),
-          gasPrice: factory(gasPrice).encode(),
+          gasPrice: gasPrice == null ? undefined : factory(gasPrice).encode(),
           maxGasPrice: maxFeePerGas == null ? undefined : factory(maxFeePerGas).encode(),
           meta: { type: metaType },
           priorityGasPrice: maxPriorityFeePerGas == null ? undefined : factory(maxPriorityFeePerGas).encode(),
@@ -72,7 +73,7 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
     }
   };
 
-export const restoreEthereumTransaction: EntryHandler<EthereumEntry> = (data, provider) => (storedTx) => {
-  getFee(data, provider)(storedTx);
-  restoreTransaction(data, provider)(storedTx).then(() => provider.dispatch(setPreparing(false)));
+export const restoreEthereumTransaction: EntryHandler<EthereumEntry> = (data, provider) => () => {
+  getFee(data, provider)();
+  restoreTransaction(data, provider)().then(() => provider.dispatch(setPreparing(false)));
 };

@@ -179,7 +179,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
       approveBy: address,
       allowFor: spenderAddress,
       blockchain: currentBlockchain,
-      meta: { type: workflow.TxMetaType.ETHEREUM_APPROVE },
+      meta: { type: workflow.TxMetaType.ERC20_APPROVE },
       token: currentToken,
       totalBalance: balances[currentEntry.id],
       totalTokenBalance: getTokenBalance(currentEntry, currentToken.address),

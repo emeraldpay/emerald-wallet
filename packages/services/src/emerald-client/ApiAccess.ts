@@ -212,7 +212,7 @@ export class EmeraldApiAccess {
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
   constructor(id: string, versions: Versions) {
-    super('api2.emeraldpay.dev:443', id, versions);
+    super('api.emeraldpay.dev:443', id, versions);
   }
 }
 

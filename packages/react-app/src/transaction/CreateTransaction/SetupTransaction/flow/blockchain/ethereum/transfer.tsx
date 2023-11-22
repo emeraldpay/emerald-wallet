@@ -3,11 +3,11 @@ import { workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { SelectAsset } from '../../../../../../common/SelectAsset';
-import { TransferFlow } from '../../common/transfer';
+import { TransferFlow } from '../../common';
 import { EthereumFee } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 
-type EthereumData = Data<workflow.AnyEthereumCreateTx, EthereumEntry>;
+type EthereumData = Data<workflow.CreateEthereumTx | workflow.CreateErc20Tx, EthereumEntry>;
 
 export class EthereumTransferFlow extends TransferFlow {
   readonly data: EthereumData;

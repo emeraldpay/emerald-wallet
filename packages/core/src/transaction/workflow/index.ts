@@ -3,19 +3,46 @@
 export {
   AnyBitcoinCreateTx,
   AnyCreateTx,
+  AnyErc20CreateTx,
   AnyEthereumCreateTx,
+  ApproveTarget,
+  BitcoinTx,
+  BitcoinTxDetails,
+  BitcoinTxOrigin,
+  CreateBitcoinCancelTx,
+  CreateBitcoinSpeedUpTx,
+  CreateBitcoinTx,
+  CreateErc20ApproveTx,
+  CreateErc20CancelTx,
+  CreateErc20SpeedUpTx,
+  CreateErc20Tx,
+  CreateErc20WrappedTx,
+  CreateEthereumCancelTx,
+  CreateEthereumSpeedUpTx,
+  CreateEthereumTx,
+  Erc20ApproveTxDetails,
+  Erc20TxDetails as Erc20TxDetails,
+  Erc20WrappedTxDetails,
   EthereumTx,
+  TxDetails,
   bitcoinTxFactory,
   fromBitcoinPlainTx,
+  fromErc20PlainTx,
   fromEthereumPlainTx,
   fromPlainTx,
   isAnyBitcoinCreateTx,
+  isAnyErc20CreateTx,
   isAnyEthereumCreateTx,
   isBitcoinCancelCreateTx,
+  isBitcoinCreateTx,
   isBitcoinSpeedUpCreateTx,
+  isErc20CancelCreateTx,
   isErc20CreateTx,
+  isErc20SpeedUpCreateTx,
+  isEthereumCancelCreateTx,
   isEthereumCreateTx,
-} from './create-tx/types';
+  isEthereumSpeedUpCreateTx,
+} from './create-tx';
 
 export {
   AnyPlainTx,
@@ -33,24 +60,6 @@ export {
   isEthereumFeeRange,
   isEthereumPlainTx,
 } from './types';
-
-export {
-  ApproveTarget,
-  BitcoinTx,
-  BitcoinTxDetails,
-  BitcoinTxOrigin,
-  CreateBitcoinCancelTx,
-  CreateBitcoinSpeedUpTx,
-  CreateBitcoinTx,
-  CreateERC20Tx,
-  CreateErc20ApproveTx,
-  CreateErc20WrappedTx,
-  CreateEthereumTx,
-  ERC20TxDetails,
-  Erc20ApproveTxDetails,
-  Erc20WrappedTxDetails,
-  TxDetails,
-} from './create-tx';
 
 export { TxBuilder } from './TxBuilder';
 export { TxSigner } from './TxSigner';

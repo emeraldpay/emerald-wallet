@@ -9,7 +9,7 @@ export enum TxAction {
   CANCEL,
   CONVERT,
   RECOVERY,
-  SPEED_UP,
+  SPEEDUP,
   TRANSFER,
 }
 

@@ -99,7 +99,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       blockchain,
       token,
       address: address?.value,
-      meta: { type: workflow.TxMetaType.ETHEREUM_WRAP },
+      meta: { type: workflow.TxMetaType.ERC20_WRAP },
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(address?.value),
       type: supportEip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,

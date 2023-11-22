@@ -257,8 +257,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goToReceipt(tx) {
       dispatch(screen.actions.openTxReceipt(tx.txId));
     },
-    goToSpeedUpTx(entryId, tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, { entryId, tx }, null, true));
+    goToSpeedUpTx(entryId, storedTx) {
+      dispatch(gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.SPEEDUP }, null, true));
     },
     lookupAddress(blockchain, address) {
       return dispatch(blockchains.actions.lookupAddress(blockchain, address));

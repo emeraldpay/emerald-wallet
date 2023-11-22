@@ -723,12 +723,10 @@ export function restoreBtcTx(
 
     const addresses = entryAddresses
       .flat()
-      .filter(
-        ({ address }) => rawTx.vout.find(({ scriptPubKey: { address: txAddress } }) => address === txAddress) != null,
-      );
+      .filter(({ address }) => rawTx.vout.some(({ scriptPubKey: { address: txAddress } }) => address === txAddress));
 
     const outputs = rawTx.vout.filter(
-      ({ scriptPubKey: { address: txAddress } }) => addresses.find(({ address }) => address === txAddress) == null,
+      ({ scriptPubKey: { address: txAddress } }) => !addresses.some(({ address }) => address === txAddress),
     );
 
     if (outputs.length === 0) {

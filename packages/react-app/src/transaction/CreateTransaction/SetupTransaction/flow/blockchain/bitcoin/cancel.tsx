@@ -2,7 +2,7 @@ import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
 import { StoredTxView } from '../../../../../../common/StoredTxView';
-import { CancelFlow } from '../../common/cancel';
+import { CancelFlow } from '../../common';
 import { BitcoinFee } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 

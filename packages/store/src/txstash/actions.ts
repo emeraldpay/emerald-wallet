@@ -27,9 +27,9 @@ export function prepareTransaction(
   storedTx?: StoredTransaction,
 ): Dispatched<void> {
   return (dispatch, getState, extra) => {
-    const handler = getHandler(action, entry, { dispatch, getState, extra });
+    const handler = getHandler({ action, entry, storedTx }, { dispatch, getState, extra });
 
-    handler?.(storedTx);
+    handler?.();
   };
 }
 

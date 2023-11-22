@@ -22,7 +22,7 @@ export interface EthereumRawTransaction {
   chainID?: string;
   from: string;
   gas: string;
-  gasPrice: string;
+  gasPrice?: string;
   hash: string;
   input: string;
   maxFeePerGas?: string;

@@ -29,7 +29,6 @@ export enum Pages {
   CREATE_TX_APPROVE = 'create-tx-approve',
   CREATE_TX_CONVERT = 'create-tx-convert',
   CREATE_TX_RECOVER = 'create-tx-recovery',
-  CREATE_TX_SPEED_UP = 'create-tx-speed-up',
   CREATE_WALLET = 'create-wallet',
   EDIT_ADDRESS = 'edit-address',
   GLOBAL_KEY = 'global-key',

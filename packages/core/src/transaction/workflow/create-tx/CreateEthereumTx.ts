@@ -25,7 +25,7 @@ const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
   target: TxTarget.MANUAL,
 };
 
-function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
+export function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
   const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
 
   return {
