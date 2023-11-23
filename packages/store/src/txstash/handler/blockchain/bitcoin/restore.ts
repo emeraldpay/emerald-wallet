@@ -77,8 +77,8 @@ function extractUtxo(
 }
 
 const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry, metaType }, { dispatch, getState, extra }) =>
-  async (storedTx) => {
+  ({ entry, metaType, storedTx }, { dispatch, getState, extra }) =>
+  async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
 
@@ -134,13 +134,12 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
 
         const addresses = entryAddresses
           .flat()
-          .filter(
-            ({ address }) =>
-              rawTx.vout.find(({ scriptPubKey: { address: txAddress } }) => address === txAddress) != null,
+          .filter(({ address }) =>
+            rawTx.vout.some(({ scriptPubKey: { address: txAddress } }) => address === txAddress),
           );
 
         let outputs = rawTx.vout.filter(
-          ({ scriptPubKey: { address: txAddress } }) => addresses.find(({ address }) => address === txAddress) == null,
+          ({ scriptPubKey: { address: txAddress } }) => !addresses.some(({ address }) => address === txAddress),
         );
 
         if (outputs.length === 0) {
@@ -150,7 +149,7 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
            */
           const isAllChangeAddress = rawTx.vout.reduce(
             (carry, { scriptPubKey: { address: txAddress } }) =>
-              carry && addresses.find(({ address, role }) => address === txAddress && role === 'change') != null,
+              carry && addresses.some(({ address, role }) => address === txAddress && role === 'change'),
             true,
           );
 
@@ -170,9 +169,8 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
 
             outputs = [...mergedOutputs.values()];
           } else {
-            outputs = rawTx.vout.filter(
-              ({ scriptPubKey: { address: txAddress } }) =>
-                addresses.find(({ address, role }) => address === txAddress && role === 'change') != null,
+            outputs = rawTx.vout.filter(({ scriptPubKey: { address: txAddress } }) =>
+              addresses.some(({ address, role }) => address === txAddress && role === 'change'),
             );
           }
 
@@ -284,11 +282,10 @@ const recalculateFee: EntryHandler<BitcoinEntry> =
     }
   };
 
-export const restoreBitcoinTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  (data, provider) => async (storedTx) => {
-    await Promise.all([getFee(data, provider)(storedTx), restoreTransaction(data, provider)(storedTx)]);
+export const restoreBitcoinTransaction: EntryHandler<BitcoinEntry, Promise<void>> = (data, provider) => async () => {
+  await Promise.all([getFee(data, provider)(), restoreTransaction(data, provider)()]);
 
-    recalculateFee(data, provider)(storedTx);
+  recalculateFee(data, provider)();
 
-    provider.dispatch(setPreparing(false));
-  };
+  provider.dispatch(setPreparing(false));
+};

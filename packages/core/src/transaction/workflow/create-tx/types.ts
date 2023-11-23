@@ -1,11 +1,15 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import BigNumber from 'bignumber.js';
-import { Blockchains, TokenRegistry } from '../../../blockchains';
+import { TokenRegistry } from '../../../blockchains';
 import { AnyPlainTx, BitcoinPlainTx, CommonTx, EthereumPlainTx, TxMetaType, isBitcoinPlainTx } from '../types';
 import { CreateBitcoinCancelTx } from './CreateBitcoinCancelTx';
 import { CreateBitcoinSpeedUpTx } from './CreateBitcoinSpeedUpTx';
 import { BitcoinTx, BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
-import { CreateERC20Tx } from './CreateErc20Tx';
+import { CreateErc20CancelTx } from './CreateErc20CancelTx';
+import { CreateErc20SpeedUpTx } from './CreateErc20SpeedUpTx';
+import { CreateErc20Tx } from './CreateErc20Tx';
+import { CreateEthereumCancelTx } from './CreateEthereumCancelTx';
+import { CreateEthereumSpeedUpTx } from './CreateEthereumSpeedUpTx';
 import { CreateEthereumTx } from './CreateEthereumTx';
 
 // TODO Make unified interface for all create tx classes
@@ -17,9 +21,10 @@ export interface EthereumTx<T extends BigAmount> extends CommonTx {
   setTotalBalance(total: T): void;
 }
 
-export type AnyBitcoinCreateTx = CreateBitcoinTx | CreateBitcoinCancelTx;
-export type AnyEthereumCreateTx = CreateEthereumTx | CreateERC20Tx;
-export type AnyCreateTx = AnyBitcoinCreateTx | AnyEthereumCreateTx;
+export type AnyBitcoinCreateTx = CreateBitcoinTx | CreateBitcoinCancelTx | CreateBitcoinSpeedUpTx;
+export type AnyEthereumCreateTx = CreateEthereumTx | CreateEthereumCancelTx | CreateEthereumSpeedUpTx;
+export type AnyErc20CreateTx = CreateErc20Tx | CreateErc20CancelTx | CreateErc20SpeedUpTx;
+export type AnyCreateTx = AnyBitcoinCreateTx | AnyEthereumCreateTx | AnyErc20CreateTx;
 
 type BitcoinTxFactory = (...params: ConstructorParameters<typeof CreateBitcoinTx>) => BitcoinTx;
 
@@ -28,7 +33,7 @@ export function bitcoinTxFactory(metaType: TxMetaType): BitcoinTxFactory {
     switch (metaType) {
       case TxMetaType.BITCOIN_CANCEL:
         return new CreateBitcoinCancelTx(...params);
-      case TxMetaType.BITCOIN_SPEED_UP:
+      case TxMetaType.BITCOIN_SPEEDUP:
         return new CreateBitcoinSpeedUpTx(...params);
       case TxMetaType.BITCOIN_TRANSFER:
         return new CreateBitcoinTx(...params);
@@ -40,21 +45,28 @@ export function bitcoinTxFactory(metaType: TxMetaType): BitcoinTxFactory {
 
 const bitcoinTxMetaTypes: Readonly<TxMetaType[]> = [
   TxMetaType.BITCOIN_CANCEL,
-  TxMetaType.BITCOIN_SPEED_UP,
+  TxMetaType.BITCOIN_SPEEDUP,
   TxMetaType.BITCOIN_TRANSFER,
 ];
 
 const ethereumTxMetaTypes: Readonly<TxMetaType[]> = [
-  TxMetaType.ETHEREUM_APPROVE,
   TxMetaType.ETHEREUM_CANCEL,
-  TxMetaType.ETHEREUM_RECOVERY,
-  TxMetaType.ETHEREUM_SPEED_UP,
+  TxMetaType.ETHEREUM_SPEEDUP,
   TxMetaType.ETHEREUM_TRANSFER,
-  TxMetaType.ETHEREUM_WRAP,
+];
+
+const erc20TxMetaTypes: Readonly<TxMetaType[]> = [
+  TxMetaType.ERC20_CANCEL,
+  TxMetaType.ERC20_SPEEDUP,
+  TxMetaType.ERC20_TRANSFER,
 ];
 
 export function isAnyBitcoinCreateTx(createTx: AnyCreateTx): createTx is CreateBitcoinTx {
   return bitcoinTxMetaTypes.includes(createTx.meta.type);
+}
+
+export function isBitcoinCreateTx(createTx: AnyCreateTx): createTx is CreateBitcoinCancelTx {
+  return createTx.meta.type === TxMetaType.BITCOIN_TRANSFER;
 }
 
 export function isBitcoinCancelCreateTx(createTx: AnyCreateTx): createTx is CreateBitcoinCancelTx {
@@ -62,7 +74,7 @@ export function isBitcoinCancelCreateTx(createTx: AnyCreateTx): createTx is Crea
 }
 
 export function isBitcoinSpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateBitcoinCancelTx {
-  return createTx.meta.type === TxMetaType.BITCOIN_SPEED_UP;
+  return createTx.meta.type === TxMetaType.BITCOIN_SPEEDUP;
 }
 
 export function isAnyEthereumCreateTx(createTx: AnyCreateTx): createTx is AnyEthereumCreateTx {
@@ -70,31 +82,70 @@ export function isAnyEthereumCreateTx(createTx: AnyCreateTx): createTx is AnyEth
 }
 
 export function isEthereumCreateTx(createTx: AnyCreateTx): createTx is CreateEthereumTx {
-  return isAnyEthereumCreateTx(createTx) && createTx.getAsset() === Blockchains[createTx.blockchain].params.coinTicker;
+  return createTx.meta.type === TxMetaType.ETHEREUM_TRANSFER;
 }
 
-export function isErc20CreateTx(createTx: AnyCreateTx, tokenRegistry: TokenRegistry): createTx is CreateERC20Tx {
-  return isAnyEthereumCreateTx(createTx) && tokenRegistry.hasAddress(createTx.blockchain, createTx.getAsset());
+export function isEthereumCancelCreateTx(createTx: AnyCreateTx): createTx is CreateEthereumCancelTx {
+  return createTx.meta.type === TxMetaType.ETHEREUM_CANCEL;
+}
+
+export function isEthereumSpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateEthereumSpeedUpTx {
+  return createTx.meta.type === TxMetaType.ETHEREUM_SPEEDUP;
+}
+
+export function isAnyErc20CreateTx(createTx: AnyCreateTx): createTx is AnyErc20CreateTx {
+  return erc20TxMetaTypes.includes(createTx.meta.type);
+}
+
+export function isErc20CreateTx(createTx: AnyCreateTx): createTx is CreateErc20Tx {
+  return createTx.meta.type === TxMetaType.ERC20_TRANSFER;
+}
+
+export function isErc20CancelCreateTx(createTx: AnyCreateTx): createTx is CreateErc20CancelTx {
+  return createTx.meta.type === TxMetaType.ERC20_CANCEL;
+}
+
+export function isErc20SpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateErc20SpeedUpTx {
+  return createTx.meta.type === TxMetaType.ERC20_SPEEDUP;
 }
 
 export function fromBitcoinPlainTx(transaction: BitcoinPlainTx, origin: BitcoinTxOrigin): AnyBitcoinCreateTx {
   switch (transaction.meta.type) {
     case TxMetaType.BITCOIN_CANCEL:
       return CreateBitcoinCancelTx.fromPlain(origin, transaction);
-    case TxMetaType.BITCOIN_SPEED_UP:
+    case TxMetaType.BITCOIN_SPEEDUP:
       return CreateBitcoinSpeedUpTx.fromPlain(origin, transaction);
-    default:
+    case TxMetaType.BITCOIN_TRANSFER:
       return CreateBitcoinTx.fromPlain(origin, transaction);
   }
+
+  throw new Error('Unsupported transaction meta type');
 }
 
-export function fromEthereumPlainTx(transaction: EthereumPlainTx, tokenRegistry: TokenRegistry): AnyEthereumCreateTx {
-  // TODO Use meta to detect transaction type
-  if (tokenRegistry.hasAddress(transaction.blockchain, transaction.asset)) {
-    return CreateERC20Tx.fromPlain(tokenRegistry, transaction);
+export function fromEthereumPlainTx(transaction: EthereumPlainTx): AnyEthereumCreateTx {
+  switch (transaction.meta.type) {
+    case TxMetaType.ETHEREUM_CANCEL:
+      return CreateEthereumCancelTx.fromPlain(transaction);
+    case TxMetaType.ETHEREUM_SPEEDUP:
+      return CreateEthereumSpeedUpTx.fromPlain(transaction);
+    case TxMetaType.ETHEREUM_TRANSFER:
+      return CreateEthereumTx.fromPlain(transaction);
   }
 
-  return CreateEthereumTx.fromPlain(transaction);
+  throw new Error('Unsupported transaction meta type');
+}
+
+export function fromErc20PlainTx(transaction: EthereumPlainTx, tokenRegistry: TokenRegistry): AnyErc20CreateTx {
+  switch (transaction.meta.type) {
+    case TxMetaType.ERC20_CANCEL:
+      return CreateErc20CancelTx.fromPlain(tokenRegistry, transaction);
+    case TxMetaType.ERC20_SPEEDUP:
+      return CreateErc20SpeedUpTx.fromPlain(tokenRegistry, transaction);
+    case TxMetaType.ERC20_TRANSFER:
+      return CreateErc20Tx.fromPlain(tokenRegistry, transaction);
+  }
+
+  throw new Error('Unsupported transaction meta type');
 }
 
 export function fromPlainTx(
@@ -106,5 +157,9 @@ export function fromPlainTx(
     return fromBitcoinPlainTx(transaction, origin);
   }
 
-  return fromEthereumPlainTx(transaction, tokenRegistry);
+  if (tokenRegistry.hasAddress(transaction.blockchain, transaction.asset)) {
+    return fromErc20PlainTx(transaction, tokenRegistry);
+  }
+
+  return fromEthereumPlainTx(transaction);
 }

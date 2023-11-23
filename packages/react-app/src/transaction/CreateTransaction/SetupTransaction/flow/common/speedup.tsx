@@ -1,15 +1,13 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
-import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
-import { SelectEntry } from '../../../../../common/SelectEntry';
-import { Actions, Amount, To } from '../components';
+import { Actions } from '../components';
 import { Data, DataProvider, Handler } from '../types';
 
 type CommonData = Data<workflow.AnyCreateTx, WalletEntry>;
 
-export abstract class TransferFlow {
+export abstract class SpeedUpFlow {
   readonly data: CommonData;
   readonly dataProvider: DataProvider;
   readonly handler: Handler;
@@ -21,38 +19,6 @@ export abstract class TransferFlow {
   }
 
   abstract render(): React.ReactElement;
-
-  renderFrom(): React.ReactNode {
-    const { entry, entries, ownerAddress } = this.data;
-    const { setEntry } = this.handler;
-
-    return (
-      <FormRow>
-        <FormLabel>From</FormLabel>
-        <SelectEntry
-          withAllowances
-          entries={entries}
-          ownerAddress={ownerAddress}
-          selectedEntry={entry}
-          onSelect={setEntry}
-        />
-      </FormRow>
-    );
-  }
-
-  renderTo(): React.ReactNode {
-    const { createTx } = this.data;
-    const { setTransaction } = this.handler;
-
-    return <To createTx={createTx} setTransaction={setTransaction} />;
-  }
-
-  renderAmount(): React.ReactNode {
-    const { createTx, fee } = this.data;
-    const { setTransaction } = this.handler;
-
-    return <Amount createTx={createTx} maxDisabled={fee.loading} setTransaction={setTransaction} />;
-  }
 
   renderActions(): React.ReactNode {
     const { createTx, entry, fee } = this.data;

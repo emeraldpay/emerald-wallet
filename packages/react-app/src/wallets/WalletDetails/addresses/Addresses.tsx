@@ -89,13 +89,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               identifiers = [{ address: entry.address.value }];
             }
 
-            const addressInfo = carry.find(
-              (info) =>
-                identifiers.find(
-                  (identifier) =>
-                    identifier.address === info.address ||
-                    (identifier.xPub != null && identifier.xPub.xpub === info.xPub?.xpub),
-                ) != null,
+            const addressInfo = carry.find((info) =>
+              identifiers.some(
+                (identifier) =>
+                  identifier.address === info.address ||
+                  (identifier.xPub != null && identifier.xPub.xpub === info.xPub?.xpub),
+              ),
             );
 
             if (addressInfo != null) {

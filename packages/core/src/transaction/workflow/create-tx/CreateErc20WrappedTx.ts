@@ -20,7 +20,7 @@ export interface Erc20WrappedTxDetails extends CommonTx {
 }
 
 export class CreateErc20WrappedTx implements Erc20WrappedTxDetails {
-  meta = { type: TxMetaType.ETHEREUM_TRANSFER };
+  meta = { type: TxMetaType.ERC20_WRAP };
 
   address?: string;
   amount: BigAmount;

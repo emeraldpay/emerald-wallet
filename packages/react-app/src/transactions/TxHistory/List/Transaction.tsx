@@ -453,8 +453,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         screen.actions.gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.CANCEL }, null, true),
       );
     },
-    goToSpeedUpTx(entryId, tx) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, { entryId, tx }, null, true));
+    goToSpeedUpTx(entryId, storedTx) {
+      dispatch(
+        screen.actions.gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.SPEEDUP }, null, true),
+      );
     },
     goToTransaction(entryId, tx) {
       dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, { entryId, tx }, { tab: WalletTabs.TRANSACTIONS }));

@@ -249,7 +249,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isErc20CreateTx(createTx, tokenRegistry);
+    const isCorrectCreateTx = isErc20CreateTx(createTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -321,7 +321,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isErc20CreateTx(createTx, tokenRegistry);
+    const isCorrectCreateTx = isErc20CreateTx(createTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -382,7 +382,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isErc20CreateTx(erc20CreateTx, tokenRegistry);
+      const isConvertedCreateTx = isErc20CreateTx(erc20CreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -446,7 +446,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isErc20CreateTx(erc20CreateTx, tokenRegistry);
+      const isConvertedCreateTx = isErc20CreateTx(erc20CreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -486,7 +486,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx, tokenRegistry);
+    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -834,7 +834,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx, tokenRegistry);
+    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -858,7 +858,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isErc20CreateTx(restoredErc20CreateTx, tokenRegistry);
+      const isConvertedCreateTx = isErc20CreateTx(restoredErc20CreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -898,7 +898,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx, tokenRegistry);
+    const isCorrectCreateTx = isErc20CreateTx(erc20CreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -923,7 +923,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isErc20CreateTx(restoredErc20CreateTx, tokenRegistry);
+      const isConvertedCreateTx = isErc20CreateTx(restoredErc20CreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 

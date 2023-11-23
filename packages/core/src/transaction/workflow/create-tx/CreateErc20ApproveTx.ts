@@ -35,7 +35,7 @@ export interface Erc20ApproveTxDetails extends CommonTx {
 }
 
 export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
-  meta = { type: TxMetaType.ETHEREUM_APPROVE };
+  meta = { type: TxMetaType.ERC20_APPROVE };
 
   private _amount: TokenAmount;
   private _target: ApproveTarget;

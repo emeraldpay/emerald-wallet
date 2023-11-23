@@ -17,7 +17,6 @@ import { BroadcastEthTx } from '../../../transaction/BroadcastEthTx';
 import CreateApproveTransaction from '../../../transaction/CreateApproveTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
-import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
 import { CreateTransaction } from '../../../transaction/CreateTransaction';
 import TxDetails from '../../../transactions/TxDetails';
 import WalletDetails from '../../../wallets/WalletDetails';
@@ -68,8 +67,6 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <CreateApproveTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
       return <CreateConvertTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_SPEED_UP:
-      return <CreateSpeedUpTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:
       return <CreateRecoverTransaction entry={screenItem} />;
     case screen.Pages.CREATE_WALLET:

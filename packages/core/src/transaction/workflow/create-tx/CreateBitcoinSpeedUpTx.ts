@@ -4,7 +4,7 @@ import { BitcoinPlainTx, TxMetaType } from '../types';
 import { BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
 
 export class CreateBitcoinSpeedUpTx extends CreateBitcoinTx {
-  meta = { type: TxMetaType.BITCOIN_SPEED_UP };
+  meta = { type: TxMetaType.BITCOIN_SPEEDUP };
 
   static fromPlain(origin: BitcoinTxOrigin, plain: BitcoinPlainTx): CreateBitcoinSpeedUpTx {
     const changeAddress = origin.changeAddress ?? plain.changeAddress;
@@ -14,7 +14,7 @@ export class CreateBitcoinSpeedUpTx extends CreateBitcoinTx {
     const decoder = amountDecoder<SatoshiAny>(origin.blockchain);
 
     tx.amount = decoder(plain.amount);
-    tx.meta.type = TxMetaType.BITCOIN_SPEED_UP;
+    tx.meta.type = TxMetaType.BITCOIN_SPEEDUP;
     tx.target = plain.target;
     tx.to = plain.to;
     tx.vkbPrice = plain.vkbPrice;

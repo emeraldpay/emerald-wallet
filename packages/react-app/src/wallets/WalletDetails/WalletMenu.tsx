@@ -99,7 +99,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
 
     return {
-      hasEthereumEntry: wallet?.entries.find((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) != null,
+      hasEthereumEntry: wallet?.entries.some((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) ?? false,
       hasHDAccount: (wallet?.reserved?.length ?? 0) > 0,
     };
   },

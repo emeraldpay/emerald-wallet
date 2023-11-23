@@ -1,13 +1,14 @@
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import { TransferFlow } from '../../common';
+import { StoredTxView } from '../../../../../../common/StoredTxView';
+import { SpeedUpFlow } from '../../common';
 import { BitcoinFee } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 
-type BitcoinData = Data<workflow.CreateBitcoinTx, BitcoinEntry>;
+type BitcoinData = Data<workflow.CreateBitcoinSpeedUpTx, BitcoinEntry>;
 
-export class BitcoinTransferFlow extends TransferFlow {
+export class BitcoinSpeedUpFlow extends SpeedUpFlow {
   readonly data: BitcoinData;
 
   constructor(data: BitcoinData, dataProvider: DataProvider, handler: Handler) {
@@ -16,27 +17,32 @@ export class BitcoinTransferFlow extends TransferFlow {
     this.data = data;
   }
 
-  private renderFee(): React.ReactElement {
-    const {
-      createTx,
-      fee: { loading, range },
-    } = this.data;
+  private renderPreview(): React.ReactNode {
+    const { storedTx } = this.data;
 
-    if (!workflow.isBitcoinFeeRange(range)) {
+    if (storedTx == null) {
+      return null;
+    }
+
+    return <StoredTxView tx={storedTx} />;
+  }
+
+  private renderFee(): React.ReactElement {
+    const { createTx, transactionFee } = this.data;
+
+    if (!workflow.isBitcoinFeeRange(transactionFee)) {
       throw new Error('Ethereum transaction or fee provided for Bitcoin transaction');
     }
 
     const { setTransaction } = this.handler;
 
-    return <BitcoinFee createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
+    return <BitcoinFee createTx={createTx} feeRange={transactionFee} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {
     return (
       <>
-        {this.renderFrom()}
-        {this.renderTo()}
-        {this.renderAmount()}
+        {this.renderPreview()}
         {this.renderFee()}
         {this.renderActions()}
       </>

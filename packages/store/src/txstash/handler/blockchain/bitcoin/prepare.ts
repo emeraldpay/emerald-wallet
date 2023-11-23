@@ -14,10 +14,10 @@ const prepareTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
     );
 
     dispatch(setChangeAddress(changeAddress));
-    dispatch(setPreparing(false));
   };
 
-export const prepareBitcoinTransaction: EntryHandler<BitcoinEntry> = (data, provider) => (storedTx) => {
-  getFee(data, provider)(storedTx);
-  prepareTransaction(data, provider)(storedTx);
+export const prepareBitcoinTransaction: EntryHandler<BitcoinEntry> = (data, provider) => () => {
+  getFee(data, provider)();
+
+  prepareTransaction(data, provider)().then(() => provider.dispatch(setPreparing(false)));
 };

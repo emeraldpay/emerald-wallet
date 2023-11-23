@@ -2,7 +2,7 @@ import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
 import * as React from 'react';
-import { Actions } from '../components/Actions';
+import { Actions } from '../components';
 import { Data, DataProvider, Handler } from '../types';
 
 type CommonData = Data<workflow.AnyCreateTx, WalletEntry>;

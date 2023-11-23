@@ -246,7 +246,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     return {
       wallet,
       balance: accounts.selectors.fiatTotalBalance(state, balances),
-      hasEthereumEntry: wallet?.entries.find((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) != null,
+      hasEthereumEntry: wallet?.entries.some((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) ?? false,
       walletIcon: state.accounts.icons[walletId],
       isHardware(wallet) {
         const [account] = wallet?.reserved ?? [];

@@ -202,16 +202,15 @@ export default connect<StateProps, DispatchProps, unknown, IState>(
               reject(error);
             } else {
               wallet.entries.forEach((entry) => {
-                const disabled =
-                  receiveDisabled.find(({ address, blockchain }) => {
-                    if (blockchain === entry.blockchain) {
-                      const { value: entryAddress } = entry.address ?? {};
+                const disabled = receiveDisabled.some(({ address, blockchain }) => {
+                  if (blockchain === entry.blockchain) {
+                    const { value: entryAddress } = entry.address ?? {};
 
-                      return address == null || entryAddress == null ? true : address === entryAddress;
-                    }
+                    return address == null || entryAddress == null ? true : address === entryAddress;
+                  }
 
-                    return false;
-                  }) != null;
+                  return false;
+                });
 
                 if (disabled) {
                   dispatch(accounts.actions.disableReceiveForEntry(entry.id));
