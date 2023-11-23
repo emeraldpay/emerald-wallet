@@ -32,7 +32,7 @@ export {
   SignHandler,
 } from './transaction/types';
 export { ConvertedBalance } from './accounts/types';
-export { CreateTxStage, FeeState } from './txstash/types';
+export { CreateTxStage, FeeState, TxAction } from './txstash/types';
 export { DefaultFee } from './application/types';
 export { IState } from './types';
 export { RemoteAddressBook } from './remote-access/AddressBook';

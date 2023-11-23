@@ -23,7 +23,7 @@ export function getFee(state: IState, blockchain: BlockchainCode): FeeState {
   const { range } = state.txStash.fee?.[blockchain] ?? {};
 
   if (isBitcoin(blockchain)) {
-    if (range == null || workflow.CreateTxConverter.isEthereumFeeRange(range)) {
+    if (range == null || workflow.isEthereumFeeRange(range)) {
       return {
         loading: true,
         range: { std: 0, min: 0, max: 0 },
@@ -36,7 +36,7 @@ export function getFee(state: IState, blockchain: BlockchainCode): FeeState {
   const factory = amountFactory(blockchain) as CreateAmount<WeiAny>;
   const zeroAmount = factory(0);
 
-  if (range == null || workflow.CreateTxConverter.isBitcoinFeeRange(range)) {
+  if (range == null || workflow.isBitcoinFeeRange(range)) {
     return {
       loading: true,
       range: {
@@ -73,4 +73,43 @@ export function getStage(state: IState): CreateTxStage {
 
 export function getTransaction(state: IState): workflow.AnyPlainTx | undefined {
   return state.txStash.transaction;
+}
+
+export function getTransactionFee(state: IState, blockchain: BlockchainCode): workflow.FeeRange {
+  const { transactionFee: range } = state.txStash;
+
+  if (isBitcoin(blockchain)) {
+    if (range == null || workflow.isEthereumFeeRange(range)) {
+      return { std: 0, min: 0, max: 0 };
+    }
+
+    return range;
+  }
+
+  const factory = amountFactory(blockchain) as CreateAmount<WeiAny>;
+  const zeroAmount = factory(0);
+
+  if (range == null || workflow.isBitcoinFeeRange(range)) {
+    return {
+      stdMaxGasPrice: zeroAmount,
+      lowMaxGasPrice: zeroAmount,
+      highMaxGasPrice: zeroAmount,
+      stdPriorityGasPrice: zeroAmount,
+      lowPriorityGasPrice: zeroAmount,
+      highPriorityGasPrice: zeroAmount,
+    };
+  }
+
+  return {
+    stdMaxGasPrice: factory(range.stdMaxGasPrice),
+    lowMaxGasPrice: factory(range.lowMaxGasPrice),
+    highMaxGasPrice: factory(range.highMaxGasPrice),
+    stdPriorityGasPrice: range.stdPriorityGasPrice == null ? zeroAmount : factory(range.stdPriorityGasPrice),
+    lowPriorityGasPrice: range.lowPriorityGasPrice == null ? zeroAmount : factory(range.lowPriorityGasPrice),
+    highPriorityGasPrice: range.highPriorityGasPrice == null ? zeroAmount : factory(range.highPriorityGasPrice),
+  };
+}
+
+export function isPreparing(state: IState): boolean {
+  return state.txStash.preparing;
 }

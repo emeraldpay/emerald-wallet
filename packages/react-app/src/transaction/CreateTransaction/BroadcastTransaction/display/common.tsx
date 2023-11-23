@@ -31,7 +31,7 @@ export abstract class CommonDisplay {
     } = this.data;
     const { broadcastTx, onCancel } = this.handler;
 
-    const handleBroadcastTx = (): void => {
+    const handleBroadcastTx = (): Promise<void> =>
       broadcastTx({
         entryId,
         signed,
@@ -41,7 +41,6 @@ export abstract class CommonDisplay {
         originalAmount: createTx.amount,
         tx: createTx.build(),
       });
-    };
 
     return <Actions onBroadcast={handleBroadcastTx} onCancel={onCancel} />;
   }

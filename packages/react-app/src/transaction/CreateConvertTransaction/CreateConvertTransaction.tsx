@@ -15,7 +15,6 @@ import {
   formatAmount,
   workflow,
 } from '@emeraldwallet/core';
-import { ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import { FEE_KEYS, GasPrices, IState, SignData, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
 import { CircularProgress, Typography, createStyles, makeStyles } from '@material-ui/core';
@@ -100,6 +99,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       blockchain,
       token,
       address: address?.value,
+      meta: { type: workflow.TxMetaType.ETHEREUM_WRAP },
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(address?.value),
       type: supportEip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
@@ -392,7 +392,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
               <Button label="Cancel" onClick={goBack} />
               <Button
                 primary
-                disabled={initializing || preparing || currentTx.validate() !== ValidationResult.OK}
+                disabled={initializing || preparing || currentTx.validate() !== workflow.ValidationResult.OK}
                 label="Create Transaction"
                 onClick={onCreateTransaction}
               />

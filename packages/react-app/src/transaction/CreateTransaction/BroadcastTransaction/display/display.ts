@@ -6,7 +6,7 @@ export class Display {
   private readonly _display: BlockchainDisplay;
 
   constructor({ createTx, ...data }: Data<workflow.AnyCreateTx>, handler: Handler, tokenRegistry: TokenRegistry) {
-    if (workflow.isBitcoinCreateTx(createTx)) {
+    if (workflow.isAnyBitcoinCreateTx(createTx)) {
       this._display = new BitcoinDisplay({ ...data, createTx }, handler);
     } else {
       this._display = new EthereumDisplay({ ...data, createTx }, handler, tokenRegistry);

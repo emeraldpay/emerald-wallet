@@ -351,6 +351,10 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices<GasPric
   };
 }
 
+/**
+ * FIXME Use action from new create transaction flow
+ * @deprecated
+ */
 export function getBtcTx(blockchain: BlockchainCode, hash: string): Dispatched<BitcoinRawTransaction | null> {
   return async (dispatch, getState, extra) => {
     const rawTx = await extra.backendApi.getBtcTx(blockchain, hash);
@@ -383,6 +387,10 @@ export function getEthReceipt(blockchain: BlockchainCode, hash: string): Dispatc
   };
 }
 
+/**
+ * FIXME Use action from new create transaction flow
+ * @deprecated
+ */
 export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<EthereumTransaction | null> {
   return async (dispatch, getState, extra) => {
     const rawTx = await extra.backendApi.getEthTx(blockchain, hash);
@@ -665,6 +673,10 @@ function extractUtxo(
     );
 }
 
+/**
+ * FIXME Use action from new create transaction flow
+ * @deprecated
+ */
 export function restoreBtcTx(
   rawTx: BitcoinRawTransaction,
   tx: StoredTransaction,
@@ -759,12 +771,14 @@ export function restoreBtcTx(
 
     const TxClass = cancel ? workflow.CreateBitcoinCancelTx : workflow.CreateBitcoinTx;
 
-    const restoredTx = new TxClass({
-      changeAddress,
-      blockchain: blockchainIdToCode(entry.blockchain),
-      entryId: entry.id,
-      utxo: [...txUtxo, ...restUtxo],
-    });
+    const restoredTx = new TxClass(
+      {
+        changeAddress,
+        blockchain: blockchainIdToCode(entry.blockchain),
+        entryId: entry.id,
+      },
+      [...txUtxo, ...restUtxo],
+    );
 
     const decoder = amountDecoder<Satoshi>(blockchainCode);
 

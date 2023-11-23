@@ -1,21 +1,23 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { CurrencyAmount, TokenRegistry, workflow } from '@emeraldwallet/core';
-import { CreateTxStage, FeeState } from '@emeraldwallet/store';
+import { CreateTxStage, FeeState, StoredTransaction } from '@emeraldwallet/store';
 import { Asset } from '../../../../common/SelectAsset';
-import { BitcoinTransferFlow, EthereumTransferFlow } from './blockchain';
+import { BitcoinCancelFlow, BitcoinTransferFlow, EthereumTransferFlow } from './blockchain';
 
-export type BlockchainFlow = BitcoinTransferFlow | EthereumTransferFlow;
+export type BlockchainFlow = BitcoinCancelFlow | BitcoinTransferFlow | EthereumTransferFlow;
 
 export interface Data<C extends workflow.AnyCreateTx, E extends WalletEntry> {
   asset: string;
   assets: Asset[];
   createTx: C;
-  fee: FeeState;
-  entry: E;
   entries: WalletEntry[];
+  entry: E;
+  fee: FeeState;
   ownerAddress?: string;
+  storedTx?: StoredTransaction;
   tokenRegistry: TokenRegistry;
+  transactionFee?: workflow.FeeRange;
 }
 
 export interface DataProvider {

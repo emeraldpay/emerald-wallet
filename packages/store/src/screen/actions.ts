@@ -106,7 +106,7 @@ export function closeDialog(): IDialogAction {
   };
 }
 
-export function showError(error: Error, transaction?: StoredTransaction): IErrorAction {
+export function showError(error: Error | string, transaction?: StoredTransaction): IErrorAction {
   return {
     type: ActionTypes.ERROR,
     error: new WrappedError(error, transaction),

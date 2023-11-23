@@ -1,10 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { BlockchainCode, Token, TokenAmount, TokenData, amountFactory, wrapTokenAbi } from '../blockchains';
-import { Contract } from '../Contract';
-import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../transaction/ethereum';
-import { TxTarget, ValidationResult } from './types';
+import { BlockchainCode, Token, TokenAmount, TokenData, amountFactory, wrapTokenAbi } from '../../../blockchains';
+import { Contract } from '../../../Contract';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
+import { CommonTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 
-export interface Erc20WrappedTxDetails {
+export interface Erc20WrappedTxDetails extends CommonTx {
   address?: string;
   amount?: BigAmount;
   blockchain: BlockchainCode;
@@ -19,7 +19,9 @@ export interface Erc20WrappedTxDetails {
   type: EthereumTransactionType;
 }
 
-export class CreateErc20WrappedTx {
+export class CreateErc20WrappedTx implements Erc20WrappedTxDetails {
+  meta = { type: TxMetaType.ETHEREUM_TRANSFER };
+
   address?: string;
   amount: BigAmount;
   blockchain: BlockchainCode;
@@ -32,7 +34,8 @@ export class CreateErc20WrappedTx {
   totalTokenBalance: TokenAmount;
   type: EthereumTransactionType;
 
-  private readonly token: Token;
+  readonly token: Token;
+
   private readonly zeroAmount: BigAmount;
 
   private tokenContract = new Contract(wrapTokenAbi);
@@ -92,6 +95,7 @@ export class CreateErc20WrappedTx {
       gas: this.gas,
       gasPrice: this.gasPrice,
       maxGasPrice: this.maxGasPrice,
+      meta: this.meta,
       priorityGasPrice: this.priorityGasPrice,
       target: this.target,
       token: this.token.toPlain(),

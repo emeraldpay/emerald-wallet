@@ -7,10 +7,10 @@ import {
   TokenData,
   amountFactory,
   tokenAbi,
-} from '../blockchains';
-import { Contract } from '../Contract';
-import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../transaction/ethereum';
-import { ValidationResult } from './types';
+} from '../../../blockchains';
+import { Contract } from '../../../Contract';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
+import { CommonTx, TxMetaType, ValidationResult } from '../types';
 
 export enum ApproveTarget {
   MANUAL,
@@ -18,7 +18,7 @@ export enum ApproveTarget {
   INFINITE,
 }
 
-export interface Erc20ApproveTxDetails {
+export interface Erc20ApproveTxDetails extends CommonTx {
   allowFor?: string;
   amount?: TokenAmount;
   approveBy?: string;
@@ -35,6 +35,8 @@ export interface Erc20ApproveTxDetails {
 }
 
 export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
+  meta = { type: TxMetaType.ETHEREUM_APPROVE };
+
   private _amount: TokenAmount;
   private _target: ApproveTarget;
   private _token: Token;
@@ -154,6 +156,7 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
       gas: this.gas,
       gasPrice: this.gasPrice,
       maxGasPrice: this.maxGasPrice,
+      meta: this.meta,
       priorityGasPrice: this.priorityGasPrice,
       target: this._target,
       totalBalance: this.totalBalance,

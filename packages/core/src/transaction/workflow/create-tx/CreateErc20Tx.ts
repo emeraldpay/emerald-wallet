@@ -1,12 +1,13 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
-import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../blockchains';
-import { Contract } from '../Contract';
-import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../transaction/ethereum';
-import { EthereumPlainTx, EthereumTx, TxTarget, ValidationResult } from './types';
+import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../../../blockchains';
+import { Contract } from '../../../Contract';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
+import { CommonTx, EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { EthereumTx } from './types';
 
-export interface ERC20TxDetails {
+export interface ERC20TxDetails extends CommonTx {
   amount: BigAmount;
   asset: string;
   blockchain: BlockchainCode;
@@ -26,6 +27,7 @@ export interface ERC20TxDetails {
 const TxDefaults: Omit<ERC20TxDetails, 'amount' | 'asset' | 'blockchain' | 'type'> = {
   from: undefined,
   gas: DEFAULT_GAS_LIMIT_ERC20,
+  meta: { type: TxMetaType.ETHEREUM_TRANSFER },
   target: TxTarget.MANUAL,
   to: undefined,
 };
@@ -43,6 +45,7 @@ function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumPlainTx):
     gas: plain.gas,
     gasPrice: plain.gasPrice == null ? undefined : decoder(plain.gasPrice),
     maxGasPrice: plain.maxGasPrice == null ? undefined : decoder(plain.maxGasPrice),
+    meta: plain.meta,
     priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: plain.target,
     to: plain.to,
@@ -62,6 +65,7 @@ function toPlainDetails(tx: ERC20TxDetails): EthereumPlainTx {
     gas: tx.gas,
     gasPrice: tx.gasPrice?.encode(),
     maxGasPrice: tx.maxGasPrice?.encode(),
+    meta: tx.meta,
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
@@ -73,6 +77,8 @@ function toPlainDetails(tx: ERC20TxDetails): EthereumPlainTx {
 }
 
 export class CreateERC20Tx implements ERC20TxDetails, EthereumTx<BigAmount> {
+  meta = { type: TxMetaType.ETHEREUM_TRANSFER };
+
   public amount: BigAmount;
   public blockchain: BlockchainCode;
   public asset: string;

@@ -13,7 +13,6 @@ import {
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
-import { ApproveTarget, ValidationResult } from '@emeraldwallet/core/lib/workflow';
 import {
   Allowance,
   FEE_KEYS,
@@ -166,10 +165,10 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
     const { allowance, spenderAddress } = initialAllowance ?? {};
 
     let amount: TokenAmount | undefined;
-    let target: ApproveTarget | undefined;
+    let target: workflow.ApproveTarget | undefined;
 
     if (allowance?.number.isGreaterThanOrEqualTo(MAX_DISPLAY_ALLOWANCE)) {
-      target = ApproveTarget.INFINITE;
+      target = workflow.ApproveTarget.INFINITE;
     } else {
       amount = allowance;
     }
@@ -180,6 +179,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
       approveBy: address,
       allowFor: spenderAddress,
       blockchain: currentBlockchain,
+      meta: { type: workflow.TxMetaType.ETHEREUM_APPROVE },
       token: currentToken,
       totalBalance: balances[currentEntry.id],
       totalTokenBalance: getTokenBalance(currentEntry, currentToken.address),
@@ -190,7 +190,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   });
 
   const [allowInfinite, setAllowInfinite] = React.useState(
-    workflow.CreateErc20ApproveTx.fromPlain(approveTx).target === ApproveTarget.INFINITE,
+    workflow.CreateErc20ApproveTx.fromPlain(approveTx).target === workflow.ApproveTarget.INFINITE,
   );
 
   const fetchFees = (): Promise<void> =>
@@ -271,7 +271,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
     if (allowance != null && tx.amount.isZero()) {
       if (allowance.number.isGreaterThanOrEqualTo(MAX_DISPLAY_ALLOWANCE)) {
-        tx.target = ApproveTarget.INFINITE;
+        tx.target = workflow.ApproveTarget.INFINITE;
 
         setAllowInfinite(true);
       } else {
@@ -289,7 +289,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
 
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
-    tx.target = allowed ? ApproveTarget.INFINITE : ApproveTarget.MAX_AVAILABLE;
+    tx.target = allowed ? workflow.ApproveTarget.INFINITE : workflow.ApproveTarget.MAX_AVAILABLE;
 
     setApproveTx(tx.dump());
   };
@@ -305,7 +305,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
   const onMaxAmount = (callback: (value: BigAmount) => void): void => {
     const tx = workflow.CreateErc20ApproveTx.fromPlain(approveTx);
 
-    tx.target = ApproveTarget.MAX_AVAILABLE;
+    tx.target = workflow.ApproveTarget.MAX_AVAILABLE;
 
     callback(tx.amount);
 
@@ -486,7 +486,7 @@ const SetupApproveTransaction: React.FC<OwnProps & StateProps & DispatchProps> =
           <Button label="Cancel" onClick={goBack} />
           <Button
             primary
-            disabled={initializing || tx.validate() !== ValidationResult.OK}
+            disabled={initializing || tx.validate() !== workflow.ValidationResult.OK}
             label="Create Transaction"
             onClick={() => onCreateTx(currentEntry, approveTx)}
           />

@@ -192,6 +192,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
       blockchain: wrongBlockchain.params.code,
       from: fromAddress.value,
       gas: DEFAULT_GAS_LIMIT,
+      meta: { type: workflow.TxMetaType.ETHEREUM_RECOVERY },
       to: address,
       target: workflow.TxTarget.SEND_ALL,
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,

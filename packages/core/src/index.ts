@@ -2,8 +2,8 @@
 
 import * as blockchains from './blockchains';
 import * as config from './config';
+import * as workflow from './transaction/workflow';
 import * as utils from './utils';
-import * as workflow from './workflow';
 
 export * as PersistentState from './persistentState';
 export { BackendApi } from './BackendApi';

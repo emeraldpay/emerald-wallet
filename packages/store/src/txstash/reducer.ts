@@ -6,14 +6,16 @@ import {
   SetEntryAction,
   SetFeeLoadingAction,
   SetFeeRangeAction,
+  SetPreparingAction,
   SetSignedAction,
   SetStageAction,
   SetTransactionAction,
+  SetTransactionFeeAction,
   TxStashAction,
   TxStashState,
 } from './types';
 
-const INITIAL_STATE: TxStashState = { stage: CreateTxStage.SETUP };
+const INITIAL_STATE: TxStashState = { preparing: true, stage: CreateTxStage.SETUP };
 
 function reset({ fee }: TxStashState): TxStashState {
   return { ...INITIAL_STATE, fee };
@@ -52,15 +54,38 @@ function setFeeRange(state: TxStashState, { payload: { blockchain, range } }: Se
 }
 
 function setSigned(state: TxStashState, { payload: { signed } }: SetSignedAction): TxStashState {
-  return { ...state, signed };
+  if (state.stage === CreateTxStage.SIGN) {
+    return { ...state, signed };
+  }
+
+  return state;
+}
+
+function setPreparing(state: TxStashState, { payload: { preparing } }: SetPreparingAction): TxStashState {
+  return { ...state, preparing };
 }
 
 function setStage(state: TxStashState, { payload: { stage } }: SetStageAction): TxStashState {
-  return { ...state, stage };
+  if (state.stage < stage) {
+    return { ...state, stage };
+  }
+
+  return state;
 }
 
 function setTransaction(state: TxStashState, { payload: { transaction } }: SetTransactionAction): TxStashState {
-  return { ...state, transaction };
+  if (state.stage === CreateTxStage.SETUP) {
+    return { ...state, transaction };
+  }
+
+  return state;
+}
+
+function setTransactionFee(
+  state: TxStashState,
+  { payload: { transactionFee } }: SetTransactionFeeAction,
+): TxStashState {
+  return { ...state, transactionFee };
 }
 
 export function reducer(state = INITIAL_STATE, action: TxStashAction): TxStashState {
@@ -77,12 +102,16 @@ export function reducer(state = INITIAL_STATE, action: TxStashAction): TxStashSt
       return setFeeLoading(state, action);
     case ActionTypes.SET_FEE_RANGE:
       return setFeeRange(state, action);
+    case ActionTypes.SET_PREPARING:
+      return setPreparing(state, action);
     case ActionTypes.SET_SIGNED:
       return setSigned(state, action);
     case ActionTypes.SET_STAGE:
       return setStage(state, action);
     case ActionTypes.SET_TRANSACTION:
       return setTransaction(state, action);
+    case ActionTypes.SET_TRANSACTION_FEE:
+      return setTransactionFee(state, action);
     default:
       return state;
   }

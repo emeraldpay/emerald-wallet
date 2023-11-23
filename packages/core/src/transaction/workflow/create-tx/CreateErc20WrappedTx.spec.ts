@@ -1,8 +1,8 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, TokenData, TokenRegistry, amountFactory } from '../blockchains';
-import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransactionType } from '../transaction/ethereum';
+import { BlockchainCode, TokenData, TokenRegistry, amountFactory } from '../../../blockchains';
+import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransactionType } from '../../ethereum';
+import { TxMetaType, TxTarget } from '../types';
 import { CreateErc20WrappedTx } from './CreateErc20WrappedTx';
-import { TxTarget } from './types';
 
 describe('CreateErc20WrappedTx', () => {
   const tokenData: TokenData = {
@@ -23,6 +23,7 @@ describe('CreateErc20WrappedTx', () => {
       token: tokenData,
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       blockchain: BlockchainCode.Goerli,
+      meta: { type: TxMetaType.ETHEREUM_WRAP },
       totalBalance: new Wei(0),
       totalTokenBalance: token.getAmount(0),
       type: EthereumTransactionType.LEGACY,
@@ -39,6 +40,7 @@ describe('CreateErc20WrappedTx', () => {
       token: tokenData,
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       blockchain: BlockchainCode.Goerli,
+      meta: { type: TxMetaType.ETHEREUM_WRAP },
       totalBalance: new Wei(0),
       totalTokenBalance: token.getAmount(0),
       type: EthereumTransactionType.EIP1559,
@@ -58,6 +60,7 @@ describe('CreateErc20WrappedTx', () => {
       totalBalance,
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       blockchain: BlockchainCode.Goerli,
+      meta: { type: TxMetaType.ETHEREUM_WRAP },
       token: tokenData,
       totalTokenBalance: token.getAmount(0),
       type: EthereumTransactionType.EIP1559,
@@ -81,6 +84,7 @@ describe('CreateErc20WrappedTx', () => {
       address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       amount: token.getAmount(0),
       blockchain: BlockchainCode.Goerli,
+      meta: { type: TxMetaType.ETHEREUM_WRAP },
       totalBalance: new Wei(0),
       totalTokenBalance: token.getAmount(1),
       type: EthereumTransactionType.EIP1559,

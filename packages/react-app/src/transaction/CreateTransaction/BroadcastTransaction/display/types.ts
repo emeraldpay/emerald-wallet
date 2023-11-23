@@ -12,6 +12,6 @@ export interface Data<T extends workflow.AnyCreateTx> {
 }
 
 export interface Handler {
-  broadcastTx(data: BroadcastData): void;
+  broadcastTx(data: BroadcastData): Promise<void>;
   onCancel(): void;
 }

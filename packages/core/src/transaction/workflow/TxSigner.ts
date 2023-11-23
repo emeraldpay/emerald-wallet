@@ -14,11 +14,11 @@ import {
   isEthereumTx,
 } from '@emeraldpay/emerald-vault-core';
 import { Transaction as BitcoinTx } from 'bitcoinjs-lib';
-import { BlockchainCode, Blockchains } from '../blockchains';
-import { EthereumTx } from '../blockchains/ethereum';
-import { EthereumAddress } from '../blockchains/ethereum/EthereumAddress';
-import { EthereumTransaction, EthereumTransactionType } from '../transaction/ethereum';
-import { AnyCreateTx, isBitcoinCreateTx } from './types';
+import { BlockchainCode, Blockchains } from '../../blockchains';
+import { EthereumTx } from '../../blockchains/ethereum';
+import { EthereumAddress } from '../../blockchains/ethereum/EthereumAddress';
+import { EthereumTransaction, EthereumTransactionType } from '../ethereum';
+import { AnyCreateTx, isAnyBitcoinCreateTx } from './create-tx/types';
 
 interface SignerOrigin {
   createTx: AnyCreateTx;
@@ -90,7 +90,7 @@ export class TxSigner implements SignerOrigin {
 
     let unsigned: UnsignedTx;
 
-    if (isBitcoinCreateTx(createTx)) {
+    if (isAnyBitcoinCreateTx(createTx)) {
       unsigned = createTx.build();
     } else {
       unsigned = TxSigner.convertEthereumTx(createTx.build());
@@ -114,7 +114,7 @@ export class TxSigner implements SignerOrigin {
   private verifySigned(raw: string): void {
     const { createTx } = this;
 
-    if (isBitcoinCreateTx(createTx)) {
+    if (isAnyBitcoinCreateTx(createTx)) {
       const transaction = BitcoinTx.fromHex(raw);
 
       const correctInputs = transaction.ins.every(({ hash }) => {

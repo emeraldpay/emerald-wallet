@@ -1,25 +1,37 @@
 import { SignedTx, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, isBitcoin, workflow } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
-import { application } from '..';
-import { Dispatched, Dispatcher, IExtraArgument, IState } from '../types';
+import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { StoredTransaction } from '..';
+import { Dispatched } from '../types';
+import { getHandler } from './handler';
 import {
   ActionTypes,
   CreateTxStage,
-  FEE_KEYS,
   FeeRange,
-  GasPrice,
-  GetFee,
   ResetAction,
   SetAssetAction,
   SetChangeAddressAction,
   SetEntryAction,
   SetFeeLoadingAction,
   SetFeeRangeAction,
+  SetPreparingAction,
   SetSignedAction,
   SetStageAction,
   SetTransactionAction,
+  SetTransactionFeeAction,
+  TxAction,
 } from './types';
+
+export function prepareTransaction(
+  action: TxAction,
+  entry: WalletEntry,
+  storedTx?: StoredTransaction,
+): Dispatched<void> {
+  return (dispatch, getState, extra) => {
+    const handler = getHandler(action, entry, { dispatch, getState, extra });
+
+    handler?.(storedTx);
+  };
+}
 
 export function reset(): ResetAction {
   return { type: ActionTypes.RESET };
@@ -60,6 +72,13 @@ export function setFeeRange(blockchain: BlockchainCode, range: FeeRange): SetFee
   };
 }
 
+export function setPreparing(preparing: boolean): SetPreparingAction {
+  return {
+    type: ActionTypes.SET_PREPARING,
+    payload: { preparing },
+  };
+}
+
 export function setSigned(signed: SignedTx): SetSignedAction {
   return {
     type: ActionTypes.SET_SIGNED,
@@ -81,183 +100,9 @@ export function setTransaction(transaction: workflow.AnyPlainTx): SetTransaction
   };
 }
 
-function sortBigNumber(first: BigNumber, second: BigNumber): number {
-  if (first.eq(second)) {
-    return 0;
-  }
-
-  return first.gt(second) ? 1 : -1;
-}
-
-function getBitcoinFee(state: IState, dispatch: Dispatcher, extra: IExtraArgument): GetFee {
-  return async (blockchain) => {
-    const results = await Promise.allSettled<Promise<number>>(
-      FEE_KEYS.map((key) => extra.backendApi.estimateFee(blockchain, 6, key)),
-    );
-
-    const [min, std, max] = results
-      .map((result) => (result.status === 'fulfilled' ? result.value : 0))
-      .sort((first, second) => {
-        if (first === second) {
-          return 0;
-        }
-
-        return first > second ? 1 : -1;
-      });
-
-    if (max === 0) {
-      const defaultFee = application.selectors.getDefaultFee<number>(state, blockchain);
-
-      const defaults: workflow.BitcoinFeeRange = {
-        min: defaultFee?.min ?? 0,
-        max: defaultFee?.max ?? 0,
-        std: defaultFee?.std ?? 0,
-      };
-
-      const cachedFee = await extra.api.cache.get(`fee_range.${blockchain}`);
-
-      if (cachedFee == null) {
-        dispatch(setFeeRange(blockchain, defaults));
-      } else {
-        try {
-          dispatch(setFeeRange(blockchain, JSON.parse(cachedFee)));
-        } catch (exception) {
-          dispatch(setFeeRange(blockchain, defaults));
-        }
-      }
-    } else {
-      const fee: workflow.BitcoinFeeRange = { max, min, std };
-
-      await extra.api.cache.put(
-        `fee_range.${blockchain}`,
-        JSON.stringify(fee),
-        application.selectors.getFeeTtl(state, blockchain),
-      );
-
-      dispatch(setFeeRange(blockchain, fee));
-    }
-  };
-}
-
-function getEthereumFee(state: IState, dispatch: Dispatcher, extra: IExtraArgument): GetFee {
-  return async (blockchain) => {
-    let results = await Promise.allSettled<Promise<string>>(
-      FEE_KEYS.map((key) => extra.backendApi.estimateFee(blockchain, 128, key)),
-    );
-
-    results = await Promise.allSettled(
-      results.map((result, index) =>
-        result.status === 'fulfilled'
-          ? Promise.resolve(result.value)
-          : extra.backendApi.estimateFee(blockchain, 256, FEE_KEYS[index]),
-      ),
-    );
-
-    const defaultGasPrice: GasPrice<string> = { max: '0', priority: '0' };
-
-    let [lowFee, stdFee, highFee] = results.map((result) => {
-      const value = result.status === 'fulfilled' ? result.value ?? defaultGasPrice : defaultGasPrice;
-
-      let max: string;
-      let priority: string;
-
-      if (typeof value === 'string') {
-        ({ max, priority } = { ...defaultGasPrice, max: value });
-      } else {
-        ({ max, priority } = value);
-      }
-
-      return {
-        max: new BigNumber(max),
-        priority: new BigNumber(priority),
-      };
-    });
-
-    let { highs, priorities } = [lowFee, stdFee, highFee].reduce<Record<'highs' | 'priorities', BigNumber[]>>(
-      (carry, item) => ({
-        highs: [...carry.highs, item.max],
-        priorities: [...carry.priorities, item.priority],
-      }),
-      {
-        highs: [],
-        priorities: [],
-      },
-    );
-
-    highs = highs.sort(sortBigNumber);
-    priorities = priorities.sort(sortBigNumber);
-
-    [lowFee, stdFee, highFee] = highs.reduce<Array<GasPrice<BigNumber>>>(
-      (carry, item, index) => [
-        ...carry,
-        {
-          max: item,
-          priority: priorities[index],
-        },
-      ],
-      [],
-    );
-
-    if (highFee.max.eq(0)) {
-      const defaultFee = application.selectors.getDefaultFee<string>(state, blockchain);
-
-      const defaults: workflow.EthereumFeeRange<string> = {
-        stdMaxGasPrice: defaultFee?.max ?? '0',
-        lowMaxGasPrice: defaultFee?.min ?? '0',
-        highMaxGasPrice: defaultFee?.std ?? '0',
-        stdPriorityGasPrice: defaultFee?.priority_max ?? '0',
-        lowPriorityGasPrice: defaultFee?.priority_min ?? '0',
-        highPriorityGasPrice: defaultFee?.priority_std ?? '0',
-      };
-
-      const cachedFee = await extra.api.cache.get(`fee_range.${blockchain}`);
-
-      if (cachedFee == null) {
-        dispatch(setFeeRange(blockchain, defaults));
-      } else {
-        try {
-          dispatch(setFeeRange(blockchain, JSON.parse(cachedFee)));
-        } catch (exception) {
-          dispatch(setFeeRange(blockchain, defaults));
-        }
-      }
-    } else {
-      const fee: workflow.EthereumFeeRange<string> = {
-        stdMaxGasPrice: stdFee.max.toString(),
-        lowMaxGasPrice: lowFee.max.toString(),
-        highMaxGasPrice: highFee.max.toString(),
-        stdPriorityGasPrice: stdFee.priority.toString(),
-        lowPriorityGasPrice: lowFee.priority.toString(),
-        highPriorityGasPrice: highFee.priority.toString(),
-      };
-
-      await extra.api.cache.put(
-        `fee_range.${blockchain}`,
-        JSON.stringify(fee),
-        application.selectors.getFeeTtl(state, blockchain),
-      );
-
-      dispatch(setFeeRange(blockchain, fee));
-    }
-  };
-}
-
-export function getFee(blockchain: BlockchainCode): Dispatched<void, SetFeeLoadingAction> {
-  return async (dispatch, getState, extra) => {
-    const state = getState();
-
-    const { timestamp } = state.txStash.fee?.[blockchain] ?? {};
-
-    const rangeTtl = application.selectors.getFeeRangeTtl(state, blockchain);
-
-    if (timestamp == null || rangeTtl == null || timestamp < Date.now() - rangeTtl * 1000) {
-      dispatch(setFeeLoading(blockchain));
-
-      if (isBitcoin(blockchain)) {
-        getBitcoinFee(state, dispatch, extra)(blockchain);
-      } else {
-        getEthereumFee(state, dispatch, extra)(blockchain);
-      }
-    }
+export function setTransactionFee(transactionFee: FeeRange): SetTransactionFeeAction {
+  return {
+    type: ActionTypes.SET_TRANSACTION_FEE,
+    payload: { transactionFee },
   };
 }
