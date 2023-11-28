@@ -11,7 +11,6 @@ import {
   WalletEntry,
   isBitcoinEntry,
   isBitcoinTx,
-  isEthereumTx,
 } from '@emeraldpay/emerald-vault-core';
 import { Transaction as BitcoinTx } from 'bitcoinjs-lib';
 import { BlockchainCode, Blockchains } from '../../blockchains';
@@ -54,8 +53,36 @@ export class TxSigner implements SignerOrigin {
     this.handler = handler;
   }
 
-  static convertEthereumTx(transaction: EthereumTransaction): UnsignedEthereumTx {
-    const { from, gas, gasPrice, maxGasPrice, priorityGasPrice, data, nonce, to, type, value } = transaction;
+  async sign(): Promise<SignedTx> {
+    const { createTx, entry, password } = this;
+    const { signTx } = this.handler;
+
+    let unsigned: UnsignedTx;
+
+    if (isAnyBitcoinCreateTx(createTx)) {
+      unsigned = createTx.build();
+    } else {
+      unsigned = await this.convertEthereumTx(createTx.blockchain, createTx.build());
+    }
+
+    const signedTx = await signTx(unsigned, entry.id, password);
+
+    this.verifySigned(signedTx.raw);
+
+    if (isBitcoinTx(unsigned)) {
+      this.updateXPubIndex(unsigned);
+    }
+
+    return signedTx;
+  }
+
+  private async convertEthereumTx(
+    blockchain: BlockchainCode,
+    transaction: EthereumTransaction,
+  ): Promise<UnsignedEthereumTx> {
+    const { from, gas, gasPrice, maxGasPrice, priorityGasPrice, data, to, type, value } = transaction;
+
+    const { getNonce } = this.dataProvider;
 
     let gasPrices:
       | Pick<UnsignedBasicEthereumTx, 'gasPrice'>
@@ -72,43 +99,21 @@ export class TxSigner implements SignerOrigin {
       };
     }
 
+    let { nonce } = transaction;
+
+    if (nonce == null) {
+      nonce = await getNonce(blockchain, from);
+    }
+
     return {
       ...gasPrices,
       data,
       from,
       gas,
+      nonce,
       to,
-      nonce: nonce ?? 0,
       value: value.number.toString(),
     };
-  }
-
-  async sign(): Promise<SignedTx> {
-    const { createTx, entry, password } = this;
-    const { getNonce } = this.dataProvider;
-    const { signTx } = this.handler;
-
-    let unsigned: UnsignedTx;
-
-    if (isAnyBitcoinCreateTx(createTx)) {
-      unsigned = createTx.build();
-    } else {
-      unsigned = TxSigner.convertEthereumTx(createTx.build());
-    }
-
-    if (isEthereumTx(unsigned)) {
-      unsigned.nonce = await getNonce(createTx.blockchain, unsigned.from);
-    }
-
-    const signedTx = await signTx(unsigned, entry.id, password);
-
-    this.verifySigned(signedTx.raw);
-
-    if (isBitcoinTx(unsigned)) {
-      this.updateXPubIndex(unsigned);
-    }
-
-    return signedTx;
   }
 
   private verifySigned(raw: string): void {

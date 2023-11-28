@@ -20,6 +20,7 @@ import {
   settings,
   tokens,
   txStash,
+  txhistory,
 } from '@emeraldwallet/store';
 import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
 import * as React from 'react';
@@ -48,6 +49,7 @@ interface StateProps {
   ownerAddress?: string;
   tokenRegistry: TokenRegistry;
   transactionFee?: workflow.FeeRange;
+  updatedStoredTx?: StoredTransaction;
   getBalance(entry: WalletEntry, asset: string, ownerAddress?: string): BigAmount;
   getFiatBalance(asset: string): CurrencyAmount | undefined;
 }
@@ -70,9 +72,9 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   fee,
   isPreparing,
   ownerAddress,
-  storedTx,
   tokenRegistry,
   transactionFee,
+  updatedStoredTx: storedTx,
   getBalance,
   getFiatBalance,
   onCancel,
@@ -120,7 +122,7 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, { entryId, initialAllowance, initialAsset, walletId }) => {
+  (state, { entryId, initialAllowance, initialAsset, storedTx, walletId }) => {
     if (walletId == null) {
       if (entryId == null) {
         throw new Error('Wallet id or entry id should be provided');
@@ -224,6 +226,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       ownerAddress,
       tokenRegistry,
       transactionFee,
+      updatedStoredTx:
+        storedTx == null ? undefined : txhistory.selectors.transactionById(state, storedTx.txId) ?? storedTx,
       getBalance,
       getFiatBalance(asset) {
         const balance = getBalance(entry, asset);

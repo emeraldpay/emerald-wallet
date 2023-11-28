@@ -1,5 +1,5 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { workflow } from '@emeraldwallet/core';
+import { PersistentState, workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
 import * as React from 'react';
 import { Actions } from '../components';
@@ -7,7 +7,7 @@ import { Data, DataProvider, Handler } from '../types';
 
 type CommonData = Data<workflow.AnyCreateTx, WalletEntry>;
 
-export abstract class CancelFlow {
+export abstract class ModifyFlow {
   readonly data: CommonData;
   readonly dataProvider: DataProvider;
   readonly handler: Handler;
@@ -21,7 +21,7 @@ export abstract class CancelFlow {
   abstract render(): React.ReactElement;
 
   renderActions(): React.ReactNode {
-    const { createTx, entry, fee } = this.data;
+    const { createTx, entry, fee, storedTx } = this.data;
     const { onCancel, setEntry, setStage, setTransaction } = this.handler;
 
     const handleCreateTx = (): void => {
@@ -31,6 +31,14 @@ export abstract class CancelFlow {
       setStage(CreateTxStage.SIGN);
     };
 
-    return <Actions createTx={createTx} initializing={fee.loading} onCancel={onCancel} onCreate={handleCreateTx} />;
+    return (
+      <Actions
+        createTx={createTx}
+        disabled={(storedTx?.state ?? 0) > PersistentState.State.SUBMITTED}
+        initializing={fee.loading}
+        onCancel={onCancel}
+        onCreate={handleCreateTx}
+      />
+    );
   }
 }

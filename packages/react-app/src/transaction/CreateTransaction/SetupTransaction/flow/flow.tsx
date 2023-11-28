@@ -17,86 +17,30 @@ export class Flow {
     const { entry, createTx } = data;
 
     if (isBitcoinEntry(entry)) {
-      switch (createTx.meta.type) {
-        case workflow.TxMetaType.BITCOIN_CANCEL:
-          if (!workflow.isBitcoinCancelCreateTx(createTx)) {
-            throw new Error('Unsupported Bitcoin transaction provided');
-          }
-
-          this._flow = new BitcoinCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.BITCOIN_SPEEDUP:
-          if (!workflow.isBitcoinSpeedUpCreateTx(createTx)) {
-            throw new Error('Unsupported Bitcoin transaction provided');
-          }
-
-          this._flow = new BitcoinSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.BITCOIN_TRANSFER:
-          if (!workflow.isAnyBitcoinCreateTx(createTx)) {
-            throw new Error('Unsupported Bitcoin transaction provided');
-          }
-
-          this._flow = new BitcoinTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        default:
-          throw new Error('Unsupported Bitcoin transaction action');
+      if (workflow.isBitcoinCancelCreateTx(createTx)) {
+        this._flow = new BitcoinCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isBitcoinSpeedUpCreateTx(createTx)) {
+        this._flow = new BitcoinSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isAnyBitcoinCreateTx(createTx)) {
+        this._flow = new BitcoinTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else {
+        throw new Error('Unsupported Bitcoin transaction action');
       }
     } else if (isEthereumEntry(entry)) {
-      switch (createTx.meta.type) {
-        case workflow.TxMetaType.ETHEREUM_CANCEL:
-          if (!workflow.isEthereumCancelCreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.ETHEREUM_SPEEDUP:
-          if (!workflow.isEthereumSpeedUpCreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.ETHEREUM_TRANSFER:
-          if (!workflow.isEthereumCreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.ERC20_CANCEL:
-          if (!workflow.isErc20CancelCreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.ERC20_SPEEDUP:
-          if (!workflow.isErc20SpeedUpCreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        case workflow.TxMetaType.ERC20_TRANSFER:
-          if (!workflow.isErc20CreateTx(createTx)) {
-            throw new Error('Unsupported Ethereum transaction provided');
-          }
-
-          this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
-
-          break;
-        default:
-          throw new Error('Unsupported Ethereum transaction action');
+      if (workflow.isEtherCancelCreateTx(createTx)) {
+        this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isEtherSpeedUpCreateTx(createTx)) {
+        this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isEtherCreateTx(createTx)) {
+        this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isErc20CancelCreateTx(createTx)) {
+        this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isErc20SpeedUpCreateTx(createTx)) {
+        this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isErc20CreateTx(createTx)) {
+        this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else {
+        throw new Error('Unsupported Ethereum transaction action');
       }
     } else {
       throw new Error('Unsupported entry provided');

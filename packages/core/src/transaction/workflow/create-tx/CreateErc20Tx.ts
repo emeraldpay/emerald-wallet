@@ -15,6 +15,7 @@ export interface Erc20TxDetails extends CommonTx {
   gas: number;
   gasPrice?: WeiAny;
   maxGasPrice?: WeiAny;
+  nonce?: number;
   priorityGasPrice?: WeiAny;
   target: TxTarget;
   to?: string;
@@ -27,7 +28,7 @@ export interface Erc20TxDetails extends CommonTx {
 const TxDefaults: Omit<Erc20TxDetails, 'amount' | 'asset' | 'blockchain' | 'type'> = {
   from: undefined,
   gas: DEFAULT_GAS_LIMIT_ERC20,
-  meta: { type: TxMetaType.ETHEREUM_TRANSFER },
+  meta: { type: TxMetaType.ETHER_TRANSFER },
   target: TxTarget.MANUAL,
   to: undefined,
 };
@@ -46,6 +47,7 @@ export function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumPl
     gasPrice: plain.gasPrice == null ? undefined : decoder(plain.gasPrice),
     maxGasPrice: plain.maxGasPrice == null ? undefined : decoder(plain.maxGasPrice),
     meta: plain.meta,
+    nonce: plain.nonce,
     priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: plain.target,
     to: plain.to,
@@ -66,6 +68,7 @@ function toPlainDetails(tx: Erc20TxDetails): EthereumPlainTx {
     gasPrice: tx.gasPrice?.encode(),
     maxGasPrice: tx.maxGasPrice?.encode(),
     meta: tx.meta,
+    nonce: tx.nonce,
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
@@ -80,12 +83,13 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
   meta = { type: TxMetaType.ERC20_TRANSFER };
 
   public amount: BigAmount;
-  public blockchain: BlockchainCode;
   public asset: string;
+  public blockchain: BlockchainCode;
   public from?: string;
   public gas: number;
   public gasPrice?: WeiAny;
   public maxGasPrice?: WeiAny;
+  public nonce?: number;
   public priorityGasPrice?: WeiAny;
   public target: TxTarget;
   public to?: string;
@@ -132,6 +136,7 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
     this.blockchain = details.blockchain;
     this.from = details.from;
     this.gas = details.gas;
+    this.nonce = details.nonce;
     this.target = details.target;
     this.to = details.to;
     this.totalBalance = details.totalBalance;
@@ -215,7 +220,7 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
   }
 
   public build(): EthereumTransaction {
-    const { blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, from = '' } = this;
+    const { blockchain, gas, gasPrice, maxGasPrice, nonce, priorityGasPrice, to, type, from = '' } = this;
 
     const value = this.amount.number.toFixed();
 
@@ -231,6 +236,7 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
       gas,
       gasPrice,
       maxGasPrice,
+      nonce,
       priorityGasPrice,
       type,
       to: this.token.address,

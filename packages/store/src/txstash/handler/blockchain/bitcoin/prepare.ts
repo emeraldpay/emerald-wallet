@@ -2,10 +2,10 @@ import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { accounts } from '../../../..';
 import { setChangeAddress, setPreparing } from '../../../actions';
 import { EntryHandler } from '../../types';
-import { getFee } from './fee';
+import { fetchFee } from './fee';
 
 const prepareTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry }, { dispatch }) =>
+  ({ entry }, _dataProvider, { dispatch }) =>
   async () => {
     const [{ address: changeAddress }] = await Promise.all(
       entry.xpub
@@ -16,8 +16,8 @@ const prepareTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
     dispatch(setChangeAddress(changeAddress));
   };
 
-export const prepareBitcoinTransaction: EntryHandler<BitcoinEntry> = (data, provider) => () => {
-  getFee(data, provider)();
+export const prepareBitcoinTransaction: EntryHandler<BitcoinEntry> = (data, dataProvider, storeProvider) => () => {
+  fetchFee(data, dataProvider, storeProvider)();
 
-  prepareTransaction(data, provider)().then(() => provider.dispatch(setPreparing(false)));
+  prepareTransaction(data, dataProvider, storeProvider)().then(() => storeProvider.dispatch(setPreparing(false)));
 };

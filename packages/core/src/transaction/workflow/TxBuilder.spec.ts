@@ -4,7 +4,7 @@ import { BitcoinEntry, EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { InputUtxo, TokenData, TokenRegistry, amountFactory, blockchainIdToCode } from '../../blockchains';
 import { DEFAULT_GAS_LIMIT, EthereumTransactionType } from '../ethereum';
 import { DEFAULT_VKB_FEE } from './create-tx/CreateBitcoinTx';
-import { isAnyBitcoinCreateTx, isErc20CreateTx, isEthereumCreateTx } from './create-tx/types';
+import { isAnyBitcoinCreateTx, isErc20CreateTx, isEtherCreateTx } from './create-tx/types';
 import { TxBuilder } from './TxBuilder';
 import { FeeRange, TxTarget } from './types';
 
@@ -216,7 +216,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(createTx);
+    const isCorrectCreateTx = isEtherCreateTx(createTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -287,7 +287,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(createTx);
+    const isCorrectCreateTx = isEtherCreateTx(createTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -360,7 +360,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(ethCreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(ethCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -393,7 +393,7 @@ describe('TxBuilder', () => {
 
         const token = tokenRegistry.byAddress(blockchain, tokenData.address);
 
-        expect(erc20CreateTx.amount.equals(token.getAmount(0))).toBeTruthy();
+        expect(erc20CreateTx.amount.equals(token.getAmount(1))).toBeTruthy();
         expect(erc20CreateTx.from).toEqual(ethEntry1.address?.value);
         expect(erc20CreateTx.to).toEqual(ethToAddress);
         expect(erc20CreateTx.target).toEqual(TxTarget.MANUAL);
@@ -422,7 +422,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(ethCreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(ethCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -510,7 +510,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isEthereumCreateTx(ethCreateTx);
+      const isConvertedCreateTx = isEtherCreateTx(ethCreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -571,7 +571,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isEthereumCreateTx(ethCreateTx);
+      const isConvertedCreateTx = isEtherCreateTx(ethCreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -606,7 +606,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(ethCreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(ethCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -659,7 +659,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(ethCreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(ethCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -681,14 +681,14 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isEthereumCreateTx(etcCreateTx);
+      const isConvertedCreateTx = isEtherCreateTx(etcCreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
       if (isConvertedCreateTx) {
         const factory = amountFactory(blockchainIdToCode(etcEntry.blockchain));
 
-        expect(etcCreateTx.amount.equals(factory(0))).toBeTruthy();
+        expect(etcCreateTx.amount.equals(factory(1))).toBeTruthy();
         expect(etcCreateTx.from).toEqual(etcEntry.address?.value);
         expect(etcCreateTx.to).toEqual(ethToAddress);
         expect(etcCreateTx.target).toEqual(TxTarget.MANUAL);
@@ -716,7 +716,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(eth1CreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(eth1CreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -738,7 +738,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isEthereumCreateTx(eth2CreateTx);
+      const isConvertedCreateTx = isEtherCreateTx(eth2CreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 
@@ -773,7 +773,7 @@ describe('TxBuilder', () => {
       tokenRegistry,
     );
 
-    const isCorrectCreateTx = isEthereumCreateTx(ethCreateTx);
+    const isCorrectCreateTx = isEtherCreateTx(ethCreateTx);
 
     expect(isCorrectCreateTx).toBeTruthy();
 
@@ -797,7 +797,7 @@ describe('TxBuilder', () => {
         tokenRegistry,
       );
 
-      const isConvertedCreateTx = isEthereumCreateTx(restoredEthCreateTx);
+      const isConvertedCreateTx = isEtherCreateTx(restoredEthCreateTx);
 
       expect(isConvertedCreateTx).toBeTruthy();
 

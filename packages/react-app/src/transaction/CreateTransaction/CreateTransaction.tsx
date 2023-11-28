@@ -36,8 +36,23 @@ const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ st
     [],
   );
 
+  let title: string;
+
+  switch (props.action) {
+    case TxAction.CANCEL:
+      title = 'Revoke Transaction';
+
+      break;
+    case TxAction.SPEEDUP:
+      title = 'Speed Up Transaction';
+
+      break;
+    default:
+      title = 'Create Transaction';
+  }
+
   return (
-    <Page leftIcon={<Back onClick={goBack} />} title="Create Transaction">
+    <Page leftIcon={<Back onClick={goBack} />} title={title}>
       {stage === CreateTxStage.SETUP && <SetupTransaction {...props} onCancel={goBack} />}
       {stage === CreateTxStage.SIGN && <SignTransaction onCancel={goBack} />}
       {stage === CreateTxStage.BROADCAST && <BroadcastTransaction onCancel={goBack} />}

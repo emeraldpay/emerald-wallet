@@ -15,12 +15,13 @@ const useStyles = makeStyles(
 
 interface OwnProps {
   createTx: workflow.AnyCreateTx;
+  disabled?: boolean;
   initializing: boolean;
   onCancel(): void;
   onCreate(): void;
 }
 
-export const Actions: React.FC<OwnProps> = ({ createTx, initializing, onCancel, onCreate }) => {
+export const Actions: React.FC<OwnProps> = ({ createTx, initializing, disabled = false, onCancel, onCreate }) => {
   const styles = useStyles();
 
   return (
@@ -33,7 +34,7 @@ export const Actions: React.FC<OwnProps> = ({ createTx, initializing, onCancel, 
         <Button label="Cancel" onClick={onCancel} />
         <Button
           primary
-          disabled={initializing || createTx.validate() !== workflow.ValidationResult.OK}
+          disabled={disabled || initializing || createTx.validate() !== workflow.ValidationResult.OK}
           label="Create Transaction"
           onClick={onCreate}
         />

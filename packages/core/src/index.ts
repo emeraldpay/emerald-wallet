@@ -7,7 +7,12 @@ import * as utils from './utils';
 
 export * as PersistentState from './persistentState';
 export { BackendApi } from './BackendApi';
-export { BitcoinRawTransaction, BitcoinRawTransactionInput, BitcoinRawTransactionOutput } from './transaction/bitcoin';
+export {
+  BitcoinRawTransaction,
+  BitcoinRawTransactionInput,
+  BitcoinRawTransactionOutput,
+  isBitcoinRawTransaction,
+} from './transaction/bitcoin';
 export {
   BlockchainCode,
   Blockchains,
@@ -56,6 +61,7 @@ export {
   EthereumReceipt,
   EthereumTransaction,
   EthereumTransactionType,
+  isEthereumRawTransaction,
   isEthereumTransaction,
 } from './transaction/ethereum';
 export { default as DefaultLogger } from './logging/DefaultLogger';

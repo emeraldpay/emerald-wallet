@@ -1,3 +1,4 @@
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   Blockchains,
@@ -9,12 +10,14 @@ import {
   toBigNumber,
   workflow,
 } from '@emeraldwallet/core';
-import { setPreparing, setTransaction } from '../../../actions';
+import { EthereumFeeRange } from '@emeraldwallet/core/src/transaction/workflow';
+import { setPreparing, setTransaction, setTransactionFee } from '../../../actions';
+import { getFee } from '../../../selectors';
 import { EntryHandler } from '../../types';
-import { getFee } from './fee';
+import { fetchFee } from './fee';
 
 const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
-  ({ entry, metaType, storedTx }, { dispatch, getState, extra }) =>
+  ({ entry, storedTx }, { getTxMetaType }, { dispatch, getState, extra }) =>
   async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
@@ -24,13 +27,7 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
       if (rawTx != null) {
         const tokenRegistry = new TokenRegistry(getState().application.tokens);
 
-        const { from, gas, gasPrice, input, maxFeePerGas, maxPriorityFeePerGas, to, type, value } = rawTx;
-
-        let asset: string = Blockchains[blockchain].params.coinTicker;
-
-        if (to != null && tokenRegistry.hasAddress(blockchain, to)) {
-          asset = to;
-        }
+        const { from, gas, gasPrice, input, nonce, maxFeePerGas, maxPriorityFeePerGas, to, type, value } = rawTx;
 
         const { inputs, name } = decodeData(input);
 
@@ -52,16 +49,28 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
 
         const factory = amountFactory(blockchain);
 
+        let amount = factory(value).encode();
+        let asset = Blockchains[blockchain].params.coinTicker as string;
+
+        if (to != null && tokenRegistry.hasAddress(blockchain, to)) {
+          asset = to;
+
+          if (dataAmount != null) {
+            amount = tokenRegistry.byAddress(blockchain, asset).getAmount(toBigNumber(dataAmount)).encode();
+          }
+        }
+
         const restoredTx: workflow.EthereumPlainTx = {
+          amount,
           asset,
           blockchain,
           from,
           type,
-          amount: factory(toBigNumber(dataAmount?.toString() ?? value)).encode(),
           gas: parseInt(gas, 16),
           gasPrice: gasPrice == null ? undefined : factory(gasPrice).encode(),
           maxGasPrice: maxFeePerGas == null ? undefined : factory(maxFeePerGas).encode(),
-          meta: { type: metaType },
+          meta: { type: getTxMetaType(rawTx) },
+          nonce: parseInt(nonce, 16),
           priorityGasPrice: maxPriorityFeePerGas == null ? undefined : factory(maxPriorityFeePerGas).encode(),
           target: workflow.TxTarget.MANUAL,
           to: dataTo?.toString() ?? to,
@@ -73,7 +82,73 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
     }
   };
 
-export const restoreEthereumTransaction: EntryHandler<EthereumEntry> = (data, provider) => () => {
-  getFee(data, provider)();
-  restoreTransaction(data, provider)().then(() => provider.dispatch(setPreparing(false)));
-};
+const recalculateFee: EntryHandler<EthereumEntry> =
+  ({ entry }, _dataProvider, { dispatch, getState }) =>
+  () => {
+    const state = getState();
+
+    const { fee, transaction } = state.txStash;
+
+    if (fee != null && transaction != null && workflow.isEthereumPlainTx(transaction)) {
+      const blockchain = blockchainIdToCode(entry.blockchain);
+
+      const { range } = getFee(state, blockchain);
+
+      if (range != null && workflow.isEthereumFeeRange(range)) {
+        const createTx = workflow.fromEthereumPlainTx(transaction, new TokenRegistry(state.application.tokens));
+
+        const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
+
+        const lowFee = createTx.gasPrice?.plus(createTx.gasPrice.multiply(0.1));
+        const lowMaxFee = createTx.maxGasPrice?.plus(createTx.maxGasPrice.multiply(0.1)) ?? lowFee ?? zeroAmount;
+        const lowPriorityFee = createTx.priorityGasPrice?.plus(createTx.priorityGasPrice.multiply(0.1)) ?? zeroAmount;
+
+        const highFee = createTx.gasPrice?.plus(createTx.gasPrice.multiply(0.5));
+        const highMaxFee = createTx.maxGasPrice?.plus(createTx.maxGasPrice.multiply(0.5)) ?? highFee ?? zeroAmount;
+        const highPriorityFee = createTx.priorityGasPrice?.plus(createTx.priorityGasPrice.multiply(0.5)) ?? zeroAmount;
+
+        const lowMaxGasPrice = range.lowMaxGasPrice.isGreaterThan(lowMaxFee)
+          ? range.lowMaxGasPrice.number.toString()
+          : lowMaxFee.number.toString();
+        const highMaxGasPrice = range.highMaxGasPrice.isGreaterThan(highMaxFee)
+          ? range.highMaxGasPrice.number.toString()
+          : highMaxFee.number.toString();
+
+        const lowPriorityGasPrice = range.lowPriorityGasPrice.isGreaterThan(lowPriorityFee)
+          ? range.lowPriorityGasPrice.number.toString()
+          : lowPriorityFee.number.toString();
+        const highPriorityGasPrice = range.highPriorityGasPrice.isGreaterThan(highPriorityFee)
+          ? range.highPriorityGasPrice.number.toString()
+          : highPriorityFee.number.toString();
+
+        createTx.gasPrice = lowFee;
+        createTx.maxGasPrice = lowMaxFee;
+        createTx.priorityGasPrice = lowPriorityFee;
+
+        dispatch(setTransaction(createTx.dump()));
+
+        const feeRange: EthereumFeeRange<string> = {
+          lowMaxGasPrice,
+          highMaxGasPrice,
+          lowPriorityGasPrice,
+          highPriorityGasPrice,
+          stdMaxGasPrice: lowMaxGasPrice,
+          stdPriorityGasPrice: lowPriorityGasPrice,
+        };
+
+        dispatch(setTransactionFee(feeRange));
+      }
+    }
+  };
+
+export const restoreEthereumTransaction: EntryHandler<EthereumEntry> =
+  (data, dataProvider, storeProvider) => async () => {
+    await Promise.all([
+      fetchFee(data, dataProvider, storeProvider)(),
+      restoreTransaction(data, dataProvider, storeProvider)(),
+    ]);
+
+    recalculateFee(data, dataProvider, storeProvider)();
+
+    storeProvider.dispatch(setPreparing(false));
+  };

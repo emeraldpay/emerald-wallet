@@ -41,7 +41,7 @@ export const EthereumFee: React.FC<OwnProps> = ({ createTx, feeRange, initializi
   const { eip1559: supportEip1559 = false } = Blockchains[createTx.blockchain].params;
 
   const isEip1559 = createTx.type === EthereumTransactionType.EIP1559;
-  const gasPrice = (isEip1559 ? createTx.gasPrice : createTx.maxGasPrice) ?? zeroAmount;
+  const gasPrice = (isEip1559 ? createTx.maxGasPrice : createTx.gasPrice) ?? zeroAmount;
 
   return (
     <EthTxSettings

@@ -1,85 +1,106 @@
 import { WalletEntry, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
-import { TokenRegistry, workflow } from '@emeraldwallet/core';
-import { StoredTransaction } from '../../txhistory/types';
+import { EthereumRawTransaction, decodeData, isEthereumRawTransaction, workflow } from '@emeraldwallet/core';
 import { TxAction } from '../types';
-import {
-  prepareBitcoinTransaction,
-  prepareEthereumTransaction,
-  restoreBitcoinTransaction,
-  restoreEthereumTransaction,
-} from './blockchain';
-import { Handler, Provider } from './types';
+import { prepareEthereumTransaction, restoreBitcoinTransaction, restoreEthereumTransaction } from './blockchain';
+import { Data, Handler, StoreProvider } from './types';
 
-interface Origin {
-  action: TxAction;
-  entry: WalletEntry;
-  storedTx?: StoredTransaction;
+function ethereumTxTypeSelector<T>(rawTx: EthereumRawTransaction, whenEther: T, whenContract: T): T {
+  const { name: method } = decodeData(rawTx.input);
+
+  return method == null ? whenEther : whenContract;
 }
 
-export function getHandler({ action, entry, storedTx }: Origin, provider: Provider): Handler | undefined {
+export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider): Handler | undefined {
+  const { action, entry } = data;
+
   if (isBitcoinEntry(entry)) {
     switch (action) {
       case TxAction.CANCEL:
         return restoreBitcoinTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: workflow.TxMetaType.BITCOIN_CANCEL,
+            getTxMetaType() {
+              return workflow.TxMetaType.BITCOIN_CANCEL;
+            },
           },
-          provider,
+          storeProvider,
         );
       case TxAction.SPEEDUP:
         return restoreBitcoinTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: workflow.TxMetaType.BITCOIN_SPEEDUP,
+            getTxMetaType() {
+              return workflow.TxMetaType.BITCOIN_SPEEDUP;
+            },
           },
-          provider,
+          storeProvider,
         );
       case TxAction.TRANSFER:
-        return prepareBitcoinTransaction(
+        return restoreBitcoinTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: workflow.TxMetaType.BITCOIN_TRANSFER,
+            getTxMetaType() {
+              return workflow.TxMetaType.BITCOIN_TRANSFER;
+            },
           },
-          provider,
+          storeProvider,
         );
     }
   } else {
-    const tokenRegistry = new TokenRegistry(provider.getState().application.tokens);
-
-    const isErc20 =
-      storedTx?.changes.some(({ asset, blockchain }) => tokenRegistry.hasAddress(blockchain, asset)) ?? false;
-
     switch (action) {
       case TxAction.CANCEL:
         return restoreEthereumTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: isErc20 ? workflow.TxMetaType.ERC20_CANCEL : workflow.TxMetaType.ETHEREUM_CANCEL,
+            getTxMetaType(rawTx) {
+              if (isEthereumRawTransaction(rawTx)) {
+                return ethereumTxTypeSelector(
+                  rawTx,
+                  workflow.TxMetaType.ETHER_CANCEL,
+                  workflow.TxMetaType.ERC20_CANCEL,
+                );
+              }
+
+              throw new Error('Incorrect raw transaction provided');
+            },
           },
-          provider,
+          storeProvider,
         );
       case TxAction.SPEEDUP:
         return restoreEthereumTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: isErc20 ? workflow.TxMetaType.ERC20_SPEEDUP : workflow.TxMetaType.ETHEREUM_SPEEDUP,
+            getTxMetaType(rawTx) {
+              if (isEthereumRawTransaction(rawTx)) {
+                return ethereumTxTypeSelector(
+                  rawTx,
+                  workflow.TxMetaType.ETHER_SPEEDUP,
+                  workflow.TxMetaType.ERC20_SPEEDUP,
+                );
+              }
+
+              throw new Error('Incorrect raw transaction provided');
+            },
           },
-          provider,
+          storeProvider,
         );
       case TxAction.TRANSFER:
         return prepareEthereumTransaction(
+          { ...data, entry },
           {
-            entry,
-            storedTx,
-            metaType: isErc20 ? workflow.TxMetaType.ERC20_TRANSFER : workflow.TxMetaType.ETHEREUM_TRANSFER,
+            getTxMetaType(rawTx) {
+              if (isEthereumRawTransaction(rawTx)) {
+                return ethereumTxTypeSelector(
+                  rawTx,
+                  workflow.TxMetaType.ETHER_TRANSFER,
+                  workflow.TxMetaType.ERC20_TRANSFER,
+                );
+              }
+
+              throw new Error('Incorrect raw transaction provided');
+            },
           },
-          provider,
+          storeProvider,
         );
     }
   }

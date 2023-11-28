@@ -162,9 +162,9 @@ export class CreateBitcoinTx implements BitcoinTx {
       });
     }
 
-    if (this.change.isPositive()) {
+    if (this.changeAddress != null && this.change.isPositive()) {
       result.push({
-        address: this.changeAddress ?? '',
+        address: this.changeAddress,
         amount: this.change.number.toNumber(),
         entryId: this.entryId,
       });
@@ -305,11 +305,15 @@ export class CreateBitcoinTx implements BitcoinTx {
         return false;
       }
 
-      if (amount.plus(fees).isLessThan(send)) {
+      if (this.changeAddress != null && amount.plus(fees).isLessThan(send)) {
         // sending more that receive + fees ==> keep change
         const changeWeight = this.metric.weightOf(from, [
           ...to,
-          { address: this.changeAddress ?? '', amount: 0, entryId: this.entryId },
+          {
+            address: this.changeAddress,
+            amount: 0,
+            entryId: this.entryId,
+          },
         ]);
         const changeFees = this.amountFactory(this.vkbPrice).multiply(convertWUToVB(changeWeight)).divide(1024);
 
