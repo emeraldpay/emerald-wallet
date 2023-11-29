@@ -2,25 +2,14 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
     "jsx": "react",
     "outDir": "lib/",
     "rootDir": "src/",
     "strict": false,
-    "typeRoots": [
-      "../../node_modules/@types",
-      "node_modules/@types"
-    ]
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types"]
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "../core"

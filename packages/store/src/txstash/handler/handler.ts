@@ -1,7 +1,12 @@
 import { WalletEntry, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { EthereumRawTransaction, decodeData, isEthereumRawTransaction, workflow } from '@emeraldwallet/core';
 import { TxAction } from '../types';
-import { prepareEthereumTransaction, restoreBitcoinTransaction, restoreEthereumTransaction } from './blockchain';
+import {
+  prepareBitcoinTransaction,
+  prepareEthereumTransaction,
+  restoreBitcoinTransaction,
+  restoreEthereumTransaction,
+} from './blockchain';
 import { Data, Handler, StoreProvider } from './types';
 
 function ethereumTxTypeSelector<T>(rawTx: EthereumRawTransaction, whenEther: T, whenContract: T): T {
@@ -36,7 +41,7 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
           storeProvider,
         );
       case TxAction.TRANSFER:
-        return restoreBitcoinTransaction(
+        return prepareBitcoinTransaction(
           { ...data, entry },
           {
             getTxMetaType() {
