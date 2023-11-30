@@ -21,6 +21,13 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
 
+      - name: Connect Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
         # Needed for Electron tests
       - name: Setup Display (Linux)
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
