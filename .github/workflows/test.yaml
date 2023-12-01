@@ -26,6 +26,14 @@ jobs:
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
 
+      - name: Connect Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+        if: runner.os == 'Linux'
+
       - name: Update apt index (Linux)
         run: sudo apt update
         if: runner.os == 'Linux'
