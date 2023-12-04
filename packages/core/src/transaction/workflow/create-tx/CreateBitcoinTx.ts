@@ -247,11 +247,18 @@ export class CreateBitcoinTx implements BitcoinTx {
       blockchain: this.blockchain,
       changeAddress: this.changeAddress,
       meta: { type: this.meta.type },
+      originalFees: this.fees.encode(),
       target: this.tx.target,
       vkbPrice: this.vkbPrice,
       to: this.tx.to,
       utxo: this.utxo,
     };
+  }
+
+  estimateFeesFor(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): SatoshiAny {
+    const weight = this.metric.weightOf(inputs, outputs);
+
+    return this.amountFactory(this.vkbPrice).multiply(convertWUToVB(weight)).divide(1024);
   }
 
   estimateVkbPrice(fee: SatoshiAny): number {
@@ -307,7 +314,7 @@ export class CreateBitcoinTx implements BitcoinTx {
 
       if (this.changeAddress != null && amount.plus(fees).isLessThan(send)) {
         // sending more that receive + fees ==> keep change
-        const changeWeight = this.metric.weightOf(from, [
+        const changeFees = this.estimateFeesFor(from, [
           ...to,
           {
             address: this.changeAddress,
@@ -315,7 +322,6 @@ export class CreateBitcoinTx implements BitcoinTx {
             entryId: this.entryId,
           },
         ]);
-        const changeFees = this.amountFactory(this.vkbPrice).multiply(convertWUToVB(changeWeight)).divide(1024);
 
         change = send.minus(amount).minus(changeFees);
 
@@ -374,11 +380,5 @@ export class CreateBitcoinTx implements BitcoinTx {
     }
 
     return sequence < MAX_SEQUENCE ? sequence + 1 : MAX_SEQUENCE;
-  }
-
-  private estimateFeesFor(inputs: InputUtxo[], outputs: BitcoinTxOutput[]): SatoshiAny {
-    const weight = this.metric.weightOf(inputs, outputs);
-
-    return this.amountFactory(this.vkbPrice).multiply(convertWUToVB(weight)).divide(1024);
   }
 }

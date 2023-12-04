@@ -3,19 +3,10 @@
   "compilerOptions": {
     "outDir": "lib/",
     "rootDir": "src/",
-    "typeRoots": [
-      "../../node_modules/@types",
-      "node_modules/@types",
-      "./typings"
-    ]
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types", "./typings"]
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "src/**/*.ts"
-  ],
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "include": ["src/**/*.ts"],
   "references": [
     {
       "path": "../core"
