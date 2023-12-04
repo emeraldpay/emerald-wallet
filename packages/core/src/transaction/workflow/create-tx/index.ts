@@ -7,7 +7,6 @@ export {
   AnyEtherCreateTx,
   AnyEthereumCreateTx,
   EthereumTx,
-  bitcoinTxFactory,
   fromBitcoinPlainTx,
   fromErc20PlainTx,
   fromEtherPlainTx,

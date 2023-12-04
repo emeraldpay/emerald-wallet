@@ -17,7 +17,7 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
 }
 
 export const fetchFee: EntryHandler<EthereumEntry, Promise<void>> =
-  ({ entry }, _dataProvider, { dispatch, getState, extra }) =>
+  ({ entry }, { dispatch, getState, extra }) =>
   async () => {
     const state = getState();
 

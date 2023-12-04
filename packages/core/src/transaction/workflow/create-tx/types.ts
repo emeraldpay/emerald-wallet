@@ -4,7 +4,7 @@ import { TokenRegistry } from '../../../blockchains';
 import { AnyPlainTx, BitcoinPlainTx, CommonTx, EthereumPlainTx, TxMetaType, isBitcoinPlainTx } from '../types';
 import { CreateBitcoinCancelTx } from './CreateBitcoinCancelTx';
 import { CreateBitcoinSpeedUpTx } from './CreateBitcoinSpeedUpTx';
-import { BitcoinTx, BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
+import { BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
 import { CreateErc20CancelTx } from './CreateErc20CancelTx';
 import { CreateErc20SpeedUpTx } from './CreateErc20SpeedUpTx';
 import { CreateErc20Tx } from './CreateErc20Tx';
@@ -26,23 +26,6 @@ export type AnyEtherCreateTx = CreateEtherTx | CreateEtherCancelTx | CreateEther
 export type AnyErc20CreateTx = CreateErc20Tx | CreateErc20CancelTx | CreateErc20SpeedUpTx;
 export type AnyEthereumCreateTx = AnyEtherCreateTx | AnyErc20CreateTx;
 export type AnyCreateTx = AnyBitcoinCreateTx | AnyEthereumCreateTx;
-
-type BitcoinTxFactory = (...params: ConstructorParameters<typeof CreateBitcoinTx>) => BitcoinTx;
-
-export function bitcoinTxFactory(metaType: TxMetaType): BitcoinTxFactory {
-  return (...params) => {
-    switch (metaType) {
-      case TxMetaType.BITCOIN_CANCEL:
-        return new CreateBitcoinCancelTx(...params);
-      case TxMetaType.BITCOIN_SPEEDUP:
-        return new CreateBitcoinSpeedUpTx(...params);
-      case TxMetaType.BITCOIN_TRANSFER:
-        return new CreateBitcoinTx(...params);
-      default:
-        throw new Error();
-    }
-  };
-}
 
 const bitcoinTxMetaTypes: Readonly<TxMetaType[]> = [
   TxMetaType.BITCOIN_CANCEL,

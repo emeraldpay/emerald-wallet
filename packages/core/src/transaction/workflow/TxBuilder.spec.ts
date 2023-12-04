@@ -24,7 +24,7 @@ describe('TxBuilder', () => {
     id: '7d395b44-0bac-49b9-98de-47e88dbc5a28-0',
     address: {
       type: 'xpub',
-      value: 'tb1',
+      value: 'vpub_common',
     },
     key: {
       type: 'hd-path',
@@ -33,12 +33,12 @@ describe('TxBuilder', () => {
     },
     xpub: [
       {
-        role: 'change',
-        xpub: 'zpub1',
+        role: 'receive',
+        xpub: 'vpub_receive',
       },
       {
-        role: 'receive',
-        xpub: 'zpub2',
+        role: 'change',
+        xpub: 'vpub_change',
       },
     ],
     blockchain: 1,

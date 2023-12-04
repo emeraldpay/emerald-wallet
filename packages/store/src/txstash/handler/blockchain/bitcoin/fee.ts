@@ -6,7 +6,7 @@ import { FEE_KEYS } from '../../../types';
 import { EntryHandler } from '../../types';
 
 export const fetchFee: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry }, _dataProvider, { dispatch, getState, extra }) =>
+  ({ entry }, { dispatch, getState, extra }) =>
   async () => {
     const state = getState();
 

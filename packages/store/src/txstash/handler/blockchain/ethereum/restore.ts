@@ -3,6 +3,7 @@ import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   Blockchains,
   DecodedInput,
+  EthereumRawTransaction,
   TokenRegistry,
   amountFactory,
   blockchainIdToCode,
@@ -16,8 +17,16 @@ import { getFee } from '../../../selectors';
 import { EntryHandler } from '../../types';
 import { fetchFee } from './fee';
 
-const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
-  ({ entry, storedTx }, { getTxMetaType }, { dispatch, getState, extra }) =>
+export interface DataProvider {
+  getTxMetaType(rawTx: EthereumRawTransaction): workflow.TxMetaType;
+}
+
+type EthereumHandler<R = void> = EntryHandler<EthereumEntry, R> extends (...args: infer A) => infer T
+  ? (...args: [...args: A, dataProvider: DataProvider]) => T
+  : never;
+
+const restoreTx: EthereumHandler<Promise<void>> =
+  ({ entry, storedTx }, { dispatch, getState, extra }, { getTxMetaType }) =>
   async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
@@ -82,8 +91,8 @@ const restoreTransaction: EntryHandler<EthereumEntry, Promise<void>> =
     }
   };
 
-const recalculateFee: EntryHandler<EthereumEntry> =
-  ({ entry }, _dataProvider, { dispatch, getState }) =>
+const recalculateFee: EthereumHandler =
+  ({ entry }, { dispatch, getState }) =>
   () => {
     const state = getState();
 
@@ -141,14 +150,10 @@ const recalculateFee: EntryHandler<EthereumEntry> =
     }
   };
 
-export const restoreEthereumTransaction: EntryHandler<EthereumEntry> =
-  (data, dataProvider, storeProvider) => async () => {
-    await Promise.all([
-      fetchFee(data, dataProvider, storeProvider)(),
-      restoreTransaction(data, dataProvider, storeProvider)(),
-    ]);
+export const restoreEthereumTx: EthereumHandler<Promise<void>> = (data, storeProvider, dataProvider) => async () => {
+  await Promise.all([fetchFee(data, storeProvider)(), restoreTx(data, storeProvider, dataProvider)()]);
 
-    recalculateFee(data, dataProvider, storeProvider)();
+  recalculateFee(data, storeProvider, dataProvider)();
 
-    storeProvider.dispatch(setPreparing(false));
-  };
+  storeProvider.dispatch(setPreparing(false));
+};

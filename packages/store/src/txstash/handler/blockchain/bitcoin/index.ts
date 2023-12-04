@@ -1,4 +1,4 @@
 /* eslint sort-exports/sort-exports: error */
 
-export { prepareBitcoinTransaction } from './prepare';
-export { restoreBitcoinTransaction } from './restore';
+export { prepareBitcoinTx } from './prepare';
+export { restoreBitcoinCancelTx, restoreBitcoinSpeedUpTx } from './restore';

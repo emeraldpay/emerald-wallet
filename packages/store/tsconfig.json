@@ -1,28 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015.promise"
-    ],
+    "lib": ["dom", "es5", "scripthost", "es2015.promise"],
     "outDir": "lib/",
     "rootDir": "src/",
-    "typeRoots": [
-      "./typings",
-      "node_modules/@types",
-      "../../node_modules/@types"
-    ]
+    "typeRoots": ["./typings", "node_modules/@types", "../../node_modules/@types"]
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ],
-  "include": [
-    "src/**/*.ts"
-  ],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"],
+  "include": ["src/**/*.ts"],
   "references": [
     {
       "path": "../core"

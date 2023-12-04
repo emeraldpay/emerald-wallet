@@ -1,9 +1,10 @@
 import { SatoshiAny } from '@emeraldpay/bigamount-crypto';
 import { amountDecoder } from '../../../blockchains';
 import { BitcoinPlainTx, TxMetaType } from '../types';
-import { BitcoinTxOrigin, BitcoinTxOutput, CreateBitcoinTx } from './CreateBitcoinTx';
+import { CreateBitcoinModifyTx } from './CreateBitcoinModifyTx';
+import { BitcoinTxOrigin, BitcoinTxOutput } from './CreateBitcoinTx';
 
-export class CreateBitcoinCancelTx extends CreateBitcoinTx {
+export class CreateBitcoinCancelTx extends CreateBitcoinModifyTx {
   meta = { type: TxMetaType.BITCOIN_CANCEL };
 
   static fromPlain(origin: BitcoinTxOrigin, plain: BitcoinPlainTx): CreateBitcoinCancelTx {
@@ -15,6 +16,7 @@ export class CreateBitcoinCancelTx extends CreateBitcoinTx {
 
     tx.amount = decoder(plain.amount);
     tx.meta.type = TxMetaType.BITCOIN_CANCEL;
+    tx.originalFees = decoder(plain.originalFees);
     tx.target = plain.target;
     tx.to = plain.to;
     tx.vkbPrice = plain.vkbPrice;

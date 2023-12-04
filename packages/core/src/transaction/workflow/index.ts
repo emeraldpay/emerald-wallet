@@ -25,7 +25,6 @@ export {
   Erc20WrappedTxDetails,
   EthereumTx,
   TxDetails,
-  bitcoinTxFactory,
   fromBitcoinPlainTx,
   fromErc20PlainTx,
   fromEtherPlainTx,

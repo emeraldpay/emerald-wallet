@@ -1,4 +1,4 @@
 /* eslint sort-exports/sort-exports: error */
 
-export { prepareEthereumTransaction } from './prepare';
-export { restoreEthereumTransaction } from './restore';
+export { prepareEthereumTx } from './prepare';
+export { restoreEthereumTx } from './restore';

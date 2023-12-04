@@ -4,8 +4,8 @@ import { setChangeAddress, setPreparing } from '../../../actions';
 import { EntryHandler } from '../../types';
 import { fetchFee } from './fee';
 
-const prepareTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry }, _dataProvider, { dispatch }) =>
+const prepareTx: EntryHandler<BitcoinEntry, Promise<void>> =
+  ({ entry }, { dispatch }) =>
   async () => {
     const [{ address: changeAddress }] = await Promise.all(
       entry.xpub
@@ -16,8 +16,8 @@ const prepareTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
     dispatch(setChangeAddress(changeAddress));
   };
 
-export const prepareBitcoinTransaction: EntryHandler<BitcoinEntry> = (data, dataProvider, storeProvider) => () => {
-  fetchFee(data, dataProvider, storeProvider)();
+export const prepareBitcoinTx: EntryHandler<BitcoinEntry> = (data, storeProvider) => () => {
+  fetchFee(data, storeProvider)();
 
-  prepareTransaction(data, dataProvider, storeProvider)().then(() => storeProvider.dispatch(setPreparing(false)));
+  prepareTx(data, storeProvider)().then(() => storeProvider.dispatch(setPreparing(false)));
 };
