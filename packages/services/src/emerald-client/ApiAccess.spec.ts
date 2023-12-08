@@ -1,11 +1,11 @@
 import { Blockchain, ConnectionStatus } from '@emeraldpay/api';
-import { EmeraldApiAccessDev } from './ApiAccess';
+import { EmeraldApiAccessProd } from './ApiAccess';
 
 jest.setTimeout(10000);
 
 describe('ApiAccess', () => {
   test('should connect without errors', async () => {
-    const apiAccess = new EmeraldApiAccessDev('test', {
+    const apiAccess = new EmeraldApiAccessProd('test', {
       appLocale: 'en-US',
       appVersion: '0.0.0',
       chromeVersion: '0.0.0',
