@@ -15,8 +15,9 @@ import { IState, StoredTransaction } from '../../../..';
 import { findEntry } from '../../../../accounts/selectors';
 import { showError } from '../../../../screen/actions';
 import { setPreparing, setTransaction, setTransactionFee } from '../../../actions';
+import { getFee } from '../../../selectors';
 import { EntryHandler } from '../../types';
-import { getFee } from './fee';
+import { fetchFee } from './fee';
 
 function extractEntries(state: IState, { changes }: StoredTransaction): BitcoinEntry[] {
   const entryById = changes
@@ -77,7 +78,7 @@ function extractUtxo(
 }
 
 const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry, metaType, storedTx }, { dispatch, getState, extra }) =>
+  ({ entry, storedTx }, { getTxMetaType }, { dispatch, getState, extra }) =>
   async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
@@ -219,7 +220,7 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
           },
         ] = outputs;
 
-        const restoredTx = workflow.bitcoinTxFactory(metaType)(
+        const restoredTx = workflow.bitcoinTxFactory(getTxMetaType(rawTx))(
           {
             changeAddress,
             blockchain: blockchainIdToCode(entry.blockchain),
@@ -250,14 +251,16 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
   };
 
 const recalculateFee: EntryHandler<BitcoinEntry> =
-  ({ entry }, { dispatch, getState }) =>
+  ({ entry }, _dataProvider, { dispatch, getState }) =>
   () => {
-    const { fee, transaction } = getState().txStash;
+    const state = getState();
+
+    const { fee, transaction } = state.txStash;
 
     if (fee != null && transaction != null && workflow.isBitcoinPlainTx(transaction)) {
       const blockchain = blockchainIdToCode(entry.blockchain);
 
-      const { range } = fee[blockchain] ?? {};
+      const { range } = getFee(state, blockchain);
 
       if (range != null && workflow.isBitcoinFeeRange(range)) {
         const createTx = workflow.fromBitcoinPlainTx(transaction, {
@@ -282,10 +285,14 @@ const recalculateFee: EntryHandler<BitcoinEntry> =
     }
   };
 
-export const restoreBitcoinTransaction: EntryHandler<BitcoinEntry, Promise<void>> = (data, provider) => async () => {
-  await Promise.all([getFee(data, provider)(), restoreTransaction(data, provider)()]);
+export const restoreBitcoinTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
+  (data, dataProvider, storeProvider) => async () => {
+    await Promise.all([
+      fetchFee(data, dataProvider, storeProvider)(),
+      restoreTransaction(data, dataProvider, storeProvider)(),
+    ]);
 
-  recalculateFee(data, provider)();
+    recalculateFee(data, dataProvider, storeProvider)();
 
-  provider.dispatch(setPreparing(false));
-};
+    storeProvider.dispatch(setPreparing(false));
+  };

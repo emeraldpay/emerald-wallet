@@ -1,17 +1,17 @@
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import { StoredTxView } from '../../../../../../common/StoredTxView';
-import { SpeedUpFlow } from '../../common';
-import { BitcoinFee } from '../../components';
-import { Data, DataProvider, Handler } from '../../types';
+import { StoredTxView } from '../../../../../../../common/StoredTxView';
+import { ModifyFlow } from '../../../common';
+import { BitcoinFee } from '../../../components';
+import { Data, DataProvider, Handler } from '../../../types';
 
-type BitcoinData = Data<workflow.CreateBitcoinSpeedUpTx, BitcoinEntry>;
+type BitcoinData<T extends workflow.AnyBitcoinCreateTx> = Data<T, BitcoinEntry>;
 
-export class BitcoinSpeedUpFlow extends SpeedUpFlow {
-  readonly data: BitcoinData;
+export class BitcoinModifyFlow<T extends workflow.AnyBitcoinCreateTx> extends ModifyFlow {
+  readonly data: BitcoinData<T>;
 
-  constructor(data: BitcoinData, dataProvider: DataProvider, handler: Handler) {
+  constructor(data: BitcoinData<T>, dataProvider: DataProvider, handler: Handler) {
     super(data, dataProvider, handler);
 
     this.data = data;

@@ -10,10 +10,10 @@ export enum TxMetaType {
   BITCOIN_CANCEL,
   BITCOIN_SPEEDUP,
   BITCOIN_TRANSFER,
-  ETHEREUM_CANCEL,
-  ETHEREUM_RECOVERY,
-  ETHEREUM_SPEEDUP,
-  ETHEREUM_TRANSFER,
+  ETHER_CANCEL,
+  ETHER_RECOVERY,
+  ETHER_SPEEDUP,
+  ETHER_TRANSFER,
   ERC20_APPROVE,
   ERC20_CANCEL,
   ERC20_SPEEDUP,
@@ -58,6 +58,7 @@ export interface EthereumPlainTx extends CommonTx {
   gas: number;
   gasPrice?: string;
   maxGasPrice?: string;
+  nonce?: number;
   priorityGasPrice?: string;
   target: number;
   to?: string;

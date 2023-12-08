@@ -7,7 +7,7 @@ import { TransferFlow } from '../../common';
 import { EthereumFee } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 
-type EthereumData = Data<workflow.CreateEthereumTx | workflow.CreateErc20Tx, EthereumEntry>;
+type EthereumData = Data<workflow.CreateEtherTx | workflow.CreateErc20Tx, EthereumEntry>;
 
 export class EthereumTransferFlow extends TransferFlow {
   readonly data: EthereumData;

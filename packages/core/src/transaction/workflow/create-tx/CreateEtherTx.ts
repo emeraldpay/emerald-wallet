@@ -12,6 +12,7 @@ export interface TxDetails extends CommonTx {
   gas: number;
   gasPrice?: WeiAny;
   maxGasPrice?: WeiAny;
+  nonce?: number;
   priorityGasPrice?: WeiAny;
   target: TxTarget;
   to?: string;
@@ -21,7 +22,7 @@ export interface TxDetails extends CommonTx {
 
 const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
   gas: DEFAULT_GAS_LIMIT,
-  meta: { type: TxMetaType.ETHEREUM_TRANSFER },
+  meta: { type: TxMetaType.ETHER_TRANSFER },
   target: TxTarget.MANUAL,
 };
 
@@ -36,6 +37,7 @@ export function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
     gasPrice: plain.gasPrice == null ? undefined : (decoder(plain.gasPrice) as WeiAny),
     maxGasPrice: plain.maxGasPrice == null ? undefined : decoder(plain.maxGasPrice),
     meta: plain.meta,
+    nonce: plain.nonce,
     priorityGasPrice: plain.priorityGasPrice == null ? undefined : decoder(plain.priorityGasPrice),
     target: plain.target,
     to: plain.to,
@@ -54,6 +56,7 @@ function toPlainDetails(tx: TxDetails): EthereumPlainTx {
     gasPrice: tx.gasPrice?.encode(),
     maxGasPrice: tx.maxGasPrice?.encode(),
     meta: tx.meta,
+    nonce: tx.nonce,
     priorityGasPrice: tx.priorityGasPrice?.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
@@ -62,8 +65,8 @@ function toPlainDetails(tx: TxDetails): EthereumPlainTx {
   };
 }
 
-export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
-  meta = { type: TxMetaType.ETHEREUM_TRANSFER };
+export class CreateEtherTx implements TxDetails, EthereumTx<WeiAny> {
+  meta = { type: TxMetaType.ETHER_TRANSFER };
 
   public amount: WeiAny;
   public blockchain: BlockchainCode;
@@ -71,6 +74,7 @@ export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
   public gas: number;
   public gasPrice?: WeiAny;
   public maxGasPrice?: WeiAny;
+  public nonce?: number;
   public priorityGasPrice?: WeiAny;
   public target: TxTarget;
   public to?: string;
@@ -98,6 +102,7 @@ export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
     this.blockchain = blockchainCode;
     this.from = details.from;
     this.gas = details.gas;
+    this.nonce = details.nonce;
     this.target = details.target;
     this.to = details.to;
     this.totalBalance = details.totalBalance;
@@ -110,8 +115,8 @@ export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
     this.zeroAmount = zeroAmount;
   }
 
-  public static fromPlain(details: EthereumPlainTx): CreateEthereumTx {
-    return new CreateEthereumTx(fromPlainDetails(details));
+  public static fromPlain(details: EthereumPlainTx): CreateEtherTx {
+    return new CreateEtherTx(fromPlainDetails(details));
   }
 
   public getAmount(): WeiAny {
@@ -168,9 +173,20 @@ export class CreateEthereumTx implements TxDetails, EthereumTx<WeiAny> {
   }
 
   public build(): EthereumTransaction {
-    const { blockchain, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, amount: value, from = '' } = this;
+    const {
+      blockchain,
+      gas,
+      gasPrice,
+      maxGasPrice,
+      nonce,
+      priorityGasPrice,
+      to,
+      type,
+      amount: value,
+      from = '',
+    } = this;
 
-    return { blockchain, from, gas, gasPrice, maxGasPrice, priorityGasPrice, to, type, value };
+    return { blockchain, from, gas, gasPrice, maxGasPrice, nonce, priorityGasPrice, to, type, value };
   }
 
   public dump(): EthereumPlainTx {

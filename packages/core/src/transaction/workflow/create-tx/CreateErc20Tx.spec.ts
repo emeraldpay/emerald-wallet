@@ -249,7 +249,7 @@ describe('CreateErc20Tx', () => {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
       maxGasPrice: '10007000000/WEI',
-      meta: { type: TxMetaType.ETHEREUM_TRANSFER },
+      meta: { type: TxMetaType.ETHER_TRANSFER },
       priorityGasPrice: '5007000000/WEI',
       target: 1,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',

@@ -1,10 +1,10 @@
 import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { setPreparing } from '../../../actions';
 import { EntryHandler } from '../../types';
-import { getFee } from './fee';
+import { fetchFee } from './fee';
 
-export const prepareEthereumTransaction: EntryHandler<EthereumEntry> = (data, provider) => () => {
-  getFee(data, provider)();
+export const prepareEthereumTransaction: EntryHandler<EthereumEntry> = (data, dataProvider, storeProvider) => () => {
+  fetchFee(data, dataProvider, storeProvider)();
 
-  provider.dispatch(setPreparing(false));
+  storeProvider.dispatch(setPreparing(false));
 };

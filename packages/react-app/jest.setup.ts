@@ -1,9 +1,11 @@
 import { TextDecoder, TextEncoder } from 'util';
 import * as Enzyme from 'enzyme';
-import * as Adapter from 'enzyme-adapter-react-16';
+import Adapter from 'enzyme-adapter-react-16';
 import 'jest-canvas-mock';
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+Object.defineProperties(globalThis, {
+  TextDecoder: { value: TextDecoder },
+  TextEncoder: { value: TextEncoder },
+});
 
 Enzyme.configure({ adapter: new Adapter() });

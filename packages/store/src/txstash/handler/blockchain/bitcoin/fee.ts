@@ -5,8 +5,8 @@ import { setFeeRange } from '../../../actions';
 import { FEE_KEYS } from '../../../types';
 import { EntryHandler } from '../../types';
 
-export const getFee: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry }, { dispatch, getState, extra }) =>
+export const fetchFee: EntryHandler<BitcoinEntry, Promise<void>> =
+  ({ entry }, _dataProvider, { dispatch, getState, extra }) =>
   async () => {
     const state = getState();
 

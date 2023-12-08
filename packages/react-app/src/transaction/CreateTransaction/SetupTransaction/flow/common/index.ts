@@ -1,5 +1,4 @@
 /* eslint sort-exports/sort-exports: error */
 
-export { CancelFlow } from './cancel';
-export { SpeedUpFlow } from './speedup';
+export { ModifyFlow } from './modify';
 export { TransferFlow } from './transfer';

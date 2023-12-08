@@ -2,11 +2,11 @@ import { Wei } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode } from '../../../blockchains';
 import { EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
-import { CreateEthereumTx } from './CreateEthereumTx';
+import { CreateEtherTx } from './CreateEtherTx';
 
 describe('CreateEthereumTx', () => {
   it('creates tx', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
 
     expect(tx.validate()).toBe(ValidationResult.NO_AMOUNT);
     expect(tx.amount.equals(Wei.ZERO)).toBeTruthy();
@@ -14,7 +14,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('fails to validated if set only from', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setAmount(new Wei(1, 'ETHER'));
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(2, 'ETHER'));
 
@@ -22,7 +22,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('fails to validated if set only to', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.amount = new Wei(1, 'ETHER');
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
 
@@ -30,7 +30,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('validates is set from/to', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.amount = new Wei(1, 'ETHER');
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -39,7 +39,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('insufficient funds if send whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new Wei(1, 'ETHER');
@@ -50,14 +50,14 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target can be even without to', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
 
     expect(tx.validateTarget()).toBeTruthy();
   });
 
   it('target fails without totalBalance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.target = TxTarget.SEND_ALL;
     tx.totalBalance = undefined;
@@ -66,7 +66,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('no-target ok without totalBalance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.target = TxTarget.MANUAL;
     tx.totalBalance = undefined;
@@ -75,7 +75,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is 0', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000000', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -88,7 +88,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is positive', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('959580000000000000', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -101,7 +101,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is negative', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000100', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -114,7 +114,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is unknown without balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000100', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -126,7 +126,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target fails if total is less than whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -140,7 +140,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('no-target succeeds if total is less than whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
@@ -154,7 +154,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target fails if total is more than whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -172,7 +172,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target succeeds if total is equal whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -191,7 +191,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance to match whole balance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -214,7 +214,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance ignored without totalBalance', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -238,7 +238,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance does nothing for no-target', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
@@ -257,7 +257,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('doesnt rebalance small value', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei('1000000000000', 'WEI'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -276,7 +276,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('dumps plain', () => {
-    const tx = new CreateEthereumTx(null, BlockchainCode.ETH);
+    const tx = new CreateEtherTx(null, BlockchainCode.ETH);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei('1000000000057', 'WEI'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -305,7 +305,7 @@ describe('CreateEthereumTx', () => {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
       maxGasPrice: '10007000000/WEI',
-      meta: { type: TxMetaType.ETHEREUM_TRANSFER },
+      meta: { type: TxMetaType.ETHER_TRANSFER },
       priorityGasPrice: '5007000000/WEI',
       target: 1,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
@@ -313,7 +313,7 @@ describe('CreateEthereumTx', () => {
       type: '0x2',
     };
 
-    const tx = CreateEthereumTx.fromPlain(dump);
+    const tx = CreateEtherTx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057', 'WEI'));
@@ -333,7 +333,7 @@ describe('CreateEthereumTx', () => {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       gas: 42011,
       maxGasPrice: '10007000000/WEI',
-      meta: { type: TxMetaType.ETHEREUM_TRANSFER },
+      meta: { type: TxMetaType.ETHER_TRANSFER },
       priorityGasPrice: '5007000000/WEI',
       target: 0,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
@@ -341,7 +341,7 @@ describe('CreateEthereumTx', () => {
       type: '0x2',
     };
 
-    const tx = CreateEthereumTx.fromPlain(dump);
+    const tx = CreateEtherTx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance : null).toEqual(new Wei('1000000000057', 'WEI'));

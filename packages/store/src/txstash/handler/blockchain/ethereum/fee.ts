@@ -16,8 +16,8 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
   return first.gt(second) ? 1 : -1;
 }
 
-export const getFee: EntryHandler<EthereumEntry, Promise<void>> =
-  ({ entry }, { dispatch, getState, extra }) =>
+export const fetchFee: EntryHandler<EthereumEntry, Promise<void>> =
+  ({ entry }, _dataProvider, { dispatch, getState, extra }) =>
   async () => {
     const state = getState();
 

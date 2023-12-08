@@ -113,7 +113,7 @@ interface DispatchProps {
   estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<(typeof FEE_KEYS)[number], GasPrices>>;
   goBack(): void;
-  signTransaction(tx: workflow.CreateEthereumTx, password?: string): Promise<void>;
+  signTransaction(tx: workflow.CreateEtherTx, password?: string): Promise<void>;
   verifyGlobalKey(password: string): Promise<boolean>;
 }
 
@@ -149,7 +149,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const [passwordError, setPasswordError] = React.useState<string>();
 
   const [transaction, setTransaction] = React.useState(
-    new workflow.CreateEthereumTx(null, wrongBlockchain.params.code).dump(),
+    new workflow.CreateEtherTx(null, wrongBlockchain.params.code).dump(),
   );
 
   const [useEip1559, setUseEip1559] = React.useState(eip1559);
@@ -187,12 +187,12 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
 
     const balance = new Wei(balanceByToken[token.symbol]);
 
-    const tx = new workflow.CreateEthereumTx({
+    const tx = new workflow.CreateEtherTx({
       amount: balance,
       blockchain: wrongBlockchain.params.code,
       from: fromAddress.value,
       gas: DEFAULT_GAS_LIMIT,
-      meta: { type: workflow.TxMetaType.ETHEREUM_RECOVERY },
+      meta: { type: workflow.TxMetaType.ETHER_RECOVERY },
       to: address,
       target: workflow.TxTarget.SEND_ALL,
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
@@ -219,7 +219,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
   const onSignTransaction = async (): Promise<void> => {
     setPasswordError(undefined);
 
-    const tx = workflow.CreateEthereumTx.fromPlain(transaction);
+    const tx = workflow.CreateEtherTx.fromPlain(transaction);
 
     if (isHardware) {
       await signTransaction(tx);
@@ -284,7 +284,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StateProps & DispatchProps> 
     [],
   );
 
-  const tx = workflow.CreateEthereumTx.fromPlain(transaction);
+  const tx = workflow.CreateEtherTx.fromPlain(transaction);
 
   const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
   const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();

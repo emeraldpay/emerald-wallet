@@ -92,6 +92,10 @@ export interface EthereumReceipt {
   transactionIndex: number;
 }
 
+export function isEthereumRawTransaction(tx: unknown): tx is EthereumRawTransaction {
+  return tx != null && typeof tx === 'object' && 'nonce' in tx && typeof tx.nonce === 'string';
+}
+
 export function isEthereumTransaction(tx: unknown): tx is EthereumTransaction {
   return (
     typeof tx === 'object' &&
