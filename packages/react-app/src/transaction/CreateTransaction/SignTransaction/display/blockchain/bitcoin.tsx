@@ -16,27 +16,33 @@ export class BitcoinDisplay extends CommonDisplay {
     this.data = data;
   }
 
-  render(): React.ReactElement {
+  private renderPreview(): React.ReactElement {
     const {
       blockchain,
       outputs: [{ amount, address }],
     } = this.data.createTx;
 
     return (
-      <>
-        <Box mb={2}>
-          <Grid container alignItems="center">
-            <Grid item>
-              <Box pr={2}>
-                <BlockchainAvatar blockchain={blockchain} />
-              </Box>
-            </Grid>
-            <Grid item>
-              <Typography variant="h5">Sending {formatAmount(amountFactory(blockchain)(amount))} to:</Typography>
-              <Address address={address} />
-            </Grid>
+      <Box mb={2}>
+        <Grid container alignItems="center">
+          <Grid item>
+            <Box pr={2}>
+              <BlockchainAvatar blockchain={blockchain} />
+            </Box>
           </Grid>
-        </Box>
+          <Grid item>
+            <Typography variant="h5">Sending {formatAmount(amountFactory(blockchain)(amount))} to:</Typography>
+            <Address address={address} />
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  }
+
+  render(): React.ReactElement {
+    return (
+      <>
+        {this.renderPreview()}
         {this.renderActions()}
       </>
     );

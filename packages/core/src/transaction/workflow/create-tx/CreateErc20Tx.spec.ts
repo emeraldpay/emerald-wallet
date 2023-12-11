@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, TokenRegistry } from '../../../blockchains';
-import { EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { EthereumBasicPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 import { CreateErc20Tx } from './CreateErc20Tx';
 
 describe('CreateErc20Tx', () => {
@@ -242,7 +242,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('reads from dumps', () => {
-    const dump: EthereumPlainTx = {
+    const dump: EthereumBasicPlainTx = {
       amount: '999580000000500002/DAI',
       asset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       blockchain: BlockchainCode.ETH,

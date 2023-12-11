@@ -1,5 +1,6 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
+import { Allowance } from '../../allowances/types';
 import { StoredTransaction } from '../../txhistory/types';
 import { Dispatcher, GetState, IExtraArgument } from '../../types';
 import { TxAction } from '../types';
@@ -7,6 +8,7 @@ import { TxAction } from '../types';
 export interface Data<T extends WalletEntry> {
   action: TxAction;
   entry: T;
+  initialAllowance?: Allowance;
   storedTx?: StoredTransaction;
 }
 

@@ -1,8 +1,8 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, workflow } from '@emeraldwallet/core';
-import { BitcoinDisplay, EthereumDisplay } from './blockchain';
+import { BitcoinDisplay, Erc20ApproveDisplay, EthereumDisplay } from './blockchain';
 
-export type BlockchainDisplay = BitcoinDisplay | EthereumDisplay;
+export type BlockchainDisplay = BitcoinDisplay | EthereumDisplay | Erc20ApproveDisplay;
 
 export interface Data<T extends workflow.AnyCreateTx> {
   createTx: T;

@@ -1,6 +1,5 @@
 import { SignedTx, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, workflow } from '@emeraldwallet/core';
-import { StoredTransaction } from '..';
 import { Dispatched } from '../types';
 import { getHandler } from './handler';
 import {
@@ -18,16 +17,12 @@ import {
   SetStageAction,
   SetTransactionAction,
   SetTransactionFeeAction,
-  TxAction,
+  TxOrigin,
 } from './types';
 
-export function prepareTransaction(
-  action: TxAction,
-  entry: WalletEntry,
-  storedTx?: StoredTransaction,
-): Dispatched<void> {
+export function prepareTransaction({ action, entry, initialAllowance, storedTx }: TxOrigin): Dispatched<void> {
   return (dispatch, getState, extra) => {
-    const handler = getHandler({ action, entry, storedTx }, { dispatch, getState, extra });
+    const handler = getHandler({ action, entry, initialAllowance, storedTx }, { dispatch, getState, extra });
 
     handler?.();
   };

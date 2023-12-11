@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ToField } from '../../../../../common/ToField';
 
 interface OwnProps {
-  createTx: workflow.AnyCreateTx;
+  createTx: workflow.AnyBitcoinCreateTx | workflow.AnyEtherCreateTx | workflow.AnyErc20CreateTx;
   setTransaction(transaction: workflow.AnyPlainTx): void;
 }
 

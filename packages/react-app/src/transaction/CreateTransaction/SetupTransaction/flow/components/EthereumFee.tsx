@@ -5,7 +5,7 @@ import * as React from 'react';
 import { EthTxSettings } from '../../../../../common/EthTxSettings';
 
 interface OwnProps {
-  createTx: workflow.AnyEthereumCreateTx | workflow.AnyErc20CreateTx;
+  createTx: workflow.AnyEthereumCreateTx;
   feeRange: workflow.EthereumFeeRange;
   initializing?: boolean;
   setTransaction(transaction: workflow.AnyPlainTx): void;

@@ -5,11 +5,11 @@ import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { SelectEntry } from '../../../../../common/SelectEntry';
 import { Actions, Amount, To } from '../components';
-import { Data, DataProvider, Handler } from '../types';
+import { CommonFlow, Data, DataProvider, Handler } from '../types';
 
-type CommonData = Data<workflow.AnyCreateTx, WalletEntry>;
+type CommonData = Data<workflow.AnyBitcoinCreateTx | workflow.CreateEtherTx | workflow.CreateErc20Tx, WalletEntry>;
 
-export abstract class TransferFlow {
+export abstract class TransferFlow implements CommonFlow {
   readonly data: CommonData;
   readonly dataProvider: DataProvider;
   readonly handler: Handler;

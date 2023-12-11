@@ -29,12 +29,12 @@ describe('CreateErc20ApproveTx', () => {
   const weenusToken = tokenRegistry.byAddress(BlockchainCode.Goerli, '0xaFF4481D10270F50f203E0763e2597776068CBc5');
 
   test('should create legacy approve tx', () => {
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       type: EthereumTransactionType.LEGACY,
     });
 
@@ -45,12 +45,12 @@ describe('CreateErc20ApproveTx', () => {
   });
 
   test('should create eip1559 approve tx', () => {
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       type: EthereumTransactionType.EIP1559,
     });
 
@@ -62,39 +62,26 @@ describe('CreateErc20ApproveTx', () => {
   });
 
   test('should set target', () => {
-    let tx = new CreateErc20ApproveTx({
-      blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      target: ApproveTarget.MANUAL,
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(1),
-      type: EthereumTransactionType.EIP1559,
-    });
-
-    expect(tx.amount.equals(wethToken.getAmount(0))).toBeTruthy();
-
     const amount = wethToken.getAmount(3);
 
-    tx = new CreateErc20ApproveTx({
+    let tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
+      meta: { type: TxMetaType.ERC20_APPROVE },
       target: ApproveTarget.MAX_AVAILABLE,
-      token: wethTokenData,
-      totalBalance: new Wei(0),
       totalTokenBalance: amount,
       type: EthereumTransactionType.EIP1559,
     });
 
     expect(tx.amount.equals(amount)).toBeTruthy();
 
-    tx = new CreateErc20ApproveTx({
+    tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
+      meta: { type: TxMetaType.ERC20_APPROVE },
       target: ApproveTarget.INFINITE,
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(0),
       type: EthereumTransactionType.EIP1559,
     });
 
@@ -104,16 +91,15 @@ describe('CreateErc20ApproveTx', () => {
   test('should change amount and target', () => {
     const amount = wethToken.getAmount(1);
 
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       totalTokenBalance: amount,
       type: EthereumTransactionType.EIP1559,
     });
-
-    expect(tx.target).toEqual(ApproveTarget.MANUAL);
 
     tx.target = ApproveTarget.MAX_AVAILABLE;
 
@@ -131,12 +117,12 @@ describe('CreateErc20ApproveTx', () => {
   test('should change token', () => {
     const amount = wethToken.getAmount(1);
 
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
       amount,
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       totalTokenBalance: amount,
       type: EthereumTransactionType.EIP1559,
     });
@@ -151,12 +137,12 @@ describe('CreateErc20ApproveTx', () => {
   });
 
   test('should validate tx', () => {
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       type: EthereumTransactionType.EIP1559,
     });
 
@@ -172,14 +158,14 @@ describe('CreateErc20ApproveTx', () => {
   });
 
   test('should build tx', () => {
-    const tx = new CreateErc20ApproveTx({
+    const tx = new CreateErc20ApproveTx(tokenRegistry, {
+      amount: wethToken.getAmount(0),
       approveBy: '0xe62c6f33a58d7f49e6b782aab931450e53d01f12',
       allowFor: '0x3f54eb67fea225d0a21263f1a7cb456e342cb1e8',
+      asset: wethToken.address,
       blockchain: BlockchainCode.Goerli,
-      meta: { type: TxMetaType.ETHEREUM_APPROVE },
-      token: wethTokenData,
-      totalBalance: new Wei(0),
-      totalTokenBalance: wethToken.getAmount(0),
+      meta: { type: TxMetaType.ERC20_APPROVE },
+      target: ApproveTarget.MANUAL,
       type: EthereumTransactionType.EIP1559,
     });
 

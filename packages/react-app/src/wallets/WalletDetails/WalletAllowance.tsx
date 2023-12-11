@@ -2,7 +2,7 @@ import { address as AddressApi } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EthereumEntry, Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, MAX_DISPLAY_ALLOWANCE, TokenAmount, formatAmountPartial } from '@emeraldwallet/core';
-import { Allowance, AllowanceType, IState, accounts, allowances, screen } from '@emeraldwallet/store';
+import { Allowance, AllowanceType, IState, TxAction, accounts, allowances, screen } from '@emeraldwallet/store';
 import { Address, Button } from '@emeraldwallet/ui';
 import { ButtonGroup, SvgIcon, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
 import {
@@ -240,8 +240,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     gotoApprove(initialAllowance) {
       dispatch(
         screen.actions.gotoScreen(
-          screen.Pages.CREATE_TX_APPROVE,
-          { initialAllowance, walletId },
+          screen.Pages.CREATE_TX,
+          { initialAllowance, walletId, action: TxAction.APPROVE },
           { tab: WalletTabs.ALLOWANCES },
           true,
         ),
@@ -254,8 +254,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         dispatch(
           screen.actions.gotoScreen(
             screen.Pages.CREATE_TX,
-            { initialAllowance, walletId, entryId: entry.id },
-            null,
+            { initialAllowance, walletId, action: TxAction.TRANSFER, entryId: entry.id },
+            { tab: WalletTabs.ALLOWANCES },
             true,
           ),
         );

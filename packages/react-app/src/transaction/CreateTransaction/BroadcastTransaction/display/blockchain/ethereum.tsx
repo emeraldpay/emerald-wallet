@@ -5,7 +5,7 @@ import { CommonDisplay } from '../common';
 import { Actions, EthereumDecoded } from '../components';
 import { Data, Handler } from '../types';
 
-type EthereumData = Data<workflow.AnyEthereumCreateTx | workflow.AnyErc20CreateTx>;
+type EthereumData = Data<workflow.AnyEthereumCreateTx>;
 
 export class EthereumDisplay extends CommonDisplay {
   readonly data: EthereumData;

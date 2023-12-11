@@ -28,7 +28,7 @@ export class EthereumTransferFlow extends TransferFlow {
         <FormLabel>Token</FormLabel>
         <SelectAsset
           asset={asset}
-          assets={assets}
+          assets={assets.filter(({ balance }) => balance.isPositive())}
           balance={getBalance(entry, asset, ownerAddress)}
           fiatBalance={getFiatBalance(asset)}
           onChangeAsset={setAsset}

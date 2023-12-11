@@ -450,12 +450,22 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (dispatch: any) => ({
     goToCancelTx(entryId, storedTx) {
       dispatch(
-        screen.actions.gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.CANCEL }, null, true),
+        screen.actions.gotoScreen(
+          screen.Pages.CREATE_TX,
+          { entryId, storedTx, action: TxAction.CANCEL },
+          { tab: WalletTabs.TRANSACTIONS },
+          true,
+        ),
       );
     },
     goToSpeedUpTx(entryId, storedTx) {
       dispatch(
-        screen.actions.gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.SPEEDUP }, null, true),
+        screen.actions.gotoScreen(
+          screen.Pages.CREATE_TX,
+          { entryId, storedTx, action: TxAction.SPEEDUP },
+          { tab: WalletTabs.TRANSACTIONS },
+          true,
+        ),
       );
     },
     goToTransaction(entryId, tx) {

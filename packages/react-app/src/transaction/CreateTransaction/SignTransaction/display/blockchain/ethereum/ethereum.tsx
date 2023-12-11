@@ -2,11 +2,11 @@ import { formatAmount, workflow } from '@emeraldwallet/core';
 import { ArrowRight } from '@emeraldwallet/ui';
 import { Box, Grid, Typography } from '@material-ui/core';
 import * as React from 'react';
-import { CommonDisplay } from '../common';
-import { AddressPreview } from '../components';
-import { Data, DataProvider, Handler } from '../types';
+import { CommonDisplay } from '../../common';
+import { AddressPreview } from '../../components';
+import { Data, DataProvider, Handler } from '../../types';
 
-type EthereumData = Data<workflow.AnyEthereumCreateTx | workflow.AnyErc20CreateTx>;
+type EthereumData = Data<workflow.AnyEtherCreateTx | workflow.AnyErc20CreateTx>;
 
 export class EthereumDisplay extends CommonDisplay {
   readonly data: EthereumData;
@@ -17,7 +17,7 @@ export class EthereumDisplay extends CommonDisplay {
     this.data = data;
   }
 
-  render(): React.ReactElement {
+  private renderPreview(): React.ReactElement {
     const { createTx } = this.data;
     const { lookupAddress } = this.dataProvider;
 
@@ -42,6 +42,14 @@ export class EthereumDisplay extends CommonDisplay {
             </Typography>
           </Grid>
         </Box>
+      </>
+    );
+  }
+
+  render(): React.ReactElement {
+    return (
+      <>
+        {this.renderPreview()}
         {this.renderActions()}
       </>
     );
