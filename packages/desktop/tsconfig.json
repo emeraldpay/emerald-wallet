@@ -5,15 +5,8 @@
     "outDir": "app/",
     "rootDir": "."
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "../electron-app"

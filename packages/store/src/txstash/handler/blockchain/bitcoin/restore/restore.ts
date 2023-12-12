@@ -11,13 +11,13 @@ import {
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
-import { IState, StoredTransaction } from '../../../..';
-import { findEntry } from '../../../../accounts/selectors';
-import { showError } from '../../../../screen/actions';
-import { setPreparing, setTransaction, setTransactionFee } from '../../../actions';
-import { getFee } from '../../../selectors';
-import { EntryHandler } from '../../types';
-import { fetchFee } from './fee';
+import { IState, StoredTransaction } from '../../../../..';
+import { findEntry } from '../../../../../accounts/selectors';
+import { showError } from '../../../../../screen/actions';
+import { setPreparing, setTransaction, setTransactionFee } from '../../../../actions';
+import { getFee, getTransaction } from '../../../../selectors';
+import { EntryHandler } from '../../../types';
+import { fetchFee } from '../fee';
 
 function extractEntries(state: IState, { changes }: StoredTransaction): BitcoinEntry[] {
   const entryById = changes
@@ -77,8 +77,8 @@ function extractUtxo(
     );
 }
 
-const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  ({ entry, storedTx }, { getTxMetaType }, { dispatch, getState, extra }) =>
+const restoreTx: EntryHandler<BitcoinEntry, Promise<void>> =
+  ({ entry, storedTx }, { dispatch, getState, extra }) =>
   async () => {
     if (storedTx != null) {
       const blockchain = blockchainIdToCode(entry.blockchain);
@@ -213,14 +213,7 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
           return;
         }
 
-        const [
-          {
-            scriptPubKey: { address },
-            value: amount,
-          },
-        ] = outputs;
-
-        const restoredTx = workflow.bitcoinTxFactory(getTxMetaType(rawTx))(
+        const restoredTx = new workflow.CreateBitcoinTx(
           {
             changeAddress,
             blockchain: blockchainIdToCode(entry.blockchain),
@@ -239,6 +232,13 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
         const inputAmount = txUtxo.reduce((carry, { value }) => carry.plus(decoder(value)), zeroAmount);
         const outputAmount = rawTx.vout.reduce((carry, { value }) => carry.plus(fromBitcoin(value)), zeroAmount);
 
+        const [
+          {
+            scriptPubKey: { address },
+            value: amount,
+          },
+        ] = outputs;
+
         restoredTx.amount = fromBitcoin(amount);
         restoredTx.to = address;
 
@@ -251,48 +251,41 @@ const restoreTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
   };
 
 const recalculateFee: EntryHandler<BitcoinEntry> =
-  ({ entry }, _dataProvider, { dispatch, getState }) =>
+  ({ entry }, { dispatch, getState }) =>
   () => {
     const state = getState();
 
-    const { fee, transaction } = state.txStash;
+    const blockchain = blockchainIdToCode(entry.blockchain);
 
-    if (fee != null && transaction != null && workflow.isBitcoinPlainTx(transaction)) {
-      const blockchain = blockchainIdToCode(entry.blockchain);
+    const fee = getFee(state, blockchain);
+    const tx = getTransaction(state);
 
-      const { range } = getFee(state, blockchain);
+    if (workflow.isBitcoinFeeRange(fee.range) && tx != null && workflow.isBitcoinPlainTx(tx)) {
+      const createTx = workflow.fromBitcoinPlainTx(tx, {
+        blockchain,
+        changeAddress: tx.changeAddress,
+        entryId: entry.id,
+      });
 
-      if (range != null && workflow.isBitcoinFeeRange(range)) {
-        const createTx = workflow.fromBitcoinPlainTx(transaction, {
-          blockchain,
-          changeAddress: transaction.changeAddress,
-          entryId: entry.id,
-        });
+      const minFee = createTx.vkbPrice + createTx.vkbPrice * 0.1;
+      const min = fee.range.min > minFee ? fee.range.min : minFee;
 
-        const minFee = createTx.vkbPrice + createTx.vkbPrice * 0.1;
-        const min = range.min > minFee ? range.min : minFee;
+      createTx.feePrice = min;
 
-        createTx.feePrice = min;
+      const maxFee = createTx.vkbPrice + createTx.vkbPrice * 0.5;
+      const max = fee.range.max > maxFee ? fee.range.max : maxFee;
 
-        const maxFee = createTx.vkbPrice + createTx.vkbPrice * 0.5;
-        const max = range.max > maxFee ? range.max : maxFee;
+      const feeRange: workflow.BitcoinFeeRange = { min, max, std: min };
 
-        const feeRange: workflow.BitcoinFeeRange = { min, max, std: min };
-
-        dispatch(setTransaction(createTx.dump()));
-        dispatch(setTransactionFee(feeRange));
-      }
+      dispatch(setTransaction(createTx.dump()));
+      dispatch(setTransactionFee(feeRange));
     }
   };
 
-export const restoreBitcoinTransaction: EntryHandler<BitcoinEntry, Promise<void>> =
-  (data, dataProvider, storeProvider) => async () => {
-    await Promise.all([
-      fetchFee(data, dataProvider, storeProvider)(),
-      restoreTransaction(data, dataProvider, storeProvider)(),
-    ]);
+export const restoreBitcoinTx: EntryHandler<BitcoinEntry, Promise<void>> = (data, storeProvider) => async () => {
+  await Promise.all([fetchFee(data, storeProvider)(), restoreTx(data, storeProvider)()]);
 
-    recalculateFee(data, dataProvider, storeProvider)();
+  recalculateFee(data, storeProvider)();
 
-    storeProvider.dispatch(setPreparing(false));
-  };
+  storeProvider.dispatch(setPreparing(false));
+};

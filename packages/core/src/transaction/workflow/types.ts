@@ -44,6 +44,7 @@ export interface BitcoinPlainTx extends CommonTx {
   amount: string;
   blockchain: BlockchainCode;
   changeAddress?: string;
+  originalFees: string;
   target: number;
   to?: string;
   vkbPrice: number;
