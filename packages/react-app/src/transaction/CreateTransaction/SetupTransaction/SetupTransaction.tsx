@@ -219,7 +219,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const transactionFee = txStash.selectors.getTransactionFee(state, blockchain);
 
     return {
-      asset,
       assets,
       createTx,
       entries,
@@ -229,6 +228,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       ownerAddress,
       tokenRegistry,
       transactionFee,
+      asset: createTx.getAsset(),
       updatedStoredTx:
         storedTx == null ? undefined : txhistory.selectors.transactionById(state, storedTx.txId) ?? storedTx,
       getBalance,

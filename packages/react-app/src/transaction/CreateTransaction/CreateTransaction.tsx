@@ -47,6 +47,10 @@ const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ st
       title = 'Revoke Transaction';
 
       break;
+    case TxAction.CONVERT:
+      title = 'Create Convert Transaction';
+
+      break;
     case TxAction.SPEEDUP:
       title = 'Speed Up Transaction';
 

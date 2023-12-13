@@ -4,6 +4,7 @@ import { TxAction } from '../types';
 import {
   prepareBitcoinTx,
   prepareErc20ApproveTx,
+  prepareErc20ConvertTx,
   prepareEthereumTx,
   restoreBitcoinCancelTx,
   restoreBitcoinSpeedUpTx,
@@ -43,6 +44,8 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
             throw new Error('Incorrect raw transaction provided');
           },
         });
+      case TxAction.CONVERT:
+        return prepareErc20ConvertTx({ ...data, entry }, storeProvider);
       case TxAction.SPEEDUP:
         return restoreEthereumTx({ ...data, entry }, storeProvider, {
           getTxMetaType(rawTx) {

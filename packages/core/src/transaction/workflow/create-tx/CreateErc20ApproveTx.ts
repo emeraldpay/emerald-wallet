@@ -37,7 +37,7 @@ export interface Erc20ApproveTxDetails extends CommonTx {
   type: EthereumTransactionType;
 }
 
-function fromPlainTx(tokenRegistry: TokenRegistry, plain: Erc20ApprovePlainTx): Erc20ApproveTxDetails {
+function fromPlainTx(plain: Erc20ApprovePlainTx, tokenRegistry: TokenRegistry): Erc20ApproveTxDetails {
   const token = tokenRegistry.byAddress(plain.blockchain, plain.asset);
 
   const decoder = amountDecoder(plain.blockchain) as CreateAmount<WeiAny>;
@@ -105,8 +105,8 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
   private readonly tokenContract = new Contract(tokenAbi);
 
   constructor(
-    tokenRegistry: TokenRegistry,
     source: Erc20ApproveTxDetails | string,
+    tokenRegistry: TokenRegistry,
     blockchain?: BlockchainCode,
     type = EthereumTransactionType.EIP1559,
   ) {
@@ -119,8 +119,8 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
 
       details = {
         type,
-        amount: this._token.getAmount(0),
-        asset: this._token.address,
+        amount: this.token.getAmount(0),
+        asset: this.token.address,
         blockchain: blockchainCode,
         meta: this.meta,
         target: ApproveTarget.MANUAL,
@@ -131,11 +131,11 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
       details = source;
     }
 
-    const zeroTokenAmount = this._token.getAmount(0);
+    const zeroTokenAmount = this.token.getAmount(0);
 
     switch (details.target) {
       case ApproveTarget.INFINITE:
-        this._amount = this._token.getAmount(INFINITE_ALLOWANCE);
+        this._amount = this.token.getAmount(INFINITE_ALLOWANCE);
 
         break;
       case ApproveTarget.MAX_AVAILABLE:
@@ -154,17 +154,16 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
     this.allowFor = details.allowFor;
     this.blockchain = details.blockchain;
     this.gas = details.gas ?? DEFAULT_GAS_LIMIT_ERC20;
-    this.totalBalance = details.totalBalance ?? this.zeroAmount;
-    this.totalTokenBalance = details.totalTokenBalance ?? zeroTokenAmount;
-    this.type = details.type;
-
     this.gasPrice = details.gasPrice ?? this.zeroAmount;
     this.maxGasPrice = details.maxGasPrice ?? this.zeroAmount;
     this.priorityGasPrice = details.priorityGasPrice ?? this.zeroAmount;
+    this.totalBalance = details.totalBalance ?? this.zeroAmount;
+    this.totalTokenBalance = details.totalTokenBalance ?? zeroTokenAmount;
+    this.type = details.type;
   }
 
-  static fromPlain(tokenRegistry: TokenRegistry, plain: Erc20ApprovePlainTx): CreateErc20ApproveTx {
-    return new CreateErc20ApproveTx(tokenRegistry, fromPlainTx(tokenRegistry, plain));
+  static fromPlain(plain: Erc20ApprovePlainTx, tokenRegistry: TokenRegistry): CreateErc20ApproveTx {
+    return new CreateErc20ApproveTx(fromPlainTx(plain, tokenRegistry), tokenRegistry);
   }
 
   get amount(): TokenAmount {
@@ -175,14 +174,14 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
     if (TokenAmount.is(value)) {
       this._amount = value;
     } else {
-      this._amount = this._token.getAmount(value);
+      this._amount = this.token.getAmount(value);
     }
 
     this._target = ApproveTarget.MANUAL;
   }
 
   get asset(): string {
-    return this._token.address;
+    return this.token.address;
   }
 
   get target(): ApproveTarget {
@@ -198,7 +197,7 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
 
         break;
       case ApproveTarget.INFINITE:
-        this._amount = this._token.getAmount(INFINITE_ALLOWANCE);
+        this._amount = this.token.getAmount(INFINITE_ALLOWANCE);
 
         break;
     }
@@ -212,7 +211,7 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
    * @deprecated Use getter
    */
   getAsset(): string {
-    return this._token.address;
+    return this.token.address;
   }
 
   /**
@@ -262,6 +261,7 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
   setToken(token: Token, totalBalance: WeiAny, totalTokenBalance: TokenAmount, iep1559 = false): void {
     this._amount = new TokenAmount(this.amount, token.getUnits(), token);
     this._token = token;
+
     this.totalBalance = totalBalance;
     this.totalTokenBalance = totalTokenBalance;
     this.type = iep1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;

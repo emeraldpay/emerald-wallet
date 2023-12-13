@@ -25,7 +25,7 @@ export interface Erc20TxDetails extends CommonTx {
   type: EthereumTransactionType;
 }
 
-export function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumBasicPlainTx): Erc20TxDetails {
+export function fromPlainDetails(plain: EthereumBasicPlainTx, tokenRegistry: TokenRegistry): Erc20TxDetails {
   const units = tokenRegistry.byAddress(plain.blockchain, plain.asset).getUnits();
 
   const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
@@ -97,8 +97,8 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
   private tokenContract = new Contract(tokenAbi);
 
   constructor(
-    tokenRegistry: TokenRegistry,
     source: Erc20TxDetails | string,
+    tokenRegistry: TokenRegistry,
     blockchain?: BlockchainCode | null,
     type = EthereumTransactionType.EIP1559,
   ) {
@@ -123,31 +123,28 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
       details = source;
     }
 
+    this.zeroAmount = amountFactory(details.blockchain)(0) as WeiAny;
+    this.zeroTokenAmount = tokenRegistry.byAddress(details.blockchain, details.asset).getAmount(0);
+
     this.amount = details.amount;
     this.asset = details.asset;
     this.blockchain = details.blockchain;
     this.from = details.from;
     this.gas = details.gas ?? DEFAULT_GAS_LIMIT_ERC20;
+    this.gasPrice = details.gasPrice ?? this.zeroAmount;
+    this.maxGasPrice = details.maxGasPrice ?? this.zeroAmount;
     this.nonce = details.nonce;
+    this.priorityGasPrice = details.priorityGasPrice ?? this.zeroAmount;
     this.target = details.target;
     this.to = details.to;
     this.totalBalance = details.totalBalance;
     this.totalTokenBalance = details.totalTokenBalance;
     this.transferFrom = details.transferFrom;
     this.type = details.type;
-
-    const zeroAmount = amountFactory(details.blockchain)(0) as WeiAny;
-
-    this.gasPrice = details.gasPrice ?? zeroAmount;
-    this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
-    this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
-
-    this.zeroAmount = zeroAmount;
-    this.zeroTokenAmount = tokenRegistry.byAddress(this.blockchain, this.asset).getAmount(0);
   }
 
-  public static fromPlain(tokenRegistry: TokenRegistry, details: EthereumBasicPlainTx): CreateErc20Tx {
-    return new CreateErc20Tx(tokenRegistry, fromPlainDetails(tokenRegistry, details));
+  public static fromPlain(details: EthereumBasicPlainTx, tokenRegistry: TokenRegistry): CreateErc20Tx {
+    return new CreateErc20Tx(fromPlainDetails(details, tokenRegistry), tokenRegistry);
   }
 
   public getAmount(): BigAmount {

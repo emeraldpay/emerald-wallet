@@ -9,6 +9,7 @@ import {
   BitcoinSpeedUpFlow,
   BitcoinTransferFlow,
   Erc20ApproveFlow,
+  Erc20ConvertFlow,
   EthereumCancelFlow,
   EthereumSpeedUpFlow,
   EthereumTransferFlow,
@@ -19,6 +20,7 @@ export type BlockchainFlow =
   | BitcoinSpeedUpFlow
   | BitcoinTransferFlow
   | Erc20ApproveFlow
+  | Erc20ConvertFlow
   | EthereumCancelFlow
   | EthereumSpeedUpFlow
   | EthereumTransferFlow;

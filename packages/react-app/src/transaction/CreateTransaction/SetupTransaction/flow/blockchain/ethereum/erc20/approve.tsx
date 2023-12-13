@@ -3,11 +3,11 @@ import { Blockchains, blockchainIdToCode, workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
-import { SelectAsset } from '../../../../../../common/SelectAsset';
-import { SelectEntry } from '../../../../../../common/SelectEntry';
-import { ToField } from '../../../../../../common/ToField';
-import { Actions, ApproveAmount, EthereumFee } from '../../components';
-import { CommonFlow, Data, DataProvider, Handler } from '../../types';
+import { SelectAsset } from '../../../../../../../common/SelectAsset';
+import { SelectEntry } from '../../../../../../../common/SelectEntry';
+import { ToField } from '../../../../../../../common/ToField';
+import { Actions, ApproveAmount, EthereumFee } from '../../../components';
+import { CommonFlow, Data, DataProvider, Handler } from '../../../types';
 
 type EthereumData = Data<workflow.CreateErc20ApproveTx, EthereumEntry>;
 
@@ -23,19 +23,26 @@ export class Erc20ApproveFlow implements CommonFlow {
   }
 
   private renderFrom(): React.ReactNode {
-    const { entry, entries, tokenRegistry } = this.data;
+    const { entries, tokenRegistry } = this.data;
     const { getBalance } = this.dataProvider;
     const { setEntry } = this.handler;
 
-    const approvingEntries = entries.filter((item) => {
-      const blockchain = blockchainIdToCode(item.blockchain);
+    const approvingEntries = entries
+      .filter((item): item is EthereumEntry => isEthereumEntry(item))
+      .filter((item) => {
+        const blockchain = blockchainIdToCode(item.blockchain);
 
-      return (
-        isEthereumEntry(item) &&
-        tokenRegistry.hasAnyToken(blockchain) &&
-        getBalance(item, Blockchains[blockchain].params.coinTicker).isPositive()
-      );
-    });
+        return (
+          tokenRegistry.hasAnyToken(blockchain) &&
+          getBalance(item, Blockchains[blockchain].params.coinTicker).isPositive()
+        );
+      });
+
+    let { entry } = this.data;
+
+    if (!approvingEntries.some(({ id }) => id === entry.id)) {
+      [entry] = approvingEntries;
+    }
 
     return (
       <FormRow>
@@ -109,7 +116,7 @@ export class Erc20ApproveFlow implements CommonFlow {
     return <EthereumFee createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
   }
 
-  private renderActions(): React.ReactNode {
+  private renderActions(): React.ReactElement {
     const { createTx, entry, fee } = this.data;
     const { onCancel, setEntry, setStage, setTransaction } = this.handler;
 

@@ -14,7 +14,6 @@ import SignMessage from '../../../message/SignMessage';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
 import Settings from '../../../settings/Settings';
 import { BroadcastEthTx } from '../../../transaction/BroadcastEthTx';
-import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
 import { CreateTransaction } from '../../../transaction/CreateTransaction';
 import TxDetails from '../../../transactions/TxDetails';
@@ -62,8 +61,6 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <BroadcastEthTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
       return <CreateTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_CONVERT:
-      return <CreateConvertTransaction {...screenItem} />;
     case screen.Pages.CREATE_TX_RECOVER:
       return <CreateRecoverTransaction entry={screenItem} />;
     case screen.Pages.CREATE_WALLET:

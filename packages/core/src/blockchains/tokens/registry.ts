@@ -119,14 +119,14 @@ export class Token implements TokenData {
     return isWrappedToken(this);
   }
 
+  getAmount(amount: BigNumber | string | number): TokenAmount {
+    return new TokenAmount(amount, this.getUnits(), this);
+  }
+
   getUnits(): Units {
     const { decimals, name, symbol } = this;
 
     return new Units([new Unit(decimals, name, symbol)]);
-  }
-
-  getAmount(amount: BigNumber | string | number): TokenAmount {
-    return new TokenAmount(amount, this.getUnits(), this);
   }
 
   toPlain(): TokenData {
@@ -210,20 +210,8 @@ export class TokenRegistry {
     return (instances?.size ?? 0) > 0;
   }
 
-  getStablecoins(blockchain: BlockchainCode): Token[] {
-    const instances = this.instances.get(blockchain);
-
-    if (instances == null) {
-      return [];
-    }
-
-    return [...instances.values()].reduce<Token[]>((carry, token) => {
-      if (token.stablecoin) {
-        return [...carry, token];
-      }
-
-      return carry;
-    }, []);
+  hasWrappedToken(blockchain: BlockchainCode): boolean {
+    return WRAPPED_TOKENS[blockchain] != null;
   }
 
   getPinned(blockchain: BlockchainCode): Token[] {
@@ -240,5 +228,43 @@ export class TokenRegistry {
 
       return carry;
     }, []);
+  }
+
+  getStablecoins(blockchain: BlockchainCode): Token[] {
+    const instances = this.instances.get(blockchain);
+
+    if (instances == null) {
+      return [];
+    }
+
+    return [...instances.values()].reduce<Token[]>((carry, token) => {
+      if (token.stablecoin) {
+        return [...carry, token];
+      }
+
+      return carry;
+    }, []);
+  }
+
+  getWrapped(blockchain: BlockchainCode): Token {
+    const address = WRAPPED_TOKENS[blockchain];
+
+    if (address == null) {
+      throw new Error(`Wrapped token not found for ${blockchain} blockchain`);
+    }
+
+    const instances = this.instances.get(blockchain);
+
+    if (instances == null) {
+      throw new Error(`Can't find wrapped token by blockchain ${blockchain}`);
+    }
+
+    const instance = instances.get(address.toLowerCase());
+
+    if (instance == null) {
+      throw new Error(`Can't find wrapped token by address ${address} in ${blockchain} blockchain`);
+    }
+
+    return instance;
   }
 }

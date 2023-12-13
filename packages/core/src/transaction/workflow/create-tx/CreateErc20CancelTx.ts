@@ -6,8 +6,8 @@ import { CreateErc20Tx, fromPlainDetails } from './CreateErc20Tx';
 export class CreateErc20CancelTx extends CreateErc20Tx {
   meta = { type: TxMetaType.ERC20_CANCEL };
 
-  static fromPlain(tokenRegistry: TokenRegistry, details: EthereumBasicPlainTx): CreateErc20CancelTx {
-    return new CreateErc20CancelTx(tokenRegistry, fromPlainDetails(tokenRegistry, details));
+  static fromPlain(details: EthereumBasicPlainTx, tokenRegistry: TokenRegistry): CreateErc20CancelTx {
+    return new CreateErc20CancelTx(fromPlainDetails(details, tokenRegistry), tokenRegistry);
   }
 
   build(): EthereumTransaction {
