@@ -12,6 +12,7 @@ import {
   workflow,
 } from '@emeraldwallet/core';
 import { EthereumFeeRange } from '@emeraldwallet/core/src/transaction/workflow';
+import { getTokens } from '../../../../application/selectors';
 import { setPreparing, setTransaction, setTransactionFee } from '../../../actions';
 import { getFee } from '../../../selectors';
 import { EntryHandler } from '../../types';
@@ -69,7 +70,7 @@ const restoreTx: EthereumHandler<Promise<void>> =
           }
         }
 
-        const restoredTx: workflow.EthereumPlainTx = {
+        const restoredTx: workflow.EthereumBasicPlainTx = {
           amount,
           asset,
           blockchain,
@@ -104,7 +105,7 @@ const recalculateFee: EthereumHandler =
       const { range } = getFee(state, blockchain);
 
       if (range != null && workflow.isEthereumFeeRange(range)) {
-        const createTx = workflow.fromEthereumPlainTx(transaction, new TokenRegistry(state.application.tokens));
+        const createTx = workflow.fromEthereumPlainTx(transaction, new TokenRegistry(getTokens(state)));
 
         const zeroAmount = amountFactory(blockchain)(0) as WeiAny;
 

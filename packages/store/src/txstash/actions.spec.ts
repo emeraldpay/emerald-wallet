@@ -506,7 +506,7 @@ describe('tx stash action', () => {
   };
 
   it('should prepare Bitcoin initial transfer tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.TRANSFER, btcEntry) as unknown as Action);
+    store.dispatch(prepareTransaction({ action: TxAction.TRANSFER, entry: btcEntry }) as unknown as Action);
 
     await whenFeeLoaded(BlockchainCode.BTC);
     await whenPrepared();
@@ -572,7 +572,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare Bitcoin cancel tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.CANCEL, btcEntry, bitcoinStoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.CANCEL, entry: btcEntry, storedTx: bitcoinStoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.BTC);
     await whenPrepared();
@@ -631,7 +633,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare Bitcoin speed up tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.SPEEDUP, btcEntry, bitcoinStoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.SPEEDUP, entry: btcEntry, storedTx: bitcoinStoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.BTC);
     await whenPrepared();
@@ -694,7 +698,7 @@ describe('tx stash action', () => {
   });
 
   it('should prepare Ethereum initial transfer tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.TRANSFER, ethEntry) as unknown as Action);
+    store.dispatch(prepareTransaction({ action: TxAction.TRANSFER, entry: ethEntry }) as unknown as Action);
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();
@@ -747,7 +751,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare Ethereum cancel tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.CANCEL, ethEntry, etherStoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.CANCEL, entry: ethEntry, storedTx: etherStoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();
@@ -798,7 +804,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare Ethereum speed up tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.SPEEDUP, ethEntry, etherStoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.SPEEDUP, entry: ethEntry, storedTx: etherStoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();
@@ -849,7 +857,7 @@ describe('tx stash action', () => {
   });
 
   it('should prepare ERC20 initial transfer tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.TRANSFER, ethEntry) as unknown as Action);
+    store.dispatch(prepareTransaction({ action: TxAction.TRANSFER, entry: ethEntry }) as unknown as Action);
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();
@@ -905,7 +913,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare ERC20 cancel tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.CANCEL, ethEntry, erc20StoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.CANCEL, entry: ethEntry, storedTx: erc20StoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();
@@ -956,7 +966,9 @@ describe('tx stash action', () => {
   });
 
   it('should prepare ERC20 speed up tx', async () => {
-    store.dispatch(prepareTransaction(TxAction.SPEEDUP, ethEntry, erc20StoredTx) as unknown as Action);
+    store.dispatch(
+      prepareTransaction({ action: TxAction.SPEEDUP, entry: ethEntry, storedTx: erc20StoredTx }) as unknown as Action,
+    );
 
     await whenFeeLoaded(BlockchainCode.ETH);
     await whenPrepared();

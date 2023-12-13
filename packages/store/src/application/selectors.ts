@@ -1,4 +1,4 @@
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode, TokenData, blockchainCodeToId } from '@emeraldwallet/core';
 import { IState } from '../index';
 import { ApplicationMessage, DefaultFee, moduleName } from './types';
 
@@ -26,6 +26,10 @@ export function getLedgerMinVersion<T = string | undefined>(state: IState, block
 
 export function getMessage(state: IState): ApplicationMessage {
   return state[moduleName].message;
+}
+
+export function getTokens(state: IState): TokenData[] {
+  return state[moduleName].tokens;
 }
 
 export function isConfigured(state: IState): boolean {

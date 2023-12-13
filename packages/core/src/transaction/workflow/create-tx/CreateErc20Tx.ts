@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { BlockchainCode, Token, TokenRegistry, amountDecoder, amountFactory, tokenAbi } from '../../../blockchains';
 import { Contract } from '../../../Contract';
 import { DEFAULT_GAS_LIMIT_ERC20, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
-import { CommonTx, EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { CommonTx, EthereumBasicPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 import { EthereumTx } from './types';
 
 export interface Erc20TxDetails extends CommonTx {
@@ -12,7 +12,7 @@ export interface Erc20TxDetails extends CommonTx {
   asset: string;
   blockchain: BlockchainCode;
   from?: string;
-  gas: number;
+  gas?: number;
   gasPrice?: WeiAny;
   maxGasPrice?: WeiAny;
   nonce?: number;
@@ -25,15 +25,7 @@ export interface Erc20TxDetails extends CommonTx {
   type: EthereumTransactionType;
 }
 
-const TxDefaults: Omit<Erc20TxDetails, 'amount' | 'asset' | 'blockchain' | 'type'> = {
-  from: undefined,
-  gas: DEFAULT_GAS_LIMIT_ERC20,
-  meta: { type: TxMetaType.ETHER_TRANSFER },
-  target: TxTarget.MANUAL,
-  to: undefined,
-};
-
-export function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumPlainTx): Erc20TxDetails {
+export function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumBasicPlainTx): Erc20TxDetails {
   const units = tokenRegistry.byAddress(plain.blockchain, plain.asset).getUnits();
 
   const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
@@ -58,7 +50,7 @@ export function fromPlainDetails(tokenRegistry: TokenRegistry, plain: EthereumPl
   };
 }
 
-function toPlainDetails(tx: Erc20TxDetails): EthereumPlainTx {
+function toPlainDetails(tx: Erc20TxDetails): EthereumBasicPlainTx {
   return {
     amount: tx.amount.encode(),
     asset: tx.asset,
@@ -99,7 +91,6 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
   public type: EthereumTransactionType;
 
   private readonly token: Token;
-  private readonly tokenRegistry: TokenRegistry;
   private readonly zeroAmount: WeiAny;
   private readonly zeroTokenAmount: BigAmount;
 
@@ -119,11 +110,12 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
       this.token = tokenRegistry.byAddress(blockchainCode, source);
 
       details = {
-        ...TxDefaults,
         type,
         amount: this.token.getAmount(0),
         asset: source,
         blockchain: blockchainCode,
+        meta: this.meta,
+        target: TxTarget.MANUAL,
       };
     } else {
       this.token = tokenRegistry.byAddress(source.blockchain, source.asset);
@@ -135,7 +127,7 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
     this.asset = details.asset;
     this.blockchain = details.blockchain;
     this.from = details.from;
-    this.gas = details.gas;
+    this.gas = details.gas ?? DEFAULT_GAS_LIMIT_ERC20;
     this.nonce = details.nonce;
     this.target = details.target;
     this.to = details.to;
@@ -150,13 +142,11 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
     this.maxGasPrice = details.maxGasPrice ?? zeroAmount;
     this.priorityGasPrice = details.priorityGasPrice ?? zeroAmount;
 
-    this.tokenRegistry = tokenRegistry;
-
     this.zeroAmount = zeroAmount;
     this.zeroTokenAmount = tokenRegistry.byAddress(this.blockchain, this.asset).getAmount(0);
   }
 
-  public static fromPlain(tokenRegistry: TokenRegistry, details: EthereumPlainTx): CreateErc20Tx {
+  public static fromPlain(tokenRegistry: TokenRegistry, details: EthereumBasicPlainTx): CreateErc20Tx {
     return new CreateErc20Tx(tokenRegistry, fromPlainDetails(tokenRegistry, details));
   }
 
@@ -244,7 +234,7 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
     };
   }
 
-  public dump(): EthereumPlainTx {
+  public dump(): EthereumBasicPlainTx {
     return toPlainDetails(this);
   }
 

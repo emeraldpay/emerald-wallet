@@ -39,6 +39,10 @@ const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ st
   let title: string;
 
   switch (props.action) {
+    case TxAction.APPROVE:
+      title = `${props.initialAllowance == null ? 'Create' : 'Edit'} Allowance`;
+
+      break;
     case TxAction.CANCEL:
       title = 'Revoke Transaction';
 

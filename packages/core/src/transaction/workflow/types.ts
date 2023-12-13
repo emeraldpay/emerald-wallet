@@ -55,28 +55,53 @@ export interface EthereumPlainTx extends CommonTx {
   amount: string;
   asset: string;
   blockchain: BlockchainCode;
-  from?: string;
-  gas: number;
+  gas?: number;
   gasPrice?: string;
   maxGasPrice?: string;
   nonce?: number;
   priorityGasPrice?: string;
   target: number;
-  to?: string;
   totalBalance?: string;
   totalTokenBalance?: string;
-  transferFrom?: string;
   type: string;
+}
+
+export interface EthereumBasicPlainTx extends EthereumPlainTx {
+  from?: string;
+  to?: string;
+  transferFrom?: string;
+}
+
+export interface Erc20ApprovePlainTx extends EthereumPlainTx {
+  allowFor?: string;
+  approveBy?: string;
 }
 
 export type AnyPlainTx = BitcoinPlainTx | EthereumPlainTx;
 
-export function isBitcoinPlainTx(transaction: BitcoinPlainTx | EthereumPlainTx): transaction is BitcoinPlainTx {
+const ethereumBasicTxMetaTypes: Readonly<TxMetaType[]> = [
+  TxMetaType.ETHER_CANCEL,
+  TxMetaType.ETHER_SPEEDUP,
+  TxMetaType.ETHER_TRANSFER,
+  TxMetaType.ERC20_CANCEL,
+  TxMetaType.ERC20_SPEEDUP,
+  TxMetaType.ERC20_TRANSFER,
+];
+
+export function isBitcoinPlainTx(transaction: AnyPlainTx): transaction is BitcoinPlainTx {
   return isBitcoin(transaction.blockchain);
 }
 
-export function isEthereumPlainTx(transaction: BitcoinPlainTx | EthereumPlainTx): transaction is EthereumPlainTx {
+export function isEthereumPlainTx(transaction: AnyPlainTx): transaction is EthereumPlainTx {
   return isEthereum(transaction.blockchain);
+}
+
+export function isEthereumBasicPlainTx(transaction: AnyPlainTx): transaction is EthereumBasicPlainTx {
+  return ethereumBasicTxMetaTypes.includes(transaction.meta.type);
+}
+
+export function isErc20ApprovePlainTx(transaction: AnyPlainTx): transaction is Erc20ApprovePlainTx {
+  return transaction.meta.type === TxMetaType.ERC20_APPROVE;
 }
 
 export interface BitcoinFeeRange {

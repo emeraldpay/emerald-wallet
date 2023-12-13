@@ -1,5 +1,5 @@
 import { workflow } from '@emeraldwallet/core';
-import { BitcoinDisplay, EthereumDisplay } from './blockchain';
+import { BitcoinDisplay, Erc20ApproveDisplay, EthereumDisplay } from './blockchain';
 import { BlockchainDisplay, Data, DataProvider, Handler } from './types';
 
 export class Display {
@@ -11,7 +11,11 @@ export class Display {
     if (workflow.isAnyBitcoinCreateTx(createTx)) {
       this._display = new BitcoinDisplay({ ...data, createTx }, dataProvider, handler);
     } else {
-      this._display = new EthereumDisplay({ ...data, createTx }, dataProvider, handler);
+      if (workflow.isErc20ApproveCreateTx(createTx)) {
+        this._display = new Erc20ApproveDisplay({ ...data, createTx }, dataProvider, handler);
+      } else {
+        this._display = new EthereumDisplay({ ...data, createTx }, dataProvider, handler);
+      }
     }
   }
 

@@ -2,14 +2,14 @@ import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode, amountDecoder, amountFactory } from '../../../blockchains';
 import { DEFAULT_GAS_LIMIT, EthereumTransaction, EthereumTransactionType } from '../../ethereum';
-import { CommonTx, EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { CommonTx, EthereumBasicPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 import { EthereumTx } from './types';
 
 export interface TxDetails extends CommonTx {
   amount: WeiAny;
   blockchain: BlockchainCode;
   from?: string;
-  gas: number;
+  gas?: number;
   gasPrice?: WeiAny;
   maxGasPrice?: WeiAny;
   nonce?: number;
@@ -20,13 +20,7 @@ export interface TxDetails extends CommonTx {
   type: EthereumTransactionType;
 }
 
-const TxDefaults: Omit<TxDetails, 'amount' | 'blockchain' | 'type'> = {
-  gas: DEFAULT_GAS_LIMIT,
-  meta: { type: TxMetaType.ETHER_TRANSFER },
-  target: TxTarget.MANUAL,
-};
-
-export function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
+export function fromPlainDetails(plain: EthereumBasicPlainTx): TxDetails {
   const decoder: (value: string) => WeiAny = amountDecoder(plain.blockchain);
 
   return {
@@ -46,7 +40,7 @@ export function fromPlainDetails(plain: EthereumPlainTx): TxDetails {
   };
 }
 
-function toPlainDetails(tx: TxDetails): EthereumPlainTx {
+function toPlainDetails(tx: TxDetails): EthereumBasicPlainTx {
   return {
     amount: tx.amount.encode(),
     asset: tx.amount.units.top.code,
@@ -84,24 +78,25 @@ export class CreateEtherTx implements TxDetails, EthereumTx<WeiAny> {
   private readonly zeroAmount: WeiAny;
 
   constructor(source?: TxDetails | null, blockchain?: BlockchainCode | null, type = EthereumTransactionType.EIP1559) {
-    let details = source;
-
     const blockchainCode = source?.blockchain ?? blockchain ?? BlockchainCode.Unknown;
     const zeroAmount = amountFactory(blockchainCode)(0) as WeiAny;
 
+    let details = source;
+
     if (details == null) {
       details = {
-        ...TxDefaults,
         type,
         amount: zeroAmount,
         blockchain: blockchainCode,
+        meta: this.meta,
+        target: TxTarget.MANUAL,
       };
     }
 
     this.amount = details.amount;
-    this.blockchain = blockchainCode;
+    this.blockchain = details.blockchain;
     this.from = details.from;
-    this.gas = details.gas;
+    this.gas = details.gas ?? DEFAULT_GAS_LIMIT;
     this.nonce = details.nonce;
     this.target = details.target;
     this.to = details.to;
@@ -115,7 +110,7 @@ export class CreateEtherTx implements TxDetails, EthereumTx<WeiAny> {
     this.zeroAmount = zeroAmount;
   }
 
-  public static fromPlain(details: EthereumPlainTx): CreateEtherTx {
+  public static fromPlain(details: EthereumBasicPlainTx): CreateEtherTx {
     return new CreateEtherTx(fromPlainDetails(details));
   }
 
@@ -189,7 +184,7 @@ export class CreateEtherTx implements TxDetails, EthereumTx<WeiAny> {
     return { blockchain, from, gas, gasPrice, maxGasPrice, nonce, priorityGasPrice, to, type, value };
   }
 
-  public dump(): EthereumPlainTx {
+  public dump(): EthereumBasicPlainTx {
     return toPlainDetails(this);
   }
 

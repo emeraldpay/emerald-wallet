@@ -1,11 +1,18 @@
 import { SignedTx, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { Allowance } from '../allowances/types';
+import { StoredTransaction } from '../txhistory/types';
 
 export const moduleName = 'txStash';
 
-export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+export enum CreateTxStage {
+  SETUP,
+  SIGN,
+  BROADCAST,
+}
 
 export enum TxAction {
+  APPROVE,
   CANCEL,
   CONVERT,
   RECOVERY,
@@ -15,6 +22,8 @@ export enum TxAction {
 
 export type FeeRange = workflow.BitcoinFeeRange | workflow.EthereumFeeRange<string>;
 
+export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+
 interface LastFee {
   range: FeeRange;
   timestamp: number;
@@ -22,12 +31,6 @@ interface LastFee {
 
 interface BlockchainFee {
   [blockchain: string]: LastFee | undefined;
-}
-
-export enum CreateTxStage {
-  SETUP,
-  SIGN,
-  BROADCAST,
 }
 
 export interface TxStashState {
@@ -145,6 +148,13 @@ export type TxStashAction =
   | SetStageAction
   | SetTransactionAction
   | SetTransactionFeeAction;
+
+export interface TxOrigin {
+  action: TxAction;
+  entry: WalletEntry;
+  initialAllowance?: Allowance;
+  storedTx?: StoredTransaction;
+}
 
 export interface EntryState {
   entry?: WalletEntry;

@@ -10,6 +10,7 @@ import {
 import {
   Blockchains,
   InputUtxo,
+  TokenAmount,
   TokenRegistry,
   amountFactory,
   blockchainIdToCode,
@@ -17,20 +18,22 @@ import {
   isEthereum,
 } from '../../blockchains';
 import { EthereumTransactionType } from '../ethereum';
-import { CreateBitcoinTx, CreateErc20Tx, CreateEtherTx } from './create-tx';
+import { CreateBitcoinTx, CreateErc20ApproveTx, CreateErc20Tx, CreateEtherTx } from './create-tx';
 import {
   AnyCreateTx,
   AnyErc20CreateTx,
   AnyEtherCreateTx,
+  AnyEthereumCreateTx,
   fromBitcoinPlainTx,
   fromEthereumPlainTx,
   isAnyErc20CreateTx,
+  isErc20ApproveCreateTx,
   isErc20CreateTx,
   isEtherCreateTx,
 } from './create-tx/types';
 import {
-  BitcoinPlainTx,
-  EthereumPlainTx,
+  AnyPlainTx,
+  EthereumBasicPlainTx,
   FeeRange,
   TxTarget,
   isBitcoinFeeRange,
@@ -44,7 +47,7 @@ interface BuilderOrigin {
   entry: WalletEntry;
   feeRange: FeeRange;
   ownerAddress?: string;
-  transaction?: BitcoinPlainTx | EthereumPlainTx;
+  transaction?: AnyPlainTx;
 }
 
 interface DataProvider {
@@ -60,7 +63,7 @@ export class TxBuilder implements BuilderOrigin {
   readonly entry: WalletEntry;
   readonly feeRange: FeeRange;
   readonly ownerAddress?: string;
-  readonly transaction?: BitcoinPlainTx | EthereumPlainTx;
+  readonly transaction?: AnyPlainTx;
 
   private readonly dataProvider: DataProvider;
   private readonly tokenRegistry: TokenRegistry;
@@ -132,7 +135,16 @@ export class TxBuilder implements BuilderOrigin {
             return this.convertEthereumTx(createTx);
           }
 
-          this.populateEthereumTx(createTx, transaction);
+          this.mergeEthereumFee(createTx);
+          this.mergeEthereumTx(transaction, createTx);
+        }
+
+        if (isErc20ApproveCreateTx(createTx)) {
+          if (asset !== createTx.getAsset()) {
+            createTx = this.transformErc20ApproveTx(createTx);
+          }
+
+          this.mergeEthereumFee(createTx);
         }
       }
     }
@@ -247,9 +259,26 @@ export class TxBuilder implements BuilderOrigin {
     return newCreateTx;
   }
 
-  private populateEthereumTx(createTx: AnyEtherCreateTx | AnyErc20CreateTx, transaction: EthereumPlainTx): void {
-    const { asset, entry, feeRange, ownerAddress, tokenRegistry } = this;
+  private transformErc20ApproveTx(createTx: CreateErc20ApproveTx): CreateErc20ApproveTx {
+    const { asset, entry, tokenRegistry } = this;
     const { getBalance } = this.dataProvider;
+
+    const blockchain = blockchainIdToCode(entry.blockchain);
+
+    const { coinTicker, eip1559: supportEip1559 = false } = Blockchains[blockchain].params;
+
+    createTx.setToken(
+      tokenRegistry.byAddress(blockchain, asset),
+      getBalance(entry, coinTicker) as WeiAny,
+      getBalance(entry, asset) as TokenAmount,
+      supportEip1559,
+    );
+
+    return createTx;
+  }
+
+  private mergeEthereumFee(createTx: AnyEthereumCreateTx): void {
+    const { feeRange } = this;
 
     const gasPrice = createTx.gasPrice ?? createTx.maxGasPrice;
 
@@ -258,6 +287,11 @@ export class TxBuilder implements BuilderOrigin {
       createTx.maxGasPrice = feeRange.stdMaxGasPrice;
       createTx.priorityGasPrice = feeRange.stdPriorityGasPrice;
     }
+  }
+
+  private mergeEthereumTx(transaction: EthereumBasicPlainTx, createTx: AnyEtherCreateTx | AnyErc20CreateTx): void {
+    const { asset, entry, ownerAddress, tokenRegistry } = this;
+    const { getBalance } = this.dataProvider;
 
     if (
       transaction.from !== entry.address?.value ||

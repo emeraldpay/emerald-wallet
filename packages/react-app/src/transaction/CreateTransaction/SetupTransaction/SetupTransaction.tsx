@@ -55,7 +55,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  prepareTransaction(action: TxAction, entry: WalletEntry, storedTx?: StoredTransaction): void;
+  prepareTransaction(action: TxAction, entry: WalletEntry): void;
   setAsset(asset: string): void;
   setEntry(entry: WalletEntry, ownerAddress?: string): void;
   setStage(stage: CreateTxStage): void;
@@ -63,7 +63,6 @@ interface DispatchProps {
 }
 
 const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
-  action = TxAction.TRANSFER,
   asset,
   assets,
   createTx,
@@ -74,7 +73,9 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   ownerAddress,
   tokenRegistry,
   transactionFee,
+  initialAllowance: allowance,
   updatedStoredTx: storedTx,
+  action = TxAction.TRANSFER,
   getBalance,
   getFiatBalance,
   onCancel,
@@ -87,7 +88,7 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const mounted = React.useRef(true);
 
   React.useEffect(() => {
-    prepareTransaction(action, entry, storedTx);
+    prepareTransaction(action, entry);
   }, [action, entry, storedTx, prepareTransaction]);
 
   React.useEffect(() => {
@@ -113,7 +114,7 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   }
 
   const { flow } = new Flow(
-    { asset, assets, createTx, entry, entries, fee, ownerAddress, storedTx, tokenRegistry, transactionFee },
+    { allowance, asset, assets, createTx, entry, entries, fee, ownerAddress, storedTx, tokenRegistry, transactionFee },
     { getBalance, getFiatBalance },
     { onCancel, setAsset, setEntry, setTransaction, setStage },
   );
@@ -175,19 +176,21 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0));
     };
 
-    const tokenAssets = tokenRegistry.byBlockchain(blockchain).reduce<Asset[]>((carry, { address, symbol }) => {
-      const balance = getBalance(entry, address, ownerAddress);
-
-      if (balance.isPositive()) {
-        return [...carry, { address, balance, symbol }];
-      }
-
-      return carry;
-    }, []);
+    const tokenAssets = tokenRegistry.byBlockchain(blockchain).reduce<Asset[]>(
+      (carry, { address, symbol }) => [
+        ...carry,
+        {
+          address,
+          symbol,
+          balance: getBalance(entry, address, ownerAddress),
+        },
+      ],
+      [],
+    );
 
     const { coinTicker } = Blockchains[blockchain].params;
 
-    const assets = [{ balance: getBalance(entry, coinTicker), symbol: coinTicker }, ...tokenAssets];
+    const assets: Asset[] = [{ balance: getBalance(entry, coinTicker), symbol: coinTicker }, ...tokenAssets];
 
     let asset = txStash.selectors.getAsset(state) ?? initialAllowance?.token.address ?? initialAsset ?? coinTicker;
 
@@ -246,9 +249,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any) => ({
-    prepareTransaction(action, entry, storedTx) {
-      dispatch(txStash.actions.prepareTransaction(action, entry, storedTx));
+  (dispatch: any, { initialAllowance, storedTx }) => ({
+    prepareTransaction(action, entry) {
+      dispatch(txStash.actions.prepareTransaction({ action, entry, initialAllowance, storedTx }));
     },
     setAsset(asset) {
       dispatch(txStash.actions.setAsset(asset));

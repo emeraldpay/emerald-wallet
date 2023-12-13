@@ -12,7 +12,7 @@ interface OwnProps {
   ownerAddress?: string | null;
   selectedEntry: WalletEntry;
   withAllowances?: boolean;
-  onSelect(entry: WalletEntry, ownerAddress?: string): void;
+  onSelect(entry: WalletEntry, ownerAddress: string | undefined): void;
 }
 
 interface EntryAllowances {
@@ -95,7 +95,7 @@ const SelectEntry: React.FC<OwnProps & StateProps> = ({
             balances={getBalances(entry)}
             disabled={disabled}
             identity={true}
-            onClick={() => handleEntrySelect(entry)}
+            onClick={() => handleEntrySelect(entry, undefined)}
           />
         </MenuItem>,
       ];

@@ -14,6 +14,8 @@ describe('store', () => {
   it('should dispatch screen action', () => {
     const store = createStore(apiMock, backendApiMock);
 
-    store.dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee'));
+    store.dispatch(
+      screen.actions.gotoScreen(screen.Pages.CREATE_TX, { walletId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee' }),
+    );
   });
 });

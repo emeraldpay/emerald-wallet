@@ -2,6 +2,7 @@
 
 export {
   AnyBitcoinCreateTx,
+  AnyContractCreateTx,
   AnyCreateTx,
   AnyErc20CreateTx,
   AnyEtherCreateTx,
@@ -13,11 +14,13 @@ export {
   fromEthereumPlainTx,
   fromPlainTx,
   isAnyBitcoinCreateTx,
+  isAnyContractCreateTx,
   isAnyErc20CreateTx,
   isAnyEtherCreateTx,
   isBitcoinCancelCreateTx,
   isBitcoinCreateTx,
   isBitcoinSpeedUpCreateTx,
+  isErc20ApproveCreateTx,
   isErc20CancelCreateTx,
   isErc20CreateTx,
   isErc20SpeedUpCreateTx,

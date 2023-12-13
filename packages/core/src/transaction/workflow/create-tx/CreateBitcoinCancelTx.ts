@@ -15,11 +15,11 @@ export class CreateBitcoinCancelTx extends CreateBitcoinModifyTx {
     const decoder = amountDecoder<SatoshiAny>(origin.blockchain);
 
     tx.amount = decoder(plain.amount);
+    tx.feePrice = plain.vkbPrice;
     tx.meta.type = TxMetaType.BITCOIN_CANCEL;
     tx.originalFees = decoder(plain.originalFees);
     tx.target = plain.target;
     tx.to = plain.to;
-    tx.vkbPrice = plain.vkbPrice;
 
     return tx;
   }

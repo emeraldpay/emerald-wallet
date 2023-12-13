@@ -3,6 +3,7 @@ import { EthereumRawTransaction, decodeData, isEthereumRawTransaction, workflow 
 import { TxAction } from '../types';
 import {
   prepareBitcoinTx,
+  prepareErc20ApproveTx,
   prepareEthereumTx,
   restoreBitcoinCancelTx,
   restoreBitcoinSpeedUpTx,
@@ -30,6 +31,8 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
     }
   } else {
     switch (action) {
+      case TxAction.APPROVE:
+        return prepareErc20ApproveTx({ ...data, entry }, storeProvider);
       case TxAction.CANCEL:
         return restoreEthereumTx({ ...data, entry }, storeProvider, {
           getTxMetaType(rawTx) {

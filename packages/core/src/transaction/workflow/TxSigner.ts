@@ -17,7 +17,7 @@ import { BlockchainCode, Blockchains } from '../../blockchains';
 import { EthereumTx } from '../../blockchains/ethereum';
 import { EthereumAddress } from '../../blockchains/ethereum/EthereumAddress';
 import { EthereumTransaction, EthereumTransactionType } from '../ethereum';
-import { AnyCreateTx, isAnyBitcoinCreateTx } from './create-tx/types';
+import { AnyCreateTx, isAnyBitcoinCreateTx, isErc20ApproveCreateTx } from './create-tx/types';
 
 interface SignerOrigin {
   createTx: AnyCreateTx;
@@ -143,9 +143,9 @@ export class TxSigner implements SignerOrigin {
       }
 
       if (transaction.verifySignature()) {
-        const { from } = createTx;
+        const sender = isErc20ApproveCreateTx(createTx) ? createTx.approveBy : createTx.from;
 
-        if (from != null && !transaction.getSenderAddress().equals(new EthereumAddress(from))) {
+        if (sender != null && !transaction.getSenderAddress().equals(new EthereumAddress(sender))) {
           throw new Error('Emerald Vault returned signature from wrong Sender');
         }
       } else {

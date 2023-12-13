@@ -17,6 +17,7 @@ import { TextField, Typography, createStyles, makeStyles } from '@material-ui/co
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { StoredTxView } from '../../common/StoredTxView';
+import { WalletTabs } from '../../wallets/WalletDetails';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
@@ -249,7 +250,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.goBack());
     },
     goToCancelTx(entryId, storedTx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.CANCEL }, null, true));
+      dispatch(
+        gotoScreen(
+          screen.Pages.CREATE_TX,
+          { entryId, storedTx, action: TxAction.CANCEL },
+          { tab: WalletTabs.TRANSACTIONS },
+          true,
+        ),
+      );
     },
     goToDashboard() {
       dispatch(gotoWalletsScreen());
@@ -258,7 +266,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.openTxReceipt(tx.txId));
     },
     goToSpeedUpTx(entryId, storedTx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX, { entryId, storedTx, action: TxAction.SPEEDUP }, null, true));
+      dispatch(
+        gotoScreen(
+          screen.Pages.CREATE_TX,
+          { entryId, storedTx, action: TxAction.SPEEDUP },
+          { tab: WalletTabs.TRANSACTIONS },
+          true,
+        ),
+      );
     },
     lookupAddress(blockchain, address) {
       return dispatch(blockchains.actions.lookupAddress(blockchain, address));
