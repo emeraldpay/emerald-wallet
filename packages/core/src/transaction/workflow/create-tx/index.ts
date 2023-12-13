@@ -22,6 +22,7 @@ export {
   isBitcoinSpeedUpCreateTx,
   isErc20ApproveCreateTx,
   isErc20CancelCreateTx,
+  isErc20ConvertCreateTx,
   isErc20CreateTx,
   isErc20SpeedUpCreateTx,
   isEtherCancelCreateTx,
@@ -34,9 +35,9 @@ export { BitcoinTx, BitcoinTxDetails, BitcoinTxOrigin, CreateBitcoinTx } from '.
 export { CreateBitcoinCancelTx } from './CreateBitcoinCancelTx';
 export { CreateBitcoinSpeedUpTx } from './CreateBitcoinSpeedUpTx';
 export { CreateErc20CancelTx } from './CreateErc20CancelTx';
+export { CreateErc20ConvertTx, Erc20ConvertTxDetails } from './CreateErc20ConvertTx';
 export { CreateErc20SpeedUpTx } from './CreateErc20SpeedUpTx';
 export { CreateErc20Tx, Erc20TxDetails } from './CreateErc20Tx';
-export { CreateErc20WrappedTx, Erc20WrappedTxDetails } from './CreateErc20WrappedTx';
 export { CreateEtherCancelTx } from './CreateEtherCancelTx';
 export { CreateEtherSpeedUpTx } from './CreateEtherSpeedUpTx';
 export { CreateEtherTx, TxDetails } from './CreateEtherTx';

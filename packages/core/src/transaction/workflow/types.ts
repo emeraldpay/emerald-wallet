@@ -16,9 +16,9 @@ export enum TxMetaType {
   ETHER_TRANSFER,
   ERC20_APPROVE,
   ERC20_CANCEL,
+  ERC20_CONVERT,
   ERC20_SPEEDUP,
   ERC20_TRANSFER,
-  ERC20_WRAP,
 }
 
 export enum ValidationResult {
@@ -77,6 +77,10 @@ export interface Erc20ApprovePlainTx extends EthereumPlainTx {
   approveBy?: string;
 }
 
+export interface Erc20ConvertPlainTx extends EthereumPlainTx {
+  address?: string;
+}
+
 export type AnyPlainTx = BitcoinPlainTx | EthereumPlainTx;
 
 const ethereumBasicTxMetaTypes: Readonly<TxMetaType[]> = [
@@ -102,6 +106,10 @@ export function isEthereumBasicPlainTx(transaction: AnyPlainTx): transaction is 
 
 export function isErc20ApprovePlainTx(transaction: AnyPlainTx): transaction is Erc20ApprovePlainTx {
   return transaction.meta.type === TxMetaType.ERC20_APPROVE;
+}
+
+export function isErc20ConvertPlainTx(transaction: AnyPlainTx): transaction is Erc20ApprovePlainTx {
+  return transaction.meta.type === TxMetaType.ERC20_CONVERT;
 }
 
 export interface BitcoinFeeRange {

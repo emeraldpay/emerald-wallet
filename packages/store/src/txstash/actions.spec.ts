@@ -929,7 +929,7 @@ describe('tx stash action', () => {
     const { createTx } = new workflow.TxBuilder(
       {
         changeAddress,
-        asset: 'ETH',
+        asset: tokenData.address,
         entry: ethEntry,
         feeRange: fee.range,
         transaction: tx,

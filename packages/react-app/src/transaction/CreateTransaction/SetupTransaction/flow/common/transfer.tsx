@@ -22,7 +22,7 @@ export abstract class TransferFlow implements CommonFlow {
 
   abstract render(): React.ReactElement;
 
-  renderFrom(): React.ReactNode {
+  renderFrom(): React.ReactElement {
     const { entry, entries, ownerAddress } = this.data;
     const { setEntry } = this.handler;
 
@@ -40,21 +40,21 @@ export abstract class TransferFlow implements CommonFlow {
     );
   }
 
-  renderTo(): React.ReactNode {
+  renderTo(): React.ReactElement {
     const { createTx } = this.data;
     const { setTransaction } = this.handler;
 
     return <To createTx={createTx} setTransaction={setTransaction} />;
   }
 
-  renderAmount(): React.ReactNode {
+  renderAmount(): React.ReactElement {
     const { createTx, fee } = this.data;
     const { setTransaction } = this.handler;
 
     return <Amount createTx={createTx} maxDisabled={fee.loading} setTransaction={setTransaction} />;
   }
 
-  renderActions(): React.ReactNode {
+  renderActions(): React.ReactElement {
     const { createTx, entry, fee } = this.data;
     const { onCancel, setEntry, setStage, setTransaction } = this.handler;
 

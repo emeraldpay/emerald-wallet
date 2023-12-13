@@ -4,11 +4,12 @@ import {
   BitcoinCancelFlow,
   BitcoinSpeedUpFlow,
   BitcoinTransferFlow,
+  Erc20ConvertFlow,
   EthereumCancelFlow,
   EthereumSpeedUpFlow,
   EthereumTransferFlow,
 } from './blockchain';
-import { Erc20ApproveFlow } from './blockchain/ethereum/approve';
+import { Erc20ApproveFlow } from './blockchain/ethereum/erc20/approve';
 import { BlockchainFlow, Data, DataProvider, Handler } from './types';
 
 export class Flow {
@@ -38,6 +39,8 @@ export class Flow {
         this._flow = new Erc20ApproveFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20CancelCreateTx(createTx)) {
         this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isErc20ConvertCreateTx(createTx)) {
+        this._flow = new Erc20ConvertFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20SpeedUpCreateTx(createTx)) {
         this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20CreateTx(createTx)) {

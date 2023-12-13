@@ -1,12 +1,22 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import BigNumber from 'bignumber.js';
 import { TokenRegistry } from '../../../blockchains';
-import { AnyPlainTx, BitcoinPlainTx, CommonTx, EthereumPlainTx, TxMetaType, isBitcoinPlainTx } from '../types';
+import {
+  AnyPlainTx,
+  BitcoinPlainTx,
+  CommonTx,
+  EthereumPlainTx,
+  TxMetaType,
+  isBitcoinPlainTx,
+  isErc20ApprovePlainTx,
+  isErc20ConvertPlainTx,
+} from '../types';
 import { CreateBitcoinCancelTx } from './CreateBitcoinCancelTx';
 import { CreateBitcoinSpeedUpTx } from './CreateBitcoinSpeedUpTx';
 import { BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
 import { CreateErc20ApproveTx } from './CreateErc20ApproveTx';
 import { CreateErc20CancelTx } from './CreateErc20CancelTx';
+import { CreateErc20ConvertTx } from './CreateErc20ConvertTx';
 import { CreateErc20SpeedUpTx } from './CreateErc20SpeedUpTx';
 import { CreateErc20Tx } from './CreateErc20Tx';
 import { CreateEtherCancelTx } from './CreateEtherCancelTx';
@@ -25,7 +35,7 @@ export interface EthereumTx<T extends BigAmount> extends CommonTx {
 export type AnyBitcoinCreateTx = CreateBitcoinTx | CreateBitcoinCancelTx | CreateBitcoinSpeedUpTx;
 export type AnyEtherCreateTx = CreateEtherTx | CreateEtherCancelTx | CreateEtherSpeedUpTx;
 export type AnyErc20CreateTx = CreateErc20Tx | CreateErc20CancelTx | CreateErc20SpeedUpTx;
-export type AnyContractCreateTx = AnyErc20CreateTx | CreateErc20ApproveTx;
+export type AnyContractCreateTx = AnyErc20CreateTx | CreateErc20ApproveTx | CreateErc20ConvertTx;
 export type AnyEthereumCreateTx = AnyEtherCreateTx | AnyContractCreateTx;
 export type AnyCreateTx = AnyBitcoinCreateTx | AnyEthereumCreateTx;
 
@@ -50,7 +60,7 @@ const erc20TxMetaTypes: Readonly<TxMetaType[]> = [
 const contractTxMetaTypes: Readonly<TxMetaType[]> = [
   ...erc20TxMetaTypes,
   TxMetaType.ERC20_APPROVE,
-  TxMetaType.ERC20_WRAP,
+  TxMetaType.ERC20_CONVERT,
 ];
 
 export function isAnyBitcoinCreateTx(createTx: AnyCreateTx): createTx is CreateBitcoinTx {
@@ -105,6 +115,10 @@ export function isErc20CancelCreateTx(createTx: AnyCreateTx): createTx is Create
   return createTx.meta.type === TxMetaType.ERC20_CANCEL;
 }
 
+export function isErc20ConvertCreateTx(createTx: AnyCreateTx): createTx is CreateErc20ConvertTx {
+  return createTx.meta.type === TxMetaType.ERC20_CONVERT;
+}
+
 export function isErc20SpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateErc20SpeedUpTx {
   return createTx.meta.type === TxMetaType.ERC20_SPEEDUP;
 }
@@ -138,20 +152,26 @@ export function fromEtherPlainTx(transaction: EthereumPlainTx): AnyEtherCreateTx
 export function fromErc20PlainTx(transaction: EthereumPlainTx, tokenRegistry: TokenRegistry): AnyContractCreateTx {
   switch (transaction.meta.type) {
     case TxMetaType.ERC20_APPROVE:
-      return CreateErc20ApproveTx.fromPlain(tokenRegistry, transaction);
+      return CreateErc20ApproveTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_CANCEL:
-      return CreateErc20CancelTx.fromPlain(tokenRegistry, transaction);
+      return CreateErc20CancelTx.fromPlain(transaction, tokenRegistry);
+    case TxMetaType.ERC20_CONVERT:
+      return CreateErc20ConvertTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_SPEEDUP:
-      return CreateErc20SpeedUpTx.fromPlain(tokenRegistry, transaction);
+      return CreateErc20SpeedUpTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_TRANSFER:
-      return CreateErc20Tx.fromPlain(tokenRegistry, transaction);
+      return CreateErc20Tx.fromPlain(transaction, tokenRegistry);
   }
 
   throw new Error(`Unsupported transaction meta type ${transaction.meta.type}`);
 }
 
 export function fromEthereumPlainTx(transaction: EthereumPlainTx, tokenRegistry: TokenRegistry): AnyEthereumCreateTx {
-  if (tokenRegistry.hasAddress(transaction.blockchain, transaction.asset)) {
+  if (
+    isErc20ApprovePlainTx(transaction) ||
+    isErc20ConvertPlainTx(transaction) ||
+    tokenRegistry.hasAddress(transaction.blockchain, transaction.asset)
+  ) {
     return fromErc20PlainTx(transaction, tokenRegistry);
   }
 

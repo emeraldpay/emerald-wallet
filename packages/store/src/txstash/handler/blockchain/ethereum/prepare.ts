@@ -17,11 +17,9 @@ export const prepareErc20ApproveTx: EntryHandler<EthereumEntry> = (data, storePr
   const blockchain = blockchainIdToCode(entry.blockchain);
   const tokenRegistry = new TokenRegistry(getTokens(state));
 
-  const [token] = tokenRegistry.byBlockchain(blockchain);
+  const [{ address: tokenAddress }] = tokenRegistry.byBlockchain(blockchain);
 
-  storeProvider.dispatch(setAsset(token.address));
-
-  const createTx = new workflow.CreateErc20ApproveTx(tokenRegistry, token.address, blockchain);
+  const createTx = new workflow.CreateErc20ApproveTx(tokenAddress, tokenRegistry, blockchain);
 
   if (initialAllowance == null) {
     createTx.approveBy = entry.address?.value;
@@ -47,12 +45,47 @@ export const prepareErc20ApproveTx: EntryHandler<EthereumEntry> = (data, storePr
   const { value: address } = entry.address ?? {};
 
   if (address != null) {
+    const { token } = createTx;
+
     createTx.totalTokenBalance =
       tokens.selectors.selectBalance(state, blockchain, address, token.address, {
         belonging: TokenBalanceBelong.OWN,
       }) ?? token.getAmount(0);
   }
 
+  storeProvider.dispatch(setAsset(createTx.asset));
+  storeProvider.dispatch(setTransaction(createTx.dump()));
+  storeProvider.dispatch(setPreparing(false));
+};
+
+export const prepareErc20ConvertTx: EntryHandler<EthereumEntry> = (data, storeProvider) => () => {
+  fetchFee(data, storeProvider)();
+
+  const { entry } = data;
+
+  const state = storeProvider.getState();
+
+  const blockchain = blockchainIdToCode(entry.blockchain);
+  const tokenRegistry = new TokenRegistry(getTokens(state));
+
+  const createTx = new workflow.CreateErc20ConvertTx(blockchain, tokenRegistry);
+
+  createTx.totalBalance = accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0)) as WeiAny;
+
+  const { value: address } = entry.address ?? {};
+
+  if (address != null) {
+    const { token } = createTx;
+
+    createTx.address = address;
+
+    createTx.totalTokenBalance =
+      tokens.selectors.selectBalance(state, blockchain, address, token.address, {
+        belonging: TokenBalanceBelong.OWN,
+      }) ?? token.getAmount(0);
+  }
+
+  storeProvider.dispatch(setAsset(createTx.asset));
   storeProvider.dispatch(setTransaction(createTx.dump()));
   storeProvider.dispatch(setPreparing(false));
 };

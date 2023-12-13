@@ -184,6 +184,15 @@ export class CreateBitcoinTx implements BitcoinTx {
   /**
    * @deprecated
    *   Added to make one logic for Bitcoin and Ethereum flow.
+   *   Create getter after refactoring Ethereum create transaction class.
+   */
+  getAsset(): string {
+    return this.amount.units.top.code;
+  }
+
+  /**
+   * @deprecated
+   *   Added to make one logic for Bitcoin and Ethereum flow.
    *   Use setter after refactoring Ethereum create transaction class.
    */
   setAmount(value: SatoshiAny | BigNumber): void {

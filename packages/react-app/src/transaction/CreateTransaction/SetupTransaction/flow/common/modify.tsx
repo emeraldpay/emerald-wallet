@@ -20,7 +20,7 @@ export abstract class ModifyFlow implements CommonFlow {
 
   abstract render(): React.ReactElement;
 
-  renderActions(): React.ReactNode {
+  renderActions(): React.ReactElement {
     const { createTx, entry, fee, storedTx } = this.data;
     const { onCancel, setEntry, setStage, setTransaction } = this.handler;
 

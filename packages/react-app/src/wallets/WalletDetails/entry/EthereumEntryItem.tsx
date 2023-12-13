@@ -9,7 +9,7 @@ import {
   formatAmount,
 } from '@emeraldwallet/core';
 import { isWrappedToken } from '@emeraldwallet/core/lib/blockchains';
-import { ConvertedBalance, IState, accounts, screen, tokens } from '@emeraldwallet/store';
+import { ConvertedBalance, IState, TxAction, accounts, screen, tokens } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
 import { Button, IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
 import { ImportExport as ConvertIcon, ArrowUpward as SendIcon } from '@material-ui/icons';
@@ -55,7 +55,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  gotoConvert(contractAddress: string): void;
+  gotoConvert(): void;
   gotoRecover(): void;
   gotoSend(asset?: string): void;
 }
@@ -70,9 +70,9 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
   blockchainCode,
   fiatBalance,
   tokenBalances,
-  gotoRecover,
   entries: [entry],
   gotoConvert,
+  gotoRecover,
   gotoSend,
 }) => {
   const styles = useStyles();
@@ -157,7 +157,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   classes={buttonClasses}
                   disabled={balance.isZero()}
                   size="small"
-                  onClick={() => gotoConvert(wrappedBalance.token.address)}
+                  onClick={() => gotoConvert()}
                 >
                   <ConvertIcon fontSize="small" />
                 </IconButton>
@@ -257,8 +257,19 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>, { entries: [entry], walletId }) => ({
-    gotoConvert(contractAddress) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, contractAddress }, null, true));
+    gotoConvert() {
+      dispatch(
+        screen.actions.gotoScreen(
+          screen.Pages.CREATE_TX,
+          {
+            walletId,
+            action: TxAction.CONVERT,
+            entry: entry.id,
+          },
+          null,
+          true,
+        ),
+      );
     },
     gotoRecover() {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
@@ -267,7 +278,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(
         screen.actions.gotoScreen(
           screen.Pages.CREATE_TX,
-          { walletId, entryId: entry.id, initialAsset: asset },
+          {
+            walletId,
+            entryId: entry.id,
+            initialAsset: asset,
+          },
           null,
           true,
         ),
