@@ -272,7 +272,18 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
     },
     gotoRecover() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
+      dispatch(
+        screen.actions.gotoScreen(
+          screen.Pages.CREATE_TX,
+          {
+            walletId,
+            action: TxAction.RECOVERY,
+            entryId: entry.id,
+          },
+          null,
+          true,
+        ),
+      );
     },
     gotoSend(asset) {
       dispatch(
