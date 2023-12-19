@@ -13,9 +13,7 @@ import ShowMessage from '../../../message/ShowMessage';
 import SignMessage from '../../../message/SignMessage';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
 import Settings from '../../../settings/Settings';
-import { BroadcastEthTx } from '../../../transaction/BroadcastEthTx';
-import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
-import { CreateTransaction } from '../../../transaction/CreateTransaction';
+import { CreateTransaction } from '../../../transaction';
 import TxDetails from '../../../transactions/TxDetails';
 import WalletDetails from '../../../wallets/WalletDetails';
 import WalletInfo from '../../../wallets/WalletInfo';
@@ -57,12 +55,8 @@ const Screen: React.FC<OwnProps & StateProps> = ({ restoreData, screenItem, term
       return <AddHDAddress walletId={screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
-    case screen.Pages.BROADCAST_TX:
-      return <BroadcastEthTx data={screenItem} />;
     case screen.Pages.CREATE_TX:
       return <CreateTransaction {...screenItem} />;
-    case screen.Pages.CREATE_TX_RECOVER:
-      return <CreateRecoverTransaction entry={screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
     case screen.Pages.EDIT_ADDRESS:

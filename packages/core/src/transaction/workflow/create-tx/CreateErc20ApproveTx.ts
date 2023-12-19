@@ -174,7 +174,7 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
     if (TokenAmount.is(value)) {
       this._amount = value;
     } else {
-      this._amount = this.token.getAmount(value);
+      this._amount = this.token.getAmount(1).multiply(this.token.getUnits().top.multiplier).multiply(value);
     }
 
     this._target = ApproveTarget.MANUAL;

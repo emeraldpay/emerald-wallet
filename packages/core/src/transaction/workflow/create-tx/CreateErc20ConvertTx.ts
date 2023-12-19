@@ -1,4 +1,4 @@
-import { BigAmount, CreateAmount } from '@emeraldpay/bigamount';
+import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
 import {
@@ -156,13 +156,14 @@ export class CreateErc20ConvertTx implements Erc20ConvertTxDetails {
     } else {
       const { asset, token } = this;
 
-      const { units } = this.amount;
-
       let amount: BigAmount;
+      let units: Units;
 
       if (asset.toLowerCase() === token.address.toLowerCase()) {
         amount = token.getAmount(1);
+        units = token.getUnits();
       } else {
+        units = this.amount.units;
         amount = new WeiAny(1, units);
       }
 
