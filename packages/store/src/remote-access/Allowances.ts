@@ -1,14 +1,13 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, IpcCommands, PersistentState } from '@emeraldwallet/core';
-import { CachedAllowance, PageResult } from '@emeraldwallet/core/lib/persistentState';
 import { ipcRenderer } from 'electron';
 
 class Allowances implements PersistentState.Allowances {
-  add(walletId: Uuid, allowance: CachedAllowance, ttl?: number): Promise<void> {
+  add(walletId: Uuid, allowance: PersistentState.CachedAllowance, ttl?: number): Promise<void> {
     return ipcRenderer.invoke(IpcCommands.ALLOWANCES_ADD, walletId, allowance, ttl);
   }
 
-  list(walletId?: Uuid): Promise<PageResult<CachedAllowance>> {
+  list(walletId?: Uuid): Promise<PersistentState.PageResult<PersistentState.CachedAllowance>> {
     return ipcRenderer.invoke(IpcCommands.ALLOWANCES_LIST, walletId);
   }
 

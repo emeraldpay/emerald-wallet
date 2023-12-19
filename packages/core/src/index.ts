@@ -46,6 +46,7 @@ export {
   isEthereum,
   isStructuredMessage,
   isToken,
+  isWrappedToken,
   ledgerByBlockchain,
   tokenAbi,
   wrapTokenAbi,

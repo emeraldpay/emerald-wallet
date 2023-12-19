@@ -1,6 +1,5 @@
 import { WalletApi } from '@emeraldwallet/core';
-import { createStore } from '@emeraldwallet/store';
-import { Dispatched } from '@emeraldwallet/store/lib/types';
+import { Dispatched, createStore } from '@emeraldwallet/store';
 import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';

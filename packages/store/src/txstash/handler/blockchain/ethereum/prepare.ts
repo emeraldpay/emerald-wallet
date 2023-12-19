@@ -9,7 +9,6 @@ import {
   blockchainIdToCode,
   workflow,
 } from '@emeraldwallet/core';
-import { TxTarget } from '@emeraldwallet/core/src/transaction/workflow';
 import { TokenBalanceBelong, accounts, tokens } from '../../../..';
 import { getTokens } from '../../../../application/selectors';
 import { setAsset, setPreparing, setTransaction } from '../../../actions';
@@ -148,7 +147,7 @@ export const prepareEthereumRecoveryTx: EntryHandler<EthereumEntry> = (data, sto
   );
 
   createTx.from = address;
-  createTx.target = TxTarget.SEND_ALL;
+  createTx.target = workflow.TxTarget.SEND_ALL;
   createTx.to = recoveryEntry?.address?.value;
 
   createTx.rebalance();
