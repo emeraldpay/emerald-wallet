@@ -89,10 +89,13 @@ interface OwnProps {
 }
 
 interface StateProps {
-  balance?: CurrencyAmount;
+  blockchains: string | undefined;
+  fiatBalance: CurrencyAmount | undefined;
+  groupedEntries: WalletEntry[][];
+  hasAnyBalance: boolean;
   hasEthereumEntry: boolean;
-  wallet?: Wallet;
-  walletIcon?: string | null;
+  wallet: Wallet | undefined;
+  walletIcon: string | null | undefined;
   isHardware(wallet: Wallet | undefined): boolean;
 }
 
@@ -103,7 +106,10 @@ interface DispatchProps {
 }
 
 const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
-  balance,
+  blockchains,
+  fiatBalance,
+  groupedEntries,
+  hasAnyBalance,
   hasEthereumEntry,
   wallet,
   walletIcon,
@@ -114,68 +120,30 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
 }) => {
   const styles = useStyles();
 
-  const blockchains = React.useMemo(
-    () =>
-      wallet?.entries
-        .reduce<string[]>((carry, entry) => {
-          const blockchainCode = blockchainIdToCode(entry.blockchain);
-
-          if (carry.includes(blockchainCode)) {
-            return carry;
-          }
-
-          return [...carry, blockchainCode];
-        }, [])
-        .map((blockchain) => Blockchains[blockchain].getTitle())
-        .join(', '),
-    [wallet?.entries],
-  );
-
-  const entriesByBlockchain = React.useMemo(
-    () =>
-      Object.values(
-        wallet?.entries
-          .filter((entry) => !entry.receiveDisabled)
-          .reduce<Record<number, WalletEntry[]>>(
-            (carry, entry) => ({
-              ...carry,
-              [entry.blockchain]: [...(carry[entry.blockchain] ?? []), entry],
-            }),
-            {},
-          ) ?? {},
-      ),
-    [wallet?.entries],
-  );
-
-  const receiveDisabledEntries = React.useMemo(
-    () => wallet?.entries.filter((entry) => entry.receiveDisabled) ?? [],
-    [wallet?.entries],
-  );
-
-  const renderEntry = (entries: WalletEntry[]): React.ReactNode => {
-    if (wallet != null) {
-      const [entry] = entries;
-
-      if (isBitcoinEntry(entry)) {
-        return (
-          <div key={entry.id} className={styles.walletEntry}>
-            <BitcoinEntryItem entry={entry} walletId={wallet.id} />
-          </div>
-        );
-      }
-
-      const ethereumEntries = entries.filter((item): item is EthereumEntry => isEthereumEntry(item));
-
-      if (ethereumEntries.length > 0) {
-        return (
-          <div key={entry.id} className={styles.walletEntry}>
-            <EthereumEntryItem entries={ethereumEntries} walletId={wallet.id} />
-          </div>
-        );
-      }
+  const renderEntries = (entries: WalletEntry[]): React.ReactNode => {
+    if (wallet == null) {
+      return null;
     }
 
-    return null;
+    const [entry] = entries;
+
+    if (isBitcoinEntry(entry)) {
+      return (
+        <div key={entry.id} className={styles.walletEntry}>
+          <BitcoinEntryItem entry={entry} walletId={wallet.id} />
+        </div>
+      );
+    }
+
+    const ethereumEntries = entries
+      .filter(({ blockchain }) => blockchain === entry.blockchain)
+      .filter((item): item is EthereumEntry => isEthereumEntry(item));
+
+    return (
+      <div key={entry.id} className={styles.walletEntry}>
+        <EthereumEntryItem entries={ethereumEntries} walletId={wallet.id} />
+      </div>
+    );
   };
 
   return (
@@ -196,9 +164,9 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                   {wallet.name}
                 </Typography>
               )}
-              {balance?.isPositive() && (
+              {fiatBalance?.isPositive() && (
                 <Typography className={styles.walletOption} variant="subtitle1">
-                  {formatFiatAmount(balance)}
+                  {formatFiatAmount(fiatBalance)}
                 </Typography>
               )}
             </div>
@@ -221,13 +189,12 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </div>
           </div>
           <ButtonGroup>
-            <Button primary icon={<SendIcon />} label="Send" onClick={gotoSend} />
+            <Button primary disabled={!hasAnyBalance} icon={<SendIcon />} label="Send" onClick={gotoSend} />
             <Button primary icon={<ReceiveIcon />} label="Receive" onClick={gotoReceive} />
             <Button primary disabled={!hasEthereumEntry} icon={<SignIcon />} label="Sign" onClick={gotoSign} />
           </ButtonGroup>
         </div>
-        {entriesByBlockchain.map(renderEntry)}
-        {receiveDisabledEntries.map((entry) => renderEntry([entry]))}
+        {groupedEntries.map(renderEntries)}
       </div>
     </div>
   );
@@ -243,9 +210,48 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       balances = accounts.selectors.getWalletBalances(state, wallet);
     }
 
+    const entriesByBlockchain = wallet?.entries
+      .filter((entry) => !entry.receiveDisabled)
+      .reduce<Record<number, WalletEntry[]>>((carry, entry) => {
+        const { [entry.blockchain]: entries = [] } = carry;
+
+        return { ...carry, [entry.blockchain]: [...entries, entry] };
+      }, {});
+
+    const groupedEntries = Object.values(entriesByBlockchain ?? {}).reduce<WalletEntry[][]>((carry, entries) => {
+      const [entry] = entries;
+
+      const addresses = entries.map(({ address }) => address?.value).filter((address) => address != null);
+
+      const wrongEntry = wallet?.entries.find(
+        ({ address, blockchain, receiveDisabled }) =>
+          receiveDisabled === true && addresses.includes(address?.value) && blockchain !== entry.blockchain,
+      );
+
+      if (wrongEntry == null) {
+        return [...carry, entries];
+      }
+
+      return [...carry, entries, [wrongEntry]];
+    }, []);
+
     return {
+      groupedEntries,
       wallet,
-      balance: accounts.selectors.fiatTotalBalance(state, balances),
+      blockchains: wallet?.entries
+        .reduce<string[]>((carry, entry) => {
+          const blockchainCode = blockchainIdToCode(entry.blockchain);
+
+          if (carry.includes(blockchainCode)) {
+            return carry;
+          }
+
+          return [...carry, blockchainCode];
+        }, [])
+        .map((blockchain) => Blockchains[blockchain].getTitle())
+        .join(', '),
+      fiatBalance: accounts.selectors.fiatTotalBalance(state, balances),
+      hasAnyBalance: balances.some((balance) => balance.isPositive()),
       hasEthereumEntry: wallet?.entries.some((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) ?? false,
       walletIcon: state.accounts.icons[walletId],
       isHardware(wallet) {

@@ -17,9 +17,11 @@ import { BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
 import { CreateErc20ApproveTx } from './CreateErc20ApproveTx';
 import { CreateErc20CancelTx } from './CreateErc20CancelTx';
 import { CreateErc20ConvertTx } from './CreateErc20ConvertTx';
+import { CreateErc20RecoveryTx } from './CreateErc20RecoveryTx';
 import { CreateErc20SpeedUpTx } from './CreateErc20SpeedUpTx';
 import { CreateErc20Tx } from './CreateErc20Tx';
 import { CreateEtherCancelTx } from './CreateEtherCancelTx';
+import { CreateEtherRecoveryTx } from './CreateEtherRecoveryTx';
 import { CreateEtherSpeedUpTx } from './CreateEtherSpeedUpTx';
 import { CreateEtherTx } from './CreateEtherTx';
 
@@ -36,7 +38,8 @@ export type AnyBitcoinCreateTx = CreateBitcoinTx | CreateBitcoinCancelTx | Creat
 export type AnyEtherCreateTx = CreateEtherTx | CreateEtherCancelTx | CreateEtherSpeedUpTx;
 export type AnyErc20CreateTx = CreateErc20Tx | CreateErc20CancelTx | CreateErc20SpeedUpTx;
 export type AnyContractCreateTx = AnyErc20CreateTx | CreateErc20ApproveTx | CreateErc20ConvertTx;
-export type AnyEthereumCreateTx = AnyEtherCreateTx | AnyContractCreateTx;
+export type AnyEthereumRecoveryTx = CreateEtherRecoveryTx | CreateErc20RecoveryTx;
+export type AnyEthereumCreateTx = AnyEtherCreateTx | AnyContractCreateTx | AnyEthereumRecoveryTx;
 export type AnyCreateTx = AnyBitcoinCreateTx | AnyEthereumCreateTx;
 
 const bitcoinTxMetaTypes: Readonly<TxMetaType[]> = [
@@ -47,12 +50,14 @@ const bitcoinTxMetaTypes: Readonly<TxMetaType[]> = [
 
 const etherTxMetaTypes: Readonly<TxMetaType[]> = [
   TxMetaType.ETHER_CANCEL,
+  TxMetaType.ETHER_RECOVERY,
   TxMetaType.ETHER_SPEEDUP,
   TxMetaType.ETHER_TRANSFER,
 ];
 
 const erc20TxMetaTypes: Readonly<TxMetaType[]> = [
   TxMetaType.ERC20_CANCEL,
+  TxMetaType.ERC20_RECOVERY,
   TxMetaType.ERC20_SPEEDUP,
   TxMetaType.ERC20_TRANSFER,
 ];
@@ -91,6 +96,10 @@ export function isEtherCancelCreateTx(createTx: AnyCreateTx): createTx is Create
   return createTx.meta.type === TxMetaType.ETHER_CANCEL;
 }
 
+export function isEtherRecoveryCreateTx(createTx: AnyCreateTx): createTx is CreateEtherRecoveryTx {
+  return createTx.meta.type === TxMetaType.ETHER_RECOVERY;
+}
+
 export function isEtherSpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateEtherSpeedUpTx {
   return createTx.meta.type === TxMetaType.ETHER_SPEEDUP;
 }
@@ -119,6 +128,10 @@ export function isErc20ConvertCreateTx(createTx: AnyCreateTx): createTx is Creat
   return createTx.meta.type === TxMetaType.ERC20_CONVERT;
 }
 
+export function isErc20RecoveryCreateTx(createTx: AnyCreateTx): createTx is CreateErc20RecoveryTx {
+  return createTx.meta.type === TxMetaType.ERC20_RECOVERY;
+}
+
 export function isErc20SpeedUpCreateTx(createTx: AnyCreateTx): createTx is CreateErc20SpeedUpTx {
   return createTx.meta.type === TxMetaType.ERC20_SPEEDUP;
 }
@@ -140,6 +153,8 @@ export function fromEtherPlainTx(transaction: EthereumPlainTx): AnyEtherCreateTx
   switch (transaction.meta.type) {
     case TxMetaType.ETHER_CANCEL:
       return CreateEtherCancelTx.fromPlain(transaction);
+    case TxMetaType.ETHER_RECOVERY:
+      return CreateEtherRecoveryTx.fromPlain(transaction);
     case TxMetaType.ETHER_SPEEDUP:
       return CreateEtherSpeedUpTx.fromPlain(transaction);
     case TxMetaType.ETHER_TRANSFER:
@@ -157,6 +172,8 @@ export function fromErc20PlainTx(transaction: EthereumPlainTx, tokenRegistry: To
       return CreateErc20CancelTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_CONVERT:
       return CreateErc20ConvertTx.fromPlain(transaction, tokenRegistry);
+    case TxMetaType.ERC20_RECOVERY:
+      return CreateErc20RecoveryTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_SPEEDUP:
       return CreateErc20SpeedUpTx.fromPlain(transaction, tokenRegistry);
     case TxMetaType.ERC20_TRANSFER:

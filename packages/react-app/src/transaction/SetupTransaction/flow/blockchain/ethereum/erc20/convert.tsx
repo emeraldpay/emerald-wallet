@@ -53,6 +53,7 @@ export class Erc20ConvertFlow implements CommonFlow {
         const blockchain = blockchainIdToCode(item.blockchain);
 
         return (
+          !entry.receiveDisabled &&
           tokenRegistry.hasWrappedToken(blockchain) &&
           getBalance(item, Blockchains[blockchain].params.coinTicker).isPositive()
         );

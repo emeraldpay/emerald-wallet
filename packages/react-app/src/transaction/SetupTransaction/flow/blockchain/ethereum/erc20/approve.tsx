@@ -28,13 +28,14 @@ export class Erc20ApproveFlow implements CommonFlow {
     const { setEntry } = this.handler;
 
     const approvingEntries = entries
-      .filter((item): item is EthereumEntry => isEthereumEntry(item))
-      .filter((item) => {
-        const blockchain = blockchainIdToCode(item.blockchain);
+      .filter((entry): entry is EthereumEntry => isEthereumEntry(entry))
+      .filter((entry) => {
+        const blockchain = blockchainIdToCode(entry.blockchain);
 
         return (
+          !entry.receiveDisabled &&
           tokenRegistry.hasAnyToken(blockchain) &&
-          getBalance(item, Blockchains[blockchain].params.coinTicker).isPositive()
+          getBalance(entry, Blockchains[blockchain].params.coinTicker).isPositive()
         );
       });
 

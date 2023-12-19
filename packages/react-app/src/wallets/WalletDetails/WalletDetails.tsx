@@ -1,3 +1,4 @@
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen, txhistory } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
@@ -79,6 +80,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  hasAnyBalance: boolean;
   hasEthereumEntry: boolean;
   hasOtherWallets: boolean;
 }
@@ -91,6 +93,7 @@ interface DispatchProps {
 }
 
 const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  hasAnyBalance,
   hasEthereumEntry,
   hasOtherWallets,
   initialTab,
@@ -141,7 +144,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
     >
       <TabContext value={tab}>
         <div className={styles.tabs}>
-          <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
+          <TabList indicatorColor="primary" textColor="primary" onChange={(_event, selected) => setTab(selected)}>
             {renderTabs()}
           </TabList>
           <WalletMenu walletId={walletId} />
@@ -160,9 +163,16 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
               {tab !== WalletTabs.BALANCE && (
                 <>
                   <Tooltip title="Send">
-                    <IconButton className={styles.toolbarButton} color="primary" onClick={gotoSend}>
-                      <SendIcon />
-                    </IconButton>
+                    <span>
+                      <IconButton
+                        className={styles.toolbarButton}
+                        color="primary"
+                        disabled={!hasAnyBalance}
+                        onClick={gotoSend}
+                      >
+                        <SendIcon />
+                      </IconButton>
+                    </span>
                   </Tooltip>
                   <Tooltip title="Receive">
                     <IconButton className={styles.toolbarButton} color="primary" onClick={gotoReceive}>
@@ -198,7 +208,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
 
+    let balances: BigAmount[] = [];
+
+    if (wallet != null) {
+      balances = accounts.selectors.getWalletBalances(state, wallet);
+    }
+
     return {
+      hasAnyBalance: balances.some((balance) => balance.isPositive()),
       hasEthereumEntry: wallet?.entries.some((entry) => !entry.receiveDisabled && isEthereumEntry(entry)) ?? false,
       hasOtherWallets: state.accounts.wallets.length > 1,
     };

@@ -54,8 +54,14 @@ interface StateProps {
   getFiatBalance(asset: string): CurrencyAmount | undefined;
 }
 
+interface TxOrigin {
+  action: TxAction;
+  entries: WalletEntry[];
+  entry: WalletEntry;
+}
+
 interface DispatchProps {
-  prepareTransaction(action: TxAction, entry: WalletEntry): void;
+  prepareTransaction(origin: TxOrigin): void;
   setAsset(asset: string): void;
   setEntry(entry: WalletEntry, ownerAddress?: string): void;
   setStage(stage: CreateTxStage): void;
@@ -88,8 +94,8 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const mounted = React.useRef(true);
 
   React.useEffect(() => {
-    prepareTransaction(action, entry);
-  }, [action, entry, storedTx, prepareTransaction]);
+    prepareTransaction({ action, entries, entry });
+  }, [action, entries, entry, storedTx, prepareTransaction]);
 
   React.useEffect(() => {
     return () => {
@@ -132,7 +138,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       walletId = EntryIdOp.of(entryId).extractWalletId();
     }
 
-    const entries = accounts.selectors.findWallet(state, walletId)?.entries.filter((entry) => !entry.receiveDisabled);
+    const { entries } = accounts.selectors.findWallet(state, walletId) ?? {};
 
     if (entries == null || entries.length === 0) {
       throw new Error('Something went wrong while getting entries from wallet');
@@ -250,8 +256,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { initialAllowance, storedTx }) => ({
-    prepareTransaction(action, entry) {
-      dispatch(txStash.actions.prepareTransaction({ action, entry, initialAllowance, storedTx }));
+    prepareTransaction({ action, entries, entry }) {
+      dispatch(txStash.actions.prepareTransaction({ action, entries, entry, initialAllowance, storedTx }));
     },
     setAsset(asset) {
       dispatch(txStash.actions.setAsset(asset));

@@ -58,11 +58,13 @@ const BitcoinEntryItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
         {fiatBalance?.isPositive() && <FiatBalance balance={fiatBalance} />}
       </div>
       <div className={styles.entryActions}>
-        <IconButton disabled={balance.isZero()} classes={buttonClasses} size="small" onClick={gotoSend}>
-          <Tooltip title="Send">
-            <SendIcon fontSize="small" />
-          </Tooltip>
-        </IconButton>
+        <Tooltip title="Send">
+          <span>
+            <IconButton disabled={balance.isZero()} classes={buttonClasses} size="small" onClick={gotoSend}>
+              <SendIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
       </div>
     </div>
   );
