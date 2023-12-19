@@ -54,7 +54,7 @@ export interface Handler {
   setTransaction(transaction: workflow.AnyPlainTx): void;
 }
 
-export abstract class CommonFlow {
+export abstract class BaseFlow {
   abstract readonly data: Data<workflow.AnyCreateTx, WalletEntry>;
   abstract readonly dataProvider: DataProvider;
   abstract readonly handler: Handler;
