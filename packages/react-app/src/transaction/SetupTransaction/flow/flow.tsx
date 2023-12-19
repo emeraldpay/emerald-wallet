@@ -6,6 +6,7 @@ import {
   BitcoinTransferFlow,
   Erc20ConvertFlow,
   EthereumCancelFlow,
+  EthereumRecoveryFlow,
   EthereumSpeedUpFlow,
   EthereumTransferFlow,
 } from './blockchain';
@@ -29,11 +30,15 @@ export class Flow {
         throw new Error('Unsupported Bitcoin transaction action');
       }
     } else if (isEthereumEntry(entry)) {
-      if (workflow.isEtherCancelCreateTx(createTx)) {
+      if (workflow.isEtherCreateTx(createTx)) {
+        this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isEtherCancelCreateTx(createTx)) {
         this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isEtherRecoveryCreateTx(createTx)) {
+        this._flow = new EthereumRecoveryFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isEtherSpeedUpCreateTx(createTx)) {
         this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
-      } else if (workflow.isEtherCreateTx(createTx)) {
+      } else if (workflow.isErc20CreateTx(createTx)) {
         this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20ApproveCreateTx(createTx)) {
         this._flow = new Erc20ApproveFlow({ ...data, entry, createTx }, dataProvider, handler);
@@ -41,10 +46,10 @@ export class Flow {
         this._flow = new EthereumCancelFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20ConvertCreateTx(createTx)) {
         this._flow = new Erc20ConvertFlow({ ...data, entry, createTx }, dataProvider, handler);
+      } else if (workflow.isErc20RecoveryCreateTx(createTx)) {
+        this._flow = new EthereumRecoveryFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else if (workflow.isErc20SpeedUpCreateTx(createTx)) {
         this._flow = new EthereumSpeedUpFlow({ ...data, entry, createTx }, dataProvider, handler);
-      } else if (workflow.isErc20CreateTx(createTx)) {
-        this._flow = new EthereumTransferFlow({ ...data, entry, createTx }, dataProvider, handler);
       } else {
         throw new Error('Unsupported Ethereum transaction action');
       }

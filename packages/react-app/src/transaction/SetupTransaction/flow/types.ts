@@ -11,6 +11,7 @@ import {
   Erc20ApproveFlow,
   Erc20ConvertFlow,
   EthereumCancelFlow,
+  EthereumRecoveryFlow,
   EthereumSpeedUpFlow,
   EthereumTransferFlow,
 } from './blockchain';
@@ -22,6 +23,7 @@ export type BlockchainFlow =
   | Erc20ApproveFlow
   | Erc20ConvertFlow
   | EthereumCancelFlow
+  | EthereumRecoveryFlow
   | EthereumSpeedUpFlow
   | EthereumTransferFlow;
 

@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     ...entryStyles(theme),
     alert: {
+      marginLeft: theme.spacing(8),
       marginTop: theme.spacing(2),
     },
     alertTitle: {
@@ -42,6 +43,13 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+type TokenBalances = ConvertedBalance<TokenAmount>[];
+
+interface TokenSeparateBalances {
+  commonBalances: TokenBalances;
+  wrappedBalances: TokenBalances;
+}
+
 interface OwnProps {
   entries: EthereumEntry[];
   walletId: Uuid;
@@ -51,18 +59,13 @@ interface StateProps {
   balance: WeiAny;
   fiatBalance: CurrencyAmount | undefined;
   blockchainCode: BlockchainCode;
-  tokenBalances: ConvertedBalance<TokenAmount>[];
+  tokenBalances: TokenBalances;
 }
 
 interface DispatchProps {
   gotoConvert(): void;
   gotoRecover(): void;
   gotoSend(asset?: string): void;
-}
-
-interface TokenBalances {
-  commonBalances: ConvertedBalance<TokenAmount>[];
-  wrappedBalances: ConvertedBalance<TokenAmount>[];
 }
 
 const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
@@ -92,7 +95,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
     return (
       <Alert
         action={
-          <Button color="inherit" onClick={gotoRecover}>
+          <Button color="inherit" disabled={balance.isZero()} onClick={gotoRecover}>
             Recover
           </Button>
         }
@@ -106,13 +109,14 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
             `${carry}${array.length === index + 1 ? ' and ' : ', '}${formatAmount(balance)}`,
           '',
         )}{' '}
-        on {blockchainTitle} blockchain
+        on {blockchainTitle} blockchain.
+        {balance.isZero() ? " Unfortunately you can't recovery them without positive balance." : null}
       </Alert>
     );
   }
 
   const { commonBalances: tokenCommonBalances, wrappedBalances: tokenWrappedBalances } =
-    tokenBalances.reduce<TokenBalances>(
+    tokenBalances.reduce<TokenSeparateBalances>(
       (carry, tokenBalance) => {
         if (isWrappedToken(tokenBalance.balance.token)) {
           carry.wrappedBalances.push(tokenBalance);
@@ -225,9 +229,24 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 };
 
+function aggregateBalances(balances: TokenAmount[]): TokenAmount[] {
+  return balances.reduce<TokenAmount[]>((carry, balance) => {
+    const index = carry.findIndex(
+      ({ token: { address } }) => address.toLowerCase() === balance.token.address.toLowerCase(),
+    );
+
+    if (index > -1) {
+      carry[index] = carry[index].plus(balance);
+    } else {
+      carry.push(balance);
+    }
+
+    return carry;
+  }, []);
+}
+
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, ownProps) => {
-    const { entries } = ownProps;
+  (state, { entries }) => {
     const [entry] = entries;
 
     const blockchainCode = blockchainIdToCode(entry.blockchain);
@@ -249,14 +268,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         const balances = tokens.selectors.selectBalances(state, blockchainCode, address.value);
 
-        return tokens.selectors.aggregateBalances([...carry, ...balances]);
+        return aggregateBalances([...carry, ...balances]);
       }, []),
     );
 
     return { balance, blockchainCode, fiatBalance, tokenBalances };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: Dispatch<any>, { entries: [entry], walletId }) => ({
+  (dispatch: Dispatch<any>, { walletId, entries: [entry] }) => ({
     gotoConvert() {
       dispatch(
         screen.actions.gotoScreen(

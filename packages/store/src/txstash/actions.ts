@@ -20,9 +20,9 @@ import {
   TxOrigin,
 } from './types';
 
-export function prepareTransaction({ action, entry, initialAllowance, storedTx }: TxOrigin): Dispatched<void> {
+export function prepareTransaction({ action, entries, entry, initialAllowance, storedTx }: TxOrigin): Dispatched<void> {
   return (dispatch, getState, extra) => {
-    const handler = getHandler({ action, entry, initialAllowance, storedTx }, { dispatch, getState, extra });
+    const handler = getHandler({ action, entries, entry, initialAllowance, storedTx }, { dispatch, getState, extra });
 
     handler?.();
   };

@@ -7,6 +7,7 @@ import { TxAction } from '../types';
 
 export interface Data<T extends WalletEntry> {
   action: TxAction;
+  entries: WalletEntry[];
   entry: T;
   initialAllowance?: Allowance;
   storedTx?: StoredTransaction;

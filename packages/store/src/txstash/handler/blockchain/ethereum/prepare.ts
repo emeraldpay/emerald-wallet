@@ -1,6 +1,15 @@
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { MAX_DISPLAY_ALLOWANCE, TokenRegistry, amountFactory, blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import {
+  Blockchains,
+  EthereumTransactionType,
+  MAX_DISPLAY_ALLOWANCE,
+  TokenRegistry,
+  amountFactory,
+  blockchainIdToCode,
+  workflow,
+} from '@emeraldwallet/core';
+import { TxTarget } from '@emeraldwallet/core/src/transaction/workflow';
 import { TokenBalanceBelong, accounts, tokens } from '../../../..';
 import { getTokens } from '../../../../application/selectors';
 import { setAsset, setPreparing, setTransaction } from '../../../actions';
@@ -86,6 +95,65 @@ export const prepareErc20ConvertTx: EntryHandler<EthereumEntry> = (data, storePr
   }
 
   storeProvider.dispatch(setAsset(createTx.asset));
+  storeProvider.dispatch(setTransaction(createTx.dump()));
+  storeProvider.dispatch(setPreparing(false));
+};
+
+export const prepareEthereumRecoveryTx: EntryHandler<EthereumEntry> = (data, storeProvider) => () => {
+  fetchFee(data, storeProvider)();
+
+  const { entries, entry } = data;
+
+  const { value: address } = entry.address ?? {};
+
+  if (address == null) {
+    throw new Error(`Address for entry ${entry.id} not found`);
+  }
+
+  const state = storeProvider.getState();
+
+  const blockchain = blockchainIdToCode(entry.blockchain);
+
+  const balance = accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0)) as WeiAny;
+
+  if (balance.isZero()) {
+    throw new Error(`Can't create recovery transaction with zero balance for entry ${entry.id} `);
+  }
+
+  const [tokenBalance] = tokens.selectors
+    .selectBalances(storeProvider.getState(), blockchain, address, { belonging: TokenBalanceBelong.OWN })
+    .filter((balance) => balance.isPositive());
+
+  const { eip1559: supportEip1559 = false } = Blockchains[blockchain].params;
+
+  const txType = supportEip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+  let createTx: workflow.CreateEtherRecoveryTx | workflow.CreateErc20RecoveryTx;
+
+  if (tokenBalance == null) {
+    createTx = new workflow.CreateEtherRecoveryTx(null, blockchain, txType);
+
+    createTx.totalBalance = balance;
+  } else {
+    const tokenRegistry = new TokenRegistry(getTokens(state));
+
+    createTx = new workflow.CreateErc20RecoveryTx(tokenBalance.token.address, tokenRegistry, blockchain, txType);
+
+    createTx.totalBalance = balance;
+    createTx.totalTokenBalance = tokenBalance;
+  }
+
+  const recoveryEntry = entries.find(
+    ({ blockchain, receiveDisabled }) => !receiveDisabled && blockchain === entry.blockchain,
+  );
+
+  createTx.from = address;
+  createTx.target = TxTarget.SEND_ALL;
+  createTx.to = recoveryEntry?.address?.value;
+
+  createTx.rebalance();
+
+  storeProvider.dispatch(setAsset(createTx.getAsset()));
   storeProvider.dispatch(setTransaction(createTx.dump()));
   storeProvider.dispatch(setPreparing(false));
 };

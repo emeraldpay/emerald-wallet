@@ -151,6 +151,7 @@ export type TxStashAction =
 
 export interface TxOrigin {
   action: TxAction;
+  entries: WalletEntry[];
   entry: WalletEntry;
   initialAllowance?: Allowance;
   storedTx?: StoredTransaction;

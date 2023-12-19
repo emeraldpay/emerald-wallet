@@ -1,10 +1,11 @@
-import { WalletEntry, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
+import { BitcoinEntry, EthereumEntry, WalletEntry, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { EthereumRawTransaction, decodeData, isEthereumRawTransaction, workflow } from '@emeraldwallet/core';
 import { TxAction } from '../types';
 import {
   prepareBitcoinTx,
   prepareErc20ApproveTx,
   prepareErc20ConvertTx,
+  prepareEthereumRecoveryTx,
   prepareEthereumTx,
   restoreBitcoinCancelTx,
   restoreBitcoinSpeedUpTx,
@@ -22,20 +23,24 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
   const { action, entry } = data;
 
   if (isBitcoinEntry(entry)) {
+    const bitcoinData: Data<BitcoinEntry> = { ...data, entry };
+
     switch (action) {
       case TxAction.CANCEL:
-        return restoreBitcoinCancelTx({ ...data, entry }, storeProvider);
+        return restoreBitcoinCancelTx(bitcoinData, storeProvider);
       case TxAction.SPEEDUP:
-        return restoreBitcoinSpeedUpTx({ ...data, entry }, storeProvider);
+        return restoreBitcoinSpeedUpTx(bitcoinData, storeProvider);
       case TxAction.TRANSFER:
-        return prepareBitcoinTx({ ...data, entry }, storeProvider);
+        return prepareBitcoinTx(bitcoinData, storeProvider);
     }
   } else {
+    const ethereumData: Data<EthereumEntry> = { ...data, entry };
+
     switch (action) {
       case TxAction.APPROVE:
-        return prepareErc20ApproveTx({ ...data, entry }, storeProvider);
+        return prepareErc20ApproveTx(ethereumData, storeProvider);
       case TxAction.CANCEL:
-        return restoreEthereumTx({ ...data, entry }, storeProvider, {
+        return restoreEthereumTx(ethereumData, storeProvider, {
           getTxMetaType(rawTx) {
             if (isEthereumRawTransaction(rawTx)) {
               return ethereumTxTypeSelector(rawTx, workflow.TxMetaType.ETHER_CANCEL, workflow.TxMetaType.ERC20_CANCEL);
@@ -45,9 +50,11 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
           },
         });
       case TxAction.CONVERT:
-        return prepareErc20ConvertTx({ ...data, entry }, storeProvider);
+        return prepareErc20ConvertTx(ethereumData, storeProvider);
+      case TxAction.RECOVERY:
+        return prepareEthereumRecoveryTx(ethereumData, storeProvider);
       case TxAction.SPEEDUP:
-        return restoreEthereumTx({ ...data, entry }, storeProvider, {
+        return restoreEthereumTx(ethereumData, storeProvider, {
           getTxMetaType(rawTx) {
             if (isEthereumRawTransaction(rawTx)) {
               return ethereumTxTypeSelector(
@@ -61,7 +68,7 @@ export function getHandler(data: Data<WalletEntry>, storeProvider: StoreProvider
           },
         });
       case TxAction.TRANSFER:
-        return prepareEthereumTx({ ...data, entry }, storeProvider);
+        return prepareEthereumTx(ethereumData, storeProvider);
     }
   }
 

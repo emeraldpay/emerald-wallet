@@ -75,6 +75,7 @@ interface OwnProps {
 
 interface StateProps {
   balances: BigAmount[];
+  hasAnyBalance: boolean;
   total: BigAmount | undefined;
   walletIcon?: string | null;
 }
@@ -86,6 +87,7 @@ interface DispatchProps {
 
 const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
   balances,
+  hasAnyBalance,
   total,
   wallet,
   walletIcon,
@@ -141,7 +143,13 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </Grid>
           </Grid>
           <Grid item className={styles.actions} xs={3}>
-            <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onSend}>
+            <Button
+              className={styles.actionButton}
+              color="secondary"
+              disabled={!hasAnyBalance}
+              variant="contained"
+              onClick={onSend}
+            >
               Send
             </Button>
             <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onReceive}>
@@ -157,9 +165,13 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { wallet }) => {
     const balances = accounts.selectors.getWalletBalances(state, wallet);
-    const total = accounts.selectors.fiatTotalBalance(state, balances);
 
-    return { balances, total, walletIcon: state.accounts.icons[wallet.id] };
+    return {
+      balances,
+      total: accounts.selectors.fiatTotalBalance(state, balances),
+      hasAnyBalance: balances.some((balance) => balance.isPositive()),
+      walletIcon: state.accounts.icons[wallet.id],
+    };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, { wallet }) => ({

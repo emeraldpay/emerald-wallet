@@ -3,22 +3,6 @@ import { Allowance, allowances, tokens } from '../index';
 import { IState } from '../types';
 import { TokenBalanceBelong, TokenBalanceFilter, moduleName } from './types';
 
-export function aggregateBalances(balances: TokenAmount[]): TokenAmount[] {
-  return balances.reduce<TokenAmount[]>((carry, balance) => {
-    const index = carry.findIndex(
-      ({ token: { address } }) => address.toLowerCase() === balance.token.address.toLowerCase(),
-    );
-
-    if (index > -1) {
-      carry[index] = carry[index].plus(balance);
-    } else {
-      carry.push(balance);
-    }
-
-    return carry;
-  }, []);
-}
-
 export function isInitialized(state: IState): boolean {
   return state[moduleName].initialized;
 }

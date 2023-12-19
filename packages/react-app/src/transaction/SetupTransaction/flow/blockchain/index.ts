@@ -5,6 +5,7 @@ export {
   Erc20ApproveFlow,
   Erc20ConvertFlow,
   EthereumCancelFlow,
+  EthereumRecoveryFlow,
   EthereumSpeedUpFlow,
   EthereumTransferFlow,
 } from './ethereum';
