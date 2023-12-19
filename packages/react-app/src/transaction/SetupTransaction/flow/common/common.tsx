@@ -1,17 +1,16 @@
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
-import { AnyCreateTx } from '@emeraldwallet/core/src/transaction/workflow';
 import { CreateTxStage } from '@emeraldwallet/store';
 import * as React from 'react';
 import { Actions, EthereumFee } from '../components';
 import { BaseFlow, Data, DataProvider, Handler } from '../types';
 
 export abstract class CommonFlow implements BaseFlow {
-  readonly data: Data<AnyCreateTx, WalletEntry>;
+  readonly data: Data<workflow.AnyCreateTx, WalletEntry>;
   readonly dataProvider: DataProvider;
   readonly handler: Handler;
 
-  constructor(data: Data<AnyCreateTx, WalletEntry>, dataProvider: DataProvider, handler: Handler) {
+  constructor(data: Data<workflow.AnyCreateTx, WalletEntry>, dataProvider: DataProvider, handler: Handler) {
     this.data = data;
     this.dataProvider = dataProvider;
     this.handler = handler;

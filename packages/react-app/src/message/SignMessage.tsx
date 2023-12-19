@@ -2,7 +2,6 @@ import { EntryId, SeedDescription, SignedMessage, WalletEntry, isEthereumEntry }
 import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { EthereumMessage, blockchainById, isStructuredMessage } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { findWallet } from '@emeraldwallet/store/lib/accounts/selectors';
 import {
   Address,
   Back,
@@ -458,9 +457,10 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
 
 export default connect<StateProps, DispatchPros, OwnProps, IState>(
   (state, ownProps) => {
-    const entries = findWallet(state, ownProps.walletId)?.entries.filter(
-      (entry) => !entry.receiveDisabled && isEthereumEntry(entry),
-    );
+    const entries = accounts.selectors
+      .findWallet(state, ownProps.walletId)
+      ?.entries.filter((entry) => !entry.receiveDisabled && isEthereumEntry(entry));
+
     const entryById = entries?.reduce<EntryById>((carry, entry) => ({ ...carry, [entry.id]: entry }), {});
 
     return {

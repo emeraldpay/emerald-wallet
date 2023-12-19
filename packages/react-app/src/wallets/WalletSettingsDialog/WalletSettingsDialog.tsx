@@ -1,8 +1,7 @@
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, application, screen } from '@emeraldwallet/store';
-import { ButtonGroup, HashIcon, Input } from '@emeraldwallet/ui';
-import Button from '@emeraldwallet/ui/lib/components/common/Button';
+import { Button, ButtonGroup, HashIcon, Input } from '@emeraldwallet/ui';
 import {
   Box,
   Dialog,

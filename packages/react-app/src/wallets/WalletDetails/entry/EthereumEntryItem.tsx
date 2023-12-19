@@ -7,8 +7,8 @@ import {
   TokenAmount,
   blockchainIdToCode,
   formatAmount,
+  isWrappedToken,
 } from '@emeraldwallet/core';
-import { isWrappedToken } from '@emeraldwallet/core/lib/blockchains';
 import { ConvertedBalance, IState, TxAction, accounts, screen, tokens } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
 import { Button, IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
