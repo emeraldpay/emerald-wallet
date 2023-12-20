@@ -211,7 +211,10 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, { walletId }) => {
     const wallet = accounts.selectors.findWallet(state, walletId);
-    const entries = wallet?.entries.filter((entry): entry is EthereumEntry => isEthereumEntry(entry)) ?? [];
+    const entries =
+      wallet?.entries
+        .filter(({ receiveDisabled }) => !receiveDisabled)
+        .filter((entry): entry is EthereumEntry => isEthereumEntry(entry)) ?? [];
 
     let balances: BigAmount[] = [];
 
