@@ -3,11 +3,11 @@ import { PersistentState, workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
 import * as React from 'react';
 import { Actions } from '../components';
-import { CommonFlow, Data, DataProvider, Handler } from '../types';
+import { BaseFlow, Data, DataProvider, Handler } from '../types';
 
 type CommonData = Data<workflow.AnyCreateTx, WalletEntry>;
 
-export abstract class ModifyFlow implements CommonFlow {
+export abstract class ModifyFlow implements BaseFlow {
   readonly data: CommonData;
   readonly dataProvider: DataProvider;
   readonly handler: Handler;
