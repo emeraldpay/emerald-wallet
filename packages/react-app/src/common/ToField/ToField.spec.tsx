@@ -1,5 +1,5 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import * as addressBook from '@emeraldwallet/store/lib/address-book';
+import { addressBook } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import { mount, shallow } from 'enzyme';

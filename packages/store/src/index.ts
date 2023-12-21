@@ -34,7 +34,7 @@ export {
 export { ConvertedBalance } from './accounts/types';
 export { CreateTxStage, FeeState, TxAction } from './txstash/types';
 export { DefaultFee } from './application/types';
-export { IState } from './types';
+export { Dispatched, IState } from './types';
 export { RemoteAddressBook } from './remote-access/AddressBook';
 export { RemoteAllowances } from './remote-access/Allowances';
 export { RemoteBalances } from './remote-access/Balances';

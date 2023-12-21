@@ -11,7 +11,6 @@ import {
   toBigNumber,
   workflow,
 } from '@emeraldwallet/core';
-import { EthereumFeeRange } from '@emeraldwallet/core/src/transaction/workflow';
 import { getTokens } from '../../../../application/selectors';
 import { setPreparing, setTransaction, setTransactionFee } from '../../../actions';
 import { getFee } from '../../../selectors';
@@ -137,7 +136,7 @@ const recalculateFee: EthereumHandler =
 
         dispatch(setTransaction(createTx.dump()));
 
-        const feeRange: EthereumFeeRange<string> = {
+        const feeRange: workflow.EthereumFeeRange<string> = {
           lowMaxGasPrice,
           highMaxGasPrice,
           lowPriorityGasPrice,
