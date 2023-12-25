@@ -1,14 +1,14 @@
-import { formatAmount, workflow } from '@emeraldwallet/core';
-import { ArrowRight } from '@emeraldwallet/ui';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { workflow } from '@emeraldwallet/core';
+import { Address, FormLabel, FormRow } from '@emeraldwallet/ui';
+import { Typography } from '@material-ui/core';
 import * as React from 'react';
-import { CommonDisplay } from '../../common';
-import { AddressPreview } from '../../components';
+import { EthereumCommonDisplay } from '../../common';
+import { EthereumName } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 
 type EthereumData = Data<workflow.AnyEtherCreateTx | workflow.AnyErc20CreateTx>;
 
-export class EthereumDisplay extends CommonDisplay {
+export class EthereumDisplay extends EthereumCommonDisplay {
   readonly data: EthereumData;
 
   constructor(data: EthereumData, dataProvider: DataProvider, handler: Handler) {
@@ -17,31 +17,32 @@ export class EthereumDisplay extends CommonDisplay {
     this.data = data;
   }
 
-  private renderPreview(): React.ReactElement {
+  private renderFrom(): React.ReactElement {
+    const { createTx } = this.data;
+
+    const { from: address } = createTx;
+
+    return (
+      <FormRow>
+        <FormLabel>From</FormLabel>
+        {address == null ? <Typography>Unknown address</Typography> : <Address address={address} />}
+      </FormRow>
+    );
+  }
+
+  private renderTo(): React.ReactElement {
     const { createTx } = this.data;
     const { lookupAddress } = this.dataProvider;
 
-    const { amount, blockchain, from, to } = createTx;
+    const { blockchain, to: address } = createTx;
 
     return (
       <>
-        <Grid container justifyContent="space-between">
-          <AddressPreview address={from} blockchain={blockchain} lookupAddress={lookupAddress} />
-          <Box>
-            <Grid container alignItems="center" direction="column" justifyContent="space-between">
-              <Typography>{formatAmount(amount)}</Typography>
-              <ArrowRight />
-            </Grid>
-          </Box>
-          <AddressPreview address={to} blockchain={blockchain} lookupAddress={lookupAddress} />
-        </Grid>
-        <Box mt={1} mb={2}>
-          <Grid container justifyContent="center">
-            <Typography variant="body2">
-              Plus {formatAmount(createTx.getFees())} for {createTx.gas} Gas
-            </Typography>
-          </Grid>
-        </Box>
+        <FormRow>
+          <FormLabel>To</FormLabel>
+          {address == null ? <Typography>Unknown address</Typography> : <Address address={address} />}
+        </FormRow>
+        {address != null && <EthereumName address={address} blockchain={blockchain} lookupAddress={lookupAddress} />}
       </>
     );
   }
@@ -49,7 +50,11 @@ export class EthereumDisplay extends CommonDisplay {
   render(): React.ReactElement {
     return (
       <>
-        {this.renderPreview()}
+        {this.renderType()}
+        {this.renderFrom()}
+        {this.renderTo()}
+        {this.renderAmount()}
+        {this.renderFees()}
         {this.renderActions()}
       </>
     );

@@ -1,13 +1,13 @@
-import { formatAmount, workflow } from '@emeraldwallet/core';
-import { FormLabel, FormRow } from '@emeraldwallet/ui';
+import { workflow } from '@emeraldwallet/core';
+import { Address, FormLabel, FormRow } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import * as React from 'react';
-import { CommonDisplay } from '../../../common';
+import { EthereumCommonDisplay } from '../../../common';
 import { Data, DataProvider, Handler } from '../../../types';
 
 type EthereumData = Data<workflow.CreateErc20ConvertTx>;
 
-export class Erc20ConvertDisplay extends CommonDisplay {
+export class Erc20ConvertDisplay extends EthereumCommonDisplay {
   readonly data: EthereumData;
 
   constructor(data: EthereumData, dataProvider: DataProvider, handler: Handler) {
@@ -16,15 +16,15 @@ export class Erc20ConvertDisplay extends CommonDisplay {
     this.data = data;
   }
 
-  private renderPreview(): React.ReactElement {
+  private renderFrom(): React.ReactElement {
     const { createTx } = this.data;
+
+    const { address } = createTx;
 
     return (
       <FormRow>
-        <FormLabel />
-        <Typography>
-          Convert {formatAmount(createTx.amount, 6)} with fee {formatAmount(createTx.getFees(), 6)}
-        </Typography>
+        <FormLabel>From</FormLabel>
+        {address == null ? <Typography>Unknown address</Typography> : <Address address={address} />}
       </FormRow>
     );
   }
@@ -32,7 +32,10 @@ export class Erc20ConvertDisplay extends CommonDisplay {
   render(): React.ReactElement {
     return (
       <>
-        {this.renderPreview()}
+        {this.renderType()}
+        {this.renderFrom()}
+        {this.renderAmount()}
+        {this.renderFees()}
         {this.renderActions()}
       </>
     );

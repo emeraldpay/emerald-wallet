@@ -94,7 +94,7 @@ export const Actions: React.FC<OwnProps> = ({ blockchain, isHardware, onCancel, 
           </Grid>
         </Box>
       ) : isHardware ? (
-        <WaitLedger fullSize blockchain={blockchain} onConnected={handleSignTx} />
+        <WaitLedger blockchain={blockchain} onConnected={handleSignTx} />
       ) : (
         <FormRow>
           <FormLabel>Password</FormLabel>

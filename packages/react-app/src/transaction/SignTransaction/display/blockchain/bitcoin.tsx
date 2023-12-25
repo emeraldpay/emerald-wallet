@@ -1,8 +1,9 @@
-import { amountFactory, formatAmount, workflow } from '@emeraldwallet/core';
-import { Address, BlockchainAvatar } from '@emeraldwallet/ui';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { workflow } from '@emeraldwallet/core';
+import { Address, FormLabel, FormRow } from '@emeraldwallet/ui';
+import { Typography } from '@material-ui/core';
 import * as React from 'react';
 import { CommonDisplay } from '../common';
+import { BitcoinAddresses } from '../components';
 import { Data, DataProvider, Handler } from '../types';
 
 type BitcoinData = Data<workflow.CreateBitcoinTx>;
@@ -16,33 +17,42 @@ export class BitcoinDisplay extends CommonDisplay {
     this.data = data;
   }
 
-  private renderPreview(): React.ReactElement {
-    const {
-      blockchain,
-      outputs: [{ amount, address }],
-    } = this.data.createTx;
+  private renderFrom(): React.ReactElement {
+    const { createTx } = this.data;
+
+    return <BitcoinAddresses inputs={createTx.build().inputs} />;
+  }
+
+  private renderTo(): React.ReactElement {
+    const { createTx } = this.data;
+
+    const { to: address } = createTx.tx;
 
     return (
-      <Box mb={2}>
-        <Grid container alignItems="center">
-          <Grid item>
-            <Box pr={2}>
-              <BlockchainAvatar blockchain={blockchain} />
-            </Box>
-          </Grid>
-          <Grid item>
-            <Typography variant="h5">Sending {formatAmount(amountFactory(blockchain)(amount))} to:</Typography>
-            <Address address={address} />
-          </Grid>
-        </Grid>
-      </Box>
+      <FormRow>
+        <FormLabel>To</FormLabel>
+        {address == null ? <Typography>Unknown address</Typography> : <Address address={address} />}
+      </FormRow>
+    );
+  }
+
+  private renderFees(): React.ReactElement {
+    return (
+      <FormRow>
+        <FormLabel />
+        {/* TODO */}
+      </FormRow>
     );
   }
 
   render(): React.ReactElement {
     return (
       <>
-        {this.renderPreview()}
+        {this.renderType()}
+        {this.renderFrom()}
+        {this.renderTo()}
+        {this.renderAmount()}
+        {this.renderFees()}
         {this.renderActions()}
       </>
     );

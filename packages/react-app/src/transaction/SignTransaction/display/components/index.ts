@@ -1,4 +1,7 @@
 /* eslint sort-exports/sort-exports: error */
 
 export { Actions } from './Actions';
-export { AddressPreview } from './AddressPreview';
+export { Amount } from './Amount';
+export { BitcoinAddresses } from './BitcoinAddresses';
+export { EthereumName } from './EthereumName';
+export { Type } from './Type';
