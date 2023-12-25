@@ -48,11 +48,11 @@ const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ st
 
       break;
     case TxAction.CONVERT:
-      title = 'Create Convert Transaction';
+      title = 'Convert Ether Transaction';
 
       break;
     case TxAction.RECOVERY:
-      title = 'Create Recovery Transaction';
+      title = 'Recovery Transaction';
 
       break;
     case TxAction.SPEEDUP:

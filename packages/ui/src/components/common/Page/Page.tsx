@@ -21,17 +21,11 @@ import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
+import classNames from 'classnames';
 import * as React from 'react';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
-    children: {
-      overflowY: 'auto',
-      padding: theme.spacing(4),
-    },
-    footer: {
-      padding: theme.spacing(2),
-    },
     root: {
       display: 'flex',
       flexDirection: 'column',
@@ -43,12 +37,23 @@ const useStyles = makeStyles<Theme>((theme) =>
       flex: 0,
       justifyContent: 'space-between',
     },
+    content: {
+      overflowY: 'auto',
+      padding: theme.spacing(4),
+    },
+    fullHeight: {
+      height: '100%',
+    },
+    footer: {
+      padding: theme.spacing(2),
+    },
   }),
 );
 
 interface OwnProps {
   className?: string;
   footer?: React.ReactNode;
+  fullHeight?: boolean;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
   title: React.ReactNode;
@@ -66,24 +71,24 @@ const getIconWithButton = (icon?: React.ReactElement): React.ReactElement => {
   );
 };
 
-export const PageTitle: React.FC = ({ children }) => (
-  <Typography variant="h6" color="inherit">
-    {children}
-  </Typography>
-);
-
-export const Page: React.FC<OwnProps> = ({ children, footer, leftIcon, rightIcon, title }) => {
+export const Page: React.FC<OwnProps> = ({ children, footer, leftIcon, rightIcon, title, fullHeight = false }) => {
   const styles = useStyles();
 
   return (
-    <Paper classes={{ root: styles.root }}>
+    <Paper classes={{ root: classNames(styles.root, fullHeight ? styles.fullHeight : null) }}>
       <Toolbar className={styles.toolbar}>
         {getIconWithButton(leftIcon)}
-        {typeof title === 'string' ? <PageTitle>{title}</PageTitle> : title}
+        {typeof title === 'string' ? (
+          <Typography variant="h6" color="inherit">
+            {title}
+          </Typography>
+        ) : (
+          title
+        )}
         {getIconWithButton(rightIcon)}
       </Toolbar>
       <Divider />
-      <div className={styles.children}>{children}</div>
+      <div className={classNames(styles.content, fullHeight ? styles.fullHeight : null)}>{children}</div>
       {footer != null && (
         <>
           <Divider />

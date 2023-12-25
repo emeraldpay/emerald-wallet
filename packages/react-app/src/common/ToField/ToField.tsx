@@ -30,6 +30,8 @@ interface State {
 type Props = OwnProps & StateProps & DispatchProps;
 
 class ToField extends React.Component<Props, State> {
+  private mounted = true;
+
   constructor(props: Props) {
     super(props);
 
@@ -38,6 +40,10 @@ class ToField extends React.Component<Props, State> {
       hint: null,
       value: props.to ?? '',
     };
+  }
+
+  componentWillUnmount(): void {
+    this.mounted = false;
   }
 
   getRightIcon = (): React.ReactNode => {
@@ -65,12 +71,14 @@ class ToField extends React.Component<Props, State> {
 
         const address = await resolveName(blockchain, to);
 
-        if (address == null) {
-          this.setState({ error: 'Name not found' });
-        } else {
-          onChange(address);
+        if (this.mounted) {
+          if (address == null) {
+            this.setState({ error: 'Name not found' });
+          } else {
+            onChange(address);
 
-          this.setState({ hint: address });
+            this.setState({ hint: address });
+          }
         }
       } else {
         onChange(to);
@@ -80,7 +88,7 @@ class ToField extends React.Component<Props, State> {
         } else if (isValidAddress(to)) {
           const name = await lookupAddress(blockchain, to);
 
-          if (name != null) {
+          if (this.mounted && name != null) {
             this.setState({ hint: name });
           }
         } else {

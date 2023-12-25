@@ -327,7 +327,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
       {stage === Stage.UNLOCK && (
         <>
           {seed?.type === 'ledger' ? (
-            <WaitLedger fullSize onConnected={() => setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST)} />
+            <WaitLedger onConnected={() => setStage(blockchains.length > 1 ? Stage.OPTIONS : Stage.LIST)} />
           ) : (
             <>
               <FormRow>

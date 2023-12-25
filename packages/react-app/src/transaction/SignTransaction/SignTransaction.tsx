@@ -1,6 +1,16 @@
+import { BigAmount } from '@emeraldpay/bigamount';
 import { WalletEntry, isSeedPkRef } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, TokenRegistry, workflow } from '@emeraldwallet/core';
-import { CreateTxStage, IState, accounts, blockchains, screen, transaction, txStash } from '@emeraldwallet/store';
+import { BlockchainCode, CurrencyAmount, TokenRegistry, workflow } from '@emeraldwallet/core';
+import {
+  CreateTxStage,
+  IState,
+  accounts,
+  blockchains,
+  screen,
+  settings,
+  transaction,
+  txStash,
+} from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Display } from './display';
@@ -13,6 +23,7 @@ interface StateProps {
   createTx: workflow.AnyCreateTx;
   entry: WalletEntry;
   isHardware: boolean;
+  getFiatAmount(amount: BigAmount): CurrencyAmount;
 }
 
 interface DispatchProps {
@@ -25,6 +36,7 @@ const SignTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   createTx,
   entry,
   isHardware,
+  getFiatAmount,
   lookupAddress,
   onCancel,
   signTx,
@@ -32,7 +44,7 @@ const SignTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 }) => {
   const { display } = new Display(
     { createTx, entry, isHardware },
-    { lookupAddress },
+    { getFiatAmount, lookupAddress },
     { onCancel, signTx, verifyGlobalKey },
   );
 
@@ -71,6 +83,12 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       isHardware:
         isSeedPkRef(entry, entry.key) &&
         accounts.selectors.isHardwareSeed(state, { type: 'id', value: entry.key.seedId }),
+      getFiatAmount(amount) {
+        const rate = settings.selectors.fiatRate(state, amount) ?? 0;
+        const value = amount.getNumberByUnit(amount.units.top).multipliedBy(rate);
+
+        return new CurrencyAmount(value.multipliedBy(100), state.settings.localeCurrency);
+      },
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -24,6 +24,12 @@
     },
     {
       "type": "npm",
+      "group": "build",
+      "label": "build:watch",
+      "script": "build:watch"
+    },
+    {
+      "type": "npm",
       "group": "test",
       "label": "test",
       "script": "test"

@@ -60,7 +60,7 @@ export {
   DispatchProps as NotificationDispatchProps,
   OwnProps as NotificationOwnProps,
 } from './components/common/Notification';
-export { Page, PageTitle } from './components/common/Page';
+export { Page } from './components/common/Page';
 export { default as Pager } from './components/common/Pager';
 export { default as PasswordConfirmedInput } from './components/common/PasswordConfirmedInput';
 export { default as PasswordInput } from './components/common/PasswordInput';

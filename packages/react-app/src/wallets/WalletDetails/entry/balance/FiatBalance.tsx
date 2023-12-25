@@ -1,5 +1,4 @@
-import { BigAmount } from '@emeraldpay/bigamount';
-import { formatFiatAmountPartial } from '@emeraldwallet/core';
+import { CurrencyAmount, formatFiatAmountPartial } from '@emeraldwallet/core';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -8,7 +7,7 @@ import entryStyles from '../styles';
 const useStyles = makeStyles((theme) => entryStyles(theme));
 
 interface OwnProps {
-  balance: BigAmount;
+  balance: CurrencyAmount;
 }
 
 const FiatBalance: React.FC<OwnProps> = ({ balance }) => {

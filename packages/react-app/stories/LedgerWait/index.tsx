@@ -9,4 +9,4 @@ storiesOf('WaitLedger', module)
   .addDecorator(withProvider)
   .addDecorator(withTheme)
   .add('default', () => <WaitLedger onConnected={action('Connected')} />)
-  .add('full size', () => <WaitLedger fullSize onConnected={action('Connected')} />);
+  .add('full size', () => <WaitLedger onConnected={action('Connected')} />);

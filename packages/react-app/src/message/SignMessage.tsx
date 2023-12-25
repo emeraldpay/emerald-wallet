@@ -416,7 +416,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
       {stage === Stages.SIGN && (
         <>
           {seed?.type === 'ledger' ? (
-            <WaitLedger fullSize onConnected={onLedgerConnected} />
+            <WaitLedger onConnected={onLedgerConnected} />
           ) : (
             <>
               <FormRow>

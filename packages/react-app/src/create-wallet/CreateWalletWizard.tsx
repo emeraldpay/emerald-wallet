@@ -193,7 +193,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
       />
     );
   } else if (page.code === STEP_CODE.LEDGER_OPEN) {
-    activeStepPage = <WaitLedger fullSize onConnected={applyWithState(step.applyLedgerConnected)} />;
+    activeStepPage = <WaitLedger onConnected={applyWithState(step.applyLedgerConnected)} />;
   } else if (page.code === STEP_CODE.LOCK_SEED) {
     const onLock = (globalPassword: string): void => {
       if (onSaveSeed == null) {

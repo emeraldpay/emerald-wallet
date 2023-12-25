@@ -127,7 +127,7 @@ const SetupBlockchains: React.FC<OwnProps & StateProps & DispatchProps> = ({
         )}
         {stage === Stages.CONFIRM &&
           (isHardware ? (
-            <WaitLedger fullSize onConnected={handleCreate} />
+            <WaitLedger onConnected={handleCreate} />
           ) : (
             <>
               <FormRow>

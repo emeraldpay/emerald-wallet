@@ -1,5 +1,6 @@
+import { BigAmount } from '@emeraldpay/bigamount';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { BlockchainCode, CurrencyAmount, workflow } from '@emeraldwallet/core';
 import { BitcoinDisplay, Erc20ApproveDisplay, Erc20ConvertDisplay, EthereumDisplay } from './blockchain';
 
 export type BlockchainDisplay = BitcoinDisplay | EthereumDisplay | Erc20ApproveDisplay | Erc20ConvertDisplay;
@@ -11,6 +12,7 @@ export interface Data<T extends workflow.AnyCreateTx> {
 }
 
 export interface DataProvider {
+  getFiatAmount(amount: BigAmount): CurrencyAmount;
   lookupAddress(blockchain: BlockchainCode, address: string): Promise<string | null>;
 }
 

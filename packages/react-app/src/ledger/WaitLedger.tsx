@@ -2,30 +2,12 @@ import { SeedDescription, WatchEvent } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, application, screen } from '@emeraldwallet/store';
 import { Ledger } from '@emeraldwallet/ui';
-import { CircularProgress, Grid, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { lt as isLessVersion } from 'semver';
 
-const useStyles = makeStyles(
-  createStyles({
-    fullSize: {
-      marginBottom: 100,
-      marginTop: 100,
-    },
-    progress: {
-      paddingTop: 10,
-      textAlign: 'center',
-    },
-    icon: {
-      fontSize: '4em',
-    },
-  }),
-);
-
 interface OwnProps {
-  fullSize?: boolean;
   blockchain?: BlockchainCode;
   onConnected(seed: SeedDescription): void;
 }
@@ -40,14 +22,11 @@ interface DispatchProps {
 }
 
 const WaitLedger: React.FC<StateProps & DispatchProps & OwnProps> = ({
-  fullSize = false,
   awaitConnection,
   getLedgerMinVersion,
   onConnected,
   showWarning,
 }) => {
-  const styles = useStyles();
-
   React.useEffect(
     () => {
       let mounted = true;
@@ -93,18 +72,21 @@ const WaitLedger: React.FC<StateProps & DispatchProps & OwnProps> = ({
   );
 
   return (
-    <Grid container className={fullSize ? styles.fullSize : ''}>
-      {fullSize && <Grid item xs={2} />}
-      <Grid item className={styles.progress} xs={1}>
-        <CircularProgress />
+    <Box mb={2}>
+      <Grid container alignItems="center" justifyContent="center">
+        <Grid item>
+          <Box pr={2}>
+            <CircularProgress />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5">
+            <Ledger alignmentBaseline="middle" /> Waiting for Ledger Nano
+          </Typography>
+          <Typography>Please connect and unlock your Ledger Nano X or Nano S.</Typography>
+        </Grid>
       </Grid>
-      <Grid item xs={6}>
-        <Typography variant="h5">
-          <Ledger /> Waiting for Ledger Nano
-        </Typography>
-        <Typography>Please connect and unlock your Ledger Nano X or Nano S.</Typography>
-      </Grid>
-    </Grid>
+    </Box>
   );
 };
 
