@@ -209,6 +209,10 @@ export class CreateBitcoinTx implements BitcoinTx {
     this.rebalance();
   }
 
+  get target(): TxTarget {
+    return this.tx.target;
+  }
+
   set target(target: TxTarget) {
     this.tx.target = target;
 
@@ -380,6 +384,10 @@ export class CreateBitcoinTx implements BitcoinTx {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
 
+    if (!this.validateTarget()) {
+      return ValidationResult.INCORRECT_TARGET_AMOUNT;
+    }
+
     return ValidationResult.OK;
   }
 
@@ -389,5 +397,22 @@ export class CreateBitcoinTx implements BitcoinTx {
     }
 
     return sequence < MAX_SEQUENCE ? sequence + 1 : MAX_SEQUENCE;
+  }
+
+  private validateTarget(): boolean {
+    const {
+      totalToSpend,
+      tx: { amount, target },
+    } = this;
+
+    if (target === TxTarget.SEND_ALL) {
+      if (amount == null) {
+        return false;
+      }
+
+      return totalToSpend.minus(this.getFees()).equals(amount);
+    }
+
+    return true;
   }
 }

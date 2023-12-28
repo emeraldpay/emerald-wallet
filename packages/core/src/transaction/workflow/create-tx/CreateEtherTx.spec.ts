@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode } from '../../../blockchains';
-import { EthereumPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
+import { EthereumBasicPlainTx, TxMetaType, TxTarget, ValidationResult } from '../types';
 import { CreateEtherTx } from './CreateEtherTx';
 
 describe('CreateEthereumTx', () => {
@@ -298,7 +298,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('reads from dumps', () => {
-    const dump: EthereumPlainTx = {
+    const dump: EthereumBasicPlainTx = {
       amount: '999580000000500002/WEI',
       asset: 'ETH',
       blockchain: BlockchainCode.ETH,
@@ -326,7 +326,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('reads from dumps, manual tx', () => {
-    const dump: EthereumPlainTx = {
+    const dump: EthereumBasicPlainTx = {
       amount: '999580000000500002/WEI',
       asset: 'ETH',
       blockchain: BlockchainCode.ETH,

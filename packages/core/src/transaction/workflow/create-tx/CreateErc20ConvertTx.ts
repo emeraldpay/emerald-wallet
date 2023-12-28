@@ -277,6 +277,8 @@ export class CreateErc20ConvertTx implements Erc20ConvertTxDetails {
     this.totalBalance = totalBalance;
     this.totalTokenBalance = totalTokenBalance;
     this.type = iep1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+    this.rebalance();
   }
 
   validate(): ValidationResult {
@@ -302,6 +304,28 @@ export class CreateErc20ConvertTx implements Erc20ConvertTxDetails {
       }
     }
 
+    if (!this.validateTarget()) {
+      return ValidationResult.INCORRECT_TARGET_AMOUNT;
+    }
+
     return ValidationResult.OK;
+  }
+
+  validateTarget(): boolean {
+    const { amount, asset, target, token, totalBalance, totalTokenBalance } = this;
+
+    if (target === TxTarget.SEND_ALL) {
+      if (totalBalance == null || totalTokenBalance == null) {
+        return false;
+      }
+
+      if (asset.toLowerCase() === token.address.toLowerCase()) {
+        return amount.equals(totalTokenBalance);
+      } else {
+        return amount.plus(this.getFees()).equals(totalBalance);
+      }
+    }
+
+    return true;
   }
 }

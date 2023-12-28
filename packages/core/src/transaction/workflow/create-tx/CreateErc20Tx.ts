@@ -256,7 +256,23 @@ export class CreateErc20Tx implements Erc20TxDetails, EthereumTx<BigAmount> {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
 
+    if (!this.validateTarget()) {
+      return ValidationResult.INCORRECT_TARGET_AMOUNT;
+    }
+
     return ValidationResult.OK;
+  }
+
+  public validateTarget(): boolean {
+    if (this.target === TxTarget.SEND_ALL) {
+      if (this.totalTokenBalance == null) {
+        return false;
+      }
+
+      return this.getTotal().equals(this.totalTokenBalance);
+    }
+
+    return true;
   }
 
   public rebalance(): boolean {
