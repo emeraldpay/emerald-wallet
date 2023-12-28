@@ -58,7 +58,7 @@ export class EthereumRecoveryFlow extends EthereumCommonFlow {
     );
   }
 
-  private renderToken(): React.ReactNode {
+  private renderToken(): React.ReactElement {
     const { asset, assets, entry } = this.data;
     const { getBalance, getFiatBalance } = this.dataProvider;
     const { setAsset } = this.handler;
@@ -68,7 +68,7 @@ export class EthereumRecoveryFlow extends EthereumCommonFlow {
         <FormLabel>Token</FormLabel>
         <SelectAsset
           asset={asset}
-          assets={assets.filter(({ balance }) => balance.isPositive())}
+          assets={assets}
           balance={getBalance(entry, asset)}
           fiatBalance={getFiatBalance(asset)}
           onChangeAsset={setAsset}
@@ -127,6 +127,7 @@ export class EthereumRecoveryFlow extends EthereumCommonFlow {
         {this.renderTo(toEntries)}
         {this.renderToken()}
         {this.renderPreview()}
+        {this.renderValidation()}
         {this.renderFee()}
         {this.renderActions()}
       </>

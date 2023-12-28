@@ -20,7 +20,7 @@ export class Erc20ApproveFlow extends EthereumCommonFlow {
     this.data = data;
   }
 
-  private renderFrom(): React.ReactNode {
+  private renderFrom(): React.ReactElement {
     const { entries, tokenRegistry } = this.data;
     const { getBalance } = this.dataProvider;
     const { setEntry } = this.handler;
@@ -51,7 +51,7 @@ export class Erc20ApproveFlow extends EthereumCommonFlow {
     );
   }
 
-  private renderAsset(): React.ReactElement {
+  private renderToken(): React.ReactElement {
     const { asset, assets, entry } = this.data;
     const { getBalance, getFiatBalance } = this.dataProvider;
     const { setAsset } = this.handler;
@@ -61,7 +61,7 @@ export class Erc20ApproveFlow extends EthereumCommonFlow {
         <FormLabel>Token</FormLabel>
         <SelectAsset
           asset={asset}
-          assets={assets.filter(({ address }) => address != null)}
+          assets={assets}
           balance={getBalance(entry, asset)}
           fiatBalance={getFiatBalance(asset)}
           onChangeAsset={setAsset}
@@ -104,9 +104,10 @@ export class Erc20ApproveFlow extends EthereumCommonFlow {
     return (
       <>
         {this.renderFrom()}
-        {this.renderAsset()}
+        {this.renderToken()}
         {this.renderSpender()}
         {this.renderAmount()}
+        {this.renderValidation()}
         {this.renderFee()}
         {this.renderActions()}
       </>

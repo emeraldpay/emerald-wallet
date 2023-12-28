@@ -129,7 +129,7 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state, { entryId, initialAllowance, initialAsset, storedTx, walletId }) => {
+  (state, { action, entryId, initialAllowance, initialAsset, storedTx, walletId }) => {
     if (walletId == null) {
       if (entryId == null) {
         throw new Error('Wallet id or entry id should be provided');
@@ -182,21 +182,30 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return accounts.selectors.getBalance(state, entry.id, amountFactory(blockchain)(0));
     };
 
-    const tokenAssets = tokenRegistry.byBlockchain(blockchain).reduce<Asset[]>(
-      (carry, { address, symbol }) => [
-        ...carry,
-        {
-          address,
-          symbol,
-          balance: getBalance(entry, address, ownerAddress),
-        },
-      ],
-      [],
-    );
+    const tokenAssets = tokenRegistry
+      .byBlockchain(blockchain)
+      .reduce<Asset[]>(
+        (carry, { address, symbol }) => [
+          ...carry,
+          {
+            address,
+            symbol,
+            balance: getBalance(entry, address, ownerAddress),
+          },
+        ],
+        [],
+      )
+      .filter(({ balance }) => balance.isPositive());
 
     const { coinTicker } = Blockchains[blockchain].params;
 
-    const assets: Asset[] = [{ balance: getBalance(entry, coinTicker), symbol: coinTicker }, ...tokenAssets];
+    let assets: Asset[];
+
+    if (action !== TxAction.APPROVE && ownerAddress == null) {
+      assets = [{ balance: getBalance(entry, coinTicker), symbol: coinTicker }, ...tokenAssets];
+    } else {
+      assets = tokenAssets;
+    }
 
     let asset = txStash.selectors.getAsset(state) ?? initialAllowance?.token.address ?? initialAsset ?? coinTicker;
 

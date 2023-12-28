@@ -37,6 +37,7 @@ export class BitcoinTransferFlow extends TransferFlow {
         {this.renderFrom()}
         {this.renderTo()}
         {this.renderAmount()}
+        {this.renderValidation()}
         {this.renderFee()}
         {this.renderActions()}
       </>

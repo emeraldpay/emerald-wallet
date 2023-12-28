@@ -84,6 +84,7 @@ export class Erc20ConvertFlow extends EthereumCommonFlow {
         {this.renderDirection()}
         {this.renderFrom()}
         {this.renderAmount()}
+        {this.renderValidation()}
         {this.renderFee()}
         {this.renderActions()}
       </>

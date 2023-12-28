@@ -11,6 +11,8 @@ interface OwnProps {
 }
 
 export const Amount: React.FC<OwnProps> = ({ createTx, maxDisabled, setTransaction }) => {
+  const maxAmountUnits = React.useRef(createTx.amount.units);
+
   const [maxAmount, setMaxAmount] = React.useState<BigNumber | undefined>();
 
   const handleAmountChange = (amount: BigNumber): void => {
@@ -26,8 +28,20 @@ export const Amount: React.FC<OwnProps> = ({ createTx, maxDisabled, setTransacti
 
     setTransaction(createTx.dump());
 
-    setMaxAmount(createTx.amount.getNumberByUnit(createTx.amount.units.top));
+    const { amount } = createTx;
+
+    setMaxAmount(amount.getNumberByUnit(amount.units.top));
   };
+
+  React.useEffect(() => {
+    const { units } = createTx.amount;
+
+    if (createTx.target === workflow.TxTarget.SEND_ALL && !units.equals(maxAmountUnits.current)) {
+      maxAmountUnits.current = units;
+
+      setMaxAmount(createTx.amount.getNumberByUnit(units.top));
+    }
+  }, [createTx]);
 
   let decimals: number;
 
