@@ -239,6 +239,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       groupedEntries,
       wallet,
       blockchains: wallet?.entries
+        .filter(({ receiveDisabled }) => !receiveDisabled)
         .reduce<string[]>((carry, entry) => {
           const blockchainCode = blockchainIdToCode(entry.blockchain);
 

@@ -105,7 +105,7 @@ const WalletSettingsDialog: React.FC<OwnProps & StateProps & DispatchProps> = ({
       <DialogTitle>Edit Wallet Details</DialogTitle>
       <DialogContent>
         {wallet == null ? (
-          <Alert severity="warning">Wallet not found</Alert>
+          <Alert severity="warning">Wallet not found.</Alert>
         ) : (
           <Grid container>
             <Grid item xs={3}>
