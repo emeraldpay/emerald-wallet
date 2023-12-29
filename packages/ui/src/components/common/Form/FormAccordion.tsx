@@ -6,8 +6,7 @@ import * as React from 'react';
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     container: {
-      marginBottom: '20px !important',
-      marginTop: '20px !important',
+      marginBottom: theme.spacing(2),
     },
     children: {
       flexDirection: 'column',
