@@ -25,7 +25,7 @@ export class EthereumRecoveryFlow extends EthereumCommonFlow {
 
     return entries
       .filter((entry): entry is EthereumEntry => isEthereumEntry(entry))
-      .filter(({ blockchain, receiveDisabled }) => !receiveDisabled && blockchain === entry.blockchain);
+      .filter(({ blockchain }) => blockchain === entry.blockchain);
   }
 
   private renderTo(entries: EthereumEntry[]): React.ReactElement {

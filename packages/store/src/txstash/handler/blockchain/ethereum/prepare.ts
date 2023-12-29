@@ -12,6 +12,7 @@ import {
 import { TokenBalanceBelong, accounts, tokens } from '../../../..';
 import { getTokens } from '../../../../application/selectors';
 import { setAsset, setPreparing, setTransaction } from '../../../actions';
+import { getTransaction } from '../../../selectors';
 import { EntryHandler } from '../../types';
 import { fetchFee } from './fee';
 
@@ -61,6 +62,12 @@ export const prepareErc20ApproveTx: EntryHandler<EthereumEntry> = (data, storePr
       }) ?? token.getAmount(0);
   }
 
+  const tx = getTransaction(state);
+
+  if (tx != null && workflow.isErc20ApprovePlainTx(tx)) {
+    createTx.target = tx.target;
+  }
+
   storeProvider.dispatch(setAsset(createTx.asset));
   storeProvider.dispatch(setTransaction(createTx.dump()));
   storeProvider.dispatch(setPreparing(false));
@@ -91,6 +98,12 @@ export const prepareErc20ConvertTx: EntryHandler<EthereumEntry> = (data, storePr
       tokens.selectors.selectBalance(state, blockchain, address, token.address, {
         belonging: TokenBalanceBelong.OWN,
       }) ?? token.getAmount(0);
+  }
+
+  const tx = getTransaction(state);
+
+  if (tx != null && workflow.isErc20ConvertPlainTx(tx)) {
+    createTx.target = tx.target;
   }
 
   storeProvider.dispatch(setAsset(createTx.asset));

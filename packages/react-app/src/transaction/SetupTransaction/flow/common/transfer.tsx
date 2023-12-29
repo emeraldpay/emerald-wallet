@@ -29,7 +29,7 @@ export abstract class TransferFlow extends CommonFlow {
         <FormLabel>From</FormLabel>
         <SelectEntry
           withAllowances
-          entries={entries.filter((entry) => !entry.receiveDisabled)}
+          entries={entries}
           ownerAddress={ownerAddress}
           selectedEntry={entry}
           onSelect={setEntry}

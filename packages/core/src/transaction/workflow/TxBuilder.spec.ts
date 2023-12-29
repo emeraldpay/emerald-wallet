@@ -21,7 +21,7 @@ describe('TxBuilder', () => {
   const tokenRegistry = new TokenRegistry([tokenData]);
 
   const btcEntry: BitcoinEntry = {
-    id: '7d395b44-0bac-49b9-98de-47e88dbc5a28-0',
+    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-0',
     address: {
       type: 'xpub',
       value: 'vpub_common',
@@ -46,7 +46,7 @@ describe('TxBuilder', () => {
     addresses: [],
   };
   const ethEntry1: EthereumEntry = {
-    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-0',
+    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-1',
     address: {
       type: 'single',
       value: '0x0',
@@ -60,7 +60,7 @@ describe('TxBuilder', () => {
     createdAt: new Date(),
   };
   const ethEntry2: EthereumEntry = {
-    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-1',
+    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-2',
     address: {
       type: 'single',
       value: '0x1',
@@ -74,7 +74,7 @@ describe('TxBuilder', () => {
     createdAt: new Date(),
   };
   const etcEntry: EthereumEntry = {
-    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-2',
+    id: '50391c5d-a517-4b7a-9c42-1411e0603d30-3',
     address: {
       type: 'single',
       value: '0x2',

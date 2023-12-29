@@ -91,10 +91,15 @@ const SetupTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   setStage,
   setTransaction,
 }) => {
+  const entryId = React.useRef<EntryId>();
   const mounted = React.useRef(true);
 
   React.useEffect(() => {
-    prepareTransaction({ action, entries, entry });
+    if (entry.id !== entryId.current) {
+      entryId.current = entry.id;
+
+      prepareTransaction({ action, entries, entry });
+    }
   }, [action, entries, entry, storedTx, prepareTransaction]);
 
   React.useEffect(() => {
@@ -138,9 +143,33 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       walletId = EntryIdOp.of(entryId).extractWalletId();
     }
 
-    const { entries } = accounts.selectors.findWallet(state, walletId) ?? {};
+    const tokenRegistry = new TokenRegistry(state.application.tokens);
 
-    if (entries == null || entries.length === 0) {
+    const entries =
+      accounts.selectors.findWallet(state, walletId)?.entries.filter(({ blockchain, id, receiveDisabled }) => {
+        let valid = !receiveDisabled;
+
+        if (action === TxAction.APPROVE || action === TxAction.CONVERT) {
+          const blockchainCode = blockchainIdToCode(blockchain);
+
+          switch (action) {
+            case TxAction.APPROVE:
+              valid &&= tokenRegistry.hasAnyToken(blockchainCode);
+
+              break;
+            case TxAction.CONVERT:
+              valid &&= tokenRegistry.hasWrappedToken(blockchainCode);
+
+              break;
+          }
+
+          valid &&= accounts.selectors.getBalance(state, id, amountFactory(blockchainCode)(0)).isPositive();
+        }
+
+        return valid;
+      }) ?? [];
+
+    if (entries.length === 0) {
       throw new Error('Something went wrong while getting entries from wallet');
     }
 
@@ -159,8 +188,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     }
 
     const blockchain = blockchainIdToCode(entry.blockchain);
-
-    const tokenRegistry = new TokenRegistry(state.application.tokens);
 
     const getBalance = (entry: WalletEntry, asset: string, ownerAddress?: string): BigAmount => {
       if (tokenRegistry.hasAddress(blockchain, asset)) {

@@ -192,12 +192,12 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
     this._target = value;
 
     switch (value) {
-      case ApproveTarget.MAX_AVAILABLE:
-        this._amount = this.totalTokenBalance;
-
-        break;
       case ApproveTarget.INFINITE:
         this._amount = this.token.getAmount(INFINITE_ALLOWANCE);
+
+        break;
+      case ApproveTarget.MAX_AVAILABLE:
+        this._amount = this.totalTokenBalance;
 
         break;
     }
@@ -255,11 +255,23 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
   }
 
   rebalance(): void {
-    // Nothing
+    const { amount, target, totalTokenBalance, token } = this;
+
+    switch (target) {
+      case ApproveTarget.INFINITE:
+        this._amount = token.getAmount(INFINITE_ALLOWANCE);
+
+        break;
+      case ApproveTarget.MAX_AVAILABLE:
+        this._amount = totalTokenBalance;
+
+        break;
+      default:
+        this._amount = new TokenAmount(amount, token.getUnits(), token);
+    }
   }
 
   setToken(token: Token, totalBalance: WeiAny, totalTokenBalance: TokenAmount, iep1559 = false): void {
-    this._amount = new TokenAmount(this.amount, token.getUnits(), token);
     this._token = token;
 
     this.totalBalance = totalBalance;
