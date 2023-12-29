@@ -8,5 +8,4 @@ import withTheme from '../themeProvider';
 storiesOf('WaitLedger', module)
   .addDecorator(withProvider)
   .addDecorator(withTheme)
-  .add('default', () => <WaitLedger onConnected={action('Connected')} />)
-  .add('full size', () => <WaitLedger onConnected={action('Connected')} />);
+  .add('default', () => <WaitLedger onConnected={action('Connected')} />);

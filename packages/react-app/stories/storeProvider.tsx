@@ -4,7 +4,7 @@ import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
-import { Action } from 'redux';
+import { AnyAction } from 'redux';
 import { ApiMock, MemoryApiMock } from './__mocks__/apiMock';
 import { BackendMock } from './__mocks__/backendMock';
 import {
@@ -34,11 +34,11 @@ function createApi(api: MemoryApiMock): WalletApi {
 export function providerForStore(
   api: MemoryApiMock,
   backend: BackendMock,
-  actions: Array<Action | Dispatched> = [],
+  actions: Array<AnyAction | Dispatched> = [],
 ): DecoratorFunction<ReactElement> {
   const store = createStore(createApi(api), backend);
 
-  actions?.forEach((action) => store.dispatch(action as Action));
+  actions?.forEach((action) => store.dispatch(action as AnyAction));
 
   return (story) => <Provider store={store}>{story()}</Provider>;
 }

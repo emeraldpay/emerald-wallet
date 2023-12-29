@@ -33,6 +33,27 @@
       "group": "test",
       "label": "test",
       "script": "test"
+    },
+    {
+      "type": "npm",
+      "label": "storybook:react-app",
+      "script": "storybook",
+      "path": "packages/react-app",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "label": "storybook:react-app:electron",
+      "script": "storybook:electron",
+      "path": "packages/react-app",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "label": "storybook:ui",
+      "script": "storybook",
+      "path": "packages/ui",
+      "problemMatcher": []
     }
   ]
 }
