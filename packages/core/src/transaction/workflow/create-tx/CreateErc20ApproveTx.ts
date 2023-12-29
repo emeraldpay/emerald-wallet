@@ -265,6 +265,8 @@ export class CreateErc20ApproveTx implements Erc20ApproveTxDetails {
     this.totalBalance = totalBalance;
     this.totalTokenBalance = totalTokenBalance;
     this.type = iep1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+    this.rebalance();
   }
 
   validate(): ValidationResult {

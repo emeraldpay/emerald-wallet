@@ -205,6 +205,10 @@ export class CreateEtherTx implements TxDetails, EthereumTx<WeiAny> {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
 
+    if (!this.validateTarget()) {
+      return ValidationResult.INCORRECT_TARGET_AMOUNT;
+    }
+
     return ValidationResult.OK;
   }
 
