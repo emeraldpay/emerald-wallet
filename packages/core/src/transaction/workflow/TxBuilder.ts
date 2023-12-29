@@ -148,24 +148,33 @@ export class TxBuilder implements BuilderOrigin {
             return this.convertEthereumTx(createTx);
           }
 
+          this.mergeEthereumFee(createTx);
           this.mergeEthereumTx(transaction, createTx);
         }
 
-        if (isChanged) {
-          if (isErc20ApproveCreateTx(createTx)) {
+        if (isErc20ApproveCreateTx(createTx)) {
+          if (isChanged) {
             return this.transformErc20ApproveTx(createTx);
           }
 
-          if (isErc20ConvertCreateTx(createTx)) {
+          this.mergeEthereumFee(createTx);
+        }
+
+        if (isErc20ConvertCreateTx(createTx)) {
+          if (isChanged) {
             return this.transformErc20ConvertTx(createTx);
           }
 
-          if (isEtherRecoveryCreateTx(createTx) || isErc20RecoveryCreateTx(createTx)) {
-            return this.convertEthereumRecoveryTx(createTx);
-          }
+          this.mergeEthereumFee(createTx);
         }
 
-        this.mergeEthereumFee(createTx);
+        if (isEtherRecoveryCreateTx(createTx) || isErc20RecoveryCreateTx(createTx)) {
+          if (isChanged) {
+            return this.convertEthereumRecoveryTx(createTx);
+          }
+
+          this.mergeEthereumFee(createTx);
+        }
       }
     }
 
