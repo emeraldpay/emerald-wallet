@@ -18,7 +18,7 @@ export class EthereumTransferFlow extends TransferFlow {
     this.data = data;
   }
 
-  private renderAsset(): React.ReactElement {
+  private renderToken(): React.ReactElement {
     const { asset, assets, entry, ownerAddress } = this.data;
     const { getBalance, getFiatBalance } = this.dataProvider;
     const { setAsset } = this.handler;
@@ -28,7 +28,7 @@ export class EthereumTransferFlow extends TransferFlow {
         <FormLabel>Token</FormLabel>
         <SelectAsset
           asset={asset}
-          assets={assets.filter(({ balance }) => balance.isPositive())}
+          assets={assets}
           balance={getBalance(entry, asset, ownerAddress)}
           fiatBalance={getFiatBalance(asset)}
           onChangeAsset={setAsset}
@@ -56,9 +56,10 @@ export class EthereumTransferFlow extends TransferFlow {
     return (
       <>
         {this.renderFrom()}
-        {this.renderAsset()}
+        {this.renderToken()}
         {this.renderTo()}
         {this.renderAmount()}
+        {this.renderValidation()}
         {this.renderFee()}
         {this.renderActions()}
       </>
