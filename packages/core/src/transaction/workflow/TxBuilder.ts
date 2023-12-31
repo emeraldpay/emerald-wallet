@@ -154,7 +154,7 @@ export class TxBuilder implements BuilderOrigin {
 
         if (isErc20ApproveCreateTx(createTx)) {
           if (isChanged) {
-            createTx = this.transformErc20ApproveTx(createTx);
+            return this.transformErc20ApproveTx(createTx);
           }
 
           this.mergeEthereumFee(createTx);
@@ -162,7 +162,7 @@ export class TxBuilder implements BuilderOrigin {
 
         if (isErc20ConvertCreateTx(createTx)) {
           if (isChanged) {
-            createTx = this.transformErc20ConvertTx(createTx);
+            return this.transformErc20ConvertTx(createTx);
           }
 
           this.mergeEthereumFee(createTx);
@@ -338,6 +338,8 @@ export class TxBuilder implements BuilderOrigin {
       createTx.gasPrice = feeRange.stdMaxGasPrice;
       createTx.maxGasPrice = feeRange.stdMaxGasPrice;
       createTx.priorityGasPrice = feeRange.stdPriorityGasPrice;
+
+      createTx.rebalance();
     }
   }
 
@@ -375,10 +377,16 @@ export class TxBuilder implements BuilderOrigin {
   }
 
   private transformErc20ApproveTx(createTx: CreateErc20ApproveTx): CreateErc20ApproveTx {
-    const { asset, entry, tokenRegistry } = this;
+    const { asset, entry, feeRange, tokenRegistry } = this;
     const { getBalance } = this.dataProvider;
 
     const blockchain = blockchainIdToCode(entry.blockchain);
+
+    if (blockchain !== createTx.blockchain && isEthereumFeeRange(feeRange)) {
+      createTx.gasPrice = feeRange.stdMaxGasPrice;
+      createTx.maxGasPrice = feeRange.stdMaxGasPrice;
+      createTx.priorityGasPrice = feeRange.stdPriorityGasPrice;
+    }
 
     let tokenAddress = asset;
 
@@ -399,10 +407,16 @@ export class TxBuilder implements BuilderOrigin {
   }
 
   private transformErc20ConvertTx(createTx: CreateErc20ConvertTx): CreateErc20ConvertTx {
-    const { asset, entry, tokenRegistry } = this;
+    const { asset, entry, feeRange, tokenRegistry } = this;
     const { getBalance } = this.dataProvider;
 
     const blockchain = blockchainIdToCode(entry.blockchain);
+
+    if (blockchain !== createTx.blockchain && isEthereumFeeRange(feeRange)) {
+      createTx.gasPrice = feeRange.stdMaxGasPrice;
+      createTx.maxGasPrice = feeRange.stdMaxGasPrice;
+      createTx.priorityGasPrice = feeRange.stdPriorityGasPrice;
+    }
 
     createTx.asset = asset;
 

@@ -1,5 +1,5 @@
-import { EthereumEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { Blockchains, blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { SelectAsset } from '../../../../../../common/SelectAsset';
@@ -21,32 +21,13 @@ export class Erc20ApproveFlow extends EthereumCommonFlow {
   }
 
   private renderFrom(): React.ReactElement {
-    const { entries, tokenRegistry } = this.data;
-    const { getBalance } = this.dataProvider;
+    const { entry, entries } = this.data;
     const { setEntry } = this.handler;
-
-    const approvingEntries = entries
-      .filter((entry): entry is EthereumEntry => isEthereumEntry(entry))
-      .filter((entry) => {
-        const blockchain = blockchainIdToCode(entry.blockchain);
-
-        return (
-          !entry.receiveDisabled &&
-          tokenRegistry.hasAnyToken(blockchain) &&
-          getBalance(entry, Blockchains[blockchain].params.coinTicker).isPositive()
-        );
-      });
-
-    let { entry } = this.data;
-
-    if (!approvingEntries.some(({ id }) => id === entry.id)) {
-      [entry] = approvingEntries;
-    }
 
     return (
       <FormRow>
         <FormLabel>From</FormLabel>
-        <SelectEntry entries={approvingEntries} selectedEntry={entry} onSelect={setEntry} />
+        <SelectEntry entries={entries} selectedEntry={entry} onSelect={setEntry} />
       </FormRow>
     );
   }

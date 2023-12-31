@@ -1,5 +1,5 @@
-import { EthereumEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { Blockchains, blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { Blockchains, workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import * as React from 'react';
@@ -41,32 +41,13 @@ export class Erc20ConvertFlow extends EthereumCommonFlow {
   }
 
   private renderFrom(): React.ReactElement {
-    const { entries, ownerAddress, tokenRegistry } = this.data;
-    const { getBalance } = this.dataProvider;
+    const { entry, entries, ownerAddress } = this.data;
     const { setEntry } = this.handler;
-
-    const convertEntries = entries
-      .filter((entry): entry is EthereumEntry => isEthereumEntry(entry))
-      .filter((entry) => {
-        const blockchain = blockchainIdToCode(entry.blockchain);
-
-        return (
-          !entry.receiveDisabled &&
-          tokenRegistry.hasWrappedToken(blockchain) &&
-          getBalance(entry, Blockchains[blockchain].params.coinTicker).isPositive()
-        );
-      });
-
-    let { entry } = this.data;
-
-    if (!convertEntries.some(({ id }) => id === entry.id)) {
-      [entry] = convertEntries;
-    }
 
     return (
       <FormRow>
         <FormLabel>From</FormLabel>
-        <SelectEntry entries={convertEntries} ownerAddress={ownerAddress} selectedEntry={entry} onSelect={setEntry} />
+        <SelectEntry entries={entries} ownerAddress={ownerAddress} selectedEntry={entry} onSelect={setEntry} />
       </FormRow>
     );
   }

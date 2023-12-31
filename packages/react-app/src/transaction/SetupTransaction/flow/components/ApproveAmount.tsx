@@ -28,6 +28,8 @@ interface OwnProps {
 export const ApproveAmount: React.FC<OwnProps> = ({ createTx, setTransaction }) => {
   const styles = useStyles();
 
+  const maxAmountUnits = React.useRef(createTx.amount.units);
+
   const [allowInfinite, setAllowInfinite] = React.useState(createTx.target === workflow.ApproveTarget.INFINITE);
   const [maxAmount, setMaxAmount] = React.useState<BigNumber | undefined>();
 
@@ -54,6 +56,16 @@ export const ApproveAmount: React.FC<OwnProps> = ({ createTx, setTransaction }) 
 
     setMaxAmount(createTx.amount.getNumberByUnit(createTx.amount.units.top));
   };
+
+  React.useEffect(() => {
+    const { units } = createTx.amount;
+
+    if (createTx.target === workflow.ApproveTarget.MAX_AVAILABLE && !units.equals(maxAmountUnits.current)) {
+      maxAmountUnits.current = units;
+
+      setMaxAmount(createTx.amount.getNumberByUnit(units.top));
+    }
+  }, [createTx]);
 
   return (
     <>
