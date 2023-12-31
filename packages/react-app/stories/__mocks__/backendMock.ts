@@ -6,6 +6,7 @@ import {
   EthereumRawReceipt,
   EthereumRawTransaction,
   blockchainIdToCode,
+  isBitcoin,
 } from '@emeraldwallet/core';
 
 export class BlockchainMock {
@@ -42,14 +43,39 @@ export class BackendMock implements BackendApi {
     });
   }
 
-  estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<number> {
+  estimateFee(
+    blockchain: BlockchainCode,
+    blocks: number,
+    mode: EstimationMode,
+  ): Promise<number | Record<string, string>> {
     switch (mode) {
       case 'avgLast':
-        return Promise.resolve(1000);
-      case 'avgMiddle':
-        return Promise.resolve(3000);
+        return Promise.resolve(
+          isBitcoin(blockchain)
+            ? 1000
+            : {
+                max: '100000000000',
+                priority: '1000000',
+              },
+        );
       case 'avgTail5':
-        return Promise.resolve(1500);
+        return Promise.resolve(
+          isBitcoin(blockchain)
+            ? 2000
+            : {
+                max: '200000000000',
+                priority: '2000000',
+              },
+        );
+      case 'avgMiddle':
+        return Promise.resolve(
+          isBitcoin(blockchain)
+            ? 3000
+            : {
+                max: '300000000000',
+                priority: '3000000',
+              },
+        );
     }
 
     return Promise.resolve(0);
