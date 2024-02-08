@@ -90,7 +90,7 @@ function seedTypeName(type: SeedType): string {
       return 'Ledger';
     case 'mnemonic':
     case 'raw':
-      return 'Secret Phrase';
+      return 'Seed Phrase';
     default:
       return 'Unknown type';
   }

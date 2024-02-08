@@ -122,7 +122,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
         <ConfirmedPasswordInput
           buttonLabel="Set password"
           disabled={done}
-          helperText="(optional) Additional passphrase to protect the secret mnemonic phrase."
+          helperText="(optional) Additional password to protect the seed phrase."
           minLength={1}
           onChange={setPassword}
         />
@@ -144,7 +144,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
         }
         severity="info"
       >
-        You may set an additional passphrase to your secret phrase.
+        You may set an additional password to your seed phrase.
       </Alert>
     );
   }
@@ -287,7 +287,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
       </Grid>
     );
   } else {
-    title = 'Create secret "mnemonic" phrase';
+    title = 'Generated Seed Phrase';
 
     if (hasMnemonic) {
       content = (
@@ -322,9 +322,10 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
               }
               severity="warning"
             >
-              Please write the phrase (&quot;Mnemonic Phrase&quot;) and keep it in a safe place. Never tell it to
-              anyone. Don&apos;t enter it anywhere online. It&apos;s the key to spend your funds. If you lose this
-              phrase, you will not be able to recover your account.
+              Write down your 24-word seed phrase and store it safely.
+              This phrase is the only way to access your funds, and it must never be shared or entered online.
+              If you lose this seed phrase, you cannot recover your wallet.
+              Keep it secret, keep it safe.
             </Alert>
           </Box>
         </>
@@ -334,7 +335,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
         <>
           <Box mb={2}>
             <Alert severity="info">
-              Click &quot;Generate Phrase&quot; to create a new secret phrase that will be a key to spend your
+              Click &quot;Generate Seed&quot; to create a new seed phrase that will be a key to spend your
               cryptocurrencies.
             </Alert>
           </Box>
@@ -344,7 +345,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
               variant="contained"
               onClick={() => onGenerate().then(setMnemonic).catch(console.error)}
             >
-              Generate Phrase
+              Generate Seed
             </Button>
           </Box>
         </>

@@ -98,7 +98,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
       </FormRow>
       <Typography>
         NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to recover
-        the Wallet from Secret Phrase backup. Please make sure you have it backed up.
+        the Wallet from Seed Phrase backup. Please make sure you have it backed up.
       </Typography>
     </Page>
   );

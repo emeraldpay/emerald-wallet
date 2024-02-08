@@ -52,8 +52,8 @@ const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
               buttonLabel={'Set password'}
               disabled={done}
               helperText={
-                '(optional) Additional password to protect the secret mnemonic phrase. ' +
-                "Please save the password, if you lose it you'll be unable to recover your wallet."
+                '(optional) You can set an additional password for extra protection of your seed phrase.' +
+                'Remember to save this password. If it\'s lost, you won\'t be able to access your wallet.'
               }
               minLength={1}
               onChange={setPassword}

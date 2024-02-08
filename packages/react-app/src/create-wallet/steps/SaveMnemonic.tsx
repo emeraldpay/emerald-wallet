@@ -61,8 +61,8 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ onPassword, verifyGl
           Enter your password
         </Typography>
         <Alert severity="info">
-          You&apos;re about to save an encrypted copy of the secret phrase (&quot;Mnemonic Phrase&quot;) generated on
-          the previous step. Please enter the Emerald Wallet password to save the Seed Phrase!
+          You will now save an encrypted version of your seed phrase.
+          Please enter your Emerald Wallet password to securely encrypt and store your seed phrase.
         </Alert>
       </Grid>
       <Grid item xs={12}>
