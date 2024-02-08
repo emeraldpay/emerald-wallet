@@ -53,15 +53,17 @@ const SelectKeySource: React.FC<OwnProps> = ({ seeds, onSelect }) => {
         <ListItemIcon>
           <Ledger />
         </ListItemIcon>
-        <ListItemText primary="Create from Ledger Nano" secondary="Create wallet backed by Ledger Nano model S or X" />
+        <ListItemText
+          primary="Create with Ledger Nano"
+          secondary="Connect and set up your Ledger Nano S or X to manage your wallet." />
       </ListItem>
       <ListItem button onClick={() => onSelect({ type: KeySourceType.SEED_GENERATE })}>
         <ListItemIcon>
           <AddBoxIcon />
         </ListItemIcon>
         <ListItemText
-          primary="Create new seed"
-          secondary="Generate a new mnemonic phrase for a new wallet (24 words)"
+          primary="Generate New Seed Phrase"
+          secondary="Set up a new wallet by creating a 24-word seed phrase."
         />
       </ListItem>
       <ListItem button onClick={() => onSelect({ type: KeySourceType.SEED_IMPORT })}>
@@ -69,8 +71,8 @@ const SelectKeySource: React.FC<OwnProps> = ({ seeds, onSelect }) => {
           <PublishIcon />
         </ListItemIcon>
         <ListItemText
-          primary="Import existing seed"
-          secondary="Import another mnemonic phrase or use new Hardware Wallet (Ledger Nano)"
+          primary="Import Seed Phrase"
+          secondary="Use an existing 24-word seed phrase to restore a wallet."
         />
       </ListItem>
       <ListItem button onClick={() => onSelect({ type: KeySourceType.PK_RAW, password: '', pk: '' })}>
@@ -78,8 +80,8 @@ const SelectKeySource: React.FC<OwnProps> = ({ seeds, onSelect }) => {
           <PublishIcon />
         </ListItemIcon>
         <ListItemText
-          primary="Import existing Raw Private Key"
-          secondary={'Create a new wallet dedicated to a single Private Key, by importing a raw key'}
+          primary="Import Private Key"
+          secondary="Input a private key directly to access a single wallet."
         />
       </ListItem>
       <ListItem
@@ -90,8 +92,8 @@ const SelectKeySource: React.FC<OwnProps> = ({ seeds, onSelect }) => {
           <PublishIcon />
         </ListItemIcon>
         <ListItemText
-          primary="Import existing Private Key JSON file"
-          secondary="Create a new wallet dedicated to a single Private Key, by importing Ethereum JSON file"
+          primary="Import Private Key File"
+          secondary="Upload an Ethereum JSON file to access a single wallet."
         />
       </ListItem>
     </List>

@@ -54,15 +54,15 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
   },
   lockSeed: {
     code: STEP_CODE.LOCK_SEED,
-    title: 'Save Secret Phrase',
+    title: 'Save Seed Phrase',
   },
   mnemonicGenerate: {
     code: STEP_CODE.MNEMONIC_GENERATE,
-    title: 'Generate Secret Phrase',
+    title: 'Generate Seed Phrase',
   },
   mnemonicImport: {
     code: STEP_CODE.MNEMONIC_IMPORT,
-    title: 'Import Secret Phrase',
+    title: 'Import Seed Phrase',
   },
   options: {
     code: STEP_CODE.OPTIONS,
