@@ -51,14 +51,14 @@ jobs:
 
 #       This is for the patched version
 #      ------------------------------
-      - uses: actions/checkout@master
-        name: Install license checker
+      - name: Install license checker
+        uses: actions/checkout@master
         with:
           name: emeraldpay/js-green-licenses
           ref: dev
           path: jsgl
 
-      - uses: Prepare jsgl
+      - name: Prepare jsgl
         run: |
           cd jsgl
           npm install
