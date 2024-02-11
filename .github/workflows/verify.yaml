@@ -54,7 +54,7 @@ jobs:
       - name: Install license checker
         uses: actions/checkout@master
         with:
-          name: emeraldpay/js-green-licenses
+          repository: emeraldpay/js-green-licenses
           ref: dev
           path: jsgl
 
