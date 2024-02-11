@@ -62,7 +62,7 @@ jobs:
         run: |
           cd jsgl
           npm install
-          npm run build
+          npm run compile
           cd ..
 
       - name: Check licenses
