@@ -40,8 +40,32 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install license checker
-        run: npm install -g js-green-licenses
+#      This is for the official version
+#      ------------------------------
+#      - name: Install license checker
+#        run: npm install -g js-green-licenses
+#
+#      - name: Check licenses
+#        run: jsgl --local .
+#      ------------------------------
+
+#       This is for the patched version
+#      ------------------------------
+      - uses: actions/checkout@master
+        name: Install license checker
+        with:
+          name: emeraldpay/js-green-licenses
+          ref: dev
+          path: jsgl
+
+      - uses: Prepare jsgl
+        run: |
+          cd jsgl
+          npm install
+          npm run build
+          cd ..
 
       - name: Check licenses
-        run: jsgl --local .
+        run: node jsgl/build/src/cli.js --local .
+#      ------------------------------
+
