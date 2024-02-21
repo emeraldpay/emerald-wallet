@@ -32,6 +32,7 @@ export {default as CurrencyDai} from './CurrencyDai';
 export {default as CurrencyEtc} from './CurrencyEtc';
 export {default as CurrencyEth} from './CurrencyEth';
 export {default as CurrencyUsd} from './CurrencyUsd';
+export {default as CurrencyGbp} from './CurrencyGbp';
 export {default as CurrencyUsdc} from './CurrencyUsdc';
 export {default as CurrencyUsdt} from './CurrencyUsdt';
 export {default as Download} from './Download';
