@@ -20,6 +20,7 @@ export {
   CurrencyEtc,
   CurrencyEth,
   CurrencyUsd,
+  CurrencyGbp,
   CurrencyUsdt,
   Download,
   EmoteHappy,

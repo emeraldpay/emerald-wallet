@@ -9,6 +9,7 @@ export const enum CurrencyCode {
   AUD = 'AUD',
   CNY = 'CNY',
   KRW = 'KRW',
+  GBP = 'GBP',
   MONOPOLY = 'MONOPOLY'
 }
 
@@ -27,6 +28,7 @@ export class Currency {
     switch (currencySymbol.toUpperCase()) {
       case CurrencyCode.RUB: return 'ru-RU';
       case CurrencyCode.USD: return 'en-US';
+      case CurrencyCode.GBP: return 'en-GB';
       case CurrencyCode.AUD: return 'en-AU';
       case CurrencyCode.EUR: return 'de-DE';
       case CurrencyCode.CNY: return 'zh-CN';

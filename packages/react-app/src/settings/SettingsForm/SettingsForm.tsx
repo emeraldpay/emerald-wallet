@@ -168,6 +168,9 @@ export class SettingsForm extends React.Component<Props, State> {
                   <MenuItem key="usd" value="usd">
                     USD
                   </MenuItem>
+                  <MenuItem key="gbp" value="gbp">
+                    GBP
+                  </MenuItem>
                   <MenuItem key="cny" value="cny">
                     CNY
                   </MenuItem>
