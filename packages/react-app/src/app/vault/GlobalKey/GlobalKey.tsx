@@ -64,7 +64,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
   }, [confirmPassword, hasWallets, password, createWallet, getLegacyItems, goHome, goPasswordMigration, setGlobalKey]);
 
   return (
-    <Page title="Setup Global Key" leftIcon={<Back onClick={goBack} />}>
+    <Page title="Setup You Encryption Password" leftIcon={<Back onClick={goBack} />}>
       {hasWallets && (
         <Alert severity="info" style={{ marginBottom: 15 }}>
           Starting Emerald Wallet v2.6 uses a different schema to store Privates Keys, which is more secure and easier
@@ -73,11 +73,11 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
       )}
       <Typography style={{ marginBottom: 15 }}>
         {hasWallets
-          ? 'To begin using the new format, please create a new key that will encrypt all of your Private Keys.'
-          : 'Please create a key that will encrypt all of your Private Keys.'}
+          ? 'To begin using the new format, please create a password thatencrypts and protects your private keys and seed phrases stored on your device.'
+          : 'Please create a password to secure your wallet. This password encrypts and protects your private keys and seed phrases stored on your device.'}
       </Typography>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }}>Global password</FormLabel>
+        <FormLabel classes={{ root: styles.label }}>Password</FormLabel>
         <PasswordInput onChange={(value) => setPassword(value)} />
       </FormRow>
       <FormRow>
@@ -97,8 +97,10 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
         </ButtonGroup>
       </FormRow>
       <Typography>
-        NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to recover
-        the Wallet from Seed Phrase backup. Please make sure you have it backed up.
+        Important:
+        This password is crucial for accessing your funds.
+        If you forget it, the only way to recover your wallet is through your seed phrase backup.
+        Ensure you have both recorded and stored securely.
       </Typography>
     </Page>
   );
