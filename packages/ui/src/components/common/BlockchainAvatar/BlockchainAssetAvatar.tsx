@@ -23,8 +23,8 @@ const BlockchainAssetAvatar: React.FC<OwnProps> = ({ asset, ...props }) => {
       blockchain = BlockchainCode.ETH;
       break;
     // Testnet
-    case 'ETG':
-      blockchain = BlockchainCode.Goerli;
+    case 'SEPOLIA':
+      blockchain = BlockchainCode.Sepolia;
       break;
     case 'TESTBTC':
       blockchain = BlockchainCode.TestBTC;

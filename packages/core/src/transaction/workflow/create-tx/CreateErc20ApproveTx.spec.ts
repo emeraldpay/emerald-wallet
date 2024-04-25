@@ -25,15 +25,15 @@ describe('CreateErc20ApproveTx', () => {
 
   const tokenRegistry = new TokenRegistry([wethTokenData, weenusTokenData]);
 
-  const wethToken = tokenRegistry.byAddress(BlockchainCode.Goerli, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6');
-  const weenusToken = tokenRegistry.byAddress(BlockchainCode.Goerli, '0xaFF4481D10270F50f203E0763e2597776068CBc5');
+  const wethToken = tokenRegistry.byAddress(BlockchainCode.Sepolia, '0xc31e8a1087bf1460b9926274de4a03b0dd44a6da');
+  const weenusToken = tokenRegistry.byAddress(BlockchainCode.Sepolia, '0xaFF4481D10270F50f203E0763e2597776068CBc5');
 
   test('should create legacy approve tx', () => {
     const tx = new CreateErc20ApproveTx(
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         type: EthereumTransactionType.LEGACY,
@@ -52,7 +52,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         type: EthereumTransactionType.EIP1559,
@@ -74,7 +74,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MAX_AVAILABLE,
         totalTokenBalance: amount,
@@ -89,7 +89,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.INFINITE,
         type: EthereumTransactionType.EIP1559,
@@ -107,7 +107,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         totalTokenBalance: amount,
@@ -136,7 +136,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount,
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         totalTokenBalance: amount,
@@ -159,7 +159,7 @@ describe('CreateErc20ApproveTx', () => {
       {
         amount: wethToken.getAmount(0),
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         type: EthereumTransactionType.EIP1559,
@@ -185,7 +185,7 @@ describe('CreateErc20ApproveTx', () => {
         approveBy: '0xe62c6f33a58d7f49e6b782aab931450e53d01f12',
         allowFor: '0x3f54eb67fea225d0a21263f1a7cb456e342cb1e8',
         asset: wethToken.address,
-        blockchain: BlockchainCode.Goerli,
+        blockchain: BlockchainCode.Sepolia,
         meta: { type: TxMetaType.ERC20_APPROVE },
         target: ApproveTarget.MANUAL,
         type: EthereumTransactionType.EIP1559,

@@ -12,6 +12,7 @@ export {
   ethereumByChainId,
   isBitcoin,
   isEthereum,
+  isBlockchainId,
   ledgerByBlockchain,
 } from './blockchains';
 export { Coin, CoinCode } from './coin';

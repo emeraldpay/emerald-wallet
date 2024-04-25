@@ -43,8 +43,8 @@ const BlockchainIcon: React.FC<OwnProps> = ({ blockchain, size }) => {
     case BlockchainCode.ETH:
       return <CurrencyEth className={iconSize} />;
     // Testnet
-    case BlockchainCode.Goerli:
-      return <Typography className={styles.commonIcon}>Goerli</Typography>;
+    case BlockchainCode.Sepolia:
+      return <Typography className={styles.commonIcon}>Sepolia</Typography>;
     case BlockchainCode.TestBTC:
       return <Typography className={styles.commonIcon}>TBTC</Typography>;
     // Other

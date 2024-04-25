@@ -65,7 +65,7 @@ class ToField extends React.Component<Props, State> {
 
     const to = value.trim();
 
-    if (blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Goerli) {
+    if (blockchain === BlockchainCode.ETH || blockchain === BlockchainCode.Sepolia) {
       if (/\.eth$/.test(to)) {
         onChange(undefined);
 

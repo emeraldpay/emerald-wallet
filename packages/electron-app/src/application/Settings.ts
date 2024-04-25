@@ -1,6 +1,7 @@
-import { SettingsManager, SettingsOptions, SettingsStore, TokenData } from '@emeraldwallet/core';
+import {blockchainIdToCode, SettingsManager, SettingsOptions, SettingsStore, TokenData} from '@emeraldwallet/core';
 import ElectronStore from 'electron-store';
 import { v4 as uuid } from 'uuid';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 const DEFAULTS: SettingsStore = {
   id: uuid(),
@@ -33,7 +34,7 @@ export class Settings implements SettingsManager {
   }
 
   getTokens(): TokenData[] {
-    return this.settings.get('tokens');
+    return this.settings.get('tokens').filter((token: TokenData) => isBlockchainId(token.blockchain));
   }
 
   setLastCursor(timestamp: number): Settings {

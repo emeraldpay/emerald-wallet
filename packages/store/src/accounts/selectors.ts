@@ -89,7 +89,7 @@ export function getWalletBalances(
     return isAvailable && !excludeAddresses[blockchainIdToCode(blockchain)]?.has(address.value);
   }) as EthereumEntry[];
 
-  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Goerli].forEach((blockchain) => {
+  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Sepolia].forEach((blockchain) => {
     const zero = zeroAmountFor<BigAmount>(blockchain);
 
     const blockchainAccounts = ethereumAccounts.filter(

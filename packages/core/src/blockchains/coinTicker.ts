@@ -4,8 +4,8 @@ export enum CoinTicker {
   ETC = 'ETC',
   ETH = 'ETH',
   // Testnet
-  ETG = 'ETG',
+  SEPOLIA = 'SEPOLIA',
   TESTBTC = 'TESTBTC',
 }
 
-export type CoinTickerCode = 'BTC' | 'ETC' | 'ETH' | 'ETG' | 'TESTBTC';
+export type CoinTickerCode = 'BTC' | 'ETC' | 'ETH' | 'TESTBTC' | 'SEPOLIA';

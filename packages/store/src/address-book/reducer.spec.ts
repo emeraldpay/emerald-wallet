@@ -9,25 +9,25 @@ describe('address book reducer', () => {
     const contacts: PersistentState.AddressbookItem[] = [
       {
         address: { type: 'plain', address: '0x1' },
-        blockchain: blockchainCodeToId(BlockchainCode.Goerli),
+        blockchain: blockchainCodeToId(BlockchainCode.Sepolia),
         createTimestamp,
       },
       {
         address: { type: 'plain', address: '0x2' },
-        blockchain: blockchainCodeToId(BlockchainCode.Goerli),
+        blockchain: blockchainCodeToId(BlockchainCode.Sepolia),
         createTimestamp,
       },
     ];
 
-    expect(reducer(undefined, setAddressBook(BlockchainCode.Goerli, contacts))).toEqual({
+    expect(reducer(undefined, setAddressBook(BlockchainCode.Sepolia, contacts))).toEqual({
       contacts: {
-        [BlockchainCode.Goerli]: [
+        [BlockchainCode.Sepolia]: [
           {
             address: {
               type: 'plain',
               address: '0x1',
             },
-            blockchain: blockchainCodeToId(BlockchainCode.Goerli),
+            blockchain: blockchainCodeToId(BlockchainCode.Sepolia),
             createTimestamp,
           },
           {
@@ -35,7 +35,7 @@ describe('address book reducer', () => {
               type: 'plain',
               address: '0x2',
             },
-            blockchain: blockchainCodeToId(BlockchainCode.Goerli),
+            blockchain: blockchainCodeToId(BlockchainCode.Sepolia),
             createTimestamp,
           },
         ],

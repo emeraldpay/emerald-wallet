@@ -44,6 +44,7 @@ export {
   ethereumByChainId,
   isBitcoin,
   isEthereum,
+  isBlockchainId,
   isStructuredMessage,
   isToken,
   isWrappedToken,
