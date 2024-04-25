@@ -21,7 +21,7 @@ storiesOf('ContactForm', module)
           address: '0x0',
           type: 'plain',
         },
-        blockchain: 10005,
+        blockchain: 10009,
         label: 'Test',
       }}
       title="Edit Contact"

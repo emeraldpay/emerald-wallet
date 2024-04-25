@@ -7,7 +7,7 @@ import { ApproveTarget, CreateErc20ApproveTx } from './CreateErc20ApproveTx';
 describe('CreateErc20ApproveTx', () => {
   const wethTokenData: TokenData = {
     name: 'Wrapped Ether',
-    blockchain: 10005,
+    blockchain: 10009,
     address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     symbol: 'WETG',
     decimals: 18,
@@ -15,7 +15,7 @@ describe('CreateErc20ApproveTx', () => {
   };
   const weenusTokenData: TokenData = {
     name: 'Weenus',
-    blockchain: 10005,
+    blockchain: 10009,
     address: '0xaFF4481D10270F50f203E0763e2597776068CBc5',
     symbol: 'WEENUS',
     decimals: 18,
