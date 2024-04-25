@@ -8,8 +8,8 @@ describe('CreateErc20ApproveTx', () => {
   const wethTokenData: TokenData = {
     name: 'Wrapped Ether',
     blockchain: 10009,
-    address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-    symbol: 'WETG',
+    address: '0xc31e8a1087bf1460b9926274de4a03b0dd44a6da',
+    symbol: 'WSEPOLIA',
     decimals: 18,
     type: 'ERC20',
   };
