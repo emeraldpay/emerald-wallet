@@ -25,6 +25,7 @@ import updateOptions from '../../main/utils/update-options';
 import updateTokens from '../../main/utils/update-tokens';
 import { initAllowancesState } from './cache/allowances';
 import { initBalancesState } from './cache/balances';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 Logger.setInstance(ElectronLogger);
 
@@ -185,7 +186,7 @@ export function startStore(): void {
         const { options = {}, tokens = [] } = store.getState().application;
 
         checkOptionsUpdates(versions.appVersion, options);
-        checkTokensUpdates(versions.appVersion, tokens);
+        checkTokensUpdates(versions.appVersion, tokens.filter((token) => isBlockchainId(token.blockchain)));
       });
 
       checkWalletUpdates(versions.appVersion);

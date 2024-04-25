@@ -48,7 +48,7 @@ const CONFIRMATIONS: Record<BlockchainCode, number> = {
   [BlockchainCode.BTC]: 3,
   [BlockchainCode.TestBTC]: 3,
   [BlockchainCode.ETH]: 12,
-  [BlockchainCode.Goerli]: 12,
+  [BlockchainCode.Sepolia]: 12,
   [BlockchainCode.ETC]: 48,
 } as const;
 
@@ -57,7 +57,7 @@ const CONFIRMED: Record<BlockchainCode, number> = {
   [BlockchainCode.BTC]: 6 * 24,
   [BlockchainCode.TestBTC]: 6 * 24,
   [BlockchainCode.ETH]: 4 * 60 * 24,
-  [BlockchainCode.Goerli]: 4 * 60 * 24,
+  [BlockchainCode.Sepolia]: 4 * 60 * 24,
   [BlockchainCode.ETC]: 4 * 60 * 24,
 } as const;
 

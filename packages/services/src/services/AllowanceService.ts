@@ -17,6 +17,7 @@ import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../emerald-client/ApiAccess';
 import { BalanceService } from './balance/BalanceService';
 import { Service } from './ServiceManager';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 interface Subscription {
   address: string;
@@ -66,8 +67,8 @@ export class AllowanceService implements Service {
     this.tokenRegistry = new TokenRegistry(this.tokens);
 
     ipcMain.handle(IpcCommands.ALLOWANCE_SET_TOKENS, (event, tokens) => {
-      this.tokens = tokens;
-      this.tokenRegistry = new TokenRegistry(tokens);
+      this.tokens = tokens.filter((token: TokenData) => isBlockchainId(token.blockchain));
+      this.tokenRegistry = new TokenRegistry(this.tokens);
 
       this.stop();
       this.start();
@@ -136,12 +137,16 @@ export class AllowanceService implements Service {
       })
       .finally(() => {
         if (!failed) {
-          this.persistentState.allowances.remove(extractWalletId(entryId), blockchain, timestamp).then(() =>
-            this.webContents.send(IpcCommands.STORE_DISPATCH, {
-              type: 'WALLET/ALLOWANCE/REMOVE_ALLOWANCE',
-              payload: { address, blockchain, timestamp },
-            }),
-          );
+          this.persistentState.allowances.remove(extractWalletId(entryId), blockchain, timestamp)
+            .then(() =>
+              this.webContents.send(IpcCommands.STORE_DISPATCH, {
+                type: 'WALLET/ALLOWANCE/REMOVE_ALLOWANCE',
+                payload: { address, blockchain, timestamp },
+              }),
+            )
+            .catch((error) =>
+              log.warn(`Error while removing allowances for ${address} on ${blockchain} blockchain`, error)
+            );
         }
       });
 

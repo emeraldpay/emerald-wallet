@@ -25,6 +25,7 @@ pub fn blockchain_from_code<S: AsRef<str>>(code: S) -> Result<u32, StateManagerE
     "etc" => Ok(101),
     "testbtc" => Ok(10003),
     "goerli" => Ok(10005),
+    "sepolia" => Ok(10009),
     _ => Err(StateManagerError::InvalidValue("Invalid blockchain code".to_string()))
   }
 }
@@ -36,6 +37,7 @@ pub fn blockchain_to_code(id: u32) -> Result<String, StateManagerError> {
     101 => Ok("etc".to_string()),
     10003 => Ok("testbtc".to_string()),
     10005 => Ok("goerli".to_string()),
+    10009 => Ok("sepolia".to_string()),
     _ => Err(StateManagerError::InvalidValue("Invalid blockchain id".to_string()))
   }
 }

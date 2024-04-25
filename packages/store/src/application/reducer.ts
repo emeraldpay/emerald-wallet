@@ -11,6 +11,7 @@ import {
   TermsAction,
   TokensAction,
 } from './types';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 export const INITIAL_STATE: ApplicationState = {
   configured: false,
@@ -32,7 +33,7 @@ function onConfig(state: ApplicationState, { payload: { options, terms, tokens }
     configured: true,
     options: options ?? state.options,
     terms: terms ?? state.terms,
-    tokens: tokens ?? state.tokens,
+    tokens: tokens?.filter((token) => isBlockchainId(token.blockchain)) ?? state.tokens,
   };
 }
 
@@ -76,7 +77,7 @@ function onTerms(state: ApplicationState, action: TermsAction): ApplicationState
 function onTokens(state: ApplicationState, action: TokensAction): ApplicationState {
   return {
     ...state,
-    tokens: action.payload,
+    tokens: action.payload.filter((token) => isBlockchainId(token.blockchain)),
   };
 }
 

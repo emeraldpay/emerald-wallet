@@ -10,6 +10,7 @@ import {
   UpdateStoredTxAction,
   UpdateTxTokensAction,
 } from './types';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 const INITIAL_STATE: HistoryState = {
   lastTxId: null,
@@ -40,7 +41,7 @@ function onUpdateStoreTransaction(
   { meta, tokens, transaction, walletId }: UpdateStoredTxAction,
 ): HistoryState {
   if (state.walletId === walletId) {
-    const tokenRegistry = new TokenRegistry(tokens);
+    const tokenRegistry = new TokenRegistry(tokens.filter((token) => isBlockchainId(token.blockchain)));
 
     const storedTransaction = new StoredTransaction(tokenRegistry, transaction, meta);
     const storedTransactions = [...state.transactions];

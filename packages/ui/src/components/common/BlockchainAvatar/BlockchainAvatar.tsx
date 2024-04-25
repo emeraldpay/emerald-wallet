@@ -19,7 +19,7 @@ const useStyle = makeStyles((theme: Theme) =>
     ethBlockchain: {
       backgroundColor: '#627eea',
     },
-    goerliBlockchain: {
+    sepoliaBlockchain: {
       backgroundColor: '#4a4f55',
     },
     testbtcBlockchain: {

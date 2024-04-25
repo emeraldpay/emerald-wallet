@@ -8,7 +8,7 @@ storiesOf('BlockchainAvatar', module).add('default', () => (
     <BlockchainAvatar blockchain={BlockchainCode.BTC} />
     <BlockchainAvatar blockchain={BlockchainCode.ETC} />
     <BlockchainAvatar blockchain={BlockchainCode.ETH} />
-    <BlockchainAvatar blockchain={BlockchainCode.Goerli} />
+    <BlockchainAvatar blockchain={BlockchainCode.Sepolia} />
     <BlockchainAvatar blockchain={BlockchainCode.TestBTC} />
   </React.Fragment>
 ));

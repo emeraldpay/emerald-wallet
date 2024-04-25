@@ -1,6 +1,7 @@
 import { Logger, TokenData } from '@emeraldwallet/core';
 import fetch from 'node-fetch';
 import { tokens as defaults } from '../../../defaults.json';
+import {isBlockchainId} from "@emeraldwallet/core";
 
 type Updated = { changed: boolean; tokens: TokenData[] };
 
@@ -16,7 +17,7 @@ export default async function (appVersion: string, stored: TokenData[]): Promise
 
   if (response.status === 200) {
     try {
-      const tokens = (await response.json()) as TokenData[];
+      const tokens = ((await response.json()) as TokenData[]).filter((token) => isBlockchainId(token.blockchain));
 
       const addresses = stored.map(({ address }) => address.toLowerCase());
 

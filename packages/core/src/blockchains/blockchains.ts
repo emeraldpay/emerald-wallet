@@ -14,7 +14,7 @@ export enum BlockchainCode {
   ETC = 'etc',
   ETH = 'eth',
   // Testnet
-  Goerli = 'goerli',
+  Sepolia = 'sepolia',
   TestBTC = 'testbtc',
   // Other
   Unknown = 'unknown',
@@ -44,17 +44,17 @@ export const Blockchains: Record<BlockchainCode | string, IBlockchain> = {
     ),
     'Ethereum Classic',
   ),
-  [BlockchainCode.Goerli]: new Ethereum(
+  [BlockchainCode.Sepolia]: new Ethereum(
     new EthereumParams(
-      BlockchainCode.Goerli,
+      BlockchainCode.Sepolia,
       Coin.ETHER,
-      CoinTicker.ETG,
-      5,
+      CoinTicker.SEPOLIA,
+      11155111,
       HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
       100,
       true,
     ),
-    'Goerli Testnet',
+    'Sepolia Testnet',
   ),
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
@@ -80,7 +80,7 @@ const allCodes = [
   BlockchainCode.BTC,
   BlockchainCode.ETC,
   BlockchainCode.ETH,
-  BlockchainCode.Goerli,
+  BlockchainCode.Sepolia,
   BlockchainCode.TestBTC,
 ];
 
@@ -109,6 +109,10 @@ export function ethereumByChainId(id?: number): IBlockchain | undefined {
   return allChains.find((chain) => chain.params.chainId === id);
 }
 
+export function isBlockchainId(id: number): boolean {
+  return id == 1 || id == 100 || id == 101 || id == 10003 || id == 10009;
+}
+
 export function blockchainIdToCode(id: number): BlockchainCode {
   switch (id) {
     case 1:
@@ -119,8 +123,8 @@ export function blockchainIdToCode(id: number): BlockchainCode {
       return BlockchainCode.ETC;
     case 10003:
       return BlockchainCode.TestBTC;
-    case 10005:
-      return BlockchainCode.Goerli;
+    case 10009:
+      return BlockchainCode.Sepolia;
     default:
       throw new Error(`Unsupported blockchain id: ${id}`);
   }
@@ -140,29 +144,29 @@ export function blockchainCodeToId(code: BlockchainCode): number {
       return 101;
     case BlockchainCode.TestBTC:
       return 10003;
-    case BlockchainCode.Goerli:
-      return 10005;
+    case BlockchainCode.Sepolia:
+      return 10009;
     default:
       throw new Error(`Unsupported blockchain: ${code}`);
   }
 }
 
 export function isEthereum(code: BlockchainCode): boolean {
-  return code === BlockchainCode.ETH || code === BlockchainCode.ETC || code === BlockchainCode.Goerli;
+  return code === BlockchainCode.ETH || code === BlockchainCode.ETC || code === BlockchainCode.Sepolia;
 }
 
 export function isBitcoin(code: BlockchainCode): boolean {
   return code == BlockchainCode.BTC || code == BlockchainCode.TestBTC;
 }
 
-export const WEIS_GOERLI = new Units([
-  new Unit(0, 'Goerli Wei', 'WeiG'),
-  new Unit(3, 'Goerli Kwei', 'KWeiG'),
-  new Unit(6, 'Goerli Mwei', 'MWeiG'),
-  new Unit(9, 'Goerli Gwei', 'GWeiG'),
-  new Unit(12, 'Goerli Microether', 'μETG'),
-  new Unit(15, 'Goerli Milliether', 'mETG'),
-  new Unit(18, 'Goerli Ether', 'ETG'),
+export const WEIS_SEPOLIA = new Units([
+  new Unit(0, 'Sepolia Wei', 'WeiS'),
+  new Unit(3, 'Sepolia Kwei', 'KWeiS'),
+  new Unit(6, 'Sepolia Mwei', 'MWeiS'),
+  new Unit(9, 'Sepolia Gwei', 'GWeiS'),
+  new Unit(12, 'Sepolia Microether', 'μETS'),
+  new Unit(15, 'Sepolia Milliether', 'mETS'),
+  new Unit(18, 'Sepolia Ether', 'ETS'),
 ]);
 
 export const SATOSHIS_TEST = new Units([
@@ -181,8 +185,8 @@ export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
       return WeiEtc.factory();
     case BlockchainCode.ETH:
       return Wei.factory();
-    case BlockchainCode.Goerli:
-      return (value) => new WeiAny(value, WEIS_GOERLI);
+    case BlockchainCode.Sepolia:
+      return (value) => new WeiAny(value, WEIS_SEPOLIA);
     case BlockchainCode.TestBTC:
       return (value) => new SatoshiAny(value, SATOSHIS_TEST);
     default:
