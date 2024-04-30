@@ -256,7 +256,7 @@ export class TokenRegistry {
     const instances = this.instances.get(blockchain);
 
     if (instances == null) {
-      throw new Error(`Can't find wrapped token by blockchain ${blockchain}`);
+      throw new Error(`Can't find tokens by blockchain ${blockchain}`);
     }
 
     const instance = instances.get(address.toLowerCase());

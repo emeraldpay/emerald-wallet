@@ -88,6 +88,15 @@
       "type": "ERC20",
       "pinned": true,
       "stablecoin": true
+    },
+    {
+      "name": "Wrapped Ether",
+      "blockchain": 10009,
+      "address": "0xc31e8a1087bf1460b9926274de4a03b0dd44a6da",
+      "symbol": "WETS",
+      "decimals": 18,
+      "type": "ERC20",
+      "pinned": true
     }
   ]
 }

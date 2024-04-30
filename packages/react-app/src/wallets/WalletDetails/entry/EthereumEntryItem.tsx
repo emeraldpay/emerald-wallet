@@ -134,6 +134,24 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
   const buttonClasses = { root: styles.button, disabled: styles.buttonDisabled };
 
+  let wrapActions = tokenWrappedBalances.map(({ balance: wrappedBalance }) => (
+        <Tooltip
+          key={`convert-${wrappedBalance.token.address}`}
+          title={`Convert between ${balance.units.top.name} and ${wrappedBalance.token.name}`}
+        >
+              <span>
+                <IconButton
+                  classes={buttonClasses}
+                  disabled={balance.isZero()}
+                  size="small"
+                  onClick={() => gotoConvert()}
+                >
+                  <ConvertIcon fontSize="small" />
+                </IconButton>
+              </span>
+        </Tooltip>
+      ));
+
   return (
     <>
       <div className={styles.entry}>
@@ -151,23 +169,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
           {fiatBalance?.isPositive() && <FiatBalance balance={fiatBalance} />}
         </div>
         <div className={styles.entryActions}>
-          {tokenWrappedBalances.map(({ balance: wrappedBalance }) => (
-            <Tooltip
-              key={`convert-${wrappedBalance.token.address}`}
-              title={`Convert between ${balance.units.top.name} and ${wrappedBalance.token.name}`}
-            >
-              <span>
-                <IconButton
-                  classes={buttonClasses}
-                  disabled={balance.isZero()}
-                  size="small"
-                  onClick={() => gotoConvert()}
-                >
-                  <ConvertIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
-          ))}
+          {wrapActions}
           <Tooltip title="Send">
             <span>
               <IconButton classes={buttonClasses} disabled={balance.isZero()} size="small" onClick={() => gotoSend()}>
