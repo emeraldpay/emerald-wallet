@@ -13,35 +13,33 @@ const HOST: Readonly<string> =
 const log = Logger.forCategory('Store::UpdateTokens');
 
 export default async function (appVersion: string, stored: TokenData[]): Promise<Updated> {
-  const response = await fetch(`https://${HOST}/tokens-v2.json?ref_app=desktop-wallet&ref_version=${appVersion}`);
+  let remoteTokens: TokenData[] = [];
 
+  const response = await fetch(`https://${HOST}/tokens-v2.json?ref_app=desktop-wallet&ref_version=${appVersion}`);
   if (response.status === 200) {
     try {
-      const tokens = ((await response.json()) as TokenData[]).filter((token) => isBlockchainId(token.blockchain));
-
-      const addresses = stored.map(({ address }) => address.toLowerCase());
-
-      if (tokens.reduce((carry, { address }) => carry || !addresses.includes(address.toLowerCase()), false)) {
-        const merged: Map<string, TokenData> = [...tokens, ...stored].reduce((carry, token) => {
-          const key = `${token.blockchain}:${token.address.toLowerCase()}`;
-
-          if (carry.has(key)) {
-            return carry;
-          }
-
-          return carry.set(key, token);
-        }, new Map());
-
-        return { changed: true, tokens: [...merged.values()] };
-      }
+      remoteTokens = (await response.json()) as TokenData[];
     } catch (exception) {
       log.error('Error while parsing tokens update from server:', exception);
     }
   }
 
-  if (stored.length > 0) {
-    return { changed: false, tokens: stored };
-  }
+  // @ts-ignore
+  const defaultTokens: TokenData[] = defaults;
 
-  return { changed: true, tokens: defaults as TokenData[] };
+  // merge all sources, because a new token may be added at the remote server, or also added to the defaults, etc.
+  const merged: Map<string, TokenData> = [...remoteTokens, ...stored, ...defaultTokens]
+    // make sure it has only token for blockchain that the current app version supports
+    .filter((token) => isBlockchainId(token.blockchain))
+    // keep all tokens defined at any of the sources
+    .reduce((carry, token) => {
+      const key = `${token.blockchain}:${token.address.toLowerCase()}`;
+      // this order ensure the priority, the first defined token will be kept
+      if (carry.has(key)) {
+        return carry;
+      }
+      return carry.set(key, token);
+    }, new Map());
+
+  return { changed: true, tokens: [...merged.values()] }
 }
