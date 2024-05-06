@@ -92,7 +92,7 @@
     {
       "name": "Wrapped Ether",
       "blockchain": 10009,
-      "address": "0xc31e8a1087bf1460b9926274de4a03b0dd44a6da",
+      "address": "0x097D90c9d3E0B50Ca60e1ae45F6A81010f9FB534",
       "symbol": "WETS",
       "decimals": 18,
       "type": "ERC20",

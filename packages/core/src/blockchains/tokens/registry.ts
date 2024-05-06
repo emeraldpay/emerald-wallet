@@ -7,7 +7,7 @@ const TOKEN_TYPES = ['ERC20', 'ERC721', 'ERC1155'] as const;
 const WRAPPED_TOKENS: Readonly<Partial<Record<BlockchainCode, string>>> = {
   [BlockchainCode.ETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   [BlockchainCode.ETC]: '0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a',
-  [BlockchainCode.Sepolia]: '0xc31e8a1087bf1460b9926274de4a03b0dd44a6da',
+  [BlockchainCode.Sepolia]: '0x097D90c9d3E0B50Ca60e1ae45F6A81010f9FB534',
 };
 
 export interface TokenData {

@@ -8,7 +8,7 @@ describe('CreateErc20ApproveTx', () => {
   const wethTokenData: TokenData = {
     name: 'Wrapped Ether',
     blockchain: 10009,
-    address: '0xc31e8a1087bf1460b9926274de4a03b0dd44a6da',
+    address: '0x097D90c9d3E0B50Ca60e1ae45F6A81010f9FB534',
     symbol: 'WSEPOLIA',
     decimals: 18,
     type: 'ERC20',
@@ -25,7 +25,7 @@ describe('CreateErc20ApproveTx', () => {
 
   const tokenRegistry = new TokenRegistry([wethTokenData, weenusTokenData]);
 
-  const wethToken = tokenRegistry.byAddress(BlockchainCode.Sepolia, '0xc31e8a1087bf1460b9926274de4a03b0dd44a6da');
+  const wethToken = tokenRegistry.byAddress(BlockchainCode.Sepolia, '0x097d90c9d3e0b50ca60e1ae45f6a81010f9fb534');
   const weenusToken = tokenRegistry.byAddress(BlockchainCode.Sepolia, '0xaFF4481D10270F50f203E0763e2597776068CBc5');
 
   test('should create legacy approve tx', () => {
