@@ -51,6 +51,16 @@ export class MemoryVault {
 
     this.seedAddresses[seedId][hdpath] = address;
   }
+  addSeedAddresses(seedId: Uuid, addresses: Array<[string, string]>): void {
+    if (this.seeds.indexOf(seedId) < 0) {
+      this.seedAddresses[seedId] = {};
+      this.seeds.push(seedId);
+    }
+
+    addresses.forEach(([hdpath, address]) => {
+      this.seedAddresses[seedId][hdpath] = address;
+    })
+  }
 
   setSeedPassword(seedId: Uuid, password: string): void {
     this.passwords[seedId] = password;
@@ -63,6 +73,7 @@ export class VaultMock implements IEmeraldVault {
   readonly vault: MemoryVault;
 
   constructor(vault: MemoryVault) {
+    console.log("create vault mock", vault);
     this.vault = vault;
   }
 
@@ -151,6 +162,7 @@ export class VaultMock implements IEmeraldVault {
     blockchain: number,
     hdpaths: string[],
   ): Promise<SeedAddresses> {
+    console.log("call listSeedAddresses", this);
     if (typeof seedId == 'object') {
       if (seedId.type == 'id') {
         const seed: IdSeedReference = seedId;

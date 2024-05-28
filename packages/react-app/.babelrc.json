@@ -1,0 +1,19 @@
+{
+  "sourceType": "module",
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "chrome": 120,
+          "electron": 22
+        }
+      }
+    ],
+    "@babel/preset-typescript",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-optional-chaining"
+  ]
+}
