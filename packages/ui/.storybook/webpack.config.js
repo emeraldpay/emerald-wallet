@@ -33,6 +33,7 @@ module.exports = ({ config }) => {
   config.resolve.fallback.https = require.resolve('https-browserify');
   config.resolve.fallback.stream = require.resolve('stream-browserify');
   config.resolve.fallback.zlib = require.resolve('browserify-zlib');
+  config.resolve.fallback._stream_transform = require.resolve('readable-stream');
 
   return config;
 };

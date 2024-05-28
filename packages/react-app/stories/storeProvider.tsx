@@ -1,12 +1,11 @@
 import { WalletApi } from '@emeraldwallet/core';
 import { Dispatched, createStore } from '@emeraldwallet/store';
-import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { AnyAction } from 'redux';
-import { ApiMock, MemoryApiMock } from './__mocks__/apiMock';
-import { BackendMock } from './__mocks__/backendMock';
+import { ApiMock, MemoryApiMock } from './__mocks__';
+import { BackendMock } from './__mocks__';
 import {
   AddressBookMock,
   AllowancesMock,
@@ -15,10 +14,12 @@ import {
   TxHistoryMock,
   TxMetaMock,
   XPubPosMock,
-} from './__mocks__/persistentStateMock';
-import { VaultMock } from './__mocks__/vaultMock';
+} from './__mocks__';
+import { VaultMock } from './__mocks__';
+import {DecoratorFunction, Renderer, Args} from "@storybook/types";
 
 function createApi(api: MemoryApiMock): WalletApi {
+  console.log("create api");
   return new ApiMock(
     new AddressBookMock(api.addressBook),
     new AllowancesMock(api.allowances),
@@ -35,17 +36,17 @@ export function providerForStore(
   api: MemoryApiMock,
   backend: BackendMock,
   actions: Array<AnyAction | Dispatched> = [],
-): DecoratorFunction<ReactElement> {
+): DecoratorFunction {
   const store = createStore(createApi(api), backend);
 
   actions?.forEach((action) => store.dispatch(action as AnyAction));
 
-  return (story) => <Provider store={store}>{story()}</Provider>;
+  return (story) => (<Provider store={store}>{story()}</Provider>);
 }
 
 const defaultBackend = new BackendMock();
-const defaultStore = createStore(createApi(new MemoryApiMock()), defaultBackend);
+export const defaultStore = createStore(createApi(new MemoryApiMock()), defaultBackend);
 
-const withProvider: DecoratorFunction<ReactElement> = (story) => <Provider store={defaultStore}>{story()}</Provider>;
+const withProvider: DecoratorFunction = (story) => <Provider store={defaultStore}>{story()}</Provider>;
 
 export default withProvider;

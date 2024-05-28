@@ -3,6 +3,7 @@ import { BlockchainCode } from '@emeraldwallet/core';
 import { accounts, settings, tokens } from '@emeraldwallet/store';
 
 export const ledgerSeedId = '7befa8b6-670d-467a-8ddd-a9615087ba14';
+export const xpubSeedId = 'b00e3378-40e7-4eca-b287-a5ead2f747d4';
 
 const wallet1: Wallet = {
   id: '8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef',
@@ -45,7 +46,7 @@ const wallet2: Wallet = {
 
 export const wallet3: Wallet = {
   id: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4',
-  name: 'Another Wallet',
+  name: 'My Savings',
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 3 }],
   entries: [
     {
@@ -57,7 +58,7 @@ export const wallet3: Wallet = {
     },
     {
       // seed: lake cupboard yellow project spoil era educate behind move slide fluid early purpose stone panel
-      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/84'/0'/3'/0/0" },
+      key: { type: 'hd-path', seedId: xpubSeedId, hdPath: "m/84'/0'/3'/0/0" },
       address: {
         type: 'xpub',
         value:
@@ -72,6 +73,15 @@ export const wallet3: Wallet = {
   ],
   createdAt: new Date(),
 };
+
+export function wallet3SeedAddresses(): Array<[string, string]> {
+  return [
+    ['m/84\'/0\'/0\'/0/0', 'bc1qqvc28z0kgc7fmdfu440sd7knpgzytgnurszh6t'],
+    ['m/84\'/0\'/1\'/0/0', 'bc1q0zsst3yy4k7jx0pv5gry7x0ajppqvkjny3mvg2'],
+    ['m/84\'/0\'/2\'/0/0', 'bc1q8uq8207k0k5clg2q836jmvfn8usdqej5fwj27f'],
+    ['m/84\'/0\'/3\'/0/0', 'bc1q4zph0rqgf7tphrdyn7zdrxn0zlkf3ufnhjpjq3'],
+  ]
+}
 
 export const wallet4: Wallet = {
   id: '5c455045-2259-43b3-8e81-5ec9d2be36d6',
@@ -202,10 +212,10 @@ export const setBalances = [
 
 export const setRates = [
   settings.actions.setRates({
-    ETH: '205.1761',
-    ETC: '5.234',
+    ETH: '3810.6981',
+    ETC: '31.31',
     DAI: '1.001',
     USDT: '0.9985',
-    BTC: '11407.35',
+    BTC: '68216.29',
   }),
 ];

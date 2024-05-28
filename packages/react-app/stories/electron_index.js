@@ -7,12 +7,14 @@ app.commandLine.appendSwitch('remote-debugging-port', '5858')
 //
 // To run:
 // yarn workspace @emeraldwallet/react-app run storybook
-// electron packages/react-app/stories/electron_index.js
+// yarn workspace @emeraldwallet/react-app run storybook:electron
 //
 
 app.on('ready', function () {
 
-  mainWindow = new BrowserWindow({
+  console.log("Starting Electron app");
+
+  let mainWindow = new BrowserWindow({
     width: 1410,
     height: 830,
     allowRunningInsecureContent: true,
@@ -26,11 +28,13 @@ app.on('ready', function () {
       webSecurity: false,
       contextIsolation: false,
     },
-  })
+  });
 
   mainWindow.loadURL('http://localhost:9001')
+    .then(() => { console.log("Opened Storybook") })
+    .catch((err) => { console.error("Error opening Storybook", err) })
 
   installExtension(REACT_DEVELOPER_TOOLS)
     .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+    .catch((err) => console.log('Failed to add Extension: ', err));
 })

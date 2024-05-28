@@ -1,13 +1,16 @@
-import { ThemeProvider } from '@material-ui/core/styles';
-import { addDecorator, configure } from '@storybook/react';
+import {Theme} from '@emeraldwallet/ui';
+import {ThemeProvider} from '@material-ui/core/styles';
 import * as React from 'react';
-import theme from '../src/theme';
+import { Preview } from '@storybook/react';
 
-const req = require.context('../stories/', true, /\.tsx$/);
+const preview: Preview = {
+  decorators: [
+    (Story) => (
+      <ThemeProvider theme={Theme}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
+};
 
-function loadStories () {
-  addDecorator((story) => (<ThemeProvider theme={theme}>{story()}</ThemeProvider>));
-  req.keys().forEach((filename) => req(filename));
-}
-
-configure(loadStories, module);
+export default preview;

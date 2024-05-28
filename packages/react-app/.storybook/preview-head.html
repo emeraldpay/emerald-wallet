@@ -1,0 +1,10 @@
+<script>
+  //
+  // React-App uses some functions/classes provided by Electron (clipboard, files, etc.), so it's built with `target = 'electron-renderer'` Webpack option,
+  // but Storybook loads the previews with an IFrame which has an isolated context, here we populate required global variables from the main window.
+  //
+  window.global = top.global;
+  window.require = top.require;
+  window.process = top.process;
+  window.Buffer = top.Buffer;
+</script>
