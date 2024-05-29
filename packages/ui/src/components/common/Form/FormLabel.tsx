@@ -13,6 +13,7 @@ const styles = (theme: Theme): StyleRules =>
       paddingRight: 30,
       textAlign: 'right',
       width: 160,
+      fontFamily: theme.typography.fontFamily
     },
     top: {
       alignSelf: 'flex-start',

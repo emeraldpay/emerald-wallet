@@ -17,6 +17,7 @@ const useStyles = makeStyles<Theme>((theme) =>
     },
     title: {
       color: theme.palette.text.secondary,
+      fontFamily: theme.typography.fontFamily,
       fontSize: 16,
       fontWeight: 400,
       padding: 0,

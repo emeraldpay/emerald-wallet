@@ -141,6 +141,15 @@ export const initLauncher = [
         type: 'ERC20',
         stablecoin: true,
       },
+      {
+        name: 'USD Coin',
+        blockchain: 100,
+        address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+        symbol: 'USDC',
+        decimals: 6,
+        type: 'ERC20',
+        stablecoin: true,
+      },
     ],
   },
 ];
@@ -214,8 +223,9 @@ export const setRates = [
   settings.actions.setRates({
     ETH: '3810.6981',
     ETC: '31.31',
-    DAI: '1.001',
-    USDT: '0.9985',
     BTC: '68216.29',
+    "100:0x6b175474e89094c44da98b954eedeac495271d0f": "1.001", //DAI
+    "100:0xdac17f958d2ee523a2206206994597c13d831ec7": "0.9985", //USDT
+    "100:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "0.9991", //USDC
   }),
 ];

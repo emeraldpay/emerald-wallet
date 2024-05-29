@@ -21,7 +21,7 @@ function* loadAddresses(
   let addresses: { [hdPath: string]: string } = {};
 
   try {
-    addresses = yield call(vault.listSeedAddresses, seed, blockchainCodeToId(blockchain), hdPaths);
+    addresses = yield call([vault, vault.listSeedAddresses], seed, blockchainCodeToId(blockchain), hdPaths);
   } catch (exception) {
     console.warn('Failed to get addresses', exception);
   }
