@@ -73,7 +73,6 @@ export class VaultMock implements IEmeraldVault {
   readonly vault: MemoryVault;
 
   constructor(vault: MemoryVault) {
-    console.log("create vault mock", vault);
     this.vault = vault;
   }
 
@@ -162,7 +161,6 @@ export class VaultMock implements IEmeraldVault {
     blockchain: number,
     hdpaths: string[],
   ): Promise<SeedAddresses> {
-    console.log("call listSeedAddresses", this);
     if (typeof seedId == 'object') {
       if (seedId.type == 'id') {
         const seed: IdSeedReference = seedId;

@@ -1,5 +1,6 @@
 import { Dispatched } from '../types';
-import { ActionTypes, AllowanceRaw, InitAllowanceAction } from './types';
+import {ActionTypes, AllowanceCommon, AllowanceRaw, InitAllowanceAction, SetAllowanceAction} from './types';
+import {TokenData} from "@emeraldwallet/core";
 
 export function initAddressAllowance(allowance: AllowanceRaw): Dispatched<void, InitAllowanceAction> {
   return (dispatch, getState, extra) => {
@@ -16,5 +17,12 @@ export function initAddressAllowance(allowance: AllowanceRaw): Dispatched<void, 
         payload: { allowance: { ...allowance, ownerControl, spenderControl }, tokens },
       }),
     );
+  };
+}
+
+export function setAllowance(allowance: AllowanceCommon, tokens: TokenData[]): SetAllowanceAction {
+  return {
+    type: ActionTypes.SET_ALLOWANCE,
+    payload: { allowance, tokens },
   };
 }

@@ -41,17 +41,35 @@ export enum ActionTypes {
 }
 
 export interface AllowanceRaw {
+  /**
+   * User's address. Either owner or spender, doesn't matter just any of the sides that belongs to the user because it's used as a key in the state
+   */
   address: string;
+  /**
+   * The max amount allowed
+   */
   allowance: string;
+  /**
+   * Actual amount that can be used (on owner's balance)
+   */
   available: string;
   blockchain: BlockchainCode;
+  /**
+   * ERC20 address
+   */
   contractAddress: string;
+  /**
+   * Who has provided the allowance
+   */
   ownerAddress: string;
+  /**
+   * Who can spend the allowance
+   */
   spenderAddress: string;
   timestamp: number;
 }
 
-interface AllowanceCommon extends AllowanceRaw {
+export interface AllowanceCommon extends AllowanceRaw {
   ownerControl?: AddressApi.AddressControl;
   spenderControl?: AddressApi.AddressControl;
 }

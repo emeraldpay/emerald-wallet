@@ -19,7 +19,6 @@ import { VaultMock } from './__mocks__';
 import {DecoratorFunction, Renderer, Args} from "@storybook/types";
 
 function createApi(api: MemoryApiMock): WalletApi {
-  console.log("create api");
   return new ApiMock(
     new AddressBookMock(api.addressBook),
     new AllowancesMock(api.allowances),

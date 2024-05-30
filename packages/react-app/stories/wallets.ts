@@ -1,5 +1,5 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode, TokenData} from '@emeraldwallet/core';
 import { accounts, settings, tokens } from '@emeraldwallet/store';
 
 export const ledgerSeedId = '7befa8b6-670d-467a-8ddd-a9615087ba14';
@@ -115,6 +115,47 @@ export const wallet5: Wallet = {
   createdAt: new Date(),
 };
 
+export const tokenDAI: TokenData = {
+  name: 'Dai Stablecoin',
+  blockchain: 100,
+  address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+  symbol: 'DAI',
+  decimals: 18,
+  type: 'ERC20',
+  stablecoin: true,
+}
+
+export const tokenUSDT: TokenData = {
+  name: 'Tether USD',
+  blockchain: 100,
+  address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  symbol: 'USDT',
+  decimals: 6,
+  type: 'ERC20',
+  stablecoin: true,
+}
+
+export const tokenUSDC: TokenData = {
+  name: 'USD Coin',
+  blockchain: 100,
+  address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  symbol: 'USDC',
+  decimals: 6,
+  type: 'ERC20',
+  stablecoin: true,
+}
+
+export const tokenWETH: TokenData = {
+  name: 'Wrapped Ether',
+  blockchain: 100,
+  address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  symbol: 'WETH',
+  decimals: 18,
+  type: 'ERC20',
+  stablecoin: false,
+  pinned: true,
+}
+
 export const initLauncher = [
   {
     type: 'LAUNCHER/OPTIONS',
@@ -123,33 +164,10 @@ export const initLauncher = [
   {
     type: 'LAUNCHER/TOKENS',
     payload: [
-      {
-        name: 'Dai Stablecoin',
-        blockchain: 100,
-        address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-        symbol: 'DAI',
-        decimals: 18,
-        type: 'ERC20',
-        stablecoin: true,
-      },
-      {
-        name: 'Tether USD',
-        blockchain: 100,
-        address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-        symbol: 'USDT',
-        decimals: 6,
-        type: 'ERC20',
-        stablecoin: true,
-      },
-      {
-        name: 'USD Coin',
-        blockchain: 100,
-        address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        symbol: 'USDC',
-        decimals: 6,
-        type: 'ERC20',
-        stablecoin: true,
-      },
+      tokenDAI,
+      tokenUSDT,
+      tokenUSDC,
+      tokenWETH,
     ],
   },
 ];
