@@ -56,6 +56,10 @@ const useStyles = makeStyles((theme) =>
     allowanceAddressIcon: {
       marginRight: 5,
     },
+    allowanceAddressDescription: {
+      textAlign: 'right',
+      display: 'block',
+    },
     allowanceActions: {
       display: 'flex',
       justifyContent: 'end',
@@ -164,6 +168,9 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     )}
                     <Address address={type === AllowanceType.ALLOWED_FOR ? spenderAddress : ownerAddress} />
                   </div>
+                  <Typography variant="caption" className={styles.allowanceAddressDescription}>
+                    {type === AllowanceType.ALLOWED_FOR ? 'Allowed To Address' : 'Allowed By Address'}
+                  </Typography>
                 </div>
                 <div className={styles.allowanceActions}>
                   {type === AllowanceType.ALLOWED_FOR ? (
