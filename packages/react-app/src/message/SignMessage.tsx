@@ -58,6 +58,9 @@ const useStyles = makeStyles(
       marginBottom: 10,
       width: '100%',
     },
+    typeAutoDetected: {
+      marginLeft: 20,
+    }
   }),
 );
 
@@ -333,18 +336,15 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
               <MenuItem value={MessageType.EIP191}>Unstructured / EIP-191</MenuItem>
               <MenuItem value={MessageType.EIP712}>Structured / EIP-712</MenuItem>
             </TextField>
-          </FormRow>
-          {messageType === MessageType.AUTO && (
-            <FormRow>
-              <FormLabel />
-              <div className={styles.validation}>
+            {messageType === MessageType.AUTO && (
                 <Chip
+                  className={styles.typeAutoDetected}
                   color="primary"
                   label={validation === Validation.EIP712 ? 'Structured / EIP-712' : 'Unstructured / EIP-191'}
                 />
-              </div>
-            </FormRow>
-          )}
+            )}
+          </FormRow>
+
           <FormRow>
             <FormLabel top>Message</FormLabel>
             <TextField
