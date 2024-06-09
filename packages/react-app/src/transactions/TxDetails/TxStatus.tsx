@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) =>
     block: {
       alignItems: 'center',
       display: 'flex',
+      fontFamily: theme.typography.fontFamily,
     },
     error: {
       color: theme.palette.error.main,

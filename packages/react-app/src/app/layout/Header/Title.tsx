@@ -1,5 +1,5 @@
 import { IState, screen } from '@emeraldwallet/store';
-import { Theme, createStyles } from '@material-ui/core';
+import {Theme, createStyles, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -17,9 +17,11 @@ const useStyles = makeStyles<Theme>((theme) =>
     brandPart: {
       color: theme.palette.primary.main,
       marginRight: '4px',
+      float: 'left',
     },
     productPart: {
       color: theme.palette.secondary.main,
+      float: 'left',
     },
   }),
 );
@@ -34,8 +36,8 @@ const Component: React.FC<DispatchProps> = ({ gotoWalletsScreen }) => {
   return (
     <div className={styles.root}>
       <div className={styles.title} onClick={gotoWalletsScreen}>
-        <span className={styles.brandPart}>Emerald</span>
-        <span className={styles.productPart}>Wallet</span>
+        <Typography className={styles.brandPart}>Emerald</Typography>
+        <Typography className={styles.productPart}>Wallet</Typography>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export function getEntriesGroupedAllowances(state: IState, entries: WalletEntry[
     if (isEthereumEntry(entry) && entry.address != null) {
       const blockchainCode = blockchainIdToCode(entry.blockchain);
 
-      const { allowedFor = {}, approvedBy = {} } = state[moduleName][blockchainCode]?.[entry.address.value] ?? {};
+      const { allowedFor = {}, approvedBy = {} } = state[moduleName][blockchainCode]?.[entry.address.value.toLowerCase()] ?? {};
 
       const allowances = new Map(Object.entries(allowedFor));
 

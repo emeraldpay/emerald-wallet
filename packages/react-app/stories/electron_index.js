@@ -6,7 +6,7 @@ app.commandLine.appendSwitch('remote-debugging-port', '5858')
 
 //
 // To run:
-// yarn workspace @emeraldwallet/react-app run storybook
+// yarn workspace @emeraldwallet/react-app run storybook:build
 // yarn workspace @emeraldwallet/react-app run storybook:electron
 //
 

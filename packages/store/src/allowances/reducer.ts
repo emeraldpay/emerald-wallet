@@ -15,25 +15,23 @@ const INITIAL_STATE: AllowanceState = {};
 
 function setAllowance(
   state: AllowanceState,
-  {
-    payload: {
-      allowance: {
-        address,
-        blockchain,
-        allowance,
-        available,
-        contractAddress,
-        ownerAddress,
-        ownerControl,
-        spenderAddress,
-        spenderControl,
-        timestamp,
-      },
-      tokens,
-    },
-  }: SetAllowanceAction,
+  value: SetAllowanceAction,
 ): AllowanceState {
-  const tokenRegistry = new TokenRegistry(tokens);
+
+  const {
+    address,
+    blockchain,
+    allowance,
+    available,
+    contractAddress,
+    ownerAddress,
+    ownerControl,
+    spenderAddress,
+    spenderControl,
+    timestamp,
+  } = value.payload.allowance;
+
+  const tokenRegistry = new TokenRegistry(value.payload.tokens);
 
   if (tokenRegistry.hasAddress(blockchain, contractAddress)) {
     const token = tokenRegistry.byAddress(blockchain, contractAddress);

@@ -28,7 +28,7 @@ import {
   TextField,
   Tooltip,
   createStyles,
-  makeStyles,
+  makeStyles, Typography,
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -103,6 +103,7 @@ const useStyles = makeStyles((theme) =>
     changeItemCoin: {
       lineHeight: '24px',
       textAlign: 'right',
+      color: theme.palette.text.primary,
     },
     container: {
       boxSizing: 'border-box',
@@ -182,6 +183,7 @@ const useStyles = makeStyles((theme) =>
     },
     transactionLabelText: {
       marginRight: 10,
+      color: theme.palette.text.primary,
     },
   }),
 );
@@ -334,7 +336,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
             />
           ) : (
             <>
-              <div className={styles.transactionLabelText}>Tx {label}</div>
+              <Typography className={styles.transactionLabelText}>Tx {label}</Typography>
               <IconButton className={styles.button} onClick={onEditLabel}>
                 <EditIcon fontSize="inherit" />
               </IconButton>
@@ -342,12 +344,12 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           )}
         </div>
         <div className={styles.transactionDetails}>
-          <div className={styles.transactionDetailsInfo}>
+          <Typography className={styles.transactionDetailsInfo}>
             {sinceTime} /{' '}
             {confirmations >= CONFIRMED[blockchainCode]
               ? 'Confirmed'
               : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
-          </div>
+          </Typography>
           <IconButton className={styles.button} onClick={onOpenMenu}>
             <MoreIcon fontSize="inherit" />
           </IconButton>
@@ -378,7 +380,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
             return (
               <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
-                <div className={styles.changeItemCoin}>
+                <Typography className={styles.changeItemCoin}>
                   <span>{change.direction === Direction.EARN ? '+' : '-'}&nbsp;</span>
                   {approxZero ? (
                     <Tooltip title={change.amountValue.toString()}>
@@ -388,7 +390,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                     amountValue
                   )}{' '}
                   {amountUnit}
-                </div>
+                </Typography>
                 <div className={styles.changeItemAmount}>
                   {change.walletInstance.id === walletId ? (
                     <div />
@@ -410,9 +412,9 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                       {change.walletInstance.name}
                     </div>
                   )}
-                  <div className={styles.changeItemAmountFiat}>
+                  <Typography className={styles.changeItemAmountFiat}>
                     {formatFiatAmount(getFiatValue(change.amountValue))}
-                  </div>
+                  </Typography>
                 </div>
               </div>
             );

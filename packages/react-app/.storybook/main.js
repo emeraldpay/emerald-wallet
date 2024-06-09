@@ -4,9 +4,8 @@ const config = {
   stories: [
     '../stories/**/*.stories.tsx'
   ],
-
   docs: {
-    autodocs: true
+    autodocs: false
   }
 };
 
