@@ -85,8 +85,8 @@ export const fetchFee: EntryHandler<EthereumEntry, Promise<void>> =
         [],
       );
 
+      const defaultFee = application.selectors.getDefaultFee<string>(state, blockchain);
       if (highFee.max.eq(0)) {
-        const defaultFee = application.selectors.getDefaultFee<string>(state, blockchain);
 
         const defaults: workflow.EthereumFeeRange<string> = {
           stdMaxGasPrice: defaultFee?.max ?? '0',
@@ -109,9 +109,19 @@ export const fetchFee: EntryHandler<EthereumEntry, Promise<void>> =
           }
         }
       } else {
+
+        // User may want to set a low fee even lower that the current averages because he is okay to wait longer
+        // Here we make sure we set the smaller of the two, the Default MIN and the current Average MIN
+        let min: string;
+        if (defaultFee?.min != null && defaultFee.min !== '0' && new BigNumber(defaultFee.min) < lowFee.max) {
+          min = defaultFee.min;
+        } else {
+          min = lowFee.max.toString()
+        }
+
         const fee: workflow.EthereumFeeRange<string> = {
           stdMaxGasPrice: stdFee.max.toString(),
-          lowMaxGasPrice: lowFee.max.toString(),
+          lowMaxGasPrice: min,
           highMaxGasPrice: highFee.max.toString(),
           stdPriorityGasPrice: stdFee.priority.toString(),
           lowPriorityGasPrice: lowFee.priority.toString(),
