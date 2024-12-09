@@ -150,7 +150,7 @@ jobs:
         run: echo "https://artifacts.emerald.cash/builds/emerald-wallet/v${{ steps.package-data-non-windows.outputs.version }}/EmeraldWallet-linux-amd64-${{ steps.package-data-non-windows.outputs.version }}-${{ steps.commit-data-non-windows.outputs.commit-date }}-${{ steps.commit-data-non-windows.outputs.short-sha }}.deb"
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: |
