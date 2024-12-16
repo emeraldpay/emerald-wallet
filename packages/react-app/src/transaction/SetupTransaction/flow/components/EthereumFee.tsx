@@ -38,6 +38,12 @@ export const EthereumFee: React.FC<OwnProps> = ({ createTx, feeRange, initializi
     setTransaction(createTx.dump());
   };
 
+  const handleGasLimitChange = (gasLimit: number): void => {
+    createTx.gas = gasLimit;
+
+    setTransaction(createTx.dump());
+  }
+
   const { eip1559: supportEip1559 = false } = Blockchains[createTx.blockchain].params;
 
   const isEip1559 = createTx.type === EthereumTransactionType.EIP1559;
@@ -57,9 +63,11 @@ export const EthereumFee: React.FC<OwnProps> = ({ createTx, feeRange, initializi
       stdPriorityGasPrice={feeRange.stdPriorityGasPrice}
       lowPriorityGasPrice={feeRange.lowPriorityGasPrice}
       highPriorityGasPrice={feeRange.highPriorityGasPrice}
+      estimatedGasLimit={createTx.gas}
       onUse1559Change={handleUseEip1559Change}
       onMaxGasPriceChange={handleMaxGasPriceChange}
       onPriorityGasPriceChange={handlePriorityGasPriceChange}
+      onGasLimitChange={handleGasLimitChange}
     />
   );
 };
