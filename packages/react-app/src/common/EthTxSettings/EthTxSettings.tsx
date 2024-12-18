@@ -171,7 +171,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
 
   const [currentUseStdMaxGasPrice, setCurrentUseStdMaxGasPrice] = React.useState(true);
   const [currentUseStdPriorityGasPrice, setCurrentUseStdPriorityGasPrice] = React.useState(true);
-  const [gasLimit, setGasLimit] = React.useState(estimatedGasLimit);
+  const [overriddenGasLimit, setOverriddenGasLimit] = React.useState<number | undefined>(undefined);
 
   const toWei = (decimal: number): WeiAny => WeiAny.createFor(decimal, stdMaxGasPrice.units, factory, gasPriceUnit);
 
@@ -208,13 +208,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
   };
 
   const handleGasLimitOverride = (value?: number) => {
-    if (value != undefined) {
-      setGasLimit(value);
-      onGasLimitChange(value);
-    } else {
-      setGasLimit(estimatedGasLimit);
-      onGasLimitChange(estimatedGasLimit);
-    }
+    setOverriddenGasLimit(estimatedGasLimit);
+    onGasLimitChange(estimatedGasLimit);
   }
 
   const maxGasPriceByUnit = maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
@@ -225,6 +220,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
   const showMaxRange = lowMaxGasPrice.isPositive() && highMaxGasPrice.isPositive();
   const showPriorityRange = lowPriorityGasPrice.isPositive() && highPriorityGasPrice.isPositive();
 
+  const currentGasLimit = overriddenGasLimit ?? estimatedGasLimit;
+
   return (
     <FormAccordion
       title={
@@ -233,7 +230,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
           {showEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
           {showEip1559 ? ' Max Gas Price' : ' Gas Price'}
           {showEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
-          / {gasLimit} gas
+          / {currentGasLimit} gas
         </FormRow>
       }
     >

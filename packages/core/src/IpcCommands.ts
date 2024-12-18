@@ -15,7 +15,10 @@ export enum IpcCommands {
   // Backend API
   DESCRIBE_ADDRESS = 'describe-address',
   ESTIMATE_FEE = 'estimate-fee',
+
+  // estimate the gas limit for the transaction
   ESTIMATE_TX = 'estimate-tx',
+  
   GET_BALANCE = 'get-balance',
   GET_BTC_TX = 'get-btc-tx',
   GET_ETH_RECEIPT = 'get-eth-receipt',

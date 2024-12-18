@@ -200,34 +200,6 @@ export function broadcastTx({
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Dispatched<any> {
-  return (dispatch, getState, extra) => {
-    return extra.backendApi.estimateFee(blockchain, blocks, mode);
-  };
-}
-
-export function estimateGas(blockchain: BlockchainCode, tx: EthereumTransaction): Dispatched<number> {
-  return (dispatch, getState, extra) => {
-    const { data, from, gasPrice, maxGasPrice, priorityGasPrice, to, type, value } = tx;
-
-    if (to == null) {
-      return -1;
-    }
-
-    const basicTx: EthereumBasicTransaction = { data, from, to, value: toHex(value.number) };
-
-    if (type === EthereumTransactionType.EIP1559) {
-      basicTx.maxFeePerGas = toHex(maxGasPrice?.number);
-      basicTx.maxPriorityFeePerGas = toHex(priorityGasPrice?.number);
-    } else {
-      basicTx.gasPrice = toHex(gasPrice?.number);
-    }
-
-    return extra.backendApi.estimateTxCost(blockchain, basicTx);
-  };
-}
-
 function sortBigNumber(first: BigNumber, second: BigNumber): number {
   if (first.eq(second)) {
     return 0;
@@ -579,39 +551,6 @@ function verifySender(expected: string): (txid: string, raw: string, chain: Bloc
         reject(new Error('Emerald Vault returned invalid signature for the transaction'));
       }
     });
-}
-
-/**
- * @deprecated Should be replaced by unified logic in new UI
- */
-export function signEthereumTransaction(
-  entryId: string,
-  transaction: EthereumTransaction,
-  password: string | undefined,
-): Dispatched<SignData | undefined> {
-  return (dispatch, getState, extra) => {
-    const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
-      signEthTx(entryId, tx, extra.api.vault, password)
-        .then(({ raw, txid }) => verifySender(tx.from)(txid, raw, tx.blockchain))
-        .then(({ raw: signed, txid: txId }) => ({ entryId, signed, tx, txId, blockchain: tx.blockchain }));
-
-    if (transaction.nonce == null) {
-      return extra.backendApi
-        .getNonce(transaction.blockchain, transaction.from)
-        .then((nonce) => callSignTx({ ...transaction, nonce }))
-        .catch((error) => {
-          dispatch(showError(error));
-
-          return undefined;
-        });
-    }
-
-    return callSignTx(transaction).catch((error) => {
-      dispatch(showError(error));
-
-      return undefined;
-    });
-  };
 }
 
 export function signTx(unsiged: UnsignedTx, entryId: EntryId, password?: string): Dispatched<SignedTx> {

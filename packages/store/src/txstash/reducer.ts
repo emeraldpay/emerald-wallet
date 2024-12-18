@@ -6,6 +6,7 @@ import {
   SetEntryAction,
   SetFeeLoadingAction,
   SetFeeRangeAction,
+  SetGasLimitAction,
   SetPreparingAction,
   SetSignedAction,
   SetStageAction,
@@ -88,6 +89,23 @@ function setTransactionFee(
   return { ...state, transactionFee };
 }
 
+function setGasLimit(state: TxStashState, { payload }: SetGasLimitAction): TxStashState {
+  if (state.stage === CreateTxStage.SETUP) {
+    let prev = state.transaction;
+    if (!prev) {
+      return state;
+    }
+    return {
+      ...state,
+      transaction: {
+        ...prev,
+        gas: payload,
+      }
+    };
+  }
+  return state;
+}
+
 export function reducer(state = INITIAL_STATE, action: TxStashAction): TxStashState {
   switch (action.type) {
     case ActionTypes.RESET:
@@ -112,6 +130,8 @@ export function reducer(state = INITIAL_STATE, action: TxStashAction): TxStashSt
       return setTransaction(state, action);
     case ActionTypes.SET_TRANSACTION_FEE:
       return setTransactionFee(state, action);
+    case ActionTypes.SET_GAS_LIMIT:
+      return setGasLimit(state, action);
     default:
       return state;
   }
