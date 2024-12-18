@@ -28,7 +28,7 @@ export class BackendApiInvoker implements BackendApi {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_FEE, blockchain, blocks, mode);
   }
 
-  estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number> {
+  estimateGasLimit(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number> {
     return ipcRenderer.invoke(IpcCommands.ESTIMATE_TX, blockchain, tx);
   }
 

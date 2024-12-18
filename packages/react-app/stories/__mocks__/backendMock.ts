@@ -81,7 +81,7 @@ export class BackendMock implements BackendApi {
     return Promise.resolve(0);
   }
 
-  estimateTxCost(): Promise<number> {
+  estimateGasLimit(): Promise<number> {
     return Promise.resolve(0);
   }
 

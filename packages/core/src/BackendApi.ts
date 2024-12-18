@@ -8,7 +8,7 @@ export interface BackendApi {
   describeAddress(blockchain: BlockchainCode, address: string): Promise<AddressApi.DescribeResponse>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Promise<any>;
-  estimateTxCost(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number>;
+  estimateGasLimit(blockchain: BlockchainCode, tx: EthereumBasicTransaction): Promise<number>;
   getBalance(address: string, asset: AnyAsset, includeUtxo?: boolean): Promise<AddressBalance[]>;
   getBtcTx(blockchain: BlockchainCode, hash: string): Promise<BitcoinRawTransaction | null>;
   getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null>;

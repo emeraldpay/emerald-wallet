@@ -138,7 +138,7 @@ let actions = [
 ];
 
 export default {
-  title: 'Create Transaction',
+  title: 'Create Transaction - Setup',
   decorators: [
     providerForStore(api, backend, actions),
   ],

@@ -58,6 +58,7 @@ export enum ActionTypes {
   SET_STAGE = 'TX_STASH/SET_STAGE',
   SET_TRANSACTION = 'TX_STASH/SET_TRANSACTION',
   SET_TRANSACTION_FEE = 'TX_STASH/SET_TRANSACTION_FEE',
+  SET_GAS_LIMIT = 'TX_STASH/SET_GAS_LIMIT',
 }
 
 export interface ResetAction {
@@ -136,6 +137,11 @@ export interface SetTransactionFeeAction {
   };
 }
 
+export interface SetGasLimitAction {
+  type: ActionTypes.SET_GAS_LIMIT;
+  payload: number;
+}
+
 export type TxStashAction =
   | ResetAction
   | SetAssetAction
@@ -147,7 +153,9 @@ export type TxStashAction =
   | SetSignedAction
   | SetStageAction
   | SetTransactionAction
-  | SetTransactionFeeAction;
+  | SetTransactionFeeAction
+  | SetGasLimitAction
+  ;
 
 export interface TxOrigin {
   action: TxAction;

@@ -294,9 +294,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (dispatch: any, { initialAllowance, storedTx }) => ({
     prepareTransaction({ action, entries, entry }) {
       dispatch(txStash.actions.prepareTransaction({ action, entries, entry, initialAllowance, storedTx }));
+      dispatch(txStash.actions.estimateGasLimit());
     },
     setAsset(asset) {
       dispatch(txStash.actions.setAsset(asset));
+      dispatch(txStash.actions.estimateGasLimit());
     },
     setEntry(entry, ownerAddress) {
       dispatch(txStash.actions.setEntry(entry, ownerAddress));
@@ -306,6 +308,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     setTransaction(tx) {
       dispatch(txStash.actions.setTransaction(tx));
+      dispatch(txStash.actions.estimateGasLimit());
     },
   }),
 )(SetupTransaction);

@@ -7,11 +7,11 @@ export const DEFAULT_GAS_LIMIT_ERC20 = 60000 as const;
 export interface EthereumBasicTransaction {
   data?: string;
   from?: string;
-  gas?: number | string;
+  gas?: string;
   gasPrice?: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
-  to: string;
+  to?: string;
   value?: string;
 }
 

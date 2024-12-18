@@ -1,8 +1,20 @@
 import { CreateAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import { FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, makeStyles } from '@material-ui/core';
+import {Button, FormAccordion, FormLabel, FormRow, Input} from '@emeraldwallet/ui';
+import {
+  Box,
+  FormControlLabel,
+  FormHelperText,
+  Slider,
+  Switch,
+  createStyles,
+  makeStyles,
+  TextField
+} from '@material-ui/core';
 import * as React from 'react';
+import {useState} from "react";
+import {workflow} from "@emeraldwallet/core";
+import {NumberField} from "../NumberField";
 
 const useStyles = makeStyles(
   createStyles({
@@ -38,6 +50,9 @@ const useStyles = makeStyles(
     inputField: {
       flexGrow: 5,
     },
+    gasLimitEditor: {
+      width: 240,
+    }
   }),
 );
 
@@ -54,9 +69,70 @@ interface OwnProps {
   stdPriorityGasPrice: WeiAny;
   lowPriorityGasPrice: WeiAny;
   highPriorityGasPrice: WeiAny;
+  estimatedGasLimit: number;
   onUse1559Change(value: boolean): void;
   onMaxGasPriceChange(value: WeiAny): void;
   onPriorityGasPriceChange(value: WeiAny): void;
+  onGasLimitChange(value: number): void;
+}
+
+type GasLimitFieldProps = {
+  gasLimit: number;
+  onOverride: (value?: number) => void;
+}
+const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
+  const [useDefault, setUseDefault] = useState(true);
+  const [value, setValue] = useState(gasLimit);
+  const [errorText, setErrorText] = useState<string | undefined>();
+
+  const styles = useStyles();
+
+  const onSwitch = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    setUseDefault(checked);
+    onOverride(!checked ? value : undefined);
+  }
+
+  const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = parseInt(event.target.value);
+    setValue(newValue);
+    if (isNaN(newValue)) {
+      setErrorText('Invalid number');
+    } else if (newValue < 21_000) {
+      setErrorText('Minimum is 21,000');
+    } else if (newValue > 30_000_000) {
+      setErrorText('Maximum is 30,000,000');
+    } else {
+      setErrorText(undefined);
+      onOverride(newValue);
+    }
+  }
+
+  const editor = <TextField
+    className={styles.gasLimitEditor}
+    type="number"
+    helperText={errorText != undefined ? errorText : `Estimated value: ${gasLimit}`}
+    error={errorText != undefined}
+    maxRows={1}
+    multiline={false}
+    placeholder={`${gasLimit}`}
+    value={value}
+    onChange={handleValueChange}
+  />
+
+  return (
+    <FormRow>
+      <FormLabel>Gas</FormLabel>
+      <Box className={styles.inputField}>
+        <Box>
+        <FormControlLabel
+          control={<Switch checked={useDefault} color="primary" onChange={onSwitch} />}
+          label={useDefault ? `Auto (${gasLimit})` : 'Manual'}
+        />
+          {!useDefault && editor}
+        </Box>
+      </Box>
+    </FormRow>
+  )
 }
 
 const EthTxSettings: React.FC<OwnProps> = ({
@@ -72,9 +148,11 @@ const EthTxSettings: React.FC<OwnProps> = ({
   stdPriorityGasPrice,
   lowPriorityGasPrice,
   highPriorityGasPrice,
+  estimatedGasLimit,
   onUse1559Change,
   onMaxGasPriceChange,
   onPriorityGasPriceChange,
+  onGasLimitChange,
 }) => {
   const styles = useStyles();
 
@@ -93,6 +171,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
 
   const [currentUseStdMaxGasPrice, setCurrentUseStdMaxGasPrice] = React.useState(true);
   const [currentUseStdPriorityGasPrice, setCurrentUseStdPriorityGasPrice] = React.useState(true);
+  const [overriddenGasLimit, setOverriddenGasLimit] = React.useState<number | undefined>(undefined);
 
   const toWei = (decimal: number): WeiAny => WeiAny.createFor(decimal, stdMaxGasPrice.units, factory, gasPriceUnit);
 
@@ -128,6 +207,11 @@ const EthTxSettings: React.FC<OwnProps> = ({
     onPriorityGasPriceChange(toWei(gasPriceDecimal));
   };
 
+  const handleGasLimitOverride = (value?: number) => {
+    setOverriddenGasLimit(estimatedGasLimit);
+    onGasLimitChange(estimatedGasLimit);
+  }
+
   const maxGasPriceByUnit = maxGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
   const priorityGasPriceByUnit = priorityGasPrice.getNumberByUnit(gasPriceUnit).toFixed(2);
 
@@ -135,6 +219,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
 
   const showMaxRange = lowMaxGasPrice.isPositive() && highMaxGasPrice.isPositive();
   const showPriorityRange = lowPriorityGasPrice.isPositive() && highPriorityGasPrice.isPositive();
+
+  const currentGasLimit = overriddenGasLimit ?? estimatedGasLimit;
 
   return (
     <FormAccordion
@@ -144,6 +230,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
           {showEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
           {showEip1559 ? ' Max Gas Price' : ' Gas Price'}
           {showEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
+          / {currentGasLimit} gas
         </FormRow>
       }
     >
@@ -250,6 +337,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
           </Box>
         </FormRow>
       )}
+      <GasLimitField gasLimit={estimatedGasLimit} onOverride={handleGasLimitOverride} />
     </FormAccordion>
   );
 };

@@ -40,7 +40,12 @@ export function providerForStore(
 
   actions?.forEach((action) => store.dispatch(action as AnyAction));
 
-  return (story) => (<Provider store={store}>{story()}</Provider>);
+  return (story, context) => {
+    let extraActions = context.args["_test_actions"] as Array<AnyAction | Dispatched> || [];
+    extraActions.forEach((action) => store.dispatch(action as AnyAction));
+
+    return (<Provider store={store}>{story()}</Provider>);
+  };
 }
 
 const defaultBackend = new BackendMock();
