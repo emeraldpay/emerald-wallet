@@ -32,45 +32,41 @@ function onSetLastTxId(state: HistoryState, { txId }: LastTxIdAction): HistorySt
   return { ...state, lastTxId: txId };
 }
 
-function onRemoveStoreTransaction(state: HistoryState, { txId }: RemoveStoredTxAction): HistoryState {
-  return { ...state, transactions: state.transactions.filter((tx) => tx.txId !== txId) };
+function onRemoveStoreTransaction(state: HistoryState, { txIds }: RemoveStoredTxAction): HistoryState {
+  return { ...state, transactions: state.transactions
+      .filter((tx) => tx.txId !in txIds) };
 }
 
 function onUpdateStoreTransaction(
   state: HistoryState,
-  { meta, tokens, transaction, walletId }: UpdateStoredTxAction,
+  { tokens, transactions, walletId }: UpdateStoredTxAction,
 ): HistoryState {
+  const tokenRegistry = new TokenRegistry(tokens.filter((token) => isBlockchainId(token.blockchain)));
+  const updatedTransactions = [];
   if (state.walletId === walletId) {
-    const tokenRegistry = new TokenRegistry(tokens.filter((token) => isBlockchainId(token.blockchain)));
-
-    const storedTransaction = new StoredTransaction(tokenRegistry, transaction, meta);
-    const storedTransactions = [...state.transactions];
-
-    if (storedTransactions.length === 0) {
-      return {
-        ...state,
-        transactions: [storedTransaction],
-      };
+    for (const prevTransaction of state.transactions) {
+      const update = transactions.find((tx) => tx.transaction.txId === prevTransaction.txId);
+      if (update) {
+        const storedTransaction = new StoredTransaction(tokenRegistry, update.transaction, update.meta);
+        if ((prevTransaction.version ?? 0) > (storedTransaction.version ?? 0)) {
+          updatedTransactions.push(prevTransaction);
+        } else {
+          updatedTransactions.push(storedTransaction);
+        }
+      } else {
+        updatedTransactions.push(prevTransaction);
+      }
     }
 
-    const index = storedTransactions.findIndex((tx) => tx.txId === transaction.txId);
-
-    if (index > -1) {
-      if ((storedTransactions[index].version ?? 0) > (storedTransaction.version ?? 0)) {
-        return state;
+    for (const tx of transactions) {
+      if (!state.transactions.find((prev) => prev.txId === tx.transaction.txId)) {
+        updatedTransactions.push(new StoredTransaction(tokenRegistry, tx.transaction, tx.meta));
       }
-
-      storedTransactions[index] = storedTransaction;
-
-      return {
-        ...state,
-        transactions: storedTransactions,
-      };
     }
 
     return {
       ...state,
-      transactions: [storedTransaction, ...state.transactions].sort((first, second) => {
+      transactions: updatedTransactions.sort((first, second) => {
         const { confirmTimestamp: firstConfirmTimestamp } = first;
         const { confirmTimestamp: secondConfirmTimestamp } = second;
 

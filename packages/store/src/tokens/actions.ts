@@ -23,6 +23,6 @@ export function setTokenBalance(
 ): SetTokenBalanceAction {
   return {
     type: ActionTypes.SET_TOKEN_BALANCE,
-    payload: { address, blockchain, balance, contractAddress },
+    payload: [{ address, blockchain, balance, contractAddress }],
   };
 }

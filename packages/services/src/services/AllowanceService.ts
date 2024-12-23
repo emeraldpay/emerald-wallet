@@ -1,4 +1,4 @@
-import { Publisher, token as TokenApi } from '@emeraldpay/api';
+import {address as AddressApi, Publisher, token as TokenApi} from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import { extractWalletId } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
@@ -18,6 +18,7 @@ import { EmeraldApiAccess } from '../emerald-client/ApiAccess';
 import { BalanceService } from './balance/BalanceService';
 import { Service } from './ServiceManager';
 import {isBlockchainId} from "@emeraldwallet/core";
+import {BufferedHandler} from "./BuffereHandler";
 
 interface Subscription {
   address: string;
@@ -27,6 +28,20 @@ interface Subscription {
 
 function isEqual(first: Subscription, second: Subscription): boolean {
   return first.address === second.address && first.blockchain === second.blockchain && first.entryId === second.entryId;
+}
+
+// from packages/store/src/allowances/types.ts
+type Allowance = {
+  address: string;
+  allowance: string;
+  available: string;
+  blockchain: BlockchainCode;
+  contractAddress: string;
+  ownerAddress: string;
+  spenderAddress: string;
+  timestamp: number;
+  ownerControl?: AddressApi.AddressControl;
+  spenderControl?: AddressApi.AddressControl;
 }
 
 type AllowanceHandler = (allowance: TokenApi.AddressAllowanceAmount) => void;
@@ -49,6 +64,8 @@ export class AllowanceService implements Service {
   private subscribers: Map<string, Publisher<TokenApi.AddressAllowanceAmount>> = new Map();
   private subscriptions: Subscription[] = [];
 
+  private buffer: BufferedHandler<Allowance>;
+
   constructor(
     ipcMain: IpcMain,
     apiAccess: EmeraldApiAccess,
@@ -65,6 +82,9 @@ export class AllowanceService implements Service {
 
     this.tokens = settings.getTokens();
     this.tokenRegistry = new TokenRegistry(this.tokens);
+
+    this.buffer = new BufferedHandler<Allowance>(this.submitAllowances());
+    this.buffer.start();
 
     ipcMain.handle(IpcCommands.ALLOWANCE_SET_TOKENS, (event, tokens) => {
       this.tokens = tokens.filter((token: TokenData) => isBlockchainId(token.blockchain));
@@ -179,25 +199,29 @@ export class AllowanceService implements Service {
           this.apiAccess.addressClient.describe({ blockchain, address: ownerAddress }),
           this.apiAccess.addressClient.describe({ blockchain, address: spenderAddress }),
         ]).then(([{ control: ownerControl }, { control: spenderControl }]) =>
-          this.webContents.send(IpcCommands.STORE_DISPATCH, {
-            type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
-            payload: {
-              allowance: {
-                address,
-                allowance,
-                available,
-                contractAddress,
-                ownerAddress,
-                ownerControl,
-                spenderAddress,
-                spenderControl,
-                blockchain: blockchainCode,
-                timestamp: Date.now(),
-              },
-              tokens: this.tokens,
-            },
-          }),
+          this.buffer.onData({
+              address,
+              allowance,
+              available,
+              contractAddress,
+              ownerAddress,
+              ownerControl,
+              spenderAddress,
+              spenderControl,
+              blockchain: blockchainCode,
+              timestamp: Date.now(),
+          })
         );
+      });
+    };
+  }
+
+  private submitAllowances() {
+    return async (values: Allowance[]) => {
+      this.webContents.send(IpcCommands.STORE_DISPATCH, {
+        type: 'WALLET/ALLOWANCE/SET_ALLOWANCE',
+        allowances: values,
+        tokens: this.tokens,
       });
     };
   }

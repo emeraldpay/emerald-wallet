@@ -3,7 +3,7 @@ import produce from 'immer';
 import {
   ActionTypes,
   Allowance,
-  AllowanceAction,
+  AllowanceAction, AllowanceCommon,
   AllowanceState,
   AllowanceType,
   InitAllowanceAction,
@@ -18,73 +18,76 @@ function setAllowance(
   value: SetAllowanceAction,
 ): AllowanceState {
 
-  const {
-    address,
-    blockchain,
-    allowance,
-    available,
-    contractAddress,
-    ownerAddress,
-    ownerControl,
-    spenderAddress,
-    spenderControl,
-    timestamp,
-  } = value.payload.allowance;
+  const tokenRegistry = new TokenRegistry(value.tokens);
+  let updatedState = Object.assign({}, state);
 
-  const tokenRegistry = new TokenRegistry(value.payload.tokens);
-
-  if (tokenRegistry.hasAddress(blockchain, contractAddress)) {
-    const token = tokenRegistry.byAddress(blockchain, contractAddress);
-
-    const allowanceAddress = address.toLowerCase();
-    const allowanceContractAddress = contractAddress.toLowerCase();
-
-    const type =
-      allowanceAddress === ownerAddress.toLowerCase() ? AllowanceType.ALLOWED_FOR : AllowanceType.APPROVED_BY;
-
-    const oldAllowances = state[blockchain]?.[allowanceAddress]?.[type]?.[allowanceContractAddress] ?? [];
-    const allowances = [...oldAllowances];
-
-    const newAllowance: Allowance = {
+  for (const next of value.allowances) {
+    const {
+      address,
       blockchain,
+      allowance,
+      available,
+      contractAddress,
       ownerAddress,
       ownerControl,
       spenderAddress,
       spenderControl,
       timestamp,
-      token,
-      type,
-      allowance: token.getAmount(allowance),
-      available: token.getAmount(available),
-    };
+    } = next;
 
-    if (allowances.length > 0) {
-      const index = allowances.findIndex((item) => item.spenderAddress.toLowerCase() === spenderAddress.toLowerCase());
+    if (tokenRegistry.hasAddress(blockchain, contractAddress)) {
+      const token = tokenRegistry.byAddress(blockchain, contractAddress);
 
-      if (index > -1) {
-        allowances[index] = newAllowance;
+      const allowanceAddress = address.toLowerCase();
+      const allowanceContractAddress = contractAddress.toLowerCase();
+
+      const type =
+        allowanceAddress === ownerAddress.toLowerCase() ? AllowanceType.ALLOWED_FOR : AllowanceType.APPROVED_BY;
+
+      const oldAllowances = state[blockchain]?.[allowanceAddress]?.[type]?.[allowanceContractAddress] ?? [];
+      const allowances = [...oldAllowances];
+
+      const newAllowance: Allowance = {
+        blockchain,
+        ownerAddress,
+        ownerControl,
+        spenderAddress,
+        spenderControl,
+        timestamp,
+        token,
+        type,
+        allowance: token.getAmount(allowance),
+        available: token.getAmount(available),
+      };
+
+      if (allowances.length > 0) {
+        const index = allowances.findIndex((item) => item.spenderAddress.toLowerCase() === spenderAddress.toLowerCase());
+
+        if (index > -1) {
+          allowances[index] = newAllowance;
+        } else {
+          allowances.push(newAllowance);
+        }
       } else {
         allowances.push(newAllowance);
       }
-    } else {
-      allowances.push(newAllowance);
-    }
 
-    return produce(state, (draft) => {
-      draft[blockchain] = {
-        ...draft[blockchain],
-        [allowanceAddress]: {
-          ...draft[blockchain]?.[allowanceAddress],
-          [type]: {
-            ...draft[blockchain]?.[allowanceAddress]?.[type],
-            [allowanceContractAddress]: allowances,
+      updatedState = produce(updatedState, (draft) => {
+        draft[blockchain] = {
+          ...draft[blockchain],
+          [allowanceAddress]: {
+            ...draft[blockchain]?.[allowanceAddress],
+            [type]: {
+              ...draft[blockchain]?.[allowanceAddress]?.[type],
+              [allowanceContractAddress]: allowances,
+            },
           },
-        },
-      };
-    });
+        };
+      });
+    }
   }
 
-  return state;
+  return updatedState;
 }
 
 function initAllowance(state: AllowanceState, { payload }: InitAllowanceAction): AllowanceState {
@@ -102,7 +105,7 @@ function initAllowance(state: AllowanceState, { payload }: InitAllowanceAction):
   );
 
   if (allowance == null) {
-    return setAllowance(state, { payload, type: ActionTypes.SET_ALLOWANCE });
+    return setAllowance(state, { allowances: [payload.allowance], tokens: payload.tokens, type: ActionTypes.SET_ALLOWANCE });
   }
 
   return state;

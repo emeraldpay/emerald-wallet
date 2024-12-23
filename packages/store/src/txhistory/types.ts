@@ -143,14 +143,16 @@ export interface LoadStoredTxsAction {
 
 export interface RemoveStoredTxAction {
   type: ActionTypes.REMOVE_STORED_TX;
-  txId: string;
+  txIds: string[];
 }
 
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
-  meta: PersistentState.TxMetaItem | null;
+  transactions: {
+    transaction: PersistentState.Transaction;
+    meta: PersistentState.TxMetaItem | null;
+  }[]
   tokens: TokenData[];
-  transaction: PersistentState.Transaction;
   walletId: Uuid;
 }
 

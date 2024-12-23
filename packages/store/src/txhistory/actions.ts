@@ -77,7 +77,7 @@ export function loadTransactions(walletId: Uuid, initial: boolean, limit = 20): 
 
 export function removeTransaction(txId: string): RemoveStoredTxAction {
   return {
-    txId,
+    txIds: [txId],
     type: ActionTypes.REMOVE_STORED_TX,
   };
 }
@@ -93,9 +93,8 @@ export function updateTransaction(
     } = getState();
 
     dispatch({
-      meta,
+      transactions: [{ meta, transaction }],
       tokens,
-      transaction,
       walletId,
       type: ActionTypes.UPDATE_STORED_TX,
     });

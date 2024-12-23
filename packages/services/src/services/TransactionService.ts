@@ -14,12 +14,13 @@ import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../emerald-client/ApiAccess';
 import { Service } from './ServiceManager';
+import {BufferedHandler} from "./BuffereHandler";
 
 const { ChangeType: ApiType, Direction: ApiDirection } = TransactionApi;
 const { ChangeType: StateType, Direction: StateDirection, State, Status } = PersistentState;
 
 type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
-type TransactionHandler = (tx: TransactionApi.AddressTransaction) => void;
+type TransactionHandler = (tx: TransactionApi.AddressTransaction[]) => Promise<void>;
 
 const log = Logger.forCategory('TransactionService');
 
@@ -118,17 +119,19 @@ export class TransactionService implements Service {
 
         this.persistentState.txhistory
           .query({ state: State.SUBMITTED })
-          .then(({ items: transactions }) =>
-            Promise.all(
-              transactions.map(({ blockchain: txBlockchain, txId }) =>
-                this.persistentState.txhistory.remove(txBlockchain, txId).then(() =>
-                  this.webContents.send(IpcCommands.STORE_DISPATCH, {
-                    type: 'WALLET/HISTORY/REMOVE_STORED_TX',
-                    txId,
-                  }),
+          .then(({ items: transactions }) => {
+              let removePromise =  Promise.all(
+                transactions.map(({blockchain: txBlockchain, txId}) =>
+                  this.persistentState.txhistory.remove(txBlockchain, txId)
                 ),
-              ),
-            ),
+              );
+              removePromise.then(() => {
+                this.webContents.send(IpcCommands.STORE_DISPATCH, {
+                  type: 'WALLET/HISTORY/REMOVE_STORED_TX',
+                  txIds: transactions.map((tx) => tx.txId),
+                })
+              })
+            },
           )
           .then(() =>
             entryIdentifiers.forEach(({ blockchain, entryId, identifier }) =>
@@ -157,6 +160,8 @@ export class TransactionService implements Service {
   private subscribe(identifier: string, blockchain: number, entryId: string): void {
     const blockchainCode = blockchainIdToCode(blockchain);
 
+    if (blockchain != 0) return;
+
     this.persistentState.txhistory
       .getCursor(identifier)
       .then((cursor) => {
@@ -172,29 +177,32 @@ export class TransactionService implements Service {
         };
 
         const handler = this.processTransaction(identifier, blockchain, entryId);
+        const buffer = new BufferedHandler(handler);
+        buffer.start();
 
         this.apiAccess.transactionClient
           .getTransactions(request)
-          .onData(handler)
-          .onError((error) =>
-            log.error(
-              `Error while getting transactions for ${identifier} on ${blockchainCode},`,
-              `restart after ${this.restartTimeout} seconds...`,
-              error,
-            ),
-          );
+          .onData(buffer.accept())
+          .onError((error) => {
+              log.error(
+                `Error while getting transactions for ${identifier} on ${blockchainCode},`,
+                `restart after ${this.restartTimeout} seconds...`,
+                error,
+              );
+              buffer.flush();
+            });
 
         const subscriber = this.apiAccess.transactionClient
           .subscribeTransactions(request)
-          .onData(handler)
+          .onData(buffer.accept())
           .onError((error) => log.error(`Error while subscribing for ${identifier} on ${blockchainCode}`, error))
           .finally(() => {
             log.info(
               `Subscription for ${identifier} on ${blockchainCode} is closed,`,
               `restart after ${this.restartTimeout} seconds...`,
             );
-
             setTimeout(() => this.subscribe(identifier, blockchain, entryId), this.restartTimeout * 1000);
+            buffer.flush();
           });
 
         this.subscribers.set(identifier, subscriber);
@@ -205,22 +213,25 @@ export class TransactionService implements Service {
   private processTransaction(identifier: string, blockchain: number, entryId: string): TransactionHandler {
     const blockchainCode = blockchainIdToCode(blockchain);
 
-    return (tx) => {
-      log.info(`Receive transaction ${tx.txId} for ${identifier} on ${blockchainCode}...`);
+    return async (txs: TransactionApi.AddressTransaction[]) => {
+      let removed = txs.filter((tx) => tx.removed);
+      let added = txs.filter((tx) => !tx.removed);
 
-      if (tx.removed) {
+      log.info(`Receive transactions ${txs.length} (+${added.length}, -${removed.length}) for ${identifier} on ${blockchainCode}...`);
+
+      removed.forEach((tx) => {
         this.persistentState.txhistory
           .remove(blockchain, tx.txId)
-          .then(() =>
-            this.webContents.send(IpcCommands.STORE_DISPATCH, {
-              type: 'WALLET/HISTORY/REMOVE_STORED_TX',
-              txId: tx.txId,
-            }),
-          )
           .catch((error) =>
             log.error(`Error while removing transaction for ${identifier} on ${blockchainCode} from state`, error),
           );
-      } else {
+      });
+      this.webContents.send(IpcCommands.STORE_DISPATCH, {
+        type: 'WALLET/HISTORY/REMOVE_STORED_TX',
+        txIds: removed.map((tx) => tx.txId),
+      });
+
+      let mergedPromise = added.map((tx) => {
         let confirmation: PersistentState.TransactionConfirmation | null = null;
 
         const now = new Date();
@@ -257,38 +268,42 @@ export class TransactionService implements Service {
           txId: tx.txId,
         };
 
-        this.persistentState.txhistory
+        return this.persistentState.txhistory
           .submit({ ...confirmation, ...transaction })
           .then((merged) => {
             if (tx.cursor != null && tx.cursor.length > 0) {
-              this.persistentState.txhistory
+              return this.persistentState.txhistory
                 .setCursor(identifier, tx.cursor)
                 .catch((error) =>
                   log.error(`Error while set cursor ${tx.cursor} for ${identifier} on ${blockchainCode}`, error),
-                );
+                )
+                .then(() => merged);
+            } else {
+              return Promise.resolve(merged)
             }
-
-            const walletId = EntryIdOp.of(entryId).extractWalletId();
-
-            this.persistentState.txmeta
-              .get(blockchainCode, merged.txId)
-              .then((meta) =>
-                this.webContents.send(IpcCommands.STORE_DISPATCH, {
-                  meta,
-                  walletId,
-                  type: 'WALLET/HISTORY/UPDATE_STORED_TX',
-                  tokens: this.tokens,
-                  transaction: merged,
-                }),
-              )
-              .catch((error) =>
-                log.error(`Error while getting transaction meta for ${identifier} on ${blockchainCode}`, error),
-              );
           })
-          .catch((error) =>
-            log.error(`Error while submitting transaction data for ${identifier} on ${blockchainCode}`, error),
-          );
-      }
-    };
+      });
+
+      const merged = await Promise.all(mergedPromise);
+      const meta = await Promise.all(
+        merged.map((tx) =>
+          this.persistentState.txmeta
+            .get(blockchainCode, tx.txId)
+            .catch((error) => {
+              log.error(`Error while getting transaction meta for ${identifier} on ${blockchainCode}`, error);
+              return null;
+            })
+        ));
+
+      const walletId = EntryIdOp.of(entryId).extractWalletId();
+      this.webContents.send(IpcCommands.STORE_DISPATCH, {
+        transactions: merged.map((tx, index) => {
+          return { meta: meta[index], transaction: tx };
+        }),
+        type: 'WALLET/HISTORY/UPDATE_STORED_TX',
+        tokens: this.tokens,
+        walletId,
+      });
+    }
   }
 }

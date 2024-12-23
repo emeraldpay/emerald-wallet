@@ -121,7 +121,7 @@ export interface PendingBalanceAction {
 
 export interface SetBalanceAction {
   type: ActionTypes.SET_BALANCE;
-  payload: AccountBalance;
+  payload: AccountBalance[];
 }
 
 export interface SetLoadingAction {
