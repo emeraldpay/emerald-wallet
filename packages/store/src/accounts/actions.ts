@@ -64,7 +64,7 @@ export function initState(
 export function setBalanceAction(balance: AccountBalance): SetBalanceAction {
   return {
     type: ActionTypes.SET_BALANCE,
-    payload: balance,
+    payload: [balance],
   };
 }
 

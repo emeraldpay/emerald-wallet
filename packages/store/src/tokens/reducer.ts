@@ -40,19 +40,22 @@ function onInitState(state: TokensState, { payload: { balances, tokens } }: Init
 }
 
 function onSetTokenBalance(state: TokensState, action: SetTokenBalanceAction): TokensState {
-  const { address, blockchain, balance, contractAddress } = action.payload;
+  let updated = state;
+  for (const { address, balance, blockchain, contractAddress } of action.payload) {
+    const balanceAddress = address.toLowerCase();
 
-  const balanceAddress = address.toLowerCase();
+    updated = produce(updated, (draft) => {
+      draft.balances[blockchain] = {
+        ...draft.balances[blockchain],
+        [balanceAddress]: {
+          ...draft.balances[blockchain]?.[balanceAddress],
+          [contractAddress.toLowerCase()]: { ...balance },
+        },
+      };
+    });
+  }
 
-  return produce(state, (draft) => {
-    draft.balances[blockchain] = {
-      ...draft.balances[blockchain],
-      [balanceAddress]: {
-        ...draft.balances[blockchain]?.[balanceAddress],
-        [contractAddress.toLowerCase()]: { ...balance },
-      },
-    };
-  });
+  return updated;
 }
 
 export function reducer(state: TokensState = INITIAL_STATE, action: TokensAction): TokensState {

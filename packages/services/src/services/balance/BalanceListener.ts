@@ -2,7 +2,7 @@ import { AddressBalance, AnyAsset, BalanceRequest, Publisher, Utxo } from '@emer
 import { BlockchainClient } from '@emeraldpay/api-node';
 import { BlockchainCode, EthereumAddress, Logger, blockchainCodeToId, isBitcoin } from '@emeraldwallet/core';
 
-interface AddressEvent {
+export interface AddressEvent {
   address: string;
   balance: string;
   asset: AnyAsset;

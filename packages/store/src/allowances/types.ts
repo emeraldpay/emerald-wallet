@@ -93,10 +93,8 @@ export interface RemoveAllowanceAction {
 
 export interface SetAllowanceAction {
   type: ActionTypes.SET_ALLOWANCE;
-  payload: {
-    allowance: AllowanceCommon;
-    tokens: TokenData[];
-  };
+  allowances: AllowanceCommon[];
+  tokens: TokenData[];
 }
 
 export type AllowanceAction = InitAllowanceAction | RemoveAllowanceAction | SetAllowanceAction;

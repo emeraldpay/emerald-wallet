@@ -2,6 +2,7 @@ import { EntryId, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
 import { amountFactory, blockchainIdToCode } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
+  AccountBalance,
   AccountDetails,
   AccountsAction,
   AccountsState,
@@ -119,9 +120,15 @@ function updateAccountDetails(
 }
 
 function onSetBalance(state: AccountsState, action: SetBalanceAction): AccountsState {
-  const { address, balance, entryId, utxo } = action.payload;
-
-  return updateAccountDetails(state, address, entryId, (account) => ({ ...account, balance, utxo }));
+  let updated: AccountsState = state;
+  for (const balance of action.payload) {
+    updated = updateAccountDetails(updated, balance.address, balance.entryId, (account) => ({
+      ...account,
+      balance: balance.balance,
+      utxo: balance.utxo,
+    }));
+  }
+  return updated;
 }
 
 function onWalletsLoaded(state: AccountsState, action: WalletsLoadedAction): AccountsState {

@@ -1,4 +1,4 @@
-import { isAsset } from '@emeraldpay/api';
+import {AnyAsset, isAsset, Utxo} from '@emeraldpay/api';
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import {
   BlockchainCode,
@@ -8,20 +8,41 @@ import {
   SettingsManager,
   TokenRegistry,
   amountFactory,
-  blockchainCodeToId,
+  blockchainCodeToId, CoinTicker, InputUtxo,
 } from '@emeraldwallet/core';
 import { PersistentStateManager } from '@emeraldwallet/persistent-state';
 import { IpcMain, WebContents } from 'electron';
 import { EmeraldApiAccess } from '../..';
 import { PriceService } from '../price/PriceService';
 import { Service } from '../ServiceManager';
-import { BalanceListener } from './BalanceListener';
+import {AddressEvent, BalanceListener} from './BalanceListener';
+import {BigAmount, CreateAmount} from "@emeraldpay/bigamount";
+import {BufferedHandler} from "../BuffereHandler";
 
 interface Subscription {
   address: string;
   asset: string;
   blockchain: BlockchainCode;
   entryId: EntryId;
+}
+
+// same as in packages/store/src/accounts/types.ts
+interface AccountBalance {
+  address: string;
+  entryId: EntryId;
+  balance: string;
+  utxo?: InputUtxo[];
+}
+// same as in packages/store/src/tokens/types.ts
+interface TokenBalance {
+  address: string;
+  blockchain: BlockchainCode;
+  balance: {
+    decimals: number;
+    symbol: string;
+    unitsValue: string;
+  };
+  contractAddress: string;
 }
 
 function isEqual(first: Subscription, second: Subscription): boolean {
@@ -48,6 +69,9 @@ export class BalanceService implements Service {
   private subscribers: Map<string, BalanceListener> = new Map();
   private subscriptions: Subscription[] = [];
 
+  private nativeBuffer: BufferedHandler<AccountBalance>;
+  private erc20Buffer: BufferedHandler<TokenBalance>;
+
   constructor(
     ipcMain: IpcMain,
     apiAccess: EmeraldApiAccess,
@@ -62,6 +86,11 @@ export class BalanceService implements Service {
     this.priceService = priceService;
     this.tokenRegistry = new TokenRegistry(settings.getTokens());
     this.webContents = webContents;
+
+    this.nativeBuffer = new BufferedHandler(this.submitManyAccountBalances());
+    this.nativeBuffer.start();
+    this.erc20Buffer = new BufferedHandler(this.submitManyTokenBalances());
+    this.erc20Buffer.start();
 
     ipcMain.handle(IpcCommands.BALANCE_SET_TOKENS, (event, tokens) => {
       this.tokenRegistry = new TokenRegistry(tokens);
@@ -118,9 +147,18 @@ export class BalanceService implements Service {
 
     const factory = amountFactory(blockchain);
 
-    subscriber.subscribe(blockchain, address, asset, ({ balance, utxo, address: eventAddress, asset: eventAsset }) => {
+    subscriber.subscribe(blockchain, address, asset, this.createHandler(blockchain, factory, entryId));
+
+    const id = `${entryId}:${address}:${asset}`;
+
+    this.subscribers.get(id)?.stop();
+    this.subscribers.set(id, subscriber);
+  }
+
+  private createHandler(blockchain: BlockchainCode, factory: CreateAmount<BigAmount>, entryId: string): (event: AddressEvent) => void {
+    return ({balance, utxo, address: eventAddress, asset: eventAsset}) => {
       const {
-        params: { coinTicker },
+        params: {coinTicker},
       } = Blockchains[blockchain];
 
       this.persistentState.balances
@@ -129,61 +167,81 @@ export class BalanceService implements Service {
           amount: balance,
           asset: isAsset(eventAsset) ? coinTicker : eventAsset.contractAddress,
           blockchain: blockchainCodeToId(blockchain),
-          utxo: utxo?.map(({ txid, vout, value: amount }) => ({ amount, txid, vout })),
+          utxo: utxo?.map(({txid, vout, value: amount}) => ({amount, txid, vout})),
         })
         .then(() => {
-          if (isAsset(eventAsset)) {
-            const amount = factory(balance);
-
-            if (amount.isPositive()) {
-              this.priceService.addFrom(coinTicker);
-            }
-
-            this.webContents.send(IpcCommands.STORE_DISPATCH, {
-              type: 'ACCOUNT/SET_BALANCE',
-              payload: {
-                entryId,
-                address: eventAddress,
-                balance: amount.encode(),
-                utxo: utxo?.map((utxo) => ({
-                  address: eventAddress,
-                  txid: utxo.txid,
-                  value: factory(utxo.value).encode(),
-                  vout: utxo.vout,
-                })),
-              },
-            });
-          } else {
-            const { contractAddress } = eventAsset;
-
-            if (this.tokenRegistry.hasAddress(blockchain, contractAddress)) {
-              const token = this.tokenRegistry.byAddress(blockchain, contractAddress);
-
-              if (token.pinned || token.getAmount(balance).isPositive()) {
-                this.priceService.addFrom(contractAddress, blockchain);
-              }
-
-              this.webContents.send(IpcCommands.STORE_DISPATCH, {
-                type: 'TOKENS/SET_TOKEN_BALANCE',
-                payload: {
-                  blockchain,
-                  address: eventAddress,
-                  balance: {
-                    decimals: token.decimals,
-                    symbol: token.symbol,
-                    unitsValue: balance,
-                  },
-                  contractAddress: token.address,
-                },
-              });
-            }
-          }
+          this.sendAsset(entryId, eventAsset, blockchain, balance, utxo, eventAddress, factory, coinTicker);
         });
-    });
+    };
+  }
 
-    const id = `${entryId}:${address}:${asset}`;
+  private sendAsset(entryId: string, eventAsset: AnyAsset, blockchain: BlockchainCode, balance: string, utxo: Utxo[] | undefined, eventAddress: string,
+                    factory: CreateAmount<BigAmount>, coinTicker: CoinTicker): void {
+    if (isAsset(eventAsset)) {
+      this.sendNativeAsset(entryId, eventAsset, blockchain, balance, utxo, eventAddress, factory, coinTicker);
+    } else {
+      this.sendERC20Asset(entryId, eventAsset, blockchain, balance, eventAddress);
+    }
+  }
 
-    this.subscribers.get(id)?.stop();
-    this.subscribers.set(id, subscriber);
+  private sendNativeAsset(entryId: string, eventAsset: AnyAsset, blockchain: BlockchainCode, balance: string, utxo: Utxo[] | undefined, eventAddress: string, factory: CreateAmount<BigAmount>, coinTicker: CoinTicker): void {
+    const amount = factory(balance);
+
+    if (amount.isPositive()) {
+      this.priceService.addFrom(coinTicker);
+    }
+
+    this.nativeBuffer.onData({
+        entryId,
+        address: eventAddress,
+        balance: amount.encode(),
+        utxo: utxo?.map((utxo) => ({
+          address: eventAddress,
+          txid: utxo.txid,
+          value: factory(utxo.value).encode(),
+          vout: utxo.vout,
+        })),
+      });
+  }
+
+  private sendERC20Asset(entryId: string, eventAsset: AnyAsset, blockchain: BlockchainCode, balance: string, eventAddress: string): void {
+    // @ts-ignore
+    const {contractAddress} = eventAsset;
+
+    if (this.tokenRegistry.hasAddress(blockchain, contractAddress)) {
+      const token = this.tokenRegistry.byAddress(blockchain, contractAddress);
+
+      if (token.pinned || token.getAmount(balance).isPositive()) {
+        this.priceService.addFrom(contractAddress, blockchain);
+      }
+      this.erc20Buffer.onData({
+          blockchain,
+          address: eventAddress,
+          balance: {
+            decimals: token.decimals,
+            symbol: token.symbol,
+            unitsValue: balance,
+          },
+          contractAddress: token.address,
+      });
+    }
+  }
+
+  private submitManyAccountBalances(): (values: AccountBalance[]) => Promise<void> {
+    return async (values: AccountBalance[]) => {
+      this.webContents.send(IpcCommands.STORE_DISPATCH, {
+        type: 'ACCOUNT/SET_BALANCE',
+        payload: values,
+      });
+    };
+  }
+
+  private submitManyTokenBalances(): (values: TokenBalance[]) => Promise<void> {
+    return async (values: TokenBalance[]) => {
+      this.webContents.send(IpcCommands.STORE_DISPATCH, {
+        type: 'TOKENS/SET_TOKEN_BALANCE',
+        payload: values,
+      });
+    };
   }
 }

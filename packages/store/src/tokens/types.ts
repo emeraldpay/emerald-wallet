@@ -52,7 +52,7 @@ export interface SetTokenBalanceAction {
     blockchain: BlockchainCode;
     balance: TokenBalance;
     contractAddress: string;
-  };
+  }[];
 }
 
 export type TokensAction = InitTokenStateAction | SetTokenBalanceAction;

@@ -23,6 +23,7 @@ export function initAddressAllowance(allowance: AllowanceRaw): Dispatched<void, 
 export function setAllowance(allowance: AllowanceCommon, tokens: TokenData[]): SetAllowanceAction {
   return {
     type: ActionTypes.SET_ALLOWANCE,
-    payload: { allowance, tokens },
+    allowances: [allowance],
+    tokens
   };
 }
