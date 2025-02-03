@@ -1,4 +1,5 @@
 /*
+Copyright 2025 EmeraldPay
 Copyright 2020 EmeraldPay, Inc
 Copyright 2019 ETCDEV GmbH
 
@@ -108,7 +109,7 @@ export default createTheme({
     },
     MuiList: {
       root: {
-        borderTop: `1px solid ${colors.conch.main}`,
+        borderTop: `1px solid ${colors.grey100.main}`,
       },
       padding: {
         paddingBottom: 0,
@@ -117,7 +118,7 @@ export default createTheme({
     },
     MuiListItem: {
       root: {
-        borderBottom: `1px solid ${colors.conch.main}`,
+        borderBottom: `1px solid ${colors.grey100.main}`,
         borderRight: 'none',
         borderLeft: 'none',
       },
@@ -138,7 +139,7 @@ export default createTheme({
     },
     MuiPaper: {
       root: {
-        border: `1px solid ${colors.conch.main}`,
+        border: `1px solid ${colors.grey100.main}`,
       },
       elevation3: {
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
@@ -151,7 +152,7 @@ export default createTheme({
     },
     MuiTextField: {
       root: {
-        borderColor: colors.conch.main,
+        borderColor: colors.grey100.main,
         borderRadius: '1px',
         borderStyle: 'solid',
         borderWidth: '1px',
@@ -187,20 +188,20 @@ export default createTheme({
   palette: {
     action: {
       hover: 'none',
-      selected: colors.snow,
+      selected: colors.grey50.main,
     },
     background: {
-      default: colors.snow,
+      default: colors.grey50.main,
     },
-    divider: colors.conch.main,
+    divider: colors.grey100.main,
     error: {
-      main: colors.ruby,
+      main: colors.red.main,
     },
     primary: colors.emerald,
-    secondary: colors.ash,
+    secondary: colors.grey200,
     text: {
-      primary: colors.coal,
-      secondary: colors.ash.main,
+      primary: colors.grey900.main,
+      secondary: colors.grey200.main,
     },
   },
   props: {

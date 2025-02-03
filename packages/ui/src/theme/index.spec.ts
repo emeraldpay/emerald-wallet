@@ -1,4 +1,5 @@
 /*
+Copyright 2025 EmeraldPay
 Copyright 2020 EmeraldPay, Inc
 Copyright 2019 ETCDEV GmbH
 

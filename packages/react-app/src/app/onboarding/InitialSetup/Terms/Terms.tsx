@@ -10,7 +10,7 @@ interface IProps {
 export const Terms = ({ onAgree }: IProps) => {
   const style: React.CSSProperties = {
     width: '100%',
-    height: '250px',
+    height: '400px',
     overflowY: 'scroll'
   };
 
@@ -20,11 +20,11 @@ export const Terms = ({ onAgree }: IProps) => {
         <div style={style}>
           <p>
             End-User License Agreement for Emerald Wallet<br/>
-            Last updated: 6 June 2020
+            Last updated: 1 February 2025
           </p>
           <p>
             This End-User License Agreement (&quot;EULA&quot; or &quot;AGREEMENT&quot;) is a legal agreement between
-            you (either an individual or a single entity) and EmeraldPay, Inc (&quot;COMPANY&quot;), including all
+            you (either an individual or a single entity) and EmeraldPay (&quot;COMPANY&quot;), including all
             contributors to source code of this Software identified above, which includes computer software and
             may include associated media, printed materials, and “online” or electronic documentation (“SOFTWARE”).
           </p>
