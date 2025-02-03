@@ -83,7 +83,7 @@ class About extends React.Component<Props> {
               https://emerald.cash
             </a>
           </div>
-          <div className={classes.infoBlock}>Copyright &copy; {About.year} EmeraldPay, Inc</div>
+          <div className={classes.infoBlock}>Copyright &copy; {About.year} EmeraldPay</div>
           <div>
             Licensed under{' '}
             <a onClick={onLicenseClick} className={classes.infoLink} href="#">
