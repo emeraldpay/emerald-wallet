@@ -3800,7 +3800,7 @@ __metadata:
     "@emeraldpay/emerald-vault-core": ^0.13.0
     "@emeraldpay/neon-frame": ^0.1.1
     "@emeraldwallet/core": 2.11.0
-    cargo-cp-artifact: ^0.1.8
+    cargo-cp-artifact: ^0.1.9
     jest: ^29.6.2
     jest-runner: ^29.6.2
     jest-serial-runner: ^1.2.1
@@ -9094,12 +9094,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cargo-cp-artifact@npm:^0.1.8":
-  version: 0.1.8
-  resolution: "cargo-cp-artifact@npm:0.1.8"
+"cargo-cp-artifact@npm:^0.1.9":
+  version: 0.1.9
+  resolution: "cargo-cp-artifact@npm:0.1.9"
   bin:
     cargo-cp-artifact: bin/cargo-cp-artifact.js
-  checksum: 06e774dbf032c79ef9d84d08dc6dc1e8842008b784098faa53f9e320acb930ac3898296e4af1d33cb11557bed9b8324c118d20ad6492ea7291cf92da641b6cb1
+  checksum: 934bf620377b4013d2199eff93c88ed9c0543ff04d6d21f965a7dcb1162dbad54424914e1fbc1a6bd9a81534f41d631f0065eb39d1b90c8a535f269486410ca8
   languageName: node
   linkType: hard
 

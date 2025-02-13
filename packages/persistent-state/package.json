@@ -18,7 +18,7 @@
     "@emeraldwallet/core": "2.11.0"
   },
   "devDependencies": {
-    "cargo-cp-artifact": "^0.1.8",
+    "cargo-cp-artifact": "^0.1.9",
     "jest": "^29.6.2",
     "jest-runner": "^29.6.2",
     "jest-serial-runner": "^1.2.1",
