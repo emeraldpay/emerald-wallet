@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/store",
-  "version": "2.11.0-dev",
+  "version": "2.11.0",
   "description": "Emerald Redux store",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,8 +16,8 @@
   "dependencies": {
     "@emeraldpay/bigamount": "^0.4.2",
     "@emeraldpay/bigamount-crypto": "^0.4.2",
-    "@emeraldpay/emerald-vault-core": "^0.13.0-dev",
-    "@emeraldwallet/core": "2.11.0-dev",
+    "@emeraldpay/emerald-vault-core": "^0.13.0",
+    "@emeraldwallet/core": "2.11.0",
     "bignumber.js": "8.0.2",
     "color-hash": "^2.0.2",
     "immer": "^9.0.21",
