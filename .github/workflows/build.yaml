@@ -15,7 +15,7 @@ jobs:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['windows-latest', 'macos-latest', 'ubuntu-latest']
+        os: ['windows-latest', 'macos-latest', 'ubuntu-latest', 'macos-13']
     runs-on: ${{ matrix.os }}
     # ENABLE CONTINUE if not enabled GH prevents the job from restarting manually
     continue-on-error: true
