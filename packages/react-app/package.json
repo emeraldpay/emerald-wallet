@@ -20,7 +20,7 @@
     "@electron/remote": "^2.0.9",
     "@emeraldpay/bigamount": "^0.4.2",
     "@emeraldpay/bigamount-crypto": "^0.4.2",
-    "@emeraldpay/emerald-vault-core": "^0.13.0",
+    "@emeraldpay/emerald-vault-core": "^0.14.0-dev",
     "@emeraldwallet/core": "2.11.0",
     "@emeraldwallet/store": "2.11.0",
     "@emeraldwallet/ui": "2.11.0",

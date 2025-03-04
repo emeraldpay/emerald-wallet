@@ -14,8 +14,8 @@
     "compile": "tsc -b"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.13.0",
-    "@emeraldpay/emerald-vault-native": "^0.13.0",
+    "@emeraldpay/emerald-vault-core": "^0.14.0-dev",
+    "@emeraldpay/emerald-vault-native": "^0.14.0-dev",
     "@emeraldwallet/core": "2.11.0",
     "@emeraldwallet/persistent-state": "2.11.0",
     "@emeraldwallet/services": "2.11.0",
