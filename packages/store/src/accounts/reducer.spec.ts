@@ -91,7 +91,7 @@ describe('accounts reducer', () => {
   it('SET_BALANCE updates utxo', () => {
     const state: AccountsState = reducer(undefined, {
       type: ActionTypes.SET_BALANCE,
-      payload: {
+      payload: [{
         address: '0x0',
         balance: '',
         entryId: 'c35d05ba-d6bb-40b1-9553-383f414a97e5-1',
@@ -103,7 +103,7 @@ describe('accounts reducer', () => {
             address: 'tb1qepcagv9wkp04ygq3ud33qrkk6482ulhkegc333',
           },
         ],
-      },
+      }],
     });
 
     expect(state.details[0].utxo).toEqual([
