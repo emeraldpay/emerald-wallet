@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.13.0-dev",
+    "@emeraldpay/emerald-vault-core": "^0.13.0",
     "@emeraldpay/neon-frame": "^0.1.1",
     "@emeraldwallet/core": "2.12.0-dev"
   },
