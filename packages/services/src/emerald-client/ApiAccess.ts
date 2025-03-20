@@ -1,7 +1,6 @@
-import { ConnectionStatus } from '@emeraldpay/api';
+import { AuthenticationStatus, ConnectionStatus, SecretToken } from '@emeraldpay/api';
 import {
   AddressClient,
-  AuthenticationStatus,
   BlockchainClient,
   CredentialsContext,
   MarketClient,
@@ -54,7 +53,7 @@ export class EmeraldApiAccess {
   private readonly connectionState: ConnectionState;
   private readonly monitoringClient: MonitoringClient;
 
-  constructor(address: string, id: string, versions: Versions) {
+  constructor(address: string, versions: Versions, secretToken: SecretToken) {
     this.address = address;
 
     const platform = [
@@ -77,7 +76,7 @@ export class EmeraldApiAccess {
       monitoringConnected: false,
     };
 
-    this.credentials = emeraldCredentials(address, agents, id);
+    this.credentials = emeraldCredentials(address, agents, secretToken);
 
     const channelCredentials = this.credentials.getChannelCredentials();
 
@@ -211,13 +210,13 @@ export class EmeraldApiAccess {
 }
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
-  constructor(id: string, versions: Versions) {
-    super('api.emeraldpay.dev:443', id, versions);
+  constructor(versions: Versions) {
+    super('api.emeraldpay.dev:443', versions, 'emrld_pbhT80xj0hsnFf73uOVJ6LEmenaVcbsXO7pGwH');
   }
 }
 
 export class EmeraldApiAccessProd extends EmeraldApiAccess {
-  constructor(id: string, versions: Versions) {
-    super('api.emrld.io:443', id, versions);
+  constructor(versions: Versions) {
+    super('api.emrld.io:443', versions, 'emrld_roMx2BHsYt52Dhgq9esjAErGHZUel9I7AscBxD');
   }
 }

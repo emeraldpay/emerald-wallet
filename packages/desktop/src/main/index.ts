@@ -92,9 +92,9 @@ app.on('ready', () => {
   let apiAccess: EmeraldApiAccess;
 
   if (apiMode.id === DevelopmentMode.id) {
-    apiAccess = new EmeraldApiAccessDev(settings.getId(), versions);
+    apiAccess = new EmeraldApiAccessDev(versions);
   } else {
-    apiAccess = new EmeraldApiAccessProd(settings.getId(), versions);
+    apiAccess = new EmeraldApiAccessProd(versions);
   }
 
   logger.info('Connect to', apiAccess.address);

@@ -5,7 +5,7 @@ jest.setTimeout(10000);
 
 describe('ApiAccess', () => {
   test('should connect without errors', async () => {
-    const apiAccess = new EmeraldApiAccessProd('test', {
+    const apiAccess = new EmeraldApiAccessProd({
       appLocale: 'en-US',
       appVersion: '0.0.0',
       chromeVersion: '0.0.0',

@@ -15,8 +15,10 @@ jobs:
     name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['windows-latest', 'macos-latest', 'ubuntu-latest']
+        os: ['windows-latest', 'macos-latest', 'ubuntu-latest', 'macos-13']
     runs-on: ${{ matrix.os }}
+    # ENABLE CONTINUE if not enabled GH prevents the job from restarting manually
+    continue-on-error: true
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -153,6 +155,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
+          # for a some reason GH may get the same artifact twice and that would fail the job
+          overwrite: true
           path: |
             packages/desktop/dist/*.zip
             packages/desktop/dist/*.dmg
