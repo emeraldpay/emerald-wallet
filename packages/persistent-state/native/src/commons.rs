@@ -12,7 +12,7 @@ pub fn if_not_empty(s: String) -> Option<String> {
 
 pub fn if_time(ts: u64) -> Option<DateTime<Utc>> {
   if ts > 0 {
-    Some(Utc.timestamp_millis(ts as i64))
+    Some(Utc.timestamp_millis_opt(ts as i64).unwrap())
   } else {
     None
   }
@@ -42,7 +42,7 @@ pub fn blockchain_to_code(id: u32) -> Result<String, StateManagerError> {
   }
 }
 
-pub fn args_get_str(cx: &mut FunctionContext, pos: i32) -> Option<String> {
+pub fn args_get_str(cx: &mut FunctionContext, pos: usize) -> Option<String> {
   match cx.argument_opt(pos) {
     None => None,
     Some(v) => {
@@ -58,7 +58,7 @@ pub fn args_get_str(cx: &mut FunctionContext, pos: i32) -> Option<String> {
   }
 }
 
-pub fn args_get_number(cx: &mut FunctionContext, pos: i32) -> Option<f64> {
+pub fn args_get_number(cx: &mut FunctionContext, pos: usize) -> Option<f64> {
   match cx.argument_opt(pos) {
     None => None,
     Some(v) => {

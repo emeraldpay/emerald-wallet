@@ -1,6 +1,6 @@
 [package]
 name = "persistent-state"
-version = "2.11.0"
+version = "2.12.0-dev"
 license = "Apache-2.0"
 edition = "2021"
 exclude = ["index.node"]
@@ -11,23 +11,22 @@ crate-type = ["cdylib"]
 [dependencies]
 #emerald-wallet-state = { path = "../../../../emerald-wallet-state" }
 emerald-wallet-state = { git = "https://github.com/emeraldpay/emerald-wallet-state", branch = "master" }
-emerald-vault = "0.34.0"
-bitcoin = "0.29"
+#emerald-vault = "0.34.0"
+emerald-vault = { git = "https://github.com/emeraldpay/emerald-vault" }
+bitcoin = "0.32.5"
 lazy_static = "1.4.0"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
 regex = "1"
-hex = "0.4.3"
-uuid = "^0.8"
+uuid = "^1.2.2"
 chrono = { version = "0.4", features = ["serde"] }
 protobuf = { version = "2.25", features = ["with-bytes"] }
-neon-frame = "0.1.1"
-neon-frame-macro = "0.1.1"
-num-bigint = "0.4.3"
-num-traits = "0.2.15"
+neon-frame = "0.2"
+neon-frame-macro = "0.2"
+num-bigint = "0.4"
 
 [dependencies.neon]
-version = "0.10.0"
+version = "1.0.0"
 default-features = false
-features = ["napi-6", "channel-api"]
+features = ["napi-8"]

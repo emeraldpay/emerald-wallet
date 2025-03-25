@@ -38,7 +38,7 @@ impl TryFrom<TransactionMeta> for TransactionMetaJson {
     Ok(TransactionMetaJson {
       blockchain: blockchain_to_code(value.blockchain.value() as u32)?,
       tx_id: value.tx_id,
-      timestamp: Utc.timestamp_millis(value.timestamp as i64),
+      timestamp: Utc.timestamp_millis_opt(value.timestamp as i64).unwrap(),
       label: if value.label.len() > 0 { Some(value.label) } else { None }
     })
   }

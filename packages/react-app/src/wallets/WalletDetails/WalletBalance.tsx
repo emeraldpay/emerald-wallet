@@ -225,7 +225,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
       const wrongEntry = wallet?.entries.find(
         ({ address, blockchain, receiveDisabled }) =>
-          receiveDisabled === true && addresses.includes(address?.value) && blockchain !== entry.blockchain,
+          receiveDisabled === true && address && addresses.includes(address.value) && blockchain !== entry.blockchain,
       );
 
       if (wrongEntry == null) {
