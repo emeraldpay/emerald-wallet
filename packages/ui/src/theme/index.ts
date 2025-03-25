@@ -28,15 +28,15 @@ const spacing = 10;
 declare module '@material-ui/core/styles/createTheme' {
   interface Theme {
     monotype: {
-      fontFamily: React.CSSProperties['fontFamily'];
-      fontWeight: React.CSSProperties['fontWeight'];
+      fontFamily: string;
+      fontWeight: number;
     };
   }
 
   interface ThemeOptions {
     monotype?: {
-      fontFamily?: React.CSSProperties['fontFamily'];
-      fontWeight?: React.CSSProperties['fontWeight'];
+      fontFamily?: string;
+      fontWeight?: number;
     };
   }
 }

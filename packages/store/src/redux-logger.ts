@@ -49,6 +49,7 @@ function toJs(state: any, depth = 0): any {
   return state;
 }
 
+//@ts-ignore
 export const reduxLogger: Middleware = createLogger({
   colors: {
     title(action) {
