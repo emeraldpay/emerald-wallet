@@ -1,5 +1,5 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { Grid, Step, StepLabel, Stepper } from '@material-ui/core';
+import { Grid, Step, StepLabel, Stepper } from '@mui/material';
 import * as React from 'react';
 import Terms from '../Terms';
 

@@ -1,7 +1,7 @@
 import { BlockchainCode, IBlockchain, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, screen, settings } from '@emeraldwallet/store';
 import { Button, ButtonGroup, FormLabel, FormRow, PasswordInput } from '@emeraldwallet/ui';
-import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../ledger/WaitLedger';

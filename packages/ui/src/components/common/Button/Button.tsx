@@ -1,8 +1,8 @@
-import { Button as ButtonBase, ButtonProps } from '@material-ui/core';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { Button as ButtonBase, ButtonProps } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   root: {
     height: 38,
   },
@@ -13,8 +13,6 @@ const styles = createStyles({
   },
 });
 
-const StyledButton = withStyles(styles)(ButtonBase);
-
 interface OwnProps extends Omit<ButtonProps, 'children'> {
   children?: never;
   icon?: React.ReactNode;
@@ -22,15 +20,23 @@ interface OwnProps extends Omit<ButtonProps, 'children'> {
   primary?: boolean;
 }
 
-const Button: React.FC<OwnProps> = ({ icon, label, primary = false, variant = 'contained', ...props }) => (
-  <StyledButton
-    {...props}
-    color={primary === false ? 'secondary' : 'primary'}
-    startIcon={icon == null || label == null ? null : icon}
-    variant={variant}
-  >
-    {label == null ? icon : label}
-  </StyledButton>
-);
+const Button: React.FC<OwnProps> = ({ icon, label, primary = false, variant = 'contained', ...props }) => {
+  const { classes } = useStyles();
+
+  return (
+    <ButtonBase
+      {...props}
+      classes={{
+        root: classes.root,
+        text: classes.label
+      }}
+      color={primary === false ? 'secondary' : 'primary'}
+      startIcon={icon == null || label == null ? null : icon}
+      variant={variant}
+    >
+      {label == null ? icon : label}
+    </ButtonBase>
+  );
+};
 
 export default Button;

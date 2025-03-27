@@ -1,16 +1,16 @@
 import { workflow } from '@emeraldwallet/core';
 import { Button, ButtonGroup, FormRow } from '@emeraldwallet/ui';
-import { CircularProgress, FormLabel, createStyles, makeStyles } from '@material-ui/core';
+import { CircularProgress, FormLabel } from '@mui/material';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     buttons: {
       display: 'flex',
       justifyContent: 'end',
       width: '100%',
     },
-  }),
+  }
 );
 
 interface OwnProps {
@@ -22,7 +22,7 @@ interface OwnProps {
 }
 
 export const Actions: React.FC<OwnProps> = ({ createTx, initializing, disabled = false, onCancel, onCreate }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   return (
     <FormRow last>

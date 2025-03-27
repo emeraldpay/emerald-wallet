@@ -22,7 +22,7 @@ import {
   txStash,
   txhistory,
 } from '@emeraldwallet/store';
-import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Asset } from '../../common/SelectAsset';

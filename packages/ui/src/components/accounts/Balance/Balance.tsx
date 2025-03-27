@@ -1,10 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { formatAmountPartial } from '@emeraldwallet/core';
-import { IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
-import { Sync } from '@material-ui/icons';
-import { ClassNameMap } from '@material-ui/styles';
+import {ClassNameMap, IconButton, Tooltip, Typography} from '@mui/material';
+import { Sync } from '@mui/icons-material';
 import classNames from 'classnames';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
 export interface OwnProps {
   balance: BigAmount;
@@ -13,8 +13,7 @@ export interface OwnProps {
   onConvert?(): void;
 }
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     root: {
       minHeight: 28,
     },
@@ -30,11 +29,11 @@ const useStyles = makeStyles(
     tooltip: {
       cursor: 'help',
     },
-  }),
+  }
 );
 
 const Balance: React.FC<OwnProps> = ({ balance, classes = {}, decimals = 3, onConvert }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [balanceValue, balanceUnit, approxZero] = formatAmountPartial(balance, decimals);
 

@@ -7,11 +7,7 @@ import {
   Menu as MenuIcon,
   Settings as SettingsIcon,
 } from '@emeraldwallet/ui';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Popover from '@material-ui/core/Popover';
+import {List, ListItem, ListItemText, ListItemIcon, Popover} from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

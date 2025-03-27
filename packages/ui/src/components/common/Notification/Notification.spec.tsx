@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import { Theme } from '../../../index';

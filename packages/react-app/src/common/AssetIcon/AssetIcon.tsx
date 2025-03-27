@@ -1,30 +1,28 @@
 import { BlockchainCode, EthereumAddress, TokenRegistry } from '@emeraldwallet/core';
 import { IState } from '@emeraldwallet/store';
 import { BlockchainAssetAvatar } from '@emeraldwallet/ui';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 import classNames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    image: {
-      maxWidth: '100%',
-    },
-    defaultSize: {
-      width: theme.spacing(4),
-      height: theme.spacing(4),
-    },
-    smallSize: {
-      width: theme.spacing(3),
-      height: theme.spacing(3),
-    },
-    largeSize: {
-      width: theme.spacing(8),
-      height: theme.spacing(8),
-    },
-  }),
-);
+const useStyles = makeStyles()((theme) => ({
+  image: {
+    maxWidth: '100%',
+  },
+  defaultSize: {
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+  },
+  smallSize: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+  },
+  largeSize: {
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+  },
+}));
 
 interface OwnProps {
   asset: string;
@@ -44,13 +42,13 @@ const AssetIcon: React.FC<OwnProps & StateProps> = ({
   tokenRegistry,
   size = 'default',
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   if (blockchain != null && EthereumAddress.isValid(asset) && tokenRegistry.hasAddress(blockchain, asset)) {
     const { icon, name } = tokenRegistry.byAddress(blockchain, asset);
 
     if (icon != null) {
-      return <img className={classNames(styles.image, styles[`${size}Size`])} alt={name} src={icon} />;
+      return <img className={classNames(classes.image, classes[`${size}Size`])} alt={name} src={icon} />;
     }
   }
 

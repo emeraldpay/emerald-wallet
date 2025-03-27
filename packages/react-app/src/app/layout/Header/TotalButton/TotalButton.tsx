@@ -8,22 +8,21 @@ import {
 } from '@emeraldwallet/core';
 import { ConvertedBalance } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
-import { List, ListItem, ListItemAvatar, ListItemText, Menu, createStyles, makeStyles } from '@material-ui/core';
+import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { AssetIcon } from '../../../../common/AssetIcon';
 
-const useStyles = makeStyles(
-  createStyles({
-    label: {
-      textTransform: 'none',
-      fontWeight: 'normal',
-      fontSize: 16,
-    },
-    root: {
-      lineHeight: 'inherit',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  label: {
+    textTransform: 'none',
+    fontWeight: 'normal',
+    fontSize: 16,
+  },
+  root: {
+    lineHeight: 'inherit',
+  },
+});
 
 export interface StateProps {
   balances: ConvertedBalance[];
@@ -32,7 +31,7 @@ export interface StateProps {
 }
 
 const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [menuElement, setMenuElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -48,7 +47,7 @@ const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) 
     <>
       {totalBalance?.isPositive() && (
         <Button
-          classes={styles}
+          classes={classes}
           disabled={false}
           label={formatFiatAmount(totalBalance)}
           variant="text"
@@ -62,7 +61,6 @@ const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) 
             vertical: 'bottom',
             horizontal: 'left',
           }}
-          getContentAnchorEl={null}
           open={menuElement != null}
           transformOrigin={{
             vertical: 'top',

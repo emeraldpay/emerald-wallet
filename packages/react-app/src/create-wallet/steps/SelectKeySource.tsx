@@ -1,9 +1,9 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { Ledger } from '@emeraldwallet/ui';
-import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import PublishIcon from '@material-ui/icons/Publish';
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import PublishIcon from '@mui/icons-material/Publish';
 import * as React from 'react';
 import { KeySourceType, KeysSource } from '../flow/types';
 

@@ -1,7 +1,8 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { CurrencyAmount, EthereumAddress, formatAmount, formatAmountPartial } from '@emeraldwallet/core';
-import { ListItemText, MenuItem, StyleRulesCallback, TextField, Theme, Tooltip, createStyles } from '@material-ui/core';
-import { WithStyles, withStyles } from '@material-ui/styles';
+import { ListItemText, MenuItem, TextField, Tooltip } from '@mui/material';
+import type { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
 export interface CommonAsset {
@@ -22,34 +23,40 @@ interface Props {
   onChangeAsset?(asset: string): void;
 }
 
-const styles: StyleRulesCallback<Theme, Props> = (theme) =>
-  createStyles({
-    balance: {
-      color: theme.palette.text.secondary,
-      fontWeight: 200,
-      letterSpacing: 1,
-      paddingLeft: 20,
-      wordSpacing: 3,
-    },
-    tooltip: { cursor: 'help' },
-  });
+const useStyles = makeStyles()((theme: Theme) => ({
+  balance: {
+    color: theme.palette.text.secondary,
+    fontWeight: 200,
+    letterSpacing: 1,
+    paddingLeft: 20,
+    wordSpacing: 3,
+  },
+  tooltip: { cursor: 'help' },
+}));
 
-export class SelectAsset extends React.Component<Props & WithStyles<typeof styles>> {
-  handleAssetChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.props.onChangeAsset?.(value);
+export const SelectAsset: React.FC<Props> = ({ 
+  asset, 
+  assets, 
+  balance, 
+  disabled, 
+  fiatBalance, 
+  onChangeAsset 
+}) => {
+  const { classes } = useStyles();
+
+  const handleAssetChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+    onChangeAsset?.(value);
   };
 
-  renderAsset = (asset: string): string => {
+  const renderAsset = (asset: string): string => {
     if (EthereumAddress.isValid(asset)) {
-      return this.props.assets.find(({ address }) => address === asset)?.symbol ?? asset;
+      return assets.find(({ address }) => address === asset)?.symbol ?? asset;
     }
 
     return asset;
   };
 
-  renderBalance = (): React.ReactNode => {
-    const { balance, classes, fiatBalance } = this.props;
-
+  const renderBalance = (): React.ReactNode => {
     if (balance == null) {
       if (fiatBalance == null) {
         return null;
@@ -75,32 +82,28 @@ export class SelectAsset extends React.Component<Props & WithStyles<typeof style
     );
   };
 
-  render(): React.ReactNode {
-    const { asset, assets, disabled } = this.props;
+  return (
+    <>
+      <TextField
+        select
+        disabled={disabled}
+        value={asset}
+        onChange={handleAssetChange}
+        SelectProps={{ renderValue: () => renderAsset(asset) }}
+      >
+        {assets.map(({ address, symbol, balance: assetBalance }) => {
+          const key = address ?? symbol;
 
-    return (
-      <>
-        <TextField
-          select
-          disabled={disabled}
-          value={asset}
-          onChange={this.handleAssetChange}
-          SelectProps={{ renderValue: () => this.renderAsset(asset) }}
-        >
-          {assets.map(({ address, symbol, balance: assetBalance }) => {
-            const key = address ?? symbol;
+          return (
+            <MenuItem key={key} value={key}>
+              <ListItemText primary={symbol} secondary={formatAmount(assetBalance)} />
+            </MenuItem>
+          );
+        })}
+      </TextField>
+      {renderBalance()}
+    </>
+  );
+};
 
-            return (
-              <MenuItem key={key} value={key}>
-                <ListItemText primary={symbol} secondary={formatAmount(assetBalance)} />
-              </MenuItem>
-            );
-          })}
-        </TextField>
-        {this.renderBalance()}
-      </>
-    );
-  }
-}
-
-export default withStyles(styles)(SelectAsset);
+export default SelectAsset;

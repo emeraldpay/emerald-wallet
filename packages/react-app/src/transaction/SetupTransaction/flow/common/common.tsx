@@ -2,7 +2,7 @@ import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import { CreateTxStage } from '@emeraldwallet/store';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/lab';
 import * as React from 'react';
 import { Actions } from '../components';
 import { BaseFlow, Data, DataProvider, Handler } from '../types';

@@ -1,6 +1,6 @@
 import { PersistentState } from '@emeraldwallet/core';
 import { Book as BookIcon } from '@emeraldwallet/ui';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import { IconButton, Menu, MenuItem } from '@mui/material';
 import * as React from 'react';
 import AddressBookMenuItem from './AddressBookMenuItem';
 

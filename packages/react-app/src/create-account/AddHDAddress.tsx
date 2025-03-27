@@ -20,37 +20,34 @@ import { Address, Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordI
 import {
   Grid,
   MenuItem,
+  Skeleton,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   TextField,
   Typography,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../ledger/WaitLedger';
 
-const useStyles = makeStyles(
-  createStyles({
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-    tableCellAction: {
-      display: 'flex',
-      justifyContent: 'end',
-      minWidth: 60,
-    },
-    tableCellHdPath: {
-      minWidth: 140,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  tableCellAction: {
+    display: 'flex',
+    justifyContent: 'end',
+    minWidth: 60,
+  },
+  tableCellHdPath: {
+    minWidth: 140,
+  },
+});
 
 enum Stage {
   UNLOCK = 'unlock',
@@ -98,7 +95,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
   loadWallets,
   verifyGlobalKey,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const listKey = React.useRef<string | undefined>();
   const mounted = React.useRef(true);
@@ -348,7 +345,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </>
           )}
           <FormRow last>
-            <ButtonGroup classes={{ container: styles.buttons }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               {seed?.type !== 'ledger' && (
                 <Button
@@ -380,7 +377,7 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </TextField>
           </FormRow>
           <FormRow last>
-            <ButtonGroup classes={{ container: styles.buttons }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button primary label="Next" onClick={() => setStage(Stage.LIST)} />
             </ButtonGroup>
@@ -392,23 +389,23 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={styles.tableCellHdPath}>HD Path</TableCell>
+                <TableCell className={classes.tableCellHdPath}>HD Path</TableCell>
                 <TableCell>Address</TableCell>
-                <TableCell className={styles.tableCellAction}>Action</TableCell>
+                <TableCell className={classes.tableCellAction}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {initializing || seedAddresses.length === 0
                 ? Array.from({ length: 10 }).map((item, index) => (
                     <TableRow key={`skeleton-row-${index}`}>
-                      <TableCell className={styles.tableCellHdPath}>
+                      <TableCell className={classes.tableCellHdPath}>
                         <Skeleton variant="text" width={120} height={12} />
                       </TableCell>
                       <TableCell>
                         <Skeleton variant="text" width={410} height={12} />
                       </TableCell>
-                      <TableCell className={styles.tableCellAction}>
-                        <Skeleton variant="rect" width={64} height={40} />
+                      <TableCell className={classes.tableCellAction}>
+                        <Skeleton variant="rectangular" width={64} height={40} />
                       </TableCell>
                     </TableRow>
                   ))
@@ -417,11 +414,11 @@ const AddHDAddress: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
                     return (
                       <TableRow key={hdPath}>
-                        <TableCell className={styles.tableCellHdPath}>{hdPath}</TableCell>
+                        <TableCell className={classes.tableCellHdPath}>{hdPath}</TableCell>
                         <TableCell>
                           <Address address={address} />
                         </TableCell>
-                        <TableCell className={styles.tableCellAction}>
+                        <TableCell className={classes.tableCellAction}>
                           <Button primary disabled={existed} label="Add" onClick={() => onAddAddress(seedAddress)} />
                         </TableCell>
                       </TableRow>

@@ -1,7 +1,7 @@
 import { IpcCommands, Versions } from '@emeraldwallet/core';
 import { About } from '@emeraldwallet/react-app';
-import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { EmeraldTheme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@mui/styles';
 import { ipcRenderer, shell } from 'electron';
 import * as React from 'react';
 
@@ -30,7 +30,7 @@ export class AboutComponent extends React.Component<unknown, State> {
     const { versions } = this.state;
 
     return (
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         {versions != null && (
           <About
             versions={versions}

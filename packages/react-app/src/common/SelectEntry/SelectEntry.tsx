@@ -2,7 +2,7 @@ import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { amountFactory, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
 import { IState, TokenBalanceBelong, accounts, allowances, tokens } from '@emeraldwallet/store';
 import { Account, Monospace } from '@emeraldwallet/ui';
-import { Menu, MenuItem, Typography } from '@material-ui/core';
+import { Menu, MenuItem, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

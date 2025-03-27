@@ -1,17 +1,17 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { Button, ButtonGroup, FormLabel, FormRow, PasswordInput } from '@emeraldwallet/ui';
-import { Box, CircularProgress, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography, } from '@mui/material';
 import * as React from 'react';
 import WaitLedger from '../../../../ledger/WaitLedger';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
+const useStyles = makeStyles()({
     buttons: {
       display: 'flex',
       justifyContent: 'end',
       width: '100%',
     },
-  }),
+  }
 );
 
 interface OwnProps {
@@ -23,7 +23,7 @@ interface OwnProps {
 }
 
 export const Actions: React.FC<OwnProps> = ({ blockchain, isHardware, onCancel, onSignTx, verifyGlobalKey }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const mounted = React.useRef(true);
 

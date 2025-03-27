@@ -2,7 +2,7 @@ import { SeedDescription, WatchEvent } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, application, screen } from '@emeraldwallet/store';
 import { Ledger } from '@emeraldwallet/ui';
-import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { lt as isLessVersion } from 'semver';

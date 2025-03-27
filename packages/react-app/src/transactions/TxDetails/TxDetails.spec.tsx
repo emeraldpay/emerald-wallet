@@ -1,7 +1,7 @@
 import { BlockchainCode, PersistentState, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';

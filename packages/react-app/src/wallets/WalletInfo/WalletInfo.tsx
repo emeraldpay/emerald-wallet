@@ -3,14 +3,15 @@ import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { Blockchains, blockchainIdToCode, utils } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, Table } from '@emeraldwallet/ui';
-import { Divider, TableBody, TableCell, TableRow, createStyles, withStyles } from '@material-ui/core';
-import { Check as CheckIcon, Close as CrossIcon } from '@material-ui/icons';
+import { Divider, TableBody, TableCell, TableRow } from '@mui/material';
+import { Check as CheckIcon, Close as CrossIcon } from '@mui/icons-material';
 import { clipboard } from 'electron';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import i18n from '../../i18n';
+import {makeStyles} from 'tss-react/mui';
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   buttons: {
     display: 'flex',
     justifyContent: 'end',
@@ -36,10 +37,6 @@ interface StateProps {
   wallet?: Wallet;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
 const dateFormatOptions: Intl.DateTimeFormatOptions = {
   day: 'numeric',
   hour: 'numeric',
@@ -48,27 +45,36 @@ const dateFormatOptions: Intl.DateTimeFormatOptions = {
   year: 'numeric',
 };
 
-const TitleTableCell = withStyles(() => ({
+const useTitleCellStyles = makeStyles()({
   body: {
     paddingLeft: 0,
     width: '20%',
   },
-}))(TableCell);
+});
 
-const ValueTableCell = withStyles(() => ({
+const TitleTableCell = ({children}: React.PropsWithChildren<any>) => {
+  return <TableCell classes={useTitleCellStyles().classes}>{children}</TableCell>;
+}
+
+const useValueCellStyles = makeStyles()({
   body: {
     paddingRight: 0,
-    wordBreak: 'break-word',
+    //wordBreak: 'break-word',
   },
-}))(TableCell);
+});
 
-const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> = ({
-  classes,
+const ValueTableCell = ({children}: React.PropsWithChildren<any>) => {
+  return <TableCell classes={useValueCellStyles().classes}>{children}</TableCell>;
+}
+
+const WalletInfo: React.FC<OwnProps & StateProps & DispatchProps> = ({
   language,
   seeds,
   wallet,
   goBack,
 }) => {
+  const { classes } = useStyles();
+
   const onCopy = React.useCallback(
     () =>
       clipboard.writeText(
@@ -289,4 +295,4 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.goBack());
     },
   }),
-)(withStyles(styles)(WalletInfo));
+)(WalletInfo);

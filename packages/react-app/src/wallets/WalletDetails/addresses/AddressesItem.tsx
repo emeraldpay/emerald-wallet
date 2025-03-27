@@ -2,19 +2,17 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { BlockchainCode, Blockchains } from '@emeraldwallet/core';
 import { accounts } from '@emeraldwallet/store';
 import { Address, Balance, BlockchainAvatar } from '@emeraldwallet/ui';
-import { TableCell, TableRow, createStyles, makeStyles } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { TableCell, TableRow, Skeleton } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AddressInfo } from './Addresses';
 
-const useStyles = makeStyles(
-  createStyles({
-    address: {
-      width: 'auto',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  address: {
+    width: 'auto',
+  },
+});
 
 interface OwnProps {
   item: AddressInfo;
@@ -28,7 +26,7 @@ const AddressesItem: React.FC<OwnProps & StateProps> = ({
   item: { address, balances, blockchain, hdPath },
   zeroAmountFor,
 }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const addressBalances = React.useMemo(() => {
     const zeroAmount = zeroAmountFor(blockchain);

@@ -13,28 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 import blockies from './blockies';
 
-const getStyles = {
+const useStyles = makeStyles()({
   clickable: {
     '&:hover': {
       cursor: 'pointer'
     }
   }
-};
+});
 
 interface IIdentityIconProps {
   id: string;
   size?: number;
   onClick?: any;
-  classes: any;
 }
 
 export function IdentityIcon(props: IIdentityIconProps) {
+  const { classes } = useStyles();
   const {
-    id, size, onClick, classes
+    id, size, onClick
   } = props;
 
   const seed = id.toLowerCase();
@@ -59,4 +59,4 @@ export function IdentityIcon(props: IIdentityIconProps) {
   );
 }
 
-export default withStyles(getStyles)(IdentityIcon);
+export default IdentityIcon;

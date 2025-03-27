@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Theme, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import * as React from 'react';
 import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../../icons';
 import ToggledIconButton from '../ToggledIconButton';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     container: {
       alignItems: 'center',
       display: 'flex',
@@ -42,8 +42,8 @@ export const useStyles = makeStyles((theme: Theme) =>
     toggledIcon: {
       cursor: 'pointer',
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   address: string;
@@ -52,7 +52,7 @@ interface OwnProps {
 }
 
 const Address: React.FC<OwnProps> = ({ address, hideCopy, shortened }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   return (
     <div className={styles.container}>

@@ -1,8 +1,8 @@
-import { WithStyles, createStyles, withStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 import { CSSProperties } from 'react';
 import * as React from 'react';
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   container: {
     alignItems: 'center',
     display: 'flex',
@@ -13,18 +13,17 @@ const styles = createStyles({
 interface OwnProps {
   last?: boolean;
   style?: CSSProperties;
+  children?: React.ReactNode;
 }
 
-class FormRow extends React.Component<OwnProps & WithStyles<typeof styles>> {
-  render(): React.ReactNode {
-    const { children, classes, last, style } = this.props;
+const FormRow: React.FC<OwnProps> = ({ children, last, style }) => {
+  const { classes } = useStyles();
 
-    return (
-      <div className={classes.container} style={{ paddingBottom: last === undefined ? undefined : 0, ...style }}>
-        {children}
-      </div>
-    );
-  }
+  return (
+    <div className={classes.container} style={{ paddingBottom: last === undefined ? undefined : 0, ...style }}>
+      {children}
+    </div>
+  );
 }
 
-export default withStyles(styles)(FormRow);
+export default FormRow;

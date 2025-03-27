@@ -14,23 +14,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { withStyles } from '@material-ui/core';
-import { ClassNameMap } from '@material-ui/styles';
+import { ClassNameMap } from '@mui/material';
 import classNames from 'classnames';
 import * as React from 'react';
-import styles from './styles';
+import { makeStyles } from 'tss-react/mui';
 
 type ClassKeys = 'container' | 'firstItem' | 'restItem';
 type ClassKeysVertical = 'containerVertical' | 'firstItemVertical' | 'restItemVertical';
 
+const useStyles = makeStyles()({
+  container: {
+    alignItems: 'center',
+    display: 'flex',
+  },
+  containerVertical: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  firstItem: {
+    marginLeft: 0,
+  },
+  restItem: {
+    marginLeft: 10,
+  },
+  firstItemVertical: {
+    marginTop: 0,
+  },
+  restItemVertical: {
+    marginTop: 10,
+  },
+});
+
 interface OwnProps {
   children?: React.ReactNode;
-  classes?: ClassNameMap<ClassKeys | ClassKeysVertical>;
+  classes?: Partial<ClassNameMap<ClassKeys | ClassKeysVertical>>;
   style?: React.CSSProperties;
   vertical?: boolean;
 }
 
-export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style, vertical = false }) => {
+export const ButtonGroup: React.FC<OwnProps> = ({ classes: classesOverride, children, style, vertical = false }) => {
+  const { classes } = useStyles();
+  const classesToUse = classesOverride || classes;
+
   if (children == null) {
     return null;
   }
@@ -38,7 +63,7 @@ export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style, vert
   const isVertical = vertical !== false;
 
   return (
-    <div className={classNames(classes?.container, isVertical ? classes?.containerVertical : null)} style={style}>
+    <div className={classNames(classesToUse?.container, isVertical ? classesToUse?.containerVertical : null)} style={style}>
       {Array.isArray(children) ? (
         children
           .filter((button) => button != null && button !== false)
@@ -46,9 +71,9 @@ export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style, vert
             let className: string;
 
             if (index === 0) {
-              className = isVertical ? classes?.firstItemVertical : classes?.firstItem;
+              className = isVertical ? classesToUse?.firstItemVertical : classesToUse?.firstItem;
             } else {
-              className = isVertical ? classes?.restItemVertical : classes?.restItem;
+              className = isVertical ? classesToUse?.restItemVertical : classesToUse?.restItem;
             }
 
             return (
@@ -58,10 +83,10 @@ export const ButtonGroup: React.FC<OwnProps> = ({ classes, children, style, vert
             );
           })
       ) : (
-        <div className={isVertical ? classes?.firstItemVertical : classes?.firstItem}>{children}</div>
+        <div className={isVertical ? classesToUse?.firstItemVertical : classesToUse?.firstItem}>{children}</div>
       )}
     </div>
   );
 };
 
-export default withStyles<ClassKeys>(styles)(ButtonGroup);
+export default ButtonGroup;

@@ -1,14 +1,12 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { Box, Card, CardContent, CardMedia, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/styles';
+import { Box, Card, CardContent, CardMedia, ClassNameMap, Typography } from '@mui/material';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Balance, HashIcon } from '../../index';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     root: {
       display: 'flex',
     },
@@ -35,8 +33,8 @@ const useStyles = makeStyles((theme) =>
       fontSize: '0.9em',
       paddingRight: 10,
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   balances: BigAmount[];
@@ -46,7 +44,7 @@ interface OwnProps {
 }
 
 const WalletReference: React.FC<OwnProps> = ({ balances, walletIcon, wallet, classes = {} }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   return (
     <Card className={classNames(styles.root, classes.root)} elevation={0}>

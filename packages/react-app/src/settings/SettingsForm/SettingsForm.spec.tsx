@@ -1,5 +1,5 @@
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import Settings from './SettingsForm';

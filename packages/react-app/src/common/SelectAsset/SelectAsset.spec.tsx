@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import { WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import { shallow } from 'enzyme';
 import * as React from 'react';

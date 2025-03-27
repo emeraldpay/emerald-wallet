@@ -1,12 +1,11 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { Avatar, Theme, makeStyles } from '@material-ui/core';
-import { createStyles } from '@material-ui/core/styles';
+import { Avatar } from '@mui/material';
 import classNames from 'classnames';
 import * as React from 'react';
 import BlockchainIcon from './BlockchainIcon';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyle = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     container: {
       display: 'inline-block',
     },
@@ -41,8 +40,8 @@ const useStyle = makeStyles((theme: Theme) =>
       height: theme.spacing(8),
       fontSize: '3em',
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   blockchain: BlockchainCode;
@@ -51,7 +50,7 @@ interface OwnProps {
 }
 
 const BlockchainAvatar: React.FC<OwnProps> = ({ blockchain, className, size = 'default' }) => {
-  const styles = useStyle();
+  const styles = useStyles().classes;
 
   return (
     <div className={classNames(styles.container, className)}>

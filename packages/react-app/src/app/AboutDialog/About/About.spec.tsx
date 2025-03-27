@@ -1,6 +1,6 @@
 import { Versions } from '@emeraldwallet/core';
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import About from './About';

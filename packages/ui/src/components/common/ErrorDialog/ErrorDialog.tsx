@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, Typography } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import * as React from 'react';
 import Button from '../Button';
 

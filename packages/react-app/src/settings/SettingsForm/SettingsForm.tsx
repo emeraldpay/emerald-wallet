@@ -1,13 +1,14 @@
-import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput, Theme } from '@emeraldwallet/ui';
-import { MenuItem, Tab, TextField, createStyles, withStyles } from '@material-ui/core';
-import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Alert, MenuItem, Tab, TextField } from '@mui/material';
+import { TabList, TabPanel, TabContext } from '@mui/lab';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
 import { DispatchProps, MutableState, StateProps } from '../Settings/Settings';
 import { ExportResult } from '../Settings/types';
 import SeedItem from './SeedItem';
 
-const styles = createStyles({
+const useStyles = makeStyles()((theme) => ({
   buttons: {
     display: 'flex',
     justifyContent: 'end',
@@ -20,10 +21,10 @@ const styles = createStyles({
     display: 'flex',
   },
   tabsSwitcher: {
-    borderRight: `1px solid ${Theme.palette.secondary.main}`,
+    borderRight: `1px solid ${theme.palette.secondary.main}`,
     marginRight: 20,
   },
-});
+}));
 
 enum SettingsTabs {
   COMMON = '0',
@@ -41,88 +42,84 @@ interface State extends MutableState {
   tab: SettingsTabs;
 }
 
-export interface Props extends DispatchProps, MutableState, StateProps, WithTranslation {
-  classes: Record<keyof typeof styles, string>;
-}
+export interface Props extends DispatchProps, MutableState, StateProps, WithTranslation {}
 
-export class SettingsForm extends React.Component<Props, State> {
-  confirmPasswordClear?(): void;
-  newPasswordClear?(): void;
-  oldPasswordClear?(): void;
+const SettingsForm: React.FC<Props> = (props) => {
+  const { classes } = useStyles();
+  const { goBack, hasWallets, seeds, t, updateSeed, onSubmit, onChangeGlobalKey, showNotification, exportVaultFile } = props;
 
-  constructor(props: Props) {
-    super(props);
+  const [state, setState] = React.useState<State>({
+    currency: props.currency.toLowerCase(),
+    globalKeySet: false,
+    language: props.language,
+    tab: SettingsTabs.COMMON,
+  });
 
-    this.state = {
-      currency: this.props.currency.toLowerCase(),
-      globalKeySet: false,
-      language: this.props.language,
-      tab: SettingsTabs.COMMON,
+  const oldPasswordClearRef = React.useRef<(() => void) | undefined>();
+  const newPasswordClearRef = React.useRef<(() => void) | undefined>();
+  const confirmPasswordClearRef = React.useRef<(() => void) | undefined>();
+
+  React.useEffect(() => {
+    const checkGlobalKey = async () => {
+      const hasGlobalKey = await props.isGlobalKeySet();
+      setState(prevState => ({ ...prevState, globalKeySet: hasGlobalKey }));
     };
-  }
 
-  async componentDidMount(): Promise<void> {
-    const hasGlobalKey = await this.props.isGlobalKeySet();
+    checkGlobalKey();
+  }, [props]);
 
-    this.setState({ globalKeySet: hasGlobalKey });
-  }
-
-  checkPasswords = (): boolean => {
-    const { confirmPassword, newPassword, oldPassword } = this.state;
-
+  const checkPasswords = (): boolean => {
+    const { confirmPassword, newPassword, oldPassword } = state;
     return (confirmPassword?.length ?? 0) > 0 && (newPassword?.length ?? 0) > 0 && (oldPassword?.length ?? 0) > 0;
   };
 
-  handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ currency: event.target.value });
+  const handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setState(prevState => ({ ...prevState, currency: event.target.value }));
   };
 
-  handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ language: event.target.value });
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setState(prevState => ({ ...prevState, language: event.target.value }));
   };
 
-  handleSettingsSave = async (): Promise<void> => {
-    await this.props.onSubmit(this.state);
+  const handleSettingsSave = async (): Promise<void> => {
+    await onSubmit(state);
   };
 
-  handlePasswordChange = async (): Promise<void> => {
-    const { t } = this.props;
-    const { confirmPassword, newPassword, oldPassword } = this.state;
+  const handlePasswordChange = async (): Promise<void> => {
+    const { confirmPassword, newPassword, oldPassword } = state;
 
-    this.setState({ changePasswordError: undefined });
+    setState(prevState => ({ ...prevState, changePasswordError: undefined }));
 
     if (newPassword == null || oldPassword == null || confirmPassword == null) {
       return;
     }
 
     if (newPassword === oldPassword || newPassword !== confirmPassword) {
-      this.setState({ changePasswordError: t('settings.globalKeyPasswordMismatch') });
-
+      setState(prevState => ({ ...prevState, changePasswordError: t('settings.globalKeyPasswordMismatch') }));
       return;
     }
 
-    const passwordChanged = await this.props.onChangeGlobalKey(oldPassword, newPassword);
+    const passwordChanged = await onChangeGlobalKey(oldPassword, newPassword);
 
     if (passwordChanged) {
-      this.props.showNotification(t('settings.globalKeyChanged'));
+      showNotification(t('settings.globalKeyChanged'));
 
-      this.setState({
+      setState(prevState => ({
+        ...prevState,
         confirmPassword: undefined,
         newPassword: undefined,
         oldPassword: undefined,
-      });
+      }));
 
-      this.confirmPasswordClear?.();
-      this.newPasswordClear?.();
-      this.oldPasswordClear?.();
+      if (oldPasswordClearRef.current) oldPasswordClearRef.current();
+      if (newPasswordClearRef.current) newPasswordClearRef.current();
+      if (confirmPasswordClearRef.current) confirmPasswordClearRef.current();
     } else {
-      this.setState({ changePasswordError: t('settings.globalKeyErrorOccurred') });
+      setState(prevState => ({ ...prevState, changePasswordError: t('settings.globalKeyErrorOccurred') }));
     }
   };
 
-  handleExportSettings = async (): Promise<void> => {
-    const { t, exportVaultFile, showNotification } = this.props;
-
+  const handleExportSettings = async (): Promise<void> => {
     const result = await exportVaultFile();
 
     if (result !== ExportResult.CANCEL) {
@@ -135,142 +132,139 @@ export class SettingsForm extends React.Component<Props, State> {
     }
   };
 
-  render(): React.ReactNode {
-    const { classes, goBack, hasWallets, seeds, t, updateSeed } = this.props;
-    const { currency, globalKeySet, language } = this.state;
+  const { currency, globalKeySet, language, tab } = state;
 
-    return (
-      <Page title="Settings" leftIcon={<Back onClick={goBack} />}>
-        <div className={classes.tabsContainer}>
-          <TabContext value={this.state.tab}>
-            <TabList
-              className={classes.tabsSwitcher}
-              orientation="vertical"
-              variant="scrollable"
-              onChange={(event, tab) => this.setState({ tab })}
-            >
-              <Tab label={t('settings.common')} value={SettingsTabs.COMMON} />
-              <Tab label={t('settings.seeds')} value={SettingsTabs.SEEDS} />
-              <Tab disabled={!globalKeySet} label={t('settings.globalKey')} value={SettingsTabs.GLOBAL_KEY} />
-              <Tab
-                disabled={!globalKeySet || !hasWallets}
-                label={t('settings.exportVault')}
-                value={SettingsTabs.EXPORT_VAULT}
-              />
-            </TabList>
-            <TabPanel className={classes.formBody} value={SettingsTabs.COMMON}>
-              <FormRow>
-                <FormLabel>{t('settings.currency')}</FormLabel>
-                <TextField select={true} fullWidth={true} value={currency} onChange={this.handleCurrencyChange}>
-                  <MenuItem key="eur" value="eur">
-                    EUR
-                  </MenuItem>
-                  <MenuItem key="usd" value="usd">
-                    USD
-                  </MenuItem>
-                  <MenuItem key="gbp" value="gbp">
-                    GBP
-                  </MenuItem>
-                  <MenuItem key="cny" value="cny">
-                    CNY
-                  </MenuItem>
-                  <MenuItem key="rub" value="rub">
-                    RUB
-                  </MenuItem>
-                  <MenuItem key="krw" value="krw">
-                    KRW
-                  </MenuItem>
-                  <MenuItem key="aud" value="aud">
-                    AUD
-                  </MenuItem>
-                </TextField>
-              </FormRow>
-              <FormRow>
-                <FormLabel>{t('settings.lang')}</FormLabel>
-                <TextField select={true} value={language} fullWidth={true} onChange={this.handleLanguageChange}>
-                  <MenuItem key="en-US" value="en-US">
-                    English (US)
-                  </MenuItem>
-                  <MenuItem key="zh-CN" value="zh-CN">
-                    中文
-                  </MenuItem>
-                  <MenuItem key="pt-BR" value="pt-BR">
-                    Portugese
-                  </MenuItem>
-                  <MenuItem key="ko-KR" value="ko-KR">
-                    Korean
-                  </MenuItem>
-                </TextField>
-              </FormRow>
-              <FormRow last>
-                <ButtonGroup classes={{ container: classes.buttons }}>
-                  <Button primary={true} label="Save" onClick={this.handleSettingsSave} />
-                </ButtonGroup>
-              </FormRow>
-            </TabPanel>
-            <TabPanel className={classes.formBody} value={SettingsTabs.SEEDS}>
-              {seeds.length > 0 ? (
-                seeds.map((seed) => <SeedItem key={seed.id} seed={seed} updateSeed={updateSeed} />)
-              ) : (
-                <Alert severity="info">{t('settings.seedsNote')}</Alert>
-              )}
-            </TabPanel>
-            {globalKeySet && (
-              <>
-                <TabPanel className={classes.formBody} value={SettingsTabs.GLOBAL_KEY}>
-                  <FormRow>
-                    <FormLabel>{t('settings.globalKeyOld')}</FormLabel>
-                    <PasswordInput
-                      autoFocus
-                      minLength={1}
-                      placeholder="Enter existing password"
-                      showLengthNotice={false}
-                      clearPassword={(callback) => (this.oldPasswordClear = callback)}
-                      onChange={(password) => this.setState({ oldPassword: password })}
-                    />
-                  </FormRow>
-                  <FormRow>
-                    <FormLabel>{t('settings.globalKeyNew')}</FormLabel>
-                    <PasswordInput
-                      error={this.state.changePasswordError}
-                      clearPassword={(callback) => (this.newPasswordClear = callback)}
-                      onChange={(password) => this.setState({ newPassword: password })}
-                    />
-                  </FormRow>
-                  <FormRow>
-                    <FormLabel>{t('settings.globalKeyConfirm')}</FormLabel>
-                    <PasswordInput
-                      clearPassword={(callback) => (this.confirmPasswordClear = callback)}
-                      onChange={(password) => this.setState({ confirmPassword: password })}
-                    />
-                  </FormRow>
-                  <FormRow last>
-                    <ButtonGroup classes={{ container: classes.buttons }}>
-                      <Button
-                        disabled={!this.checkPasswords()}
-                        primary={true}
-                        label="Change"
-                        onClick={this.handlePasswordChange}
-                      />
-                    </ButtonGroup>
-                  </FormRow>
-                </TabPanel>
-                <TabPanel className={classes.formBody} value={SettingsTabs.EXPORT_VAULT}>
-                  <FormRow>
-                    <Alert severity="info">{t('settings.exportNote')}</Alert>
-                  </FormRow>
-                  <FormRow last>
-                    <FormLabel>{t('settings.exportBackup')}</FormLabel>
-                    <Button label={t('settings.exportSelectFile')} primary={true} onClick={this.handleExportSettings} />
-                  </FormRow>
-                </TabPanel>
-              </>
+  return (
+    <Page title="Settings" leftIcon={<Back onClick={goBack} />}>
+      <div className={classes.tabsContainer}>
+        <TabContext value={tab}>
+          <TabList
+            className={classes.tabsSwitcher}
+            orientation="vertical"
+            variant="scrollable"
+            onChange={(_, newTab) => setState(prevState => ({ ...prevState, tab: newTab as SettingsTabs }))}
+          >
+            <Tab label={t('settings.common')} value={SettingsTabs.COMMON} />
+            <Tab label={t('settings.seeds')} value={SettingsTabs.SEEDS} />
+            <Tab disabled={!globalKeySet} label={t('settings.globalKey')} value={SettingsTabs.GLOBAL_KEY} />
+            <Tab
+              disabled={!globalKeySet || !hasWallets}
+              label={t('settings.exportVault')}
+              value={SettingsTabs.EXPORT_VAULT}
+            />
+          </TabList>
+          <TabPanel className={classes.formBody} value={SettingsTabs.COMMON}>
+            <FormRow>
+              <FormLabel>{t('settings.currency')}</FormLabel>
+              <TextField select={true} fullWidth={true} value={currency} onChange={handleCurrencyChange}>
+                <MenuItem key="eur" value="eur">
+                  EUR
+                </MenuItem>
+                <MenuItem key="usd" value="usd">
+                  USD
+                </MenuItem>
+                <MenuItem key="gbp" value="gbp">
+                  GBP
+                </MenuItem>
+                <MenuItem key="cny" value="cny">
+                  CNY
+                </MenuItem>
+                <MenuItem key="rub" value="rub">
+                  RUB
+                </MenuItem>
+                <MenuItem key="krw" value="krw">
+                  KRW
+                </MenuItem>
+                <MenuItem key="aud" value="aud">
+                  AUD
+                </MenuItem>
+              </TextField>
+            </FormRow>
+            <FormRow>
+              <FormLabel>{t('settings.lang')}</FormLabel>
+              <TextField select={true} value={language} fullWidth={true} onChange={handleLanguageChange}>
+                <MenuItem key="en-US" value="en-US">
+                  English (US)
+                </MenuItem>
+                <MenuItem key="zh-CN" value="zh-CN">
+                  中文
+                </MenuItem>
+                <MenuItem key="pt-BR" value="pt-BR">
+                  Portugese
+                </MenuItem>
+                <MenuItem key="ko-KR" value="ko-KR">
+                  Korean
+                </MenuItem>
+              </TextField>
+            </FormRow>
+            <FormRow last>
+              <ButtonGroup classes={{ container: classes.buttons }}>
+                <Button primary={true} label="Save" onClick={handleSettingsSave} />
+              </ButtonGroup>
+            </FormRow>
+          </TabPanel>
+          <TabPanel className={classes.formBody} value={SettingsTabs.SEEDS}>
+            {seeds.length > 0 ? (
+              seeds.map((seed) => <SeedItem key={seed.id} seed={seed} updateSeed={updateSeed} />)
+            ) : (
+              <Alert severity="info">{t('settings.seedsNote')}</Alert>
             )}
-          </TabContext>
-        </div>
-      </Page>
-    );
-  }
-}
+          </TabPanel>
+          {globalKeySet && (
+            <>
+              <TabPanel className={classes.formBody} value={SettingsTabs.GLOBAL_KEY}>
+                <FormRow>
+                  <FormLabel>{t('settings.globalKeyOld')}</FormLabel>
+                  <PasswordInput
+                    autoFocus
+                    minLength={1}
+                    placeholder="Enter existing password"
+                    showLengthNotice={false}
+                    clearPassword={(callback) => { oldPasswordClearRef.current = callback; }}
+                    onChange={(password) => setState(prevState => ({ ...prevState, oldPassword: password }))}
+                  />
+                </FormRow>
+                <FormRow>
+                  <FormLabel>{t('settings.globalKeyNew')}</FormLabel>
+                  <PasswordInput
+                    error={state.changePasswordError}
+                    clearPassword={(callback) => { newPasswordClearRef.current = callback; }}
+                    onChange={(password) => setState(prevState => ({ ...prevState, newPassword: password }))}
+                  />
+                </FormRow>
+                <FormRow>
+                  <FormLabel>{t('settings.globalKeyConfirm')}</FormLabel>
+                  <PasswordInput
+                    clearPassword={(callback) => { confirmPasswordClearRef.current = callback; }}
+                    onChange={(password) => setState(prevState => ({ ...prevState, confirmPassword: password }))}
+                  />
+                </FormRow>
+                <FormRow last>
+                  <ButtonGroup classes={{ container: classes.buttons }}>
+                    <Button
+                      disabled={!checkPasswords()}
+                      primary={true}
+                      label="Change"
+                      onClick={handlePasswordChange}
+                    />
+                  </ButtonGroup>
+                </FormRow>
+              </TabPanel>
+              <TabPanel className={classes.formBody} value={SettingsTabs.EXPORT_VAULT}>
+                <FormRow>
+                  <Alert severity="info">{t('settings.exportNote')}</Alert>
+                </FormRow>
+                <FormRow last>
+                  <FormLabel>{t('settings.exportBackup')}</FormLabel>
+                  <Button label={t('settings.exportSelectFile')} primary={true} onClick={handleExportSettings} />
+                </FormRow>
+              </TabPanel>
+            </>
+          )}
+        </TabContext>
+      </div>
+    </Page>
+  );
+};
 
-export default withStyles(styles)(SettingsForm);
+export default SettingsForm;

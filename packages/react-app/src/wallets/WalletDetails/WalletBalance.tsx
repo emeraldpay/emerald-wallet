@@ -10,79 +10,92 @@ import {
 import { Blockchains, CurrencyAmount, blockchainIdToCode, formatFiatAmount } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Button, HashIcon, Ledger } from '@emeraldwallet/ui';
-import { ButtonGroup, Divider, Typography, createStyles, makeStyles } from '@material-ui/core';
-import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon, BorderColor as SignIcon } from '@material-ui/icons';
+import { ButtonGroup, Divider, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon, BorderColor as SignIcon } from '@mui/icons-material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import BitcoinEntryItem from './entry/BitcoinEntryItem';
 import EthereumEntryItem from './entry/EthereumEntryItem';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     divider: {
       marginLeft: theme.spacing(),
       marginRight: theme.spacing(),
     },
+
     container: {
       display: 'flex',
     },
+
     columnLeft: {
       flex: '0 0 auto',
       marginLeft: theme.spacing(8),
       marginRight: theme.spacing(4),
     },
+
     columnRight: {
       flex: '1 1 auto',
       minWidth: 0,
     },
+
     walletIcon: {
       cursor: 'default',
       userSelect: 'none',
     },
+
     walletImage: {
       display: 'inline-block',
       height: 100,
       width: 100,
     },
+
     walletInfo: {
       alignItems: 'start',
       display: 'flex',
       justifyContent: 'space-between',
       marginBottom: theme.spacing(4),
     },
+
     walletDetails: {
       display: 'flex',
       flexDirection: 'column',
       marginRight: theme.spacing(2),
       minWidth: 0,
     },
+
     walletOptions: {
       alignItems: 'center',
       display: 'inline-flex',
     },
+
     walletOption: {
       marginRight: theme.spacing(),
     },
+
     walletBlockchains: {
       flex: 1,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
     },
+
     walletHardware: {
       alignItems: 'center',
       display: 'flex',
     },
+
     walletHardwareIcon: {
       display: 'block',
     },
+
     walletEntry: {
       '& + &': {
         marginTop: theme.spacing(2),
       },
-    },
-  }),
-);
+    }
+  }));
 
 interface OwnProps {
   walletId: Uuid;
@@ -118,7 +131,7 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
   gotoSign,
   gotoReceive,
 }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const renderEntries = (entries: WalletEntry[]): React.ReactNode => {
     if (wallet == null) {
@@ -188,10 +201,10 @@ const WalletBalance: React.FC<OwnProps & StateProps & DispatchProps> = ({
               ) : null}
             </div>
           </div>
-          <ButtonGroup>
-            <Button primary disabled={!hasAnyBalance} icon={<SendIcon />} label="Send" onClick={gotoSend} />
-            <Button primary icon={<ReceiveIcon />} label="Receive" onClick={gotoReceive} />
-            <Button primary disabled={!hasEthereumEntry} icon={<SignIcon />} label="Sign" onClick={gotoSign} />
+          <ButtonGroup variant={"outlined"}>
+            <Button primary variant={"outlined"} disabled={!hasAnyBalance} icon={<SendIcon />} label="Send" onClick={gotoSend} />
+            <Button primary variant={"outlined"} icon={<ReceiveIcon />} label="Receive" onClick={gotoReceive} />
+            <Button primary variant={"outlined"} disabled={!hasEthereumEntry} icon={<SignIcon />} label="Sign" onClick={gotoSign} />
           </ButtonGroup>
         </div>
         {groupedEntries.map(renderEntries)}

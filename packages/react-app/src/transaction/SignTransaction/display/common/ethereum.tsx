@@ -4,8 +4,8 @@ import * as React from 'react';
 import {Amount} from '../components';
 import {Data, DataProvider, Handler} from '../types';
 import {CommonDisplay} from './common';
-import {Tooltip} from "@material-ui/core";
-import {InfoOutlined} from "@material-ui/icons";
+import {Tooltip} from "@mui/material";
+import {InfoOutlined} from "@mui/icons-material";
 
 type EthereumData = Data<workflow.AnyEthereumCreateTx>;
 

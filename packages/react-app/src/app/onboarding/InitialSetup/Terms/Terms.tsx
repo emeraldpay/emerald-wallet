@@ -1,5 +1,5 @@
 import {Check2 as CheckIcon} from '@emeraldwallet/ui';
-import {Grid} from '@material-ui/core';
+import {Grid} from '@mui/material';
 import * as React from 'react';
 import { Button } from '@emeraldwallet/ui';
 

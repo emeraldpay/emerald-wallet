@@ -1,31 +1,33 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts } from '@emeraldwallet/store';
 import { HashIcon } from '@emeraldwallet/ui';
-import { Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     container: {
       alignItems: 'center',
       display: 'flex',
       justifyContent: 'center',
       width: '100%',
     },
+
     walletIcon: {
       cursor: 'default',
       marginRight: theme.spacing(),
       userSelect: 'none',
     },
+
     walletImage: {
       display: 'inline-block',
       height: 24,
       marginRight: theme.spacing(),
       width: 24,
-    },
-  }),
-);
+    }
+  }));
 
 interface OwnProps {
   walletId: Uuid;
@@ -37,7 +39,7 @@ interface StateProps {
 }
 
 const WalletTitle: React.FC<OwnProps & StateProps> = ({ walletIcon, walletName, walletId }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   return (
     <div className={styles.container}>

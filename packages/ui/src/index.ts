@@ -66,7 +66,7 @@ export { default as Pager } from './components/common/Pager';
 export { default as PasswordConfirmedInput } from './components/common/PasswordConfirmedInput';
 export { default as PasswordInput } from './components/common/PasswordInput';
 export { Table } from './components/common/Table';
-export { default as Theme } from './theme';
+export { default as EmeraldTheme } from './theme';
 export { default as TxRef } from './components/common/TxRef';
 export { default as WalletReference } from './components/accounts/WalletReference';
 export { Warning, WarningHeader, WarningText } from './components/common/Warning';

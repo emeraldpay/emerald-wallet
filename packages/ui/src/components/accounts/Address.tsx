@@ -1,13 +1,11 @@
-import { Box, Typography, createStyles } from '@material-ui/core';
-import { ClassNameMap, makeStyles } from '@material-ui/styles';
+import {Box, Typography, ClassNameMap} from '@mui/material';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../icons';
-import { Theme } from '../../index';
 import ToggledIconButton from '../common/ToggledIconButton';
+import {makeStyles} from "tss-react/mui";
 
-const useStyles = makeStyles<typeof Theme>((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     root: {
       alignItems: 'center',
       display: 'flex',
@@ -26,8 +24,8 @@ const useStyles = makeStyles<typeof Theme>((theme) =>
     toggledIcon: {
       cursor: 'pointer',
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   address: string;
@@ -40,7 +38,7 @@ interface OwnProps {
 }
 
 const Component: React.FC<OwnProps> = ({ address, classes, disableCopy, label, loading, loadingIcon, onCopy }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   return (
     <Box className={classNames(styles.root, classes?.root)}>

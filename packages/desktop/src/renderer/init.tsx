@@ -1,6 +1,6 @@
 import { Logger, config } from '@emeraldwallet/core';
 import { App, i18n } from '@emeraldwallet/react-app';
-import { Theme } from '@emeraldwallet/ui';
+import { EmeraldTheme } from '@emeraldwallet/ui';
 import BigNumber from 'bignumber.js';
 import * as ElectronLogger from 'electron-log';
 import * as React from 'react';
@@ -27,7 +27,7 @@ declare global {
 function start(): void {
   log.info('Starting Emerald Wallet...');
 
-  document.body.style.backgroundColor = Theme.palette.background.default;
+  document.body.style.backgroundColor = EmeraldTheme.palette.background.default;
 
   //@ts-ignore
   ReactDOM.render(<App store={store} terms={config.TERMS_VERSION} />, document.getElementById('app'));
@@ -36,7 +36,7 @@ function start(): void {
 }
 
 function showAbout(): void {
-  document.body.style.backgroundColor = Theme.palette.background.default;
+  document.body.style.backgroundColor = EmeraldTheme.palette.background.default;
 
   //@ts-ignore
   const AboutWindow: React.FC = () => (

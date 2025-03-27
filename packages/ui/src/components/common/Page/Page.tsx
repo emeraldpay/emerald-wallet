@@ -14,41 +14,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Theme, createStyles } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/styles';
+import { Divider, IconButton, Paper, Toolbar, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import classNames from 'classnames';
 import * as React from 'react';
 
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      maxHeight: '100%',
-      overflow: 'hidden',
-    },
-    toolbar: {
-      background: 'transparent',
-      flex: 0,
-      justifyContent: 'space-between',
-    },
-    content: {
-      overflowY: 'auto',
-      padding: theme.spacing(4),
-    },
-    fullHeight: {
-      height: '100%',
-    },
-    footer: {
-      padding: theme.spacing(2),
-    },
-  }),
-);
+const useStyles = makeStyles()((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '100%',
+    overflow: 'hidden',
+  },
+  toolbar: {
+    background: 'transparent',
+    flex: 0,
+    justifyContent: 'space-between',
+  },
+  content: {
+    overflowY: 'auto',
+    padding: theme.spacing(4),
+  },
+  fullHeight: {
+    height: '100%',
+  },
+  footer: {
+    padding: theme.spacing(2),
+  },
+}));
 
 interface OwnProps {
   className?: string;
@@ -72,11 +65,11 @@ const getIconWithButton = (icon?: React.ReactElement): React.ReactElement => {
 };
 
 export const Page: React.FC<OwnProps> = ({ children, footer, leftIcon, rightIcon, title, fullHeight = false }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   return (
-    <Paper classes={{ root: classNames(styles.root, fullHeight ? styles.fullHeight : null) }}>
-      <Toolbar className={styles.toolbar}>
+    <Paper classes={{ root: classNames(classes.root, fullHeight ? classes.fullHeight : null) }}>
+      <Toolbar className={classes.toolbar}>
         {getIconWithButton(leftIcon)}
         {typeof title === 'string' ? (
           <Typography variant="h6" color="inherit">
@@ -88,11 +81,11 @@ export const Page: React.FC<OwnProps> = ({ children, footer, leftIcon, rightIcon
         {getIconWithButton(rightIcon)}
       </Toolbar>
       <Divider />
-      <div className={classNames(styles.content, fullHeight ? styles.fullHeight : null)}>{children}</div>
+      <div className={classNames(classes.content, fullHeight ? classes.fullHeight : null)}>{children}</div>
       {footer != null && (
         <>
           <Divider />
-          <div className={styles.footer}>{footer}</div>
+          <div className={classes.footer}>{footer}</div>
         </>
       )}
     </Paper>

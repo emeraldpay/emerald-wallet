@@ -2,10 +2,10 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen, txhistory } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
-import { Divider, IconButton, Paper, Tab, Toolbar, Tooltip, createStyles, makeStyles } from '@material-ui/core';
-import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon } from '@material-ui/icons';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import classNames from 'classnames';
+import { Divider, IconButton, Paper, Tab, Toolbar, Tooltip } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { ArrowDownward as ReceiveIcon, ArrowUpward as SendIcon } from '@mui/icons-material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
@@ -22,13 +22,14 @@ export enum WalletTabs {
   TRANSACTIONS = '3',
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     container: {
       display: 'flex',
       flexDirection: 'column',
       maxHeight: '100%',
     },
+
     paper: {
       display: 'flex',
       flex: 1,
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) =>
       height: '100%',
       overflow: 'hidden',
     },
+
     tabs: {
       display: 'flex',
       flex: 0,
@@ -43,36 +45,42 @@ const useStyles = makeStyles((theme) =>
       marginTop: '-10px',
       marginBottom: theme.spacing(2),
     },
+
     tabPanel: {
       height: '100%',
       overflowY: 'auto',
       padding: 0,
     },
+
     tabPanelPadding: {
       padding: theme.spacing(4),
     },
+
     toolbar: {
       justifyContent: 'space-between',
     },
+
     toolbarButtons: {
       flex: '0 0 auto',
       minWidth: 200,
     },
+
     toolbarButtonsLeft: {
       marginRight: theme.spacing(),
     },
+
     toolbarButtonsRight: {
       display: 'flex',
       marginLeft: theme.spacing(),
       justifyContent: 'right',
     },
+
     toolbarButton: {
       '& + &': {
         marginLeft: theme.spacing(),
       },
-    },
-  }),
-);
+    }
+  }));
 
 interface OwnProps {
   initialTab?: WalletTabs;
@@ -103,7 +111,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   gotoWalletsScreen,
   loadTransactions,
 }) => {
-  const styles = useStyles();
+  const { classes: styles, cx } = useStyles();
 
   const currentWallet = React.useRef(walletId);
 
@@ -151,7 +159,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
         </div>
         <Paper classes={{ root: styles.paper }}>
           <Toolbar className={styles.toolbar}>
-            <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsLeft)}>
+            <div className={cx(styles.toolbarButtons, styles.toolbarButtonsLeft)}>
               {hasOtherWallets && (
                 <IconButton className={styles.toolbarButton} onClick={gotoWalletsScreen}>
                   <Back />
@@ -159,7 +167,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
               )}
             </div>
             {tab !== WalletTabs.BALANCE && <WalletTitle walletId={walletId} />}
-            <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsRight)}>
+            <div className={cx(styles.toolbarButtons, styles.toolbarButtonsRight)}>
               {tab !== WalletTabs.BALANCE && (
                 <>
                   <Tooltip title="Send">
@@ -184,7 +192,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
             </div>
           </Toolbar>
           <Divider />
-          <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.BALANCE}>
+          <TabPanel className={cx(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.BALANCE}>
             <WalletBalance walletId={walletId} />
           </TabPanel>
           {hasEthereumEntry && (
@@ -192,7 +200,7 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
               <WalletAllowance walletId={walletId} />
             </TabPanel>
           )}
-          <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.ADDRESSES}>
+          <TabPanel className={cx(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.ADDRESSES}>
             <Addresses walletId={walletId} />
           </TabPanel>
           <TabPanel className={styles.tabPanel} value={WalletTabs.TRANSACTIONS}>

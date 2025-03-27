@@ -1,4 +1,4 @@
-import { Button, Grid, TextField, Typography } from '@material-ui/core';
+import { Button, Grid, TextField, Typography } from '@mui/material';
 import * as React from 'react';
 import PasswordInput from '../PasswordInput/PasswordInput';
 

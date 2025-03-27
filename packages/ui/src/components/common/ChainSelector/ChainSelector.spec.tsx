@@ -1,6 +1,6 @@
 import { Theme } from '@emeraldwallet/ui';
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import StyledChainSelector, { ChainSelector } from './ChainSelector';

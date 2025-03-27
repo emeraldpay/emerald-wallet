@@ -1,4 +1,4 @@
-import { SnackbarCloseReason } from '@material-ui/core';
+import { SnackbarCloseReason } from '@mui/material';
 import { AnyAction } from 'redux';
 
 export const moduleName = 'screen';

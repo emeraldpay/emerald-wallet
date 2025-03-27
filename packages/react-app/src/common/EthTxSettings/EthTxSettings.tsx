@@ -7,54 +7,49 @@ import {
   FormHelperText,
   Slider,
   Switch,
-  createStyles,
-  makeStyles,
   TextField
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import {useState} from "react";
-import {workflow} from "@emeraldwallet/core";
-import {NumberField} from "../NumberField";
 
-const useStyles = makeStyles(
-  createStyles({
-    gasPriceHelp: {
-      position: 'initial',
-      paddingLeft: 10,
-    },
-    gasPriceHelpBox: {
-      width: 500,
-      clear: 'left',
-    },
-    gasPriceMarkLabel: {
-      fontSize: '0.7em',
-      opacity: 0.8,
-    },
-    gasPriceSlider: {
-      width: 300,
-      marginBottom: 10,
-      paddingTop: 10,
-    },
-    gasPriceSliderBox: {
-      width: 300,
-      float: 'left',
-    },
-    gasPriceTypeBox: {
-      width: 240,
-      float: 'left',
-      height: 40,
-    },
-    gasPriceValueLabel: {
-      fontSize: '0.7em',
-    },
-    inputField: {
-      flexGrow: 5,
-    },
-    gasLimitEditor: {
-      width: 240,
-    }
-  }),
-);
+const useStyles = makeStyles()({
+  gasPriceHelp: {
+    position: 'initial',
+    paddingLeft: 10,
+  },
+  gasPriceHelpBox: {
+    width: 500,
+    clear: 'left',
+  },
+  gasPriceMarkLabel: {
+    fontSize: '0.7em',
+    opacity: 0.8,
+  },
+  gasPriceSlider: {
+    width: 300,
+    marginBottom: 10,
+    paddingTop: 10,
+  },
+  gasPriceSliderBox: {
+    width: 300,
+    float: 'left',
+  },
+  gasPriceTypeBox: {
+    width: 240,
+    float: 'left',
+    height: 40,
+  },
+  gasPriceValueLabel: {
+    fontSize: '0.7em',
+  },
+  inputField: {
+    flexGrow: 5,
+  },
+  gasLimitEditor: {
+    width: 240,
+  }
+});
 
 interface OwnProps {
   factory: CreateAmount<WeiAny>;
@@ -85,7 +80,7 @@ const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
   const [value, setValue] = useState(gasLimit);
   const [errorText, setErrorText] = useState<string | undefined>();
 
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const onSwitch = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setUseDefault(checked);
@@ -108,7 +103,7 @@ const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
   }
 
   const editor = <TextField
-    className={styles.gasLimitEditor}
+    className={classes.gasLimitEditor}
     type="number"
     helperText={errorText != undefined ? errorText : `Estimated value: ${gasLimit}`}
     error={errorText != undefined}
@@ -122,7 +117,7 @@ const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
   return (
     <FormRow>
       <FormLabel>Gas</FormLabel>
-      <Box className={styles.inputField}>
+      <Box className={classes.inputField}>
         <Box>
         <FormControlLabel
           control={<Switch checked={useDefault} color="primary" onChange={onSwitch} />}
@@ -154,7 +149,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
   onPriorityGasPriceChange,
   onGasLimitChange,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   let gasPriceUnit: Unit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 0);
 
@@ -187,7 +182,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const handleMaxGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+  const handleMaxGasPriceChange = (event: Event, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
     onMaxGasPriceChange(toWei(gasPriceDecimal));
@@ -201,7 +196,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
     }
   };
 
-  const handlePriorityGasPriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+  const handlePriorityGasPriceChange = (event: Event, value: number | number[]): void => {
     const [gasPriceDecimal] = Array.isArray(value) ? value : [value];
 
     onPriorityGasPriceChange(toWei(gasPriceDecimal));
@@ -247,8 +242,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
       )}
       <FormRow>
         <FormLabel top>{showEip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
-        <Box className={styles.inputField}>
-          <Box className={styles.gasPriceTypeBox}>
+        <Box className={classes.inputField}>
+          <Box className={classes.gasPriceTypeBox}>
             <FormControlLabel
               control={
                 <Switch
@@ -262,12 +257,12 @@ const EthTxSettings: React.FC<OwnProps> = ({
             />
           </Box>
           {!currentUseStdMaxGasPrice && showMaxRange && (
-            <Box className={styles.gasPriceSliderBox}>
+            <Box className={classes.gasPriceSliderBox}>
               <Slider
-                className={styles.gasPriceSlider}
+                className={classes.gasPriceSlider}
                 classes={{
-                  markLabel: styles.gasPriceMarkLabel,
-                  valueLabel: styles.gasPriceValueLabel,
+                  markLabel: classes.gasPriceMarkLabel,
+                  valueLabel: classes.gasPriceValueLabel,
                 }}
                 marks={[
                   { value: lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
@@ -283,8 +278,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
               />
             </Box>
           )}
-          <Box className={styles.gasPriceHelpBox}>
-            <FormHelperText className={styles.gasPriceHelp}>
+          <Box className={classes.gasPriceHelpBox}>
+            <FormHelperText className={classes.gasPriceHelp}>
               {maxGasPriceByUnit} {gasPriceUnit.toString()}
             </FormHelperText>
           </Box>
@@ -293,8 +288,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
       {showEip1559 && (
         <FormRow>
           <FormLabel top>Priority gas price</FormLabel>
-          <Box className={styles.inputField}>
-            <Box className={styles.gasPriceTypeBox}>
+          <Box className={classes.inputField}>
+            <Box className={classes.gasPriceTypeBox}>
               <FormControlLabel
                 control={
                   <Switch
@@ -308,12 +303,12 @@ const EthTxSettings: React.FC<OwnProps> = ({
               />
             </Box>
             {!currentUseStdPriorityGasPrice && showPriorityRange && (
-              <Box className={styles.gasPriceSliderBox}>
+              <Box className={classes.gasPriceSliderBox}>
                 <Slider
-                  className={styles.gasPriceSlider}
+                  className={classes.gasPriceSlider}
                   classes={{
-                    markLabel: styles.gasPriceMarkLabel,
-                    valueLabel: styles.gasPriceValueLabel,
+                    markLabel: classes.gasPriceMarkLabel,
+                    valueLabel: classes.gasPriceValueLabel,
                   }}
                   marks={[
                     { value: lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber(), label: 'Slow' },
@@ -329,8 +324,8 @@ const EthTxSettings: React.FC<OwnProps> = ({
                 />
               </Box>
             )}
-            <Box className={styles.gasPriceHelpBox}>
-              <FormHelperText className={styles.gasPriceHelp}>
+            <Box className={classes.gasPriceHelpBox}>
+              <FormHelperText className={classes.gasPriceHelp}>
                 {priorityGasPriceByUnit} {gasPriceUnit.toString()}
               </FormHelperText>
             </Box>

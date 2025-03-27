@@ -13,32 +13,59 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import withStyles from '@material-ui/core/styles/withStyles';
 import * as React from 'react';
-import styles from './styles';
+import { makeStyles } from 'tss-react/mui';
+
+const useStyles = makeStyles()({
+  container: {
+    maxWidth: '580px',
+    borderRadius: '1px',
+    backgroundColor: '#F9F2F2',
+    color: '#CF3B3B',
+    fontSize: '14px',
+    lineHeight: '22px',
+    paddingTop: '14px',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    paddingBottom: '10px'
+  },
+  header: {
+    fontWeight: 'bold'
+  },
+  text: {
+    paddingBottom: '10px'
+  }
+});
 
 interface Props {
-  classes?: any;
-  children?: any;
+  children?: React.ReactNode;
 }
 
-export const WarningHeader = withStyles(styles)((props: Props) => (
-  <div className={props.classes.header}>
-    {props.children}
-  </div>));
+export const WarningHeader: React.FC<Props> = (props) => {
+  const { classes } = useStyles();
+  return (
+    <div className={classes.header}>
+      {props.children}
+    </div>
+  );
+};
 
-export const WarningText = withStyles(styles)((props: Props) => (
-  <div className={props.classes.text}>
-    {props.children}
-  </div>
-));
+export const WarningText: React.FC<Props> = (props) => {
+  const { classes } = useStyles();
+  return (
+    <div className={classes.text}>
+      {props.children}
+    </div>
+  );
+};
 
 interface WarningProps extends Props {
-  fullWidth?: any;
+  fullWidth?: boolean;
 }
 
-export const Warning = withStyles(styles)((props: WarningProps) => {
-  const {fullWidth, classes} = props;
+export const Warning: React.FC<WarningProps> = (props) => {
+  const { classes } = useStyles();
+  const { fullWidth, children } = props;
   const style: { width?: string, maxWidth?: string } = {};
   if (fullWidth) {
     style.width = '100%';
@@ -47,8 +74,9 @@ export const Warning = withStyles(styles)((props: WarningProps) => {
 
   return (
     <div className={classes.container} style={style}>
-      {props.children}
-    </div>);
-});
+      {children}
+    </div>
+  );
+};
 
 export default Warning;

@@ -26,14 +26,13 @@ import {
   Menu,
   MenuItem,
   TextField,
-  Tooltip,
-  createStyles,
-  makeStyles, Typography,
-} from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import EditIcon from '@material-ui/icons/Edit';
-import MoreIcon from '@material-ui/icons/MoreHoriz';
+  Tooltip, Typography,
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import MoreIcon from '@mui/icons-material/MoreHoriz';
 import classNames from 'classnames';
 import { DateTime } from 'luxon';
 import * as React from 'react';
@@ -61,8 +60,7 @@ const CONFIRMED: Record<BlockchainCode, number> = {
   [BlockchainCode.ETC]: 4 * 60 * 24,
 } as const;
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     button: {
       color: theme.palette.text.secondary,
       fontSize: 16,
@@ -185,8 +183,7 @@ const useStyles = makeStyles((theme) =>
       marginRight: 10,
       color: theme.palette.text.primary,
     },
-  }),
-);
+  }));
 
 interface OwnProps {
   tx: StoredTransaction;
@@ -239,7 +236,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   goToWallet,
   setTransactionMeta,
 }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const blockchainCode = blockchainIdToCode(tx.blockchain);
 

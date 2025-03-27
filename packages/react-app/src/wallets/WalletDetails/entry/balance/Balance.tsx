@@ -1,12 +1,12 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { formatAmountPartial } from '@emeraldwallet/core';
-import { Tooltip, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Tooltip, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import entryStyles from '../styles';
 
-const useStyles = makeStyles((theme) => ({
-  ...entryStyles(theme),
+const useStyles = makeStyles()((theme) => ({
+  ...entryStyles,
   tooltip: {
     cursor: 'help',
   },
@@ -17,7 +17,7 @@ interface OwnProps {
 }
 
 const Balance: React.FC<OwnProps> = ({ balance }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const [balanceValue, balanceUnit, approxZero] = formatAmountPartial(balance);
 

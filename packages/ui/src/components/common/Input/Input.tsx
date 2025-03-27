@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import * as React from 'react';
 
 interface OwnProps {

@@ -1,15 +1,15 @@
 import {ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon} from '../../../icons';
-import {createStyles, Grid, IconButton, withStyles} from '@material-ui/core';
+import {Grid, IconButton} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
 interface IProps {
   pageSize?: number;
   offset?: any;
   setOffset?: any;
-  classes?: any;
 }
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   offset: {
     textAlign: 'center',
     fontSize: '16px',
@@ -18,7 +18,8 @@ const styles = createStyles({
   }
 });
 
-const Pager = ({ classes, offset, setOffset, ...other }: IProps) => {
+const Pager = ({ offset, setOffset, ...other }: IProps) => {
+  const { classes } = useStyles();
   const pageSize = other.pageSize || 5;
 
   function handleRightClick () {
@@ -52,4 +53,4 @@ const Pager = ({ classes, offset, setOffset, ...other }: IProps) => {
   );
 };
 
-export default withStyles(styles)(Pager);
+export default Pager;

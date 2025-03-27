@@ -2,27 +2,26 @@ import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Pages } from '@emeraldwallet/store/lib/screen';
 import { Back, Button, ButtonGroup, FormLabel, FormRow, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Typography, createStyles, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { Alert } from '@mui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-    gutter: {
-      marginBottom: 20,
-    },
-    label: {
-      minWidth: 180,
-      width: 180,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  gutter: {
+    marginBottom: 20,
+  },
+  label: {
+    minWidth: 180,
+    width: 180,
+  },
+});
 
 interface StateProps {
   hasWallets: boolean;
@@ -46,7 +45,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
   goPasswordMigration,
   setGlobalKey,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
@@ -77,16 +76,16 @@ const GlobalKey: React.FC<DispatchProps & StateProps> = ({
           : 'Please create a password to secure your wallet. This password encrypts and protects your private keys and seed phrases stored on your device.'}
       </Typography>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }}>Password</FormLabel>
+        <FormLabel classes={{ root: classes.label }}>Password</FormLabel>
         <PasswordInput onChange={(value) => setPassword(value)} />
       </FormRow>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }}>Confirm password</FormLabel>
+        <FormLabel classes={{ root: classes.label }}>Confirm password</FormLabel>
         <PasswordInput onChange={(value) => setConfirmPassword(value)} />
       </FormRow>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }} />
-        <ButtonGroup classes={{ container: styles.buttons }}>
+        <FormLabel classes={{ root: classes.label }} />
+        <ButtonGroup classes={{ container: classes.buttons }}>
           {hasWallets && <Button label="Skip" onClick={goHome} />}
           <Button
             label="Create"

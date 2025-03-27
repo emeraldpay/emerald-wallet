@@ -7,42 +7,39 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
-import { green as greenColor, grey as greyColor, orange as orangeColor } from '@material-ui/core/colors';
-import { Done as DoneIcon, RemoveCircle as SkipIcon, Warning as WarningIcon } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+  Typography
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { green as greenColor, grey as greyColor, orange as orangeColor } from '@mui/material/colors';
+import { Done as DoneIcon, RemoveCircle as SkipIcon, Warning as WarningIcon } from '@mui/icons-material';
+import { Alert } from '@mui/lab';
 import * as React from 'react';
 import { useState } from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-    gutter: {
-      marginBottom: 15,
-    },
-    label: {
-      minWidth: 360,
-      width: 360,
-    },
-    loader: {
-      fontSize: '1.7142857142857142rem',
-    },
-    status: {
-      alignItems: 'center',
-      display: 'inline-flex',
-      gap: '5px',
-      minWidth: 120,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  gutter: {
+    marginBottom: 15,
+  },
+  label: {
+    minWidth: 360,
+    width: 360,
+  },
+  loader: {
+    fontSize: '1.7142857142857142rem',
+  },
+  status: {
+    alignItems: 'center',
+    display: 'inline-flex',
+    gap: '5px',
+    minWidth: 120,
+  },
+});
 
 interface DispatchProps {
   getLegacyItems(): Promise<OddPasswordItem[]>;
@@ -59,7 +56,7 @@ const PasswordMigration: React.FC<DispatchProps> = ({
   upgradeLegacyItems,
   verifyGlobalKey,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [initializing, setInitializing] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
@@ -151,22 +148,22 @@ const PasswordMigration: React.FC<DispatchProps> = ({
               <TableCell>{item.id}</TableCell>
               <TableCell>
                 {upgrading && !item.upgraded ? (
-                  <div className={styles.status}>
-                    <CircularProgress color="primary" className={styles.loader} size="1em" />
+                  <div className={classes.status}>
+                    <CircularProgress color="primary" className={classes.loader} size="1em" />
                     <span>Migrating...</span>
                   </div>
                 ) : item.upgraded == null ? (
-                  <div className={styles.status}>
+                  <div className={classes.status}>
                     <WarningIcon style={{ color: orangeColor['500'] }} />
                     <span>Migration required</span>
                   </div>
                 ) : item.upgraded ? (
-                  <div className={styles.status}>
+                  <div className={classes.status}>
                     <DoneIcon style={{ color: greenColor['500'] }} />
                     <span>Migration successful</span>
                   </div>
                 ) : (
-                  <div className={styles.status}>
+                  <div className={classes.status}>
                     <SkipIcon style={{ color: greyColor['500'] }} />
                     <span>Migration skipped</span>
                   </div>
@@ -177,7 +174,7 @@ const PasswordMigration: React.FC<DispatchProps> = ({
         </TableBody>
       </Table>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }}>Global password:</FormLabel>
+        <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
         <PasswordInput
           disabled={initializing}
           error={globalPasswordError}
@@ -188,7 +185,7 @@ const PasswordMigration: React.FC<DispatchProps> = ({
         />
       </FormRow>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }}>Old password (for any of the items above):</FormLabel>
+        <FormLabel classes={{ root: classes.label }}>Old password (for any of the items above):</FormLabel>
         <PasswordInput
           disabled={initializing}
           error={legacyPasswordError}
@@ -199,8 +196,8 @@ const PasswordMigration: React.FC<DispatchProps> = ({
         />
       </FormRow>
       <FormRow>
-        <FormLabel classes={{ root: styles.label }} />
-        <ButtonGroup classes={{ container: styles.buttons }}>
+        <FormLabel classes={{ root: classes.label }} />
+        <ButtonGroup classes={{ container: classes.buttons }}>
           <Button
             disabled={processing}
             label={allItemsUpgraded ? 'Continue' : 'Skip'}

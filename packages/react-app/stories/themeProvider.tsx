@@ -1,5 +1,5 @@
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import {Addon_DecoratorFunction} from "@storybook/types";
 import * as React from 'react';
 import {ReactElement} from "react";

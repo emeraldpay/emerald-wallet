@@ -1,12 +1,12 @@
 import { BlockchainCode, Blockchains, isBitcoin, workflow } from '@emeraldwallet/core';
 import { BlockchainAvatar, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import {
   blue as blueColors,
   green as greenColors,
   orange as orangeColors,
   red as redColors,
-} from '@material-ui/core/colors';
+} from '@mui/material/colors';
 import {
   Receipt as ApproveIcon,
   Cancel as CancelIcon,
@@ -15,11 +15,11 @@ import {
   Forward as SendIcon,
   Speed as SpeedupIcon,
   Help as UnknownIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
+const useStyles = makeStyles()({
     blue: {
       color: blueColors[500],
     },
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() =>
     red: {
       color: redColors[500],
     },
-  }),
+  }
 );
 
 interface OwnProps {
@@ -41,7 +41,7 @@ interface OwnProps {
 }
 
 export const Type: React.FC<OwnProps> = ({ blockchain, type }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   let typeIcon: React.ReactElement;
   let typeTitle: string;

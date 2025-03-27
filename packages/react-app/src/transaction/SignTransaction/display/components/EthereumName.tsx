@@ -1,11 +1,13 @@
 import { BlockchainCode, EthereumAddress } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, Typography, createStyles, makeStyles } from '@material-ui/core';
-import { blue as blueColors } from '@material-ui/core/colors';
-import { AccountCircle as AccountIcon } from '@material-ui/icons';
+import { Box, Typography, } from '@mui/material';
+import { AccountCircle as AccountIcon } from '@mui/icons-material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles(createStyles({ blue: { color: blueColors[500] } }));
+const useStyles = makeStyles()((theme) => ({
+  blue: { color: theme.palette.info.light }
+}));
 
 interface OwnProps {
   address: string;
@@ -14,7 +16,7 @@ interface OwnProps {
 }
 
 export const EthereumName: React.FC<OwnProps> = ({ address, blockchain, lookupAddress }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [name, setName] = React.useState<string | null>(null);
 

@@ -26,43 +26,40 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
+  Typography
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WaitLedger from '../ledger/WaitLedger';
 
-const useStyles = makeStyles(
-  createStyles({
-    address: {
-      alignItems: 'center',
-      cursor: 'pointer',
-      display: 'flex',
-    },
-    addressIcon: {
-      marginRight: 20,
-    },
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-    message: {
-      maxHeight: 240,
-    },
-    validation: {
-      display: 'flex',
-      justifyContent: 'end',
-      marginBottom: 10,
-      width: '100%',
-    },
-    typeAutoDetected: {
-      marginLeft: 20,
-    }
-  }),
-);
+const useStyles = makeStyles()({
+  address: {
+    alignItems: 'center',
+    cursor: 'pointer',
+    display: 'flex',
+  },
+  addressIcon: {
+    marginRight: 20,
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  message: {
+    maxHeight: 240,
+  },
+  validation: {
+    display: 'flex',
+    justifyContent: 'end',
+    marginBottom: 10,
+    width: '100%',
+  },
+  typeAutoDetected: {
+    marginLeft: 20,
+  }
+});
 
 enum Stages {
   SETUP = 'setup',
@@ -119,7 +116,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
   signMessage,
   verifyGlobalKey,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const mounted = React.useRef(true);
 
@@ -247,8 +244,8 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
     };
 
     return (
-      <div className={styles.address} onClick={onClick}>
-        <div className={styles.addressIcon}>
+      <div className={classes.address} onClick={onClick}>
+        <div className={classes.addressIcon}>
           <IdentityIcon id={address} />
         </div>
         <div>
@@ -338,7 +335,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
             </TextField>
             {messageType === MessageType.AUTO && (
                 <Chip
-                  className={styles.typeAutoDetected}
+                  className={classes.typeAutoDetected}
                   color="primary"
                   label={validation === Validation.EIP712 ? 'Structured / EIP-712' : 'Unstructured / EIP-191'}
                 />
@@ -360,7 +357,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
           </FormRow>
           <FormRow last>
             <FormLabel />
-            <ButtonGroup classes={{ container: styles.buttons }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button
                 disabled={validation === Validation.EMPTY || validation === Validation.INVALID}
@@ -391,7 +388,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
           </FormRow>
           <FormRow>
             <FormLabel top>Message</FormLabel>
-            <TableContainer className={styles.message}>
+            <TableContainer className={classes.message}>
               <Table divided size="small">
                 <TableHead>
                   <TableRow>
@@ -405,7 +402,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
           </FormRow>
           <FormRow last>
             <FormLabel />
-            <ButtonGroup classes={{ container: styles.buttons }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               <Button label="Edit" onClick={onVerifyBack} />
               <Button label="Sign message" primary={true} onClick={onVerifyNext} />
@@ -437,7 +434,7 @@ const SignMessage: React.FC<OwnProps & StateProps & DispatchPros> = ({
             </>
           )}
           <FormRow last>
-            <ButtonGroup classes={{ container: styles.buttons }}>
+            <ButtonGroup classes={{ container: classes.buttons }}>
               <Button label="Cancel" onClick={goBack} />
               {seed?.type !== 'ledger' && (
                 <Button

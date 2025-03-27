@@ -1,8 +1,8 @@
 import { EthereumEntry, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, blockchainIdToCode, formatAmount, workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Typography } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Typography } from '@mui/material';
+import { Alert } from '@mui/lab';
 import * as React from 'react';
 import { SelectAsset } from '../../../../../common/SelectAsset';
 import { SelectEntry } from '../../../../../common/SelectEntry';

@@ -8,15 +8,14 @@ import {
   Menu,
   MenuItem,
   Typography,
-  createStyles,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Edit as EditIcon, ArrowDropDown as MenuIcon, Clear as RemoveIcon } from '@material-ui/icons';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { Edit as EditIcon, ArrowDropDown as MenuIcon, Clear as RemoveIcon } from '@mui/icons-material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     container: {
       alignItems: 'center',
       display: 'flex',
@@ -24,30 +23,34 @@ const useStyles = makeStyles((theme) =>
         marginTop: theme.spacing(2),
       },
     },
+
     avatar: {
       flex: '0 0 auto',
       marginRight: theme.spacing(2),
     },
+
     account: {
       flex: '1 1 auto',
       minWidth: 0,
     },
+
     accountAddress: {
       alignItems: 'center',
       display: 'flex',
       flexBasis: '50%',
     },
+
     accountBitcoin: {
       alignItems: 'center',
       display: 'flex',
       justifyContent: 'space-between',
     },
+
     actions: {
       flex: '0 0 auto',
       marginLeft: theme.spacing(2),
-    },
-  }),
-);
+    }
+  }));
 
 interface OwnProps {
   contact: PersistentState.AddressbookItem;
@@ -69,7 +72,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   onDelete,
   setXPubIndex,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [addressUpdating, setAddressUpdating] = React.useState(contact.address.type === 'xpub');
   const [currentContact, setCurrentContact] = React.useState(contact);
@@ -114,15 +117,15 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   const blockchainCode = blockchainIdToCode(blockchain);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.avatar}>
+    <div className={classes.container}>
+      <div className={classes.avatar}>
         <BlockchainAvatar blockchain={blockchainCode} />
       </div>
-      <div className={styles.account}>
+      <div className={classes.account}>
         <Typography variant="body1">{label ?? currentAddress ?? address}</Typography>
         {isBitcoin(blockchainCode) && type === 'xpub' ? (
-          <div className={styles.accountBitcoin}>
-            <div className={styles.accountAddress}>
+          <div className={classes.accountBitcoin}>
+            <div className={classes.accountAddress}>
               <Address
                 address={currentAddress ?? ''}
                 loading={addressUpdating}
@@ -131,7 +134,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
             </div>
             <Address
               address={address}
-              classes={{ root: styles.accountAddress }}
+              classes={{ root: classes.accountAddress }}
               label={`${address.slice(0, 8)}..${address.slice(-4)}`}
             />
           </div>
@@ -139,7 +142,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
           <Address address={address} />
         )}
       </div>
-      <div className={styles.actions}>
+      <div className={classes.actions}>
         <IconButton onClick={(event) => setMenuElement(event.currentTarget)}>
           <MenuIcon />
         </IconButton>

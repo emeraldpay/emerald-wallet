@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Typography from '@material-ui/core/Typography';
-import { ThemeProvider } from '@material-ui/styles';
+import { Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Theme } from '../../../index';

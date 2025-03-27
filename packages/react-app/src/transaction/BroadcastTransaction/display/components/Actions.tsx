@@ -1,16 +1,15 @@
 import { Button, ButtonGroup, FormRow } from '@emeraldwallet/ui';
-import { Box, CircularProgress, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-  }),
-);
+const useStyles = makeStyles()(() => ({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+}));
 
 interface OwnProps {
   onBroadcast(): Promise<void>;
@@ -18,7 +17,7 @@ interface OwnProps {
 }
 
 export const Actions: React.FC<OwnProps> = ({ onBroadcast, onCancel }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const mounted = React.useRef(true);
 
@@ -58,7 +57,7 @@ export const Actions: React.FC<OwnProps> = ({ onBroadcast, onCancel }) => {
         </Box>
       )}
       <FormRow last>
-        <ButtonGroup classes={{ container: styles.buttons }}>
+        <ButtonGroup classes={{ container: classes.buttons }}>
           <Button label="Cancel" onClick={onCancel} />
           {!broadcasting && <Button primary label="Send" onClick={handleBroadcastTx} />}
         </ButtonGroup>

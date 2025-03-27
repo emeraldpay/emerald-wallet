@@ -1,9 +1,9 @@
 import { Button } from '@emeraldwallet/ui';
-import Grid from '@material-ui/core/Grid';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { Grid } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-export const styles = (theme?: any) => createStyles({
+const useStyles = makeStyles()((theme) => ({
   addAccount: {
     fontWeight: 500,
     padding: '20px',
@@ -35,17 +35,15 @@ export const styles = (theme?: any) => createStyles({
     backgroundColor: theme.palette.background.default,
     padding: 0
   }
-});
+}));
 
 export interface ILandingProps {
-  classes?: any;
-  onCreateWallet?: any;
-  onAboutClick?: any;
+  onCreateWallet?: () => void;
+  onAboutClick?: () => void;
 }
 
-export const Landing = ({
-                          onCreateWallet, classes, onAboutClick
-                        }: ILandingProps) => {
+export const Landing = ({ onCreateWallet, onAboutClick }: ILandingProps) => {
+  const { classes } = useStyles();
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
@@ -73,4 +71,4 @@ export const Landing = ({
   );
 };
 
-export default withStyles(styles)(Landing);
+export default Landing;

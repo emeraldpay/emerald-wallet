@@ -1,5 +1,5 @@
 import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import Label from './FormLabel';

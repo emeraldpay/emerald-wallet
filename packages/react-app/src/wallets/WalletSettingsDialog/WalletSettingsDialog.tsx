@@ -9,10 +9,9 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { Alert } from '@mui/lab';
 import { FileFilter } from 'electron';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -22,18 +21,16 @@ const IMAGES_FILE_FILTER: Readonly<FileFilter> = {
   extensions: ['jpg', 'jpeg', 'png'],
 };
 
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      width: '100%',
-    },
-    icon: {
-      display: 'inline-block',
-      height: 100,
-      width: 100,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  root: {
+    width: '100%',
+  },
+  icon: {
+    display: 'inline-block',
+    height: 100,
+    width: 100,
+  },
+});
 
 interface OwnProps {
   walletId: string;
@@ -61,7 +58,7 @@ const WalletSettingsDialog: React.FC<OwnProps & StateProps & DispatchProps> = ({
   updateWalletName,
   onClose,
 }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const [name, setName] = React.useState(wallet?.name);
   const [icon, setIcon] = React.useState(walletIcon);

@@ -1,28 +1,27 @@
 import { BlockchainCode, InputUtxo, amountDecoder, amountFactory } from '@emeraldwallet/core';
 import { Address, Balance, FormLabel, FormRow, TxRef } from '@emeraldwallet/ui';
-import { Typography, createStyles, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { Alert } from '@mui/lab';
 import { Transaction, address, networks } from 'bitcoinjs-lib';
 import * as React from 'react';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    balances: {
-      width: '100%',
+const useStyles = makeStyles()(() => ({
+  balances: {
+    width: '100%',
+  },
+  balanceItem: {
+    display: 'flex',
+    '& + &': {
+      marginTop: 20,
     },
-    balanceItem: {
-      display: 'flex',
-      '& + &': {
-        marginTop: 20,
-      },
-    },
-    balanceItemAddress: {
-      display: 'flex',
-      flex: 1,
-      flexDirection: 'column',
-    },
-  }),
-);
+  },
+  balanceItemAddress: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+  },
+}));
 
 interface OwnProps {
   blockchain: BlockchainCode;
@@ -31,7 +30,7 @@ interface OwnProps {
 }
 
 export const BitcoinDecoded: React.FC<OwnProps> = ({ blockchain, raw, utxo }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const decoded = React.useMemo(() => {
     const factory = amountFactory(blockchain);
@@ -74,10 +73,10 @@ export const BitcoinDecoded: React.FC<OwnProps> = ({ blockchain, raw, utxo }) =>
     <>
       <FormRow>
         <FormLabel top={0}>From</FormLabel>
-        <div className={styles.balances}>
+        <div className={classes.balances}>
           {decoded.inputs.map(({ address, amount, txid, vout }) => (
-            <div key={`${txid}:${vout}`} className={styles.balanceItem}>
-              <div className={styles.balanceItemAddress}>
+            <div key={`${txid}:${vout}`} className={classes.balanceItem}>
+              <div className={classes.balanceItemAddress}>
                 {address == null ? <TxRef txid={txid} vout={vout} /> : <Address address={address} />}
               </div>
               <Balance balance={amount} />
@@ -87,10 +86,10 @@ export const BitcoinDecoded: React.FC<OwnProps> = ({ blockchain, raw, utxo }) =>
       </FormRow>
       <FormRow>
         <FormLabel top={0}>To</FormLabel>
-        <div className={styles.balances}>
+        <div className={classes.balances}>
           {decoded.outputs.map(({ address, amount }, index) => (
-            <div key={`${address}-${index}`} className={styles.balanceItem}>
-              <div className={styles.balanceItemAddress}>
+            <div key={`${address}-${index}`} className={classes.balanceItem}>
+              <div className={classes.balanceItemAddress}>
                 <Address address={address} />
               </div>
               <Balance balance={amount} />

@@ -1,13 +1,13 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { Balance, HashIcon } from '@emeraldwallet/ui';
-import { Button, Card, CardContent, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
+import {Balance, HashIcon} from '@emeraldwallet/ui';
+import {Button, Card, CardContent, Grid, Typography} from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import {makeStyles} from "tss-react/mui";
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     root: {
       padding: theme.spacing(),
       margin: '10px 20px',
@@ -41,8 +41,6 @@ const useStyles = makeStyles((theme) =>
       textOverflow: 'ellipsis',
     },
     titleLine: {
-      paddingTop: 24,
-      paddingBottom: 16,
     },
     balance: {
       color: theme.palette.secondary.main,
@@ -65,8 +63,7 @@ const useStyles = makeStyles((theme) =>
       width: 150,
       margin: '5px 10px',
     },
-  }),
-);
+}));
 
 interface OwnProps {
   wallet: Wallet;
@@ -95,7 +92,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
   onSend,
   openWallet,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [current, setCurrent] = React.useState(false);
 
@@ -109,42 +106,42 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
     <Card
       variant="elevation"
       elevation={current ? 3 : 0}
-      className={styles.root}
+      className={classes.root}
       onClick={onDetails}
       onMouseOver={() => setCurrent(true)}
       onMouseOut={() => setCurrent(false)}
     >
       <CardContent>
         <Grid container>
-          <Grid item className={styles.walletIcon} xs={2}>
+          <Grid item className={classes.walletIcon} xs={2}>
             {walletIcon == null ? (
               <HashIcon value={`WALLET/${wallet.id}`} size={100} />
             ) : (
-              <img alt="Wallet Icon" className={styles.walletIconImage} src={`data:image/png;base64,${walletIcon}`} />
+              <img alt="Wallet Icon" className={classes.walletIconImage} src={`data:image/png;base64,${walletIcon}`} />
             )}
           </Grid>
           <Grid item onClick={onDetails} xs={7}>
             <Grid container>
-              <Grid item className={styles.titleLine} xs={8}>
-                <Typography className={styles.title}>{wallet.name}</Typography>
+              <Grid item className={classes.titleLine} xs={8}>
+                <Typography className={classes.title}>{wallet.name}</Typography>
               </Grid>
-              <Grid item className={styles.titleLine} xs={4}>
-                {total?.isPositive() && <Balance classes={{ coin: styles.totalBalance }} balance={total} />}
+              <Grid item className={classes.titleLine} xs={4}>
+                {total?.isPositive() && <Balance classes={{ coin: classes.totalBalance }} balance={total} />}
               </Grid>
               <Grid item xs={12}>
                 {balances.map((balance) => (
                   <Balance
                     key={balance.units.top.code}
                     balance={balance}
-                    classes={{ coin: styles.balance, root: styles.balanceRoot }}
+                    classes={{ coin: classes.balance, root: classes.balanceRoot }}
                   />
                 ))}
               </Grid>
             </Grid>
           </Grid>
-          <Grid item className={styles.actions} xs={3}>
+          <Grid item className={classes.actions} xs={3}>
             <Button
-              className={styles.actionButton}
+              className={classes.actionButton}
               color="secondary"
               disabled={!hasAnyBalance}
               variant="contained"
@@ -152,7 +149,7 @@ const WalletItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
             >
               Send
             </Button>
-            <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onReceive}>
+            <Button className={classes.actionButton} color="secondary" variant="contained" onClick={onReceive}>
               Receive
             </Button>
           </Grid>

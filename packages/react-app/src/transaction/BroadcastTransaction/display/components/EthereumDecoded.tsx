@@ -12,28 +12,27 @@ import {
   toNumber,
 } from '@emeraldwallet/core';
 import { Account, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Tooltip, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    amount: {
-      display: 'inline-block',
-      maxWidth: 120,
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      verticalAlign: 'bottom',
-    },
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      width: '100%',
-    },
-    tooltip: {
-      cursor: 'help',
-    },
-  }),
-);
+const useStyles = makeStyles()(() => ({
+  amount: {
+    display: 'inline-block',
+    maxWidth: 120,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    verticalAlign: 'bottom',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    width: '100%',
+  },
+  tooltip: {
+    cursor: 'help',
+  },
+}));
 
 interface OwnProps {
   blockchain: BlockchainCode;
@@ -42,7 +41,7 @@ interface OwnProps {
 }
 
 export const EthereumDecoded: React.FC<OwnProps> = ({ blockchain, raw, tokenRegistry }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const decoded = React.useMemo(() => {
     const { chainId } = Blockchains[blockchain].params;
@@ -116,11 +115,11 @@ export const EthereumDecoded: React.FC<OwnProps> = ({ blockchain, raw, tokenRegi
         <FormRow>
           <FormLabel>Approving</FormLabel>
           <Typography>
-            <Tooltip className={styles.tooltip} title={decoded.amount.toString()}>
+            <Tooltip className={classes.tooltip} title={decoded.amount.toString()}>
               {decoded.amount.number.isGreaterThanOrEqualTo(MAX_DISPLAY_ALLOWANCE) ? (
                 <span>&infin;</span>
               ) : (
-                <span className={styles.amount}>{amountValue}</span>
+                <span className={classes.amount}>{amountValue}</span>
               )}
             </Tooltip>{' '}
             {amountUnit}

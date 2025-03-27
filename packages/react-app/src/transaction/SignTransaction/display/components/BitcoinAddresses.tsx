@@ -1,15 +1,13 @@
 import { Address, Button, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { createStyles, makeStyles } from '@material-ui/core';
-import { blue as blueColors } from '@material-ui/core/colors';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     address: {
       marginBottom: theme.spacing(),
     },
     counter: {
-      backgroundColor: blueColors[500],
+      backgroundColor: theme.palette.info.light,
       borderRadius: '50%',
       color: 'white',
       display: 'inline-block',
@@ -18,15 +16,15 @@ const useStyles = makeStyles((theme) =>
       height: 20,
       width: 20,
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   inputs: Array<{ address?: string }>;
 }
 
 export const BitcoinAddresses: React.FC<OwnProps> = ({ inputs }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [expanded, setExpanded] = React.useState(false);
 

@@ -1,26 +1,24 @@
 import { BlockchainCode, IBlockchain, TokenRegistry } from '@emeraldwallet/core';
 import { IState } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
-import { FormControlLabel, Grid, Switch, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { FormControlLabel, Grid, Switch, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    iconBox: {
-      paddingTop: '8px',
-      paddingLeft: '32px',
-    },
-    row: {
-      marginTop: '16px',
-    },
-    descriptionEnabled: {},
-    descriptionDisabled: {
-      opacity: '0.5',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  iconBox: {
+    paddingTop: '8px',
+    paddingLeft: '32px',
+  },
+  row: {
+    marginTop: '16px',
+  },
+  descriptionEnabled: {},
+  descriptionDisabled: {
+    opacity: '0.5',
+  },
+});
 
 interface StateProps {
   tokenRegistry: TokenRegistry;
@@ -40,7 +38,7 @@ const SelectBlockchains: React.FC<OwnProps & StateProps> = ({
   tokenRegistry,
   onChange,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [justEnabled, setJustEnabled] = React.useState<BlockchainCode[]>([]);
 
@@ -79,15 +77,15 @@ const SelectBlockchains: React.FC<OwnProps & StateProps> = ({
           .join(', ');
 
         return (
-          <Grid item={true} xs={12} key={blockchain.params.code} className={styles.row}>
+          <Grid item={true} xs={12} key={blockchain.params.code} className={classes.row}>
             <Grid container={true}>
-              <Grid item={true} xs={1} className={styles.iconBox}>
+              <Grid item={true} xs={1} className={classes.iconBox}>
                 <BlockchainAvatar blockchain={blockchain.params.code} size="default" />
               </Grid>
               <Grid
                 item={true}
                 xs={8}
-                className={blockchainNowEnabled ? styles.descriptionEnabled : styles.descriptionDisabled}
+                className={blockchainNowEnabled ? classes.descriptionEnabled : classes.descriptionDisabled}
               >
                 <Typography variant={'subtitle1'}>{blockchain.getTitle()}</Typography>
                 {tokens.length > 0 && <Typography variant={'body2'}>Cryptocurrencies: {tokens}</Typography>}

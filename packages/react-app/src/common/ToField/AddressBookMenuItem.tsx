@@ -1,13 +1,12 @@
 import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
 import { accounts, addressBook, transaction } from '@emeraldwallet/store';
 import { Account } from '@emeraldwallet/ui';
-import MenuItem from '@material-ui/core/MenuItem';
+import { MenuItem } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
 interface OwnProps {
   contact: PersistentState.AddressbookItem;
-  forwardRef?: React.Ref<HTMLElement>;
   onChange(id: string, address: string): void;
   onPrevent(id: string): void;
 }
@@ -74,11 +73,10 @@ class AddressBookMenuItem extends React.Component<Props> {
         address: { address, type },
         label,
       },
-      forwardRef,
     } = this.props;
 
     return (
-      <MenuItem innerRef={forwardRef} onClick={this.onClick}>
+      <MenuItem onClick={this.onClick}>
         <Account
           address={type === 'xpub' ? `${address.slice(0, 8)}..${address.slice(-4)}` : address}
           addressProps={{ hideCopy: true }}
@@ -105,8 +103,4 @@ export default connect<{}, DispatchProps>(
       return dispatch(transaction.actions.setXPubCurrentIndex(xpub, position));
     },
   }),
-  null,
-  {
-    forwardRef: true,
-  },
 )(AddressBookMenuItem);
