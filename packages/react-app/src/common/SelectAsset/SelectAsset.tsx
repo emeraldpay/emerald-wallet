@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { CurrencyAmount, EthereumAddress, formatAmount, formatAmountPartial } from '@emeraldwallet/core';
 import { ListItemText, MenuItem, TextField, Tooltip } from '@mui/material';
-import type { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
@@ -23,7 +22,7 @@ interface Props {
   onChangeAsset?(asset: string): void;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()((theme) => ({
   balance: {
     color: theme.palette.text.secondary,
     fontWeight: 200,
@@ -34,13 +33,13 @@ const useStyles = makeStyles()((theme: Theme) => ({
   tooltip: { cursor: 'help' },
 }));
 
-export const SelectAsset: React.FC<Props> = ({ 
-  asset, 
-  assets, 
-  balance, 
-  disabled, 
-  fiatBalance, 
-  onChangeAsset 
+export const SelectAsset: React.FC<Props> = ({
+  asset,
+  assets,
+  balance,
+  disabled,
+  fiatBalance,
+  onChangeAsset
 }) => {
   const { classes } = useStyles();
 

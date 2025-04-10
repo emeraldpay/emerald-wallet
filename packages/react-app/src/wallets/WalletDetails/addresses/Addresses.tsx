@@ -151,4 +151,34 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.getAllXPubAddresses(entryId, xPub, role));
     },
   }),
+  null,
+  {
+    areStatePropsEqual: (prev, next) => {
+      if (prev.addressesInfo.length !== next.addressesInfo.length) {
+        return false;
+      }
+
+      return prev.addressesInfo.every((address, index) => {
+        const nextAddress = next.addressesInfo[index];
+
+        let balancesEqual = address.balances.length === nextAddress.balances.length
+          && Object.keys(address.balances).every((key) => {
+            const prevBalance = address.balances[key];
+            const nextBalance = nextAddress.balances[key];
+
+            return prevBalance.length === nextBalance.length
+              && prevBalance.every((balance, i) => balance.equals(nextBalance[i]))
+          });
+
+        return (
+          balancesEqual &&
+          address.entryId === nextAddress.entryId &&
+          address.blockchain === nextAddress.blockchain &&
+          address.address === nextAddress.address &&
+          address.xPub?.xpub === nextAddress.xPub?.xpub
+        );
+      });
+    }
+  }
+
 )(Addresses);

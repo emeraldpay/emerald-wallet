@@ -298,6 +298,8 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     }
   }
 
+  return (<div>sss</div>)
+
   return (
     <div className={styles.container} style={style}>
       <div className={styles.progress}>
@@ -477,4 +479,13 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(txhistory.actions.setTransactionMeta(meta));
     },
   }),
+  null,
+  {
+    areStatePropsEqual: (prev, next) => {
+      return (
+        prev.entryId === next.entryId &&
+        prev.walletIcons === next.walletIcons
+      );
+    }
+  },
 )(Transaction);

@@ -1,6 +1,5 @@
 import { Versions } from '@emeraldwallet/core';
 import { Logo } from '@emeraldwallet/ui';
-import type { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
@@ -11,7 +10,7 @@ interface OwnProps {
   onWebsiteClick(): void;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     padding: 30,
     position: 'relative',

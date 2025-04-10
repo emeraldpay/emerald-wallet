@@ -1,4 +1,4 @@
-import { Theme } from '@emeraldwallet/ui';
+import { EmeraldTheme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import * as React from 'react';
@@ -8,7 +8,7 @@ import { ExportResult } from '../Settings/types';
 describe('SettingsForm', () => {
   it('should render without crash', () => {
     const component = render(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Settings
           t={() => ''}
           tReady={true}

@@ -49,7 +49,7 @@ const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) 
         <Button
           classes={classes}
           disabled={false}
-          label={formatFiatAmount(totalBalance)}
+          label={formatFiatAmount(totalBalance!!)}
           variant="text"
           onClick={onOpen}
         />
@@ -91,7 +91,7 @@ const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) 
                   </ListItemAvatar>
                   <ListItemText
                     primary={formatAmount(balance)}
-                    secondary={formatFiatAmount(new CurrencyAmount(fiatBalance.number, fiatCurrency))}
+                    secondary={formatFiatAmount(new CurrencyAmount(fiatBalance.number, fiatCurrency!!))}
                   />
                 </ListItem>
               );
@@ -105,6 +105,14 @@ const TotalButton: React.FC<StateProps> = ({ balances, loading, totalBalance }) 
 
 export default React.memo(
   TotalButton,
-  ({ totalBalance: prevTotalBalance }: StateProps, { totalBalance: nextTotalBalance }: StateProps): boolean =>
-    prevTotalBalance == null || nextTotalBalance == null ? false : prevTotalBalance.equals(nextTotalBalance),
+  function (prev: StateProps, next: StateProps): boolean {
+    if (prev.totalBalance == null && next.totalBalance == null) {
+      return true;
+    }
+    if (prev.totalBalance == null || next.totalBalance == null) {
+      return false;
+    }
+    return prev.totalBalance.equals(next.totalBalance);
+  },
 );
+

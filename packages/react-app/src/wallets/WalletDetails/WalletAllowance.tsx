@@ -16,6 +16,9 @@ import {
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WalletTabs } from './WalletDetails';
+import {isAllowanceEqual} from "@emeraldwallet/store/lib/allowances/types";
+import type {MapDispatchToPropsParam, MapStateToPropsParam} from "react-redux/es/connect/selectorFactory";
+import {ConnectOptions} from "react-redux/es/components/connect";
 
 const useStyles = makeStyles()((theme) =>
   ({
@@ -283,4 +286,29 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
   }),
+  null,
+  {
+    areStatePropsEqual: (prev, next) => {
+      if (prev.entries.length !== next.entries.length) {
+        return false;
+      }
+      for (let i = 0; i < prev.entries.length; i++) {
+        if (prev.entries[i].id !== next.entries[i].id) {
+          return false;
+        }
+      }
+      if (prev.walletAllowances.length !== next.walletAllowances.length) {
+        return false;
+      }
+      for (let i = 0; i < prev.walletAllowances.length; i++) {
+        if (!isAllowanceEqual(prev.walletAllowances[i], next.walletAllowances[i])) {
+          return false;
+        }
+      }
+      if (prev.hasBalances !== next.hasBalances) {
+        return false;
+      }
+      return true
+    }
+  }
 )(WalletAllowance);

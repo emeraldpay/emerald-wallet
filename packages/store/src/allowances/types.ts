@@ -21,6 +21,40 @@ export interface Allowance {
   type: AllowanceType;
 }
 
+export function isAllowanceEqual(left?: Allowance, right?: Allowance): boolean {
+  if (left == null && right == null) {
+    return true;
+  }
+  if (left == null || right == null) {
+    return false;
+  }
+  if (!left.allowance.equals(right.allowance)) {
+    return false
+  }
+  if (!left.available.equals(right.available)) {
+    return false;
+  }
+  if (left.blockchain !== right.blockchain) {
+    return false;
+  }
+  if (left.ownerAddress !== right.ownerAddress) {
+    return false;
+  }
+  if (left.spenderAddress !== right.spenderAddress) {
+    return false;
+  }
+  if (left.token.address !== right.token.address) {
+    return false;
+  }
+  if (left.timestamp !== right.timestamp) {
+    return false;
+  }
+  if (left.type !== right.type) {
+    return false;
+  }
+  return true;
+}
+
 interface ContractAllowance {
   [contractAddress: string]: Allowance[];
 }

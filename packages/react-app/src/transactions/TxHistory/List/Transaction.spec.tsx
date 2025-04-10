@@ -1,7 +1,7 @@
 import { BlockchainCode, PersistentState, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
-import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@mui/material/styles';
+import { EmeraldTheme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -63,7 +63,7 @@ describe('Transaction', () => {
   it('should renders without crash', () => {
     const component = render(
       <Provider store={createStore()}>
-        <ThemeProvider theme={Theme}>
+        <ThemeProvider theme={EmeraldTheme}>
           <Transaction tx={tx} walletId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" />
         </ThemeProvider>
       </Provider>,

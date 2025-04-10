@@ -22,7 +22,7 @@ const useStyles = makeStyles()({
     '&:hover': {
       cursor: 'pointer'
     }
-  }
+  },
 });
 
 interface IIdentityIconProps {

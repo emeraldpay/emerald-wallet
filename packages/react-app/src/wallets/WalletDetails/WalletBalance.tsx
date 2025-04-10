@@ -290,4 +290,31 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.SIGN_MESSAGE, walletId));
     },
   }),
+  null,
+  {
+    areStatePropsEqual: (prev, next) => {
+      if (prev.groupedEntries.length !== next.groupedEntries.length) {
+        return false;
+      }
+      if (prev.walletIcon !== next.walletIcon) {
+        return false;
+      }
+      if (prev.blockchains !== next.blockchains) {
+        return false;
+      }
+      if ((prev.fiatBalance == null && next.fiatBalance != null) || (prev.fiatBalance != null && next.fiatBalance == null)) {
+        return false;
+      }
+      if (prev.fiatBalance!!.equals(next.fiatBalance!!)) {
+        return false;
+      }
+      if (prev.hasAnyBalance !== next.hasAnyBalance) {
+        return false;
+      }
+      if (prev.hasEthereumEntry !== next.hasEthereumEntry) {
+        return false;
+      }
+      return true;
+    }
+  }
 )(WalletBalance);

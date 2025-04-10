@@ -94,7 +94,7 @@ describe('Header/Total', () => {
     const component = mount(
       <Provider store={createStore()}>
         <Total />
-      </Provider>,
+      </Provider>
     );
 
     // ETH => (1000000000000000 + 2000000000000000) / 10^18 × 234.56 = 0.70368

@@ -1,13 +1,13 @@
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { Theme } from '../../../index';
+import { EmeraldTheme } from '../../../index';
 import Notification from './Notification';
 
 describe('Notification', () => {
   it('should be created without crash', () => {
     const component = render(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Notification notificationMessage="message55" onButtonClick={() => undefined} onClose={() => undefined} />,
       </ThemeProvider>,
     );

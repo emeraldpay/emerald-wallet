@@ -1,6 +1,6 @@
 import { BlockchainCode, PersistentState, TokenRegistry, blockchainCodeToId } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
-import { Theme } from '@emeraldwallet/ui';
+import { EmeraldTheme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@mui/material';
 import { mount } from 'enzyme';
 import * as React from 'react';
@@ -84,7 +84,7 @@ describe('TxDetailsView', () => {
   it('should render ethereum tx', () => {
     expect(
       mount(
-        <ThemeProvider theme={Theme}>
+        <ThemeProvider theme={EmeraldTheme}>
           <Provider store={createStore()}>
             <TxDetails entryId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" tx={ethereumTx} />
           </Provider>
@@ -96,7 +96,7 @@ describe('TxDetailsView', () => {
   it('should render bitcoin tx', () => {
     expect(
       mount(
-        <ThemeProvider theme={Theme}>
+        <ThemeProvider theme={EmeraldTheme}>
           <Provider store={createStore()}>
             <TxDetails entryId="74b0a509-9083-4b12-80bb-e01db1fa2293-1" tx={bitcoinTx} />
           </Provider>
