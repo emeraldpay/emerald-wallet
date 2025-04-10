@@ -1,6 +1,6 @@
 import { workflow } from '@emeraldwallet/core';
 import { Address, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import * as React from 'react';
 import { EthereumCommonDisplay } from '../../../common';
 import { Data, DataProvider, Handler } from '../../../types';

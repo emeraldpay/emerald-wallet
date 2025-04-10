@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, Typography } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import * as React from 'react';
 import Button from '../Button';
 
@@ -14,7 +14,7 @@ export interface DispatchProps {
 }
 
 const ErrorDialog: React.FC<StateProps & DispatchProps> = ({ error, message, open, handleClose, handleSubmit }) => (
-  <Dialog open={open} onClose={handleClose}>
+  <Dialog open={open || false} onClose={handleClose}>
     <DialogContent>
       <Typography variant={"subtitle1"}>
         <strong>ERROR:</strong> An unexpected error has occurred. Please restart the Emerald Wallet.

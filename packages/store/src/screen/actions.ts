@@ -1,5 +1,5 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { SnackbarCloseReason } from '@material-ui/core';
+import { SnackbarCloseReason } from '@mui/material';
 import { AnyAction } from 'redux';
 import { StoredTransaction, accounts } from '../index';
 import { Dispatched } from '../types';

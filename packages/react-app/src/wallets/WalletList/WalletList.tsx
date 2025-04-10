@@ -1,18 +1,16 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
 
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      maxHeight: '100%',
-      overflowY: 'auto',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  container: {
+    maxHeight: '100%',
+    overflowY: 'auto',
+  },
+});
 
 interface StateProps {
   wallets: Wallet[];
@@ -23,7 +21,7 @@ interface DispatchProps {
 }
 
 const WalletList: React.FC<StateProps & DispatchProps> = ({ wallets, openWallet }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   return (
     <div className={styles.container}>

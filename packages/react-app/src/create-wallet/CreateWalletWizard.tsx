@@ -10,10 +10,9 @@ import {
   CardHeader,
   Step,
   StepLabel,
-  Stepper,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
+  Stepper
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as bip39 from 'bip39';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -29,28 +28,26 @@ import SaveMnemonic from './steps/SaveMnemonic';
 import SelectKeySource from './steps/SelectKeySource';
 import WalletOptions from './steps/WalletOptions';
 
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      maxHeight: '100%',
-    },
-    header: {
-      flex: 0,
-    },
-    content: {
-      flex: 1,
-      overflowY: 'auto',
-    },
-    footer: {
-      flex: 0,
-      float: 'none',
-      justifyContent: 'end',
-      padding: 16,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '100%',
+  },
+  header: {
+    flex: 0,
+  },
+  content: {
+    flex: 1,
+    overflowY: 'auto',
+  },
+  footer: {
+    flex: 0,
+    float: 'none',
+    justifyContent: 'end',
+    padding: 16,
+  },
+});
 
 interface OwnProps {
   blockchains: IBlockchain[];
@@ -92,7 +89,7 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   onOpen,
   onSaveSeed,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const prevAddresses = React.useRef<HDPathAddresses>({});
 
@@ -276,10 +273,10 @@ export const CreateWalletWizard: React.FC<DispatchProps & OwnProps & StateProps>
   }
 
   return (
-    <Card classes={{ root: styles.container }}>
-      <CardHeader classes={{ root: styles.header }} action={stepper} />
-      <CardContent classes={{ root: styles.content }}>{activeStepPage}</CardContent>
-      <CardActions classes={{ root: styles.footer }}>{controls}</CardActions>
+    <Card classes={{ root: classes.container }}>
+      <CardHeader classes={{ root: classes.header }} action={stepper} />
+      <CardContent classes={{ root: classes.content }}>{activeStepPage}</CardContent>
+      <CardActions classes={{ root: classes.footer }}>{controls}</CardActions>
     </Card>
   );
 };

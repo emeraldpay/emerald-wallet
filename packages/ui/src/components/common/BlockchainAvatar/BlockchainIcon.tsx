@@ -1,28 +1,26 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { CurrencyBtc, CurrencyEtc, CurrencyEth } from '../../../icons';
 
-const useStyles = makeStyles(
-  createStyles({
-    commonIcon: {
-      fontSize: '0.4em',
-      color: '#f0f0f0',
-    },
-    defaultSize: {
-      fill: 'none',
-    },
-    largeSize: {
-      fill: 'none',
-      fontSize: '1.2em',
-    },
-    smallSize: {
-      fill: 'none',
-      fontSize: '0.5em',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  commonIcon: {
+    fontSize: '0.4em',
+    color: '#f0f0f0',
+  },
+  defaultSize: {
+    fill: 'none',
+  },
+  largeSize: {
+    fill: 'none',
+    fontSize: '1.2em',
+  },
+  smallSize: {
+    fill: 'none',
+    fontSize: '0.5em',
+  },
+});
 
 interface OwnProps {
   blockchain: BlockchainCode;
@@ -30,9 +28,9 @@ interface OwnProps {
 }
 
 const BlockchainIcon: React.FC<OwnProps> = ({ blockchain, size }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
-  const iconSize = styles[`${size ?? 'default'}Size`];
+  const iconSize = classes[`${size ?? 'default'}Size`];
 
   switch (blockchain) {
     // Mainnet
@@ -44,9 +42,9 @@ const BlockchainIcon: React.FC<OwnProps> = ({ blockchain, size }) => {
       return <CurrencyEth className={iconSize} />;
     // Testnet
     case BlockchainCode.Sepolia:
-      return <Typography className={styles.commonIcon}>Sepolia</Typography>;
+      return <Typography className={classes.commonIcon}>Sepolia</Typography>;
     case BlockchainCode.TestBTC:
-      return <Typography className={styles.commonIcon}>TBTC</Typography>;
+      return <Typography className={classes.commonIcon}>TBTC</Typography>;
     // Other
     default:
       return null;

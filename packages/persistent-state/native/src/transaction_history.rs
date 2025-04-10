@@ -128,7 +128,7 @@ impl TryFrom<Transaction> for TransactionJson {
       block,
       block_pos,
       tx_id: value.tx_id,
-      since_timestamp: Utc.timestamp_millis(value.since_timestamp as i64),
+      since_timestamp: Utc.timestamp_millis_opt(value.since_timestamp as i64).unwrap(),
       confirm_timestamp,
       state: value.state.value() as usize,
       status: value.status.value() as usize,
@@ -175,7 +175,7 @@ impl From<BlockRef> for BlockRefJson {
     BlockRefJson {
       height: value.height,
       block_id: value.block_id.clone(),
-      timestamp: Utc.timestamp_millis(value.timestamp as i64),
+      timestamp: Utc.timestamp_millis_opt(value.timestamp as i64).unwrap(),
     }
   }
 }

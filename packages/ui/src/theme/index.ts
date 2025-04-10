@@ -16,27 +16,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { createTheme } from '@material-ui/core';
-import createSpacing from '@material-ui/core/styles/createSpacing';
-import * as React from 'react';
+import { createTheme } from '@mui/material/styles';
+import { createSpacing } from '@mui/system';
 import colors from './colors';
 import '@fontsource/inter';
 import '@fontsource/roboto-mono';
 
 const spacing = 10;
 
-declare module '@material-ui/core/styles/createTheme' {
+declare module '@mui/material/styles/createTheme' {
   interface Theme {
     monotype: {
-      fontFamily: React.CSSProperties['fontFamily'];
-      fontWeight: React.CSSProperties['fontWeight'];
+      fontFamily: string;
+      fontWeight: number;
     };
   }
 
   interface ThemeOptions {
     monotype?: {
-      fontFamily?: React.CSSProperties['fontFamily'];
-      fontWeight?: React.CSSProperties['fontWeight'];
+      fontFamily?: string;
+      fontWeight?: number;
     };
   }
 }
@@ -46,84 +45,133 @@ export default createTheme({
     fontFamily: ['"Roboto Mono"', 'monospace'].join(','),
     fontWeight: 500,
   },
-  overrides: {
+  components: {
     MuiAppBar: {
-      colorDefault: {
-        backgroundColor: colors.white.main,
-      },
-      root: {
-        boxShadow: 'none',
-      },
+      styleOverrides: {
+        colorDefault: {
+          backgroundColor: colors.white.main,
+        },
+        root: {
+          boxShadow: 'none',
+        },
+      }
     },
     MuiCardActions: {
-      root: {
-        float: 'right' as const,
-        paddingBottom: '16px',
-        paddingRight: '16px',
-      },
+      styleOverrides: {
+        root: {
+          float: 'right' as const,
+          paddingBottom: '16px',
+          paddingRight: '16px',
+        },
+      }
     },
     MuiCardHeader: {
-      action: {
-        marginRight: '0',
-        width: '100%', //TODO why???
-      },
+      styleOverrides: {
+        action: {
+          marginRight: '0',
+          width: '100%', //TODO why???
+        },
+      }
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          color: colors.emerald.main,
+          minHeight: spacing * 4,
+          textTransform: 'none',
+        },
+      }
     },
     MuiButton: {
-      contained: {
-        backgroundColor: colors.emerald.main,
-        boxShadow: 'none',
-        color: colors.white.main,
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        },
+        contained: {
+          backgroundColor: colors.emerald.main,
+          boxShadow: 'none',
+          color: colors.white.main,
+        },
       },
-      root: {
-        borderRadius: 0,
-        color: colors.emerald.main,
-        minHeight: spacing * 4,
-        textTransform: 'none',
-      },
+      variants: [
+        {
+          props: { variant: 'contained', color: 'secondary' },
+          style: {
+            backgroundColor: colors.grey200.main,
+          }
+        }
+      ]
     },
     MuiFormControl: {
-      root: {
-        boxSizing: 'border-box',
-        paddingLeft: spacing,
-        paddingRight: spacing,
-      },
+      styleOverrides: {
+        root: {
+          boxSizing: 'border-box',
+          paddingLeft: spacing,
+          paddingRight: spacing,
+        },
+      }
     },
     MuiFormHelperText: {
-      root: {
-        bottom: -16,
-        fontSize: '0.8rem',
-        lineHeight: 1,
-        marginTop: 0,
-        position: 'absolute',
-      },
+      styleOverrides: {
+        root: {
+          bottom: -16,
+          fontSize: '0.8rem',
+          lineHeight: 1,
+          marginTop: 0,
+          position: 'absolute',
+        },
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        }
+      }
     },
     MuiInput: {
-      root: {
-        minHeight: spacing * 5,
+      defaultProps: {
+        disableUnderline: true,
       },
+      styleOverrides: {
+        root: {
+          minHeight: spacing * 5,
+        },
+      }
     },
     MuiInputAdornment: {
-      root: {
-        maxHeight: 'none',
-      },
+      styleOverrides: {
+        root: {
+          maxHeight: 'none',
+        },
+      }
     },
     MuiList: {
-      root: {
-        borderTop: `1px solid ${colors.grey100.main}`,
+      defaultProps: {
+        disablePadding: true,
       },
-      padding: {
-        paddingBottom: 0,
-        paddingTop: 0,
-      },
+      styleOverrides: {
+        root: {
+          borderTop: `1px solid ${colors.grey100.main}`,
+        },
+        padding: {
+          paddingBottom: 0,
+          paddingTop: 0,
+        },
+      }
     },
     MuiListItem: {
-      root: {
-        borderBottom: `1px solid ${colors.grey100.main}`,
-        borderRight: 'none',
-        borderLeft: 'none',
-      },
+      styleOverrides: {
+        root: {
+          borderBottom: `1px solid ${colors.grey100.main}`,
+          borderRight: 'none',
+          borderLeft: 'none',
+        },
+      }
     },
     MuiMenuItem: {
+      styleOverrides: {
       root: {
         border: 'none',
         cursor: 'pointer',
@@ -136,53 +184,66 @@ export default createTheme({
           borderLeft: `${spacing / 2}px solid ${colors.emerald.main}`,
         },
       },
+        }
     },
     MuiPaper: {
-      root: {
-        border: `1px solid ${colors.grey100.main}`,
+      defaultProps: {
+        elevation: 0,
+        square: true,
       },
-      elevation3: {
-        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-      },
+      styleOverrides: {
+        root: {
+          border: `1px solid ${colors.grey100.main}`,
+
+        },
+        elevation3: {
+          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+        },
+      }
     },
     MuiStepLabel: {
-      label: {
-        fontSize: '0.8em',
-      },
-    },
-    MuiTextField: {
-      root: {
-        borderColor: colors.grey100.main,
-        borderRadius: '1px',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-      },
+      styleOverrides: {
+        label: {
+          fontSize: '0.8em',
+        },
+      }
     },
     MuiTableCell: {
-      head: {
-        fontWeight: 600,
-      },
+      styleOverrides: {
+        head: {
+          fontWeight: 600,
+        },
+      }
     },
     MuiTableRow: {
-      root: {
-        '&:last-child td': {
-          borderBottom: 0,
+      styleOverrides: {
+        root: {
+          '&:last-child td': {
+            borderBottom: 0,
+          },
         },
-      },
+      }
     },
     MuiToolbar: {
-      gutters: {
-        paddingLeft: spacing * 3,
-        paddingRight: spacing * 3,
-      },
+      styleOverrides: {
+        gutters: {
+          paddingLeft: spacing * 3,
+          paddingRight: spacing * 3,
+        },
+      }
     },
     MuiTypography: {
-      gutterBottom: {
-        marginBottom: spacing * 4,
+      defaultProps: {
+        color: 'secondary',
       },
-      paragraph: {
-        marginBottom: spacing * 2,
-      },
+      styleOverrides: {
+        gutterBottom: {
+          marginBottom: spacing * 4,
+        },
+        paragraph: {
+          marginBottom: spacing * 2,
+        },
+      }
     },
   },
   palette: {
@@ -202,21 +263,6 @@ export default createTheme({
     text: {
       primary: colors.grey900.main,
       secondary: colors.grey200.main,
-    },
-  },
-  props: {
-    MuiInput: {
-      disableUnderline: true,
-    },
-    MuiList: {
-      disablePadding: true,
-    },
-    MuiPaper: {
-      elevation: 0,
-      square: true,
-    },
-    MuiTypography: {
-      color: 'secondary',
     },
   },
   spacing: createSpacing(spacing),

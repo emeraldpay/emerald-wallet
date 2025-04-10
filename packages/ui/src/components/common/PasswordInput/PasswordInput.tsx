@@ -1,4 +1,4 @@
-import IconButton from '@material-ui/core/IconButton';
+import {IconButton} from '@mui/material';
 import * as React from 'react';
 import { ViewVisible as ShowPasswordIcon } from '../../../icons';
 import { Input } from '../Input';

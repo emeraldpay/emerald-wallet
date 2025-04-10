@@ -4,30 +4,36 @@ import { EthereumEntry, Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-
 import { Blockchains, MAX_DISPLAY_ALLOWANCE, TokenAmount, formatAmountPartial } from '@emeraldwallet/core';
 import { Allowance, AllowanceType, IState, TxAction, accounts, allowances, screen } from '@emeraldwallet/store';
 import { Address, Button } from '@emeraldwallet/ui';
-import { ButtonGroup, SvgIcon, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { ButtonGroup, SvgIcon, Tooltip, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import {
   Create as AllowIcon,
   RemoveCircleOutline as AllowedForIcon,
   AddCircleOutline as ApprovedByIcon,
   DeveloperBoard as ContractIcon,
   AccountCircle as PersonIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WalletTabs } from './WalletDetails';
+import {isAllowanceEqual} from "@emeraldwallet/store/lib/allowances/types";
+import type {MapDispatchToPropsParam, MapStateToPropsParam} from "react-redux/es/connect/selectorFactory";
+import {ConnectOptions} from "react-redux/es/components/connect";
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     container: {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
     },
+
     content: {
       flex: 1,
       overflowY: 'auto',
       padding: theme.spacing(4),
     },
+
     allowance: {
       columnGap: theme.spacing(2),
       display: 'grid',
@@ -36,12 +42,15 @@ const useStyles = makeStyles((theme) =>
         marginTop: theme.spacing(2),
       },
     },
+
     allowanceIcon: {
       verticalAlign: 'middle',
     },
+
     allowanceAmount: {
       textAlign: 'right',
     },
+
     allowanceAmountValue: {
       display: 'inline-block',
       maxWidth: 120,
@@ -49,32 +58,37 @@ const useStyles = makeStyles((theme) =>
       textOverflow: 'ellipsis',
       verticalAlign: 'bottom',
     },
+
     allowanceAddress: {
       alignItems: 'center',
       display: 'flex',
     },
+
     allowanceAddressIcon: {
       marginRight: 5,
     },
+
     allowanceAddressDescription: {
       textAlign: 'right',
       display: 'block',
     },
+
     allowanceActions: {
       display: 'flex',
       justifyContent: 'end',
     },
+
     actions: {
       display: 'flex',
       justifyContent: 'end',
       borderTop: `1px solid ${theme.palette.divider}`,
       padding: theme.spacing(2),
     },
+
     tooltip: {
       cursor: 'help',
-    },
-  }),
-);
+    }
+  }));
 
 interface OwnProps {
   walletId: Uuid;
@@ -98,7 +112,7 @@ const WalletAllowance: React.FC<OwnProps & StateProps & DispatchProps> = ({
   gotoApprove,
   gotoTransfer,
 }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   return (
     <div className={styles.container}>
@@ -272,4 +286,29 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
   }),
+  null,
+  {
+    areStatePropsEqual: (prev, next) => {
+      if (prev.entries.length !== next.entries.length) {
+        return false;
+      }
+      for (let i = 0; i < prev.entries.length; i++) {
+        if (prev.entries[i].id !== next.entries[i].id) {
+          return false;
+        }
+      }
+      if (prev.walletAllowances.length !== next.walletAllowances.length) {
+        return false;
+      }
+      for (let i = 0; i < prev.walletAllowances.length; i++) {
+        if (!isAllowanceEqual(prev.walletAllowances[i], next.walletAllowances[i])) {
+          return false;
+        }
+      }
+      if (prev.hasBalances !== next.hasBalances) {
+        return false;
+      }
+      return true
+    }
+  }
 )(WalletAllowance);

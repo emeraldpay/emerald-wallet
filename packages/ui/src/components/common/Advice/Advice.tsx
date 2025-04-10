@@ -1,8 +1,8 @@
-import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import AdviceIcon from './AdviceIcon';
+import {makeStyles} from "tss-react/mui";
 
-const styles = {
+const useStyles = makeStyles()({
   title: {
     fontSize: '16px',
     fontWeight: 500,
@@ -18,7 +18,7 @@ const styles = {
   adviceIcon: {
     marginRight: '20px'
   }
-};
+});
 
 interface IAdviceProps {
   title?: any;
@@ -27,7 +27,8 @@ interface IAdviceProps {
 }
 
 const Advice = (props: IAdviceProps) => {
-  const { title, text, classes } = props;
+  const { title, text } = props;
+  const classes = useStyles().classes;
   return (
     <div className={classes.container} >
       <div className={classes.adviceIcon}>
@@ -41,4 +42,4 @@ const Advice = (props: IAdviceProps) => {
   );
 };
 
-export default withStyles(styles)(Advice);
+export default Advice;

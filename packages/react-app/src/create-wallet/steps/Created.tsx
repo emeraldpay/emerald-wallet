@@ -1,5 +1,5 @@
-import { Grid, Typography } from '@material-ui/core';
-import { AssignmentTurnedIn as AssignedIcon } from '@material-ui/icons';
+import { Grid, Typography } from '@mui/material';
+import { AssignmentTurnedIn as AssignedIcon } from '@mui/icons-material';
 import * as React from 'react';
 
 interface OwnProps {

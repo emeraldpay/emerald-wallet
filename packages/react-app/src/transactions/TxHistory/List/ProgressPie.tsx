@@ -1,7 +1,8 @@
-import { createStyles, Theme, useTheme, withStyles } from '@material-ui/core';
+import { Theme, useTheme } from '@mui/material';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   container: {
     alignItems: 'center',
     display: 'inline-flex',
@@ -20,12 +21,9 @@ interface OwnProps {
   progress: number;
 }
 
-interface StylesProps {
-  classes: Record<keyof typeof styles, string>;
-}
-
-const ProgressPie: React.FC<OwnProps & StylesProps> = ({ children, classes, progress }) => {
+const ProgressPie: React.FC<OwnProps> = ({ children, progress }) => {
   const theme = useTheme<Theme>();
+  const classes = useStyles().classes;
 
   return (
     <div className={classes.container}>
@@ -48,4 +46,4 @@ const ProgressPie: React.FC<OwnProps & StylesProps> = ({ children, classes, prog
   );
 };
 
-export default withStyles(styles)(ProgressPie);
+export default ProgressPie;

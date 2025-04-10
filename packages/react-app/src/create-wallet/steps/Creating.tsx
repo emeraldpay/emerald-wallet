@@ -1,26 +1,25 @@
-import { CircularProgress, Grid, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { CircularProgress, Grid, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles(
-  createStyles({
-    aligned: {
-      marginBottom: 100,
-      marginTop: 100,
-    },
-    progress: {
-      paddingTop: 10,
-      textAlign: 'center',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  aligned: {
+    marginBottom: 100,
+    marginTop: 100,
+  },
+  progress: {
+    paddingTop: 10,
+    textAlign: 'center',
+  },
+});
 
 const Creating: React.FC = () => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   return (
-    <Grid container className={styles.aligned}>
+    <Grid container className={classes.aligned}>
       <Grid item xs={4} />
-      <Grid item className={styles.progress} xs={1}>
+      <Grid item className={classes.progress} xs={1}>
         <CircularProgress />
       </Grid>
       <Grid item xs={4}>

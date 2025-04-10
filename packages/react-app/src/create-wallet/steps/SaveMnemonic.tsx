@@ -1,7 +1,7 @@
 import { IState, accounts } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
-import { Grid, Typography } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Grid, Typography } from '@mui/material';
+import { Alert } from '@mui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

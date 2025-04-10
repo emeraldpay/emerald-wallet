@@ -1,6 +1,6 @@
 import { Versions } from '@emeraldwallet/core';
-import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { EmeraldTheme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@mui/material';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import About from './About';
@@ -24,7 +24,7 @@ describe('About', () => {
     };
 
     const component = shallow(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <About
           versions={versions}
           onHelpClick={() => undefined}

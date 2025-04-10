@@ -1,5 +1,5 @@
 import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
-import { MenuItem, Select } from '@material-ui/core';
+import {MenuItem, Select, SelectChangeEvent} from '@mui/material';
 import * as React from 'react';
 
 interface OwnProps {
@@ -26,7 +26,7 @@ export class ChainSelector extends React.Component<OwnProps, State> {
     };
   }
 
-  public handleChange = (event: React.ChangeEvent<{ name?: string; value: string }>): void => {
+  public handleChange = (event: SelectChangeEvent, _child?: object): void => {
     this.setState({ value: event.target.value });
 
     this.props.onChange?.(event.target.value);

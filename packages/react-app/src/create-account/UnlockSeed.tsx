@@ -1,7 +1,7 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { accounts } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

@@ -11,9 +11,9 @@ import {
 } from '@emeraldwallet/core';
 import { ConvertedBalance, IState, TxAction, accounts, screen, tokens } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
-import { Button, IconButton, Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
-import { ImportExport as ConvertIcon, ArrowUpward as SendIcon } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { Button, IconButton, Tooltip, Typography } from '@mui/material';
+import { ImportExport as ConvertIcon, ArrowUpward as SendIcon } from '@mui/icons-material';
+import { Alert } from '@mui/lab';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Dispatch } from 'react';
@@ -21,11 +21,10 @@ import { connect } from 'react-redux';
 import { AssetIcon } from '../../../common/AssetIcon';
 import Balance from './balance/Balance';
 import FiatBalance from './balance/FiatBalance';
+import { makeStyles } from 'tss-react/mui';
 import entryStyles from './styles';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    ...entryStyles(theme),
+const useStyles = makeStyles()((theme) => ({
     alert: {
       marginLeft: theme.spacing(8),
       marginTop: theme.spacing(2),
@@ -40,8 +39,8 @@ const useStyles = makeStyles((theme) =>
     entryToken: {
       marginTop: theme.spacing(2),
     },
-  }),
-);
+    ...entryStyles,
+}));
 
 type TokenBalances = ConvertedBalance<TokenAmount>[];
 
@@ -78,7 +77,7 @@ const EthereumEntryItem: React.FC<DispatchProps & OwnProps & StateProps> = ({
   gotoRecover,
   gotoSend,
 }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const blockchainTitle = Blockchains[blockchainCode].getTitle();
 

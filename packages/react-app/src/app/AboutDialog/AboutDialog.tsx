@@ -1,6 +1,7 @@
 import { Versions } from '@emeraldwallet/core';
 import { application, screen } from '@emeraldwallet/store';
-import { Dialog, DialogContent, createStyles, makeStyles } from '@material-ui/core';
+import { Dialog, DialogContent } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import About from './About';
@@ -14,23 +15,21 @@ interface DispatchProps {
   openUrl(url: string): void;
 }
 
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      maxWidth: '680px',
-      maxHeight: '410px',
-      width: '100%',
-    },
-    content: {
-      overflowX: 'hidden',
-      overflowY: 'hidden',
-      padding: 0,
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  root: {
+    maxWidth: '680px',
+    maxHeight: '410px',
+    width: '100%',
+  },
+  content: {
+    overflowX: 'hidden',
+    overflowY: 'hidden',
+    padding: 0,
+  },
+});
 
 const AboutDialog: React.FC<OwnProps & DispatchProps> = ({ getVersions, onClose, openUrl }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [versions, setVersions] = React.useState<Versions | undefined>();
 
@@ -55,8 +54,8 @@ const AboutDialog: React.FC<OwnProps & DispatchProps> = ({ getVersions, onClose,
   };
 
   return (
-    <Dialog classes={{ paper: styles.root }} open={true} onClose={onClose}>
-      <DialogContent classes={{ root: styles.content }}>
+    <Dialog classes={{ paper: classes.root }} open={true} onClose={onClose}>
+      <DialogContent classes={{ root: classes.content }}>
         {versions != null && (
           <About
             versions={versions}

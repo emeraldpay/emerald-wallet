@@ -1,10 +1,10 @@
-import { Button, Snackbar, SnackbarCloseReason, SnackbarContent } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { WithStyles, createStyles, withStyles } from '@material-ui/styles';
+import { Button, Snackbar, SnackbarCloseReason, SnackbarContent } from '@mui/material';
+import { Alert } from '@mui/lab';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 import { AnyAction } from 'redux';
 
-const styles = createStyles({
+const useStyles = makeStyles()({
   container: {
     maxWidth: 580,
   },
@@ -41,17 +41,22 @@ export interface DispatchProps {
   onClose(reason: SnackbarCloseReason | 'manual'): void;
 }
 
-type Props = OwnProps & DispatchProps & WithStyles<typeof styles>;
+type Props = OwnProps & DispatchProps;
 
-class Notification extends React.Component<Props> {
-  constructor(props) {
-    super(props);
-  }
+const Notification: React.FC<Props> = ({
+  open,
+  notificationMessage,
+  notificationMessageType,
+  notificationDuration,
+  notificationButtonText,
+  notificationOnButtonClick,
+  onButtonClick,
+  onClose
+}) => {
+  const { classes } = useStyles();
 
-  onActionClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+  const onActionClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.stopPropagation();
-
-    const { notificationOnButtonClick, onButtonClick, onClose } = this.props;
 
     if (notificationOnButtonClick != null) {
       onButtonClick(notificationOnButtonClick);
@@ -60,49 +65,37 @@ class Notification extends React.Component<Props> {
     onClose('manual');
   };
 
-  render(): React.ReactNode {
-    const {
-      classes,
-      open,
-      notificationMessage,
-      notificationMessageType,
-      notificationDuration,
-      notificationButtonText,
-      onClose,
-    } = this.props;
+  let action: React.ReactNode;
 
-    let action: React.ReactNode;
-
-    if (notificationButtonText != null) {
-      action = (
-        <Button color="inherit" size="small" onClick={this.onActionClick}>
-          {notificationButtonText}
-        </Button>
-      );
-    }
-
-    return (
-      <Snackbar
-        classes={{ root: classes.container }}
-        open={open}
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-        autoHideDuration={(notificationDuration ?? 3) * 1000}
-        onClose={(event, reason) => onClose(reason)}
-      >
-        <Alert onClose={() => onClose('manual')} severity={notificationMessageType ?? 'info'}>
-          <SnackbarContent
-            classes={{
-              root: classes.content,
-              message: classes.contentMessage,
-              action: classes.contentAction,
-            }}
-            action={action}
-            message={notificationMessage}
-          />
-        </Alert>
-      </Snackbar>
+  if (notificationButtonText != null) {
+    action = (
+      <Button color="inherit" size="small" onClick={onActionClick}>
+        {notificationButtonText}
+      </Button>
     );
   }
-}
 
-export default withStyles(styles)(Notification);
+  return (
+    <Snackbar
+      classes={{ root: classes.container }}
+      open={open}
+      anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+      autoHideDuration={(notificationDuration ?? 3) * 1000}
+      onClose={(event, reason) => onClose(reason)}
+    >
+      <Alert onClose={() => onClose('manual')} severity={notificationMessageType ?? 'info'}>
+        <SnackbarContent
+          classes={{
+            root: classes.content,
+            message: classes.contentMessage,
+            action: classes.contentAction,
+          }}
+          action={action}
+          message={notificationMessage}
+        />
+      </Alert>
+    </Snackbar>
+  );
+};
+
+export default Notification;

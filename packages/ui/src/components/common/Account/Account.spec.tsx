@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';

@@ -1,33 +1,30 @@
-import { Table as TableBase, TableProps, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Table as TableBase, TableProps } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import classNames from 'classnames';
 import * as React from 'react';
-import Theme from '../../../theme';
 
-const useStyles = makeStyles((theme: typeof Theme) =>
-  createStyles({
-    withBorder: {
-      '& th, & td': {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
+const useStyles = makeStyles()((theme) => ({
+  withBorder: {
+    '& th, & td': {
+      borderBottom: `1px solid ${theme.palette.divider}`,
     },
-    withoutBorder: {
-      '& th, & td': {
-        borderBottom: '1px solid transparent',
-      },
+  },
+  withoutBorder: {
+    '& th, & td': {
+      borderBottom: '1px solid transparent',
     },
-  }),
-);
+  },
+}));
 
 interface OwnProps {
   divided?: boolean;
 }
 
 export const Table: React.FC<OwnProps & TableProps> = ({ className, children, divided = false, ...props }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   return (
-    <TableBase className={classNames(className, divided ? styles.withBorder : styles.withoutBorder)} {...props}>
+    <TableBase className={classNames(className, divided ? classes.withBorder : classes.withoutBorder)} {...props}>
       {children}
     </TableBase>
   );

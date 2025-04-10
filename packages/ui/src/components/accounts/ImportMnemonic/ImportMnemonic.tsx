@@ -1,15 +1,14 @@
-import { Button, Grid, TextField, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Grid, TextField, Typography, } from '@mui/material';
 import * as React from 'react';
 import { PasswordConfirmedInput } from '../../../index';
+import {makeStyles} from "tss-react/mui";
 
 interface OwnProps {
   isValidMnemonic?: (mnemonic: string) => boolean;
   onSubmit: (mnemonic: string, password: string | undefined) => void;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     mnemonicPhrase: {
       marginBottom: theme.spacing(2),
     },
@@ -17,11 +16,11 @@ const useStyles = makeStyles((theme) =>
       width: 200,
       margin: 5,
     },
-  }),
-);
+  }
+));
 
 const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [done, setDone] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState('');

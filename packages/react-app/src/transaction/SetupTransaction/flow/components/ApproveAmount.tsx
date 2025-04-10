@@ -1,14 +1,14 @@
 import { workflow } from '@emeraldwallet/core';
 import { Button, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { IconButton, Tooltip, createStyles, makeStyles } from '@material-ui/core';
-import { AllInclusive as InfiniteIcon } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { IconButton, Tooltip } from '@mui/material';
+import { AllInclusive as InfiniteIcon } from '@mui/icons-material';
+import { Alert } from '@mui/lab';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { NumberField } from '../../../../common/NumberField';
+import {makeStyles} from "tss-react/mui";
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     field: {
       alignItems: 'center',
       display: 'flex',
@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) =>
     button: {
       marginRight: theme.spacing(),
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   createTx: workflow.CreateErc20ApproveTx;
@@ -26,7 +26,7 @@ interface OwnProps {
 }
 
 export const ApproveAmount: React.FC<OwnProps> = ({ createTx, setTransaction }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const maxAmountUnits = React.useRef(createTx.amount.units);
 

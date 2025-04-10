@@ -1,22 +1,21 @@
 import { Button, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { TextField, createStyles, makeStyles } from '@material-ui/core';
+import { TextField } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    raw: {
-      ...theme.monotype,
-      fontSize: 12,
-    },
-  }),
-);
+const useStyles = makeStyles()((theme) => ({
+  raw: {
+    ...theme.monotype,
+    fontSize: 12,
+  },
+}));
 
 interface OwnProps {
   raw: string;
 }
 
 export const RawTx: React.FC<OwnProps> = ({ raw }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [showRaw, setShowRaw] = React.useState(false);
 
@@ -33,7 +32,7 @@ export const RawTx: React.FC<OwnProps> = ({ raw }) => {
             value={raw}
             InputProps={{
               classes: {
-                input: styles.raw,
+                input: classes.raw,
               },
             }}
           />

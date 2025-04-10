@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import * as React from 'react';
-import SvgIcon, {SvgIconProps} from '@material-ui/core/SvgIcon';
+import SvgIcon, {SvgIconProps} from '@mui/material/SvgIcon';
 
 const Add: React.ComponentType<SvgIconProps> = (props) => (
   <SvgIcon style={{fill: 'none'}} stroke="currentColor" fill="none" strokeWidth="4" viewBox="0 0 64 64" {...props} >

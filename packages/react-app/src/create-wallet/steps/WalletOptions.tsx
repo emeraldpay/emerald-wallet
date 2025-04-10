@@ -1,5 +1,5 @@
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import * as React from 'react';
 import { Options } from '../flow/types';
 

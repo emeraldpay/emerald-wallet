@@ -1,36 +1,34 @@
 import { HDPath } from '@emeraldwallet/core';
 import { IState } from '@emeraldwallet/store';
-import { Box, createStyles, IconButton, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
+import { Box, IconButton, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      fontSize: '1.2em',
-      paddingLeft: 16,
-    },
-    currentPath: {
-      marginRight: 10,
-    },
-    account: {
-      cursor: 'grab',
-      paddingLeft: 8,
-      paddingRight: 8,
-    },
-    accountCurrent: {
-      fontSize: '1.2em',
-      fontWeight: 'bold',
-    },
-    accountDisabled: {
-      color: '#f6eff0',
-      cursor: 'not-allowed',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  root: {
+    fontSize: '1.2em',
+    paddingLeft: 16,
+  },
+  currentPath: {
+    marginRight: 10,
+  },
+  account: {
+    cursor: 'grab',
+    paddingLeft: 8,
+    paddingRight: 8,
+  },
+  accountCurrent: {
+    fontSize: '1.2em',
+    fontWeight: 'bold',
+  },
+  accountDisabled: {
+    color: '#f6eff0',
+    cursor: 'not-allowed',
+  },
+});
 
 type AccountItem = {
   account: number;
@@ -56,7 +54,7 @@ type StateProps = {
 const MAX = Math.pow(2, 31) - 1;
 
 const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, start, onChange }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const [account, setAccount] = React.useState(start);
 

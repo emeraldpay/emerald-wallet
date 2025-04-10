@@ -1,28 +1,27 @@
 import { BlockchainCode, IBlockchain, PersistentState } from '@emeraldwallet/core';
 import { IState, addressBook, screen, settings } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
-import { Button, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
-import ContactIcon from '@material-ui/icons/PersonAdd';
+import { Button, MenuItem, TextField } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import ContactIcon from '@mui/icons-material/PersonAdd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Contact from '../Contact';
 
-const useStyles = makeStyles(
-  createStyles({
-    blockchains: {
-      marginRight: 20,
-      width: 320,
-    },
-    emptyList: {
-      textAlign: 'center',
-    },
-    footer: {
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'space-between',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  blockchains: {
+    marginRight: 20,
+    width: 320,
+  },
+  emptyList: {
+    textAlign: 'center',
+  },
+  footer: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+});
 
 type BlockchainCodeSelector = 'all' | BlockchainCode;
 
@@ -37,7 +36,7 @@ interface DispatchProps {
 }
 
 const ContactList: React.FC<StateProps & DispatchProps> = ({ blockchains, getContacts, goBack, goToAddNewContact }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [blockchain, setBlockchain] = React.useState<BlockchainCodeSelector>('all');
   const [contacts, setContacts] = React.useState(getContacts(blockchain));
@@ -51,9 +50,9 @@ const ContactList: React.FC<StateProps & DispatchProps> = ({ blockchains, getCon
       title="Address Book"
       leftIcon={<Back onClick={goBack} />}
       footer={
-        <div className={styles.footer}>
+        <div className={classes.footer}>
           <TextField
-            classes={{ root: styles.blockchains }}
+            classes={{ root: classes.blockchains }}
             select={true}
             value={blockchain}
             onChange={({ target: { value } }) => setBlockchain(value as BlockchainCode)}
@@ -76,7 +75,7 @@ const ContactList: React.FC<StateProps & DispatchProps> = ({ blockchains, getCon
           <Contact key={`${contact.blockchain}-${contact.address.address}`} contact={contact} />
         ))
       ) : (
-        <div className={styles.emptyList}>There are no contacts. Add one.</div>
+        <div className={classes.emptyList}>There are no contacts. Add one.</div>
       )}
     </Page>
   );

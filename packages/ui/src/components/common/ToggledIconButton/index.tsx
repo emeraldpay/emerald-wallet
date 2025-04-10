@@ -13,28 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const styles = (theme?: any) => ({
+const useStyles = makeStyles()((theme) => ({
   toggledIcon: {
     cursor: 'pointer',
     marginLeft: '4px'
-  }
-});
+  }}
+));
 
 interface IProps {
   onClick: any;
   icon: any;
   toggledIcon: any;
   toggleDuration?: number;
-  classes: any;
 }
 
 function ToggledIconButton(props: IProps) {
-  const {classes, toggledIcon, icon, onClick} = props;
+  const {toggledIcon, icon, onClick} = props;
   const toggleDuration = props.toggleDuration || 1000;
   const [toggled, setToggled] = React.useState(false);
+  const classes = useStyles().classes;
 
   React.useEffect(() => {
     if (toggled) {
@@ -57,4 +57,4 @@ function ToggledIconButton(props: IProps) {
   );
 }
 
-export default withStyles(styles)(ToggledIconButton);
+export default ToggledIconButton;

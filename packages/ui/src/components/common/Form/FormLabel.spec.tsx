@@ -1,5 +1,5 @@
-import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { EmeraldTheme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@mui/material';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import Label from './FormLabel';
@@ -7,7 +7,7 @@ import Label from './FormLabel';
 describe('FormLabel', () => {
   it('should render', () => {
     const wrapper = shallow(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Label />
       </ThemeProvider>,
     );

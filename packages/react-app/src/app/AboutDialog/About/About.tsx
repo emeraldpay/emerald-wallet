@@ -1,7 +1,6 @@
 import { Versions } from '@emeraldwallet/core';
 import { Logo } from '@emeraldwallet/ui';
-import { StyleRulesCallback, Theme, WithStyles } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
 interface OwnProps {
@@ -11,7 +10,7 @@ interface OwnProps {
   onWebsiteClick(): void;
 }
 
-export const styles: StyleRulesCallback<Theme, OwnProps> = (theme) => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     padding: 30,
     position: 'relative',
@@ -53,15 +52,11 @@ export const styles: StyleRulesCallback<Theme, OwnProps> = (theme) => ({
     float: 'right',
     textAlign: 'right',
   },
-});
+}));
 
-type Props = OwnProps & WithStyles<typeof styles>;
-
-class About extends React.Component<Props> {
-  static year = new Date().getFullYear();
-
-  render(): React.ReactNode {
-    const { classes, versions, onWebsiteClick, onHelpClick, onLicenseClick } = this.props;
+const About: React.FC<OwnProps> = ({ versions, onWebsiteClick, onHelpClick, onLicenseClick }) => {
+  const { classes } = useStyles();
+  const year = new Date().getFullYear();
 
     return (
       <div className={classes.container}>
@@ -83,7 +78,7 @@ class About extends React.Component<Props> {
               https://emerald.cash
             </a>
           </div>
-          <div className={classes.infoBlock}>Copyright &copy; {About.year} EmeraldPay</div>
+          <div className={classes.infoBlock}>Copyright &copy; {year} EmeraldPay</div>
           <div>
             Licensed under{' '}
             <a onClick={onLicenseClick} className={classes.infoLink} href="#">
@@ -98,7 +93,6 @@ class About extends React.Component<Props> {
         </div>
       </div>
     );
-  }
-}
+};
 
-export default withStyles(styles)(About);
+export default About;

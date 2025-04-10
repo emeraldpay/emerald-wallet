@@ -1,7 +1,7 @@
 import { PersistentState } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { Address, FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import * as React from 'react';
 import { TxStatus } from '../../transactions/TxDetails/TxStatus';
 

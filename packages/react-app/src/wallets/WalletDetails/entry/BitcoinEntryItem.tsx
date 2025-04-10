@@ -3,9 +3,9 @@ import { BitcoinEntry, Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, CurrencyAmount, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { BlockchainAvatar } from '@emeraldwallet/ui';
-import { IconButton, Tooltip, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { ArrowUpward as SendIcon } from '@material-ui/icons';
+import { IconButton, Tooltip, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { ArrowUpward as SendIcon } from '@mui/icons-material';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -13,7 +13,11 @@ import Balance from './balance/Balance';
 import FiatBalance from './balance/FiatBalance';
 import entryStyles from './styles';
 
-const useStyles = makeStyles((theme) => entryStyles(theme));
+const useStyles = makeStyles()(
+  {
+    ...entryStyles
+  }
+);
 
 interface OwnProps {
   entry: BitcoinEntry;
@@ -36,7 +40,7 @@ const BitcoinEntryItem: React.FC<OwnProps & StateProps & DispatchProps> = ({
   fiatBalance,
   gotoSend,
 }) => {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const blockchainTitle = Blockchains[blockchainCode].getTitle();
 

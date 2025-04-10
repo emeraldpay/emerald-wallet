@@ -1,14 +1,14 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { StoredTransaction } from '@emeraldwallet/store';
-import { Theme, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+
 import * as React from 'react';
 import { AutoSizer, Index, List } from 'react-virtualized';
 import { ScrollParams } from 'react-virtualized/dist/es/Grid';
 import Transaction from './Transaction';
 
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     container: {
       height: '100%',
     },
@@ -19,8 +19,7 @@ const useStyles = makeStyles<Theme>((theme) =>
     empty: {
       padding: theme.spacing(4),
     },
-  }),
-);
+  }));
 
 interface OwnProps {
   cursor?: string | null;
@@ -32,7 +31,7 @@ interface OwnProps {
 }
 
 const TxList: React.FC<OwnProps> = ({ cursor, lastTxId, transactions, walletId, onLoadMore, setLastTxId }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const listElement = React.useRef<List | null>(null);
   const initialTxCount = React.useRef(transactions.length);

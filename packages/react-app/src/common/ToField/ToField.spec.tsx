@@ -1,7 +1,7 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { addressBook } from '@emeraldwallet/store';
-import { Theme } from '@emeraldwallet/ui';
-import { ThemeProvider } from '@material-ui/core';
+import { EmeraldTheme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@mui/material';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -14,7 +14,7 @@ describe('ToField', () => {
 
     const component = shallow(
       <Provider store={store}>
-        <ThemeProvider theme={Theme}>
+        <ThemeProvider theme={EmeraldTheme}>
           <ToField blockchain={BlockchainCode.ETH} onChange={jest.fn()} />
         </ThemeProvider>
       </Provider>,
@@ -30,7 +30,7 @@ describe('ToField', () => {
 
     const component = mount(
       <Provider store={store}>
-        <ThemeProvider theme={Theme}>
+        <ThemeProvider theme={EmeraldTheme}>
           <ToField blockchain={BlockchainCode.ETH} onChange={onChange} />
         </ThemeProvider>
       </Provider>,

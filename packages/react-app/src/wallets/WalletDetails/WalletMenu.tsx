@@ -1,6 +1,6 @@
 import { Uuid, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
-import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@mui/material';
 import {
   PlaylistAdd as AddIcon,
   Assignment as DetailsIcon,
@@ -8,7 +8,7 @@ import {
   AddCircleOutline as SetupIcon,
   BorderColor as SignIcon,
   AccountBalanceWallet as WalletIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

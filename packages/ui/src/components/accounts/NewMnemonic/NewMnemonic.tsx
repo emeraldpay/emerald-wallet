@@ -1,11 +1,11 @@
-import { Box, Button, Chip, Grid, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Alert } from '@material-ui/lab';
+import { Box, Button, Chip, Grid, Typography } from '@mui/material';
+import { Alert } from '@mui/lab';
+import { useTheme } from '@mui/material/styles';
 import * as React from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { Theme } from '../../..';
 import { ButtonGroup } from '../../common/ButtonGroup';
 import ConfirmedPasswordInput from '../../common/PasswordConfirmedInput';
+import { makeStyles } from 'tss-react/mui';
 
 const CANVAS_COLUMNS = 6 as const;
 const CANVAS_FONT_SIZE = 18 as const;
@@ -13,8 +13,7 @@ const CANVAS_LINE_HEIGHT = 20 as const;
 const CANVAS_PADDING_LEFT = 20 as const;
 const CANVAS_PADDING_TOP = 20 as const;
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     alertButton: {
       whiteSpace: 'nowrap',
     },
@@ -57,7 +56,7 @@ const useStyles = makeStyles(
     mnemonicPreviewCanvas: {
       display: 'block',
     },
-  }),
+  }
 );
 
 // Component properties
@@ -76,7 +75,7 @@ interface MnemonicSelectedPartType extends MnemonicRandomPartType {
 }
 
 const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const mnemonicPreview = React.useRef<HTMLCanvasElement | undefined>();
 
@@ -155,6 +154,8 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
   const [mnemonicRandomParts, setMnemonicRandomParts] = React.useState<MnemonicRandomPartType[]>([]);
   const [mnemonicSelectedParts, setMnemonicSelectedParts] = React.useState<MnemonicSelectedPartType[]>([]);
 
+  let theme = useTheme();
+
   React.useEffect(() => {
     const mnemonicParts = mnemonic.split(' ');
 
@@ -179,7 +180,7 @@ const NewMnemonic: React.FC<OwnProps> = ({ onContinue, onGenerate }) => {
 
       const context = element.getContext('2d');
 
-      context.font = `${CANVAS_FONT_SIZE}px/${CANVAS_LINE_HEIGHT}px ${Theme.monotype.fontFamily}`;
+      context.font = `${CANVAS_FONT_SIZE}px/${CANVAS_LINE_HEIGHT}px ${theme.monotype.fontFamily}`;
       context.textBaseline = 'bottom';
 
       const columnWidth = Math.ceil((element.parentElement.clientWidth - CANVAS_PADDING_LEFT * 2) / CANVAS_COLUMNS);

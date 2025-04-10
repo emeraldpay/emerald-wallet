@@ -11,35 +11,33 @@ import {
 import { BlockchainCode, Blockchains, EthereumAddress, TokenRegistry, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, screen } from '@emeraldwallet/store';
 import { Address, Back, ButtonGroup, Page, WalletReference } from '@emeraldwallet/ui';
-import { Button, FormControl, Grid, InputLabel, MenuItem, Select, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import LibraryAddCheckIcon from '@mui/icons-material/LibraryAddCheck';
 import { clipboard } from 'electron';
 import * as React from 'react';
 import { useQRCode } from 'react-qrcode';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    form: {
-      marginTop: 40,
-    },
-    copy: {
-      paddingLeft: 8,
-      paddingTop: 18,
-    },
-    buttons: {
-      display: 'flex',
-      justifyContent: 'end',
-      marginTop: 20,
-      width: '100%',
-    },
-    code: {
-      display: 'flex',
-      justifyContent: 'center',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  form: {
+    marginTop: 40,
+  },
+  copy: {
+    paddingLeft: 8,
+    paddingTop: 18,
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'end',
+    marginTop: 20,
+    width: '100%',
+  },
+  code: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+});
 
 interface BaseAccept {
   blockchain: BlockchainCode;
@@ -100,7 +98,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   onCancel,
   onSave,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const mounted = React.useRef(true);
 
@@ -235,7 +233,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
       {wallet != null && <WalletReference balances={balances} wallet={wallet} walletIcon={walletIcon} />}
       <Grid container>
         <Grid item xs={8}>
-          <Grid container className={styles.form}>
+          <Grid container className={classes.form}>
             <Grid item xs={9}>
               <FormControl fullWidth>
                 <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
@@ -302,7 +300,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
               </FormControl>
             </Grid>
             {currentAddress != null && (
-              <Grid item xs={3} className={styles.copy}>
+              <Grid item xs={3} className={classes.copy}>
                 <Button onClick={() => clipboard.writeText(currentAddress)}>
                   <LibraryAddCheckIcon />
                   Copy
@@ -310,7 +308,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
               </Grid>
             )}
             <Grid item xs>
-              <ButtonGroup classes={{ container: styles.buttons }}>
+              <ButtonGroup classes={{ container: classes.buttons }}>
                 <Button color="secondary" variant="contained" onClick={() => onCancel()}>
                   Cancel
                 </Button>
@@ -325,7 +323,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
         </Grid>
         {qrCodeValue != null && (
           <Grid item xs={4}>
-            <div className={styles.code}>
+            <div className={classes.code}>
               <img src={qrCode} alt="QR Code" width={240} />
             </div>
           </Grid>

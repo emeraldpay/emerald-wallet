@@ -1,10 +1,10 @@
 import { workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, makeStyles } from '@material-ui/core';
+import { Box, FormControlLabel, FormHelperText, Slider, Switch } from '@mui/material';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     buttons: {
       display: 'flex',
       justifyContent: 'end',
@@ -39,7 +39,7 @@ const useStyles = makeStyles(
     inputField: {
       flexGrow: 5,
     },
-  }),
+  }
 );
 
 interface OwnProps {
@@ -50,11 +50,11 @@ interface OwnProps {
 }
 
 export const BitcoinFee: React.FC<OwnProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [useStdFee, setUseStdFee] = React.useState(true);
 
-  const handleFeePriceChange = (event: React.ChangeEvent<unknown>, value: number | number[]): void => {
+  const handleFeePriceChange = (event: Event, value: number | number[], activeThumb: number): void => {
     const [feePrice] = Array.isArray(value) ? value : [value];
 
     createTx.feePrice = feePrice;
@@ -62,7 +62,7 @@ export const BitcoinFee: React.FC<OwnProps> = ({ createTx, feeRange, initializin
     setTransaction(createTx.dump());
   };
 
-  const handleUseStdFeePrice = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean): void => {
+  const handleUseStdFeePrice = (event: React.ChangeEvent, checked: boolean): void => {
     setUseStdFee(checked);
 
     if (checked) {

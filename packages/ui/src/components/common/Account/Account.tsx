@@ -14,17 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { createStyles } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { WithStyles } from '@material-ui/styles';
+import {Typography} from '@mui/material';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Pen3 as EditIcon } from '../../../icons';
 import Address from '../Address';
 import IdentityIcon from '../IdentityIcon';
+import {makeStyles} from "tss-react/mui";
 
-export const styles = createStyles({
+const useStyles = makeStyles()({
   root: {
     alignItems: 'center',
     cursor: 'default',
@@ -68,7 +66,7 @@ export const styles = createStyles({
   },
 });
 
-interface OwnProps {
+interface AccountProps {
   address: string;
   addressProps?: Record<string, unknown>;
   addressWidth?: number | string;
@@ -83,65 +81,56 @@ interface OwnProps {
   onEditClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
-class Account extends React.PureComponent<OwnProps & WithStyles<typeof styles>> {
-  public static defaultProps = {
-    addressWidth: 'auto',
-    disabled: false,
-    editable: false,
-  };
+const Account: React.FC<AccountProps> = ({
+  address,
+  addressProps,
+  addressWidth = 'auto',
+  balances,
+  description,
+  disabled = false,
+  editable = false,
+  identity,
+  name,
+  onClick,
+  onEditClick,
+}) => {
+  const { classes } = useStyles();
 
-  public render(): React.ReactNode {
-    const {
-      address,
-      addressProps,
-      addressWidth,
-      balances,
-      classes,
-      description,
-      disabled,
-      editable,
-      identity,
-      name,
-      onClick,
-      onEditClick,
-    } = this.props;
-
-    return (
-      <div
-        className={classNames(classes.root, { [classes.clickable]: !disabled })}
-        onClick={(event) => !disabled && onClick?.(event)}
-      >
-        {identity != null && (
-          <div className={classes.accountIdentityIcon}>
-            <IdentityIcon id={address} />
+  return (
+    <div
+      className={classNames(classes.root, { [classes.clickable]: !disabled })}
+      onClick={(event) => !disabled && onClick?.(event)}
+    >
+      {identity != null && (
+        <div className={classes.accountIdentityIcon}>
+          <IdentityIcon id={address} />
+        </div>
+      )}
+      <div className={classes.account} style={{ width: addressWidth }}>
+        {name != null && (
+          <div className={classes.accountName}>
+            <Typography>{name}</Typography>
+            {editable && (
+              <div className={classes.accountNameEdit} onClick={onEditClick}>
+                <EditIcon className={classes.accountNameEditIcon} />
+              </div>
+            )}
           </div>
         )}
-        <div className={classes.account} style={{ width: addressWidth }}>
-          {name != null && (
-            <div className={classes.accountName}>
-              <Typography>{name}</Typography>
-              {editable && (
-                <div className={classes.accountNameEdit} onClick={onEditClick}>
-                  <EditIcon className={classes.accountNameEditIcon} />
-                </div>
-              )}
-            </div>
-          )}
-          <Address hideCopy shortened address={address} {...addressProps} />
-          {description != null && <Typography className={classes.accountDescription}>{description}</Typography>}
-          {balances != null && (
-            <div className={classes.accountBalances}>
-              {balances.map((balance, index) => (
-                <Typography key={`balance[${index}]`} className={classes.accountBalance} color="secondary">
-                  {balance}
-                </Typography>
-              ))}
-            </div>
-          )}
-        </div>
+        <Address hideCopy shortened address={address} {...addressProps} />
+        {description != null && <Typography className={classes.accountDescription}>{description}</Typography>}
+        {balances != null && (
+          <div className={classes.accountBalances}>
+            {balances.map((balance, index) => (
+              <Typography key={`balance[${index}]`} className={classes.accountBalance} color="secondary">
+                {balance}
+              </Typography>
+            ))}
+          </div>
+        )}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
-export default withStyles(styles)(Account);
+export default Account;

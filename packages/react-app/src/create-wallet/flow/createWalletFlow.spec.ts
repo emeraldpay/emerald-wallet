@@ -283,6 +283,6 @@ describe('Account', () => {
 
     expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATING);
     expect(result).toBeDefined();
-    expect(result?.seedAccount).toBe(1);
+    expect(result!!.seedAccount).toBe(1);
   });
 });

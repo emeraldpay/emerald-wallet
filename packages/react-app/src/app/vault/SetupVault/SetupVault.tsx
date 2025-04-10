@@ -1,7 +1,7 @@
 import { screen } from '@emeraldwallet/store';
 import { Page } from '@emeraldwallet/ui';
-import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { FiberNew as SetupIcon, Restore as RestoreIcon } from '@material-ui/icons';
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { FiberNew as SetupIcon, Restore as RestoreIcon } from '@mui/icons-material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

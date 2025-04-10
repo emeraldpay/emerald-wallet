@@ -1,11 +1,11 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { CurrencyAmount, formatAmountPartial, formatFiatAmountPartial } from '@emeraldwallet/core';
-import { Tooltip, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { Tooltip, Typography, } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) => ({
     container: {
       columnGap: theme.spacing(),
       display: 'grid',
@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) =>
     value: {
       textAlign: 'right',
     },
-  }),
-);
+  }
+));
 
 interface OwnProps {
   amount: BigAmount;
@@ -27,7 +27,7 @@ interface OwnProps {
 }
 
 export const Amount: React.FC<OwnProps> = ({ amount, fiatAmount, maxDisplay }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [amountValue, amountUnit, approxZero] = formatAmountPartial(amount, 6);
   const [fiatAmountValue, fiatAmountUnit] = formatFiatAmountPartial(fiatAmount);

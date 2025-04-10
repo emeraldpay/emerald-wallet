@@ -29,37 +29,33 @@ interface State {
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-class ToField extends React.Component<Props, State> {
-  private mounted = true;
-
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      error: null,
-      hint: null,
-      value: props.to ?? '',
+const ToField: React.FC<Props> = (props) => {
+  const { contacts, disabled, blockchain, onChange, lookupAddress, resolveName, to } = props;
+  
+  const [state, setState] = React.useState<State>({
+    error: null,
+    hint: null,
+    value: to ?? '',
+  });
+  
+  const mountedRef = React.useRef(true);
+  
+  React.useEffect(() => {
+    return () => {
+      mountedRef.current = false;
     };
-  }
-
-  componentWillUnmount(): void {
-    this.mounted = false;
-  }
-
-  getRightIcon = (): React.ReactNode => {
-    const { contacts, disabled } = this.props;
-
+  }, []);
+  
+  const getRightIcon = (): React.ReactNode => {
     if (disabled === true) {
       return null;
     }
 
-    return <AddressBookMenu contacts={contacts} onChange={(value) => this.onChange(value)} />;
+    return <AddressBookMenu contacts={contacts} onChange={(value) => handleChange(value)} />;
   };
 
-  onChange = async (value: string): Promise<void> => {
-    this.setState({ value, error: null, hint: null });
-
-    const { blockchain, onChange, lookupAddress, resolveName } = this.props;
+  const handleChange = async (value: string): Promise<void> => {
+    setState({ ...state, value, error: null, hint: null });
 
     const { isValidAddress } = Blockchains[blockchain];
 
@@ -71,56 +67,52 @@ class ToField extends React.Component<Props, State> {
 
         const address = await resolveName(blockchain, to);
 
-        if (this.mounted) {
+        if (mountedRef.current) {
           if (address == null) {
-            this.setState({ error: 'Name not found' });
+            setState(prev => ({ ...prev, error: 'Name not found' }));
           } else {
             onChange(address);
-
-            this.setState({ hint: address });
+            setState(prev => ({ ...prev, hint: address }));
           }
         }
       } else {
         onChange(to);
 
         if (to.length === 0) {
-          this.setState({ error: 'Required' });
+          setState(prev => ({ ...prev, error: 'Required' }));
         } else if (isValidAddress(to)) {
           const name = await lookupAddress(blockchain, to);
 
-          if (this.mounted && name != null) {
-            this.setState({ hint: name });
+          if (mountedRef.current && name != null) {
+            setState(prev => ({ ...prev, hint: name }));
           }
         } else {
-          this.setState({ error: 'Incorrect address format' });
+          setState(prev => ({ ...prev, error: 'Incorrect address format' }));
         }
       }
     } else {
       onChange(to);
 
       if (to.length === 0) {
-        this.setState({ error: 'Required' });
+        setState(prev => ({ ...prev, error: 'Required' }));
       } else if (!isValidAddress(to)) {
-        this.setState({ error: 'Incorrect address format' });
+        setState(prev => ({ ...prev, error: 'Incorrect address format' }));
       }
     }
   };
 
-  public render(): React.ReactNode {
-    const { disabled } = this.props;
-    const { error, hint, value } = this.state;
+  const { error, hint, value } = state;
 
-    return (
-      <Input
-        errorText={error}
-        disabled={disabled}
-        hintText={hint}
-        rightIcon={this.getRightIcon()}
-        value={value}
-        onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => this.onChange(value)}
-      />
-    );
-  }
+  return (
+    <Input
+      errorText={error}
+      disabled={disabled}
+      hintText={hint}
+      rightIcon={getRightIcon()}
+      value={value}
+      onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => handleChange(value)}
+    />
+  );
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(

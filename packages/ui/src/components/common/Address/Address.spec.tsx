@@ -14,17 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Typography from '@material-ui/core/Typography';
-import { ThemeProvider } from '@material-ui/styles';
+import { Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import { mount } from 'enzyme';
 import * as React from 'react';
-import { Theme } from '../../../index';
+import { EmeraldTheme } from '../../../index';
 import Address from './Address';
 
 describe('Address', () => {
   it('shows address', () => {
     const component = mount(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Address address="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
       </ThemeProvider>,
     );
@@ -34,7 +34,7 @@ describe('Address', () => {
 
   it('shows sanitized hex', () => {
     const component = mount(
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Address address="FBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" shortened={true} />
       </ThemeProvider>,
     );

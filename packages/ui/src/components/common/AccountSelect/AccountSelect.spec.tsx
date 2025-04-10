@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render } from '@testing-library/react';
 import * as React from 'react';
 import Theme from '../../../theme';

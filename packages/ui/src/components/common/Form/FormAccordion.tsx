@@ -1,43 +1,38 @@
-import { Accordion, AccordionDetails, AccordionSummary, Theme, createStyles } from '@material-ui/core';
-import { ExpandMore as ExpandIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { ExpandMore as ExpandIcon } from '@mui/icons-material';
+import { makeStyles } from 'tss-react/mui';
 import * as React from 'react';
 
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    container: {
-      marginBottom: theme.spacing(2),
-    },
-    children: {
-      flexDirection: 'column',
-      padding: 0,
-    },
-    icon: {
-      margin: 0,
-    },
-    title: {
-      color: theme.palette.text.secondary,
-      fontFamily: theme.typography.fontFamily,
-      fontSize: 16,
-      fontWeight: 400,
-      padding: 0,
-    },
-  }),
-);
+const useStyles = makeStyles()((theme) => ({
+  container: {
+    marginBottom: theme.spacing(2),
+  },
+  children: {
+    flexDirection: 'column',
+    padding: 0,
+  },
+  title: {
+    color: theme.palette.text.secondary,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: 16,
+    fontWeight: 400,
+    padding: 0,
+  },
+}));
 
 interface OwnProps {
   title: React.ReactNode;
 }
 
 const FormAccordion: React.FC<OwnProps> = ({ children, title }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   return (
-    <Accordion classes={{ root: styles.container }}>
-      <AccordionSummary classes={{ root: styles.title, expandIcon: styles.icon }} expandIcon={<ExpandIcon />}>
+    <Accordion classes={{ root: classes.container }}>
+      <AccordionSummary classes={{ root: classes.title }} expandIcon={<ExpandIcon />}>
         {title}
       </AccordionSummary>
-      <AccordionDetails classes={{ root: styles.children }}>{children}</AccordionDetails>
+      <AccordionDetails classes={{ root: classes.children }}>{children}</AccordionDetails>
     </Accordion>
   );
 };

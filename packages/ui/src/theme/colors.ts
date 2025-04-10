@@ -18,6 +18,7 @@ limitations under the License.
 const white = { main: '#FFFFFF' };
 const black = { main: '#1D1D1E' };
 const red = { main: '#FB285A' };
+const blue = { main: '#2196f3' };
 
 const emerald = {
   main: '#32D486',
@@ -36,6 +37,7 @@ const colors = {
   white,
   black,
   red,
+  blue,
   grey50,
   grey100,
   grey200,

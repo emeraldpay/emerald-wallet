@@ -13,45 +13,42 @@ import {
   Grid,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   Tooltip,
   Typography,
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
-import { Clear as UnusedIcon, Beenhere as UsedIcon } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+  Skeleton
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { Clear as UnusedIcon, Beenhere as UsedIcon } from '@mui/icons-material';
 import * as React from 'react';
-import { ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 import HDPathCounter from './HDPathCounter';
 
-const useStyles = makeStyles(
-  createStyles({
-    activeCell: {
-      width: 80,
-    },
-    addressSkeleton: {
-      paddingLeft: 4,
-      paddingTop: 4,
-    },
-    balanceSkeleton: {
-      float: 'right',
-    },
-    inactiveCheck: {
-      color: '#d0d0d0',
-    },
-    hdPathCell: {
-      width: 180,
-    },
-    hdPathIndex: {
-      fontSize: '1rem',
-    },
-  }),
-);
+const useStyles = makeStyles()({
+  activeCell: {
+    width: 80,
+  },
+  addressSkeleton: {
+    paddingLeft: 4,
+    paddingTop: 4,
+  },
+  balanceSkeleton: {
+    float: 'right',
+  },
+  inactiveCheck: {
+    color: '#d0d0d0',
+  },
+  hdPathCell: {
+    width: 180,
+  },
+  hdPathIndex: {
+    fontSize: '1rem',
+  },
+});
 
 interface OwnProps {
   blockchains: BlockchainCode[];
@@ -84,7 +81,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
   onInit,
   onUpdate,
 }) => {
-  const styles = useStyles();
+  const { classes } = useStyles();
 
   const [accountId, setAccountId] = React.useState(initialAccountId);
 
@@ -95,14 +92,14 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
     onChange(account, indexes);
   };
 
-  const onIndexChange =
-    (item: AccountState) =>
-    ({ target: { value } }: ChangeEvent<{ value: unknown }>) => {
-      const newIndexes = { ...indexes, [item.blockchain]: parseInt(value as string, 10) };
+  const onIndexChange = (item: AccountState) => {
+    return (event: SelectChangeEvent) => {
+      const newIndexes = {...indexes, [item.blockchain]: parseInt(event.target.value as string, 10)};
 
       onUpdate(accountId, newIndexes);
       onChange(accountId, newIndexes);
     };
+  };
 
   const isActive = ({ balance, blockchain }: AccountState): boolean =>
     balance != null && amountFactory(blockchain)(balance).isPositive();
@@ -116,7 +113,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
       const appTitle = Blockchains[blockchain].getTitle();
 
       return (
-        <Skeleton className={styles.addressSkeleton} height={20} width={380} variant="text">
+        <Skeleton className={classes.addressSkeleton} height={20} width={380} variant="text">
           Open {appTitle} App on Ledger
         </Skeleton>
       );
@@ -131,7 +128,7 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
     }
 
     if (balance === undefined || balance.length === 0) {
-      return <Skeleton className={styles.balanceSkeleton} height={12} width={80} variant="text" />;
+      return <Skeleton className={classes.balanceSkeleton} height={12} width={80} variant="text" />;
     }
 
     const [amount] = formatAmountPartial(amountFactory(blockchain)(balance));
@@ -189,12 +186,12 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
               const element = (
                 <TableRow key={item.blockchain + '-' + item.address + '-' + item.asset}>
                   <TableCell>{isChanged(item) ? Blockchains[item.blockchain].getTitle() : ''}</TableCell>
-                  <TableCell className={styles.hdPathCell}>
+                  <TableCell className={classes.hdPathCell}>
                     {isChanged(item) ? (
                       isEthereum(item.blockchain) ? (
                         <>
                           {`m/${hdpath.purpose}'/${hdpath.coin}'/${hdpath.account}'/${hdpath.change}/`}
-                          <Select className={styles.hdPathIndex} value={hdpath.index} onChange={onIndexChange(item)}>
+                          <Select className={classes.hdPathIndex} value={hdpath.index?.toString()} onChange={onIndexChange(item)}>
                             {Array(11)
                               .fill(null)
                               .map((value, hdPathIndex) => (
@@ -212,9 +209,9 @@ const SelectHDPath: React.FC<OwnProps & StateProps & DispatchProps> = ({
                   <TableCell>{isChanged(item) ? renderAddress(item.address, item.blockchain) : ''}</TableCell>
                   <TableCell align="right">{renderBalance(item)}</TableCell>
                   <TableCell>{item.asset}</TableCell>
-                  <TableCell className={styles.activeCell}>
+                  <TableCell className={classes.activeCell}>
                     <Tooltip title={isActive(item) ? 'You had used this address before' : 'New inactive address'}>
-                      {isActive(item) ? <UsedIcon /> : <UnusedIcon className={styles.inactiveCheck} />}
+                      {isActive(item) ? <UsedIcon /> : <UnusedIcon className={classes.inactiveCheck} />}
                     </Tooltip>
                   </TableCell>
                 </TableRow>

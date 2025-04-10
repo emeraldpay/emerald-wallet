@@ -1,7 +1,7 @@
 import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { Blockchains, workflow } from '@emeraldwallet/core';
 import { FormLabel, FormRow } from '@emeraldwallet/ui';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import * as React from 'react';
 import { SelectEntry } from '../../../../../../common/SelectEntry';
 import { EthereumCommonFlow } from '../../../common';

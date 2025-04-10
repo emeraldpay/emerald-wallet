@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import {Menu, MenuItem} from '@mui/material';
 import * as React from 'react';
 import { Account } from '../Account';
 import Monospace from '../Monospace';

@@ -1,11 +1,10 @@
-import { Box, Grid, TextField, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Grid, TextField, Typography } from '@mui/material';
 import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import { Button, FormLabel, FormRow, PasswordInput } from '../../index';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     dropBox: {
       backgroundColor: '#f0faff',
       border: '1px solid #f0f0f0',
@@ -14,7 +13,7 @@ const useStyles = makeStyles(
       textAlign: 'center',
       width: '100%',
     },
-  }),
+  }
 );
 
 interface Web3 {
@@ -47,7 +46,7 @@ interface OwnProps {
 }
 
 const ImportPk: React.FC<OwnProps> = ({ raw, checkGlobalKey, onChange }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [rawPk, setRawPk] = React.useState('');
   const [jsonPk, setJsonPk] = React.useState('');

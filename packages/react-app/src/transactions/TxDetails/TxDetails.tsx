@@ -13,17 +13,17 @@ import {
 } from '@emeraldwallet/core';
 import { IState, StoredTransaction, TxAction, blockchains, screen, transaction, txhistory } from '@emeraldwallet/store';
 import { Address, Back, Balance, Button, ButtonGroup, FormLabel, FormRow, Page } from '@emeraldwallet/ui';
-import { TextField, Typography, createStyles, makeStyles } from '@material-ui/core';
+import { TextField, Typography, } from '@mui/material';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { StoredTxView } from '../../common/StoredTxView';
 import { WalletTabs } from '../../wallets/WalletDetails';
+import { makeStyles } from 'tss-react/mui';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
-const useStyles = makeStyles(
-  createStyles({
+const useStyles = makeStyles()({
     address: {
       display: 'flex',
       flex: 1,
@@ -34,7 +34,7 @@ const useStyles = makeStyles(
       justifyContent: 'end',
       width: '100%',
     },
-  }),
+  }
 );
 
 type EnsLookup = { address: string; name: string };
@@ -71,7 +71,7 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   goToSpeedUpTx,
   lookupAddress,
 }) => {
-  const styles = useStyles();
+  const styles = useStyles().classes;
 
   const [nameByAddress, setNameByAddress] = React.useState<Record<string, string>>({});
   const [ethReceipt, setEthReceipt] = React.useState<EthereumReceipt | null>(null);

@@ -17,10 +17,6 @@ import {shallow} from 'enzyme';
 import * as React from 'react';
 
 import {IdentityIcon} from './IdentityIcon';
-import styles from './styles';
-
-const reduceClasses = (prev, curr) => ({...prev, [curr]: curr});
-const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 beforeEach(() => {
   const createElement: any = document.createElement.bind(document);
@@ -42,7 +38,7 @@ beforeEach(() => {
 
 describe('IdentityIcon', () => {
   it('has default size 40', () => {
-    const component = shallow(<IdentityIcon classes={classes} id='0x1234567890'/>);
+    const component = shallow(<IdentityIcon id='0x1234567890'/>);
     expect(component.props().style.height).toEqual('40px');
   });
 });
