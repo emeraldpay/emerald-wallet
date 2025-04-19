@@ -16,7 +16,7 @@ import {
   XPubPosMock,
 } from './__mocks__';
 import { VaultMock } from './__mocks__';
-import {DecoratorFunction, Renderer, Args} from "@storybook/types";
+import { DecoratorFunction } from '@storybook/types';
 
 function createApi(api: MemoryApiMock): WalletApi {
   return new ApiMock(
