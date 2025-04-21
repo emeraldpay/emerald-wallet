@@ -3,6 +3,6 @@
 export { Actions } from './Actions';
 export { Amount } from './Amount';
 export { ApproveAmount } from './ApproveAmount';
-export { BitcoinFee } from './BitcoinFee';
-export { EthereumFee } from './EthereumFee';
+export { BitcoinSettingsPanel } from './BitcoinSettingsPanel';
+export { EthereumSettingsPanel } from './EthereumSettingsPanel';
 export { To } from './To';

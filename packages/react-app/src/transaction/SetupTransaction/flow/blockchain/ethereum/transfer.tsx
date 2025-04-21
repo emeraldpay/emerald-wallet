@@ -4,7 +4,7 @@ import { FormLabel, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { SelectAsset } from '../../../../../common/SelectAsset';
 import { TransferFlow } from '../../common';
-import { EthereumFee } from '../../components';
+import { EthereumSettingsPanel } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
 
 type EthereumData = Data<workflow.CreateEtherTx | workflow.CreateErc20Tx, EthereumEntry>;
@@ -49,7 +49,7 @@ export class EthereumTransferFlow extends TransferFlow {
 
     const { setTransaction } = this.handler;
 
-    return <EthereumFee createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
+    return <EthereumSettingsPanel createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {

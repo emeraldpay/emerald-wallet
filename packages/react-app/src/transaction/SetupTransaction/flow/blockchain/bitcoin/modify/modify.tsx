@@ -3,7 +3,7 @@ import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
 import { StoredTxView } from '../../../../../../common/StoredTxView';
 import { ModifyFlow } from '../../../common';
-import { BitcoinFee } from '../../../components';
+import { BitcoinSettingsPanel } from '../../../components';
 import { Data, DataProvider, Handler } from '../../../types';
 
 type BitcoinData<T extends workflow.AnyBitcoinCreateTx> = Data<T, BitcoinEntry>;
@@ -36,7 +36,7 @@ export class BitcoinModifyFlow<T extends workflow.AnyBitcoinCreateTx> extends Mo
 
     const { setTransaction } = this.handler;
 
-    return <BitcoinFee createTx={createTx} feeRange={transactionFee} setTransaction={setTransaction} />;
+    return <BitcoinSettingsPanel createTx={createTx} feeRange={transactionFee} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {
