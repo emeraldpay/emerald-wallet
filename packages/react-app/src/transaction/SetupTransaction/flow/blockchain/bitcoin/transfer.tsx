@@ -2,8 +2,8 @@ import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
 import { TransferFlow } from '../../common';
-import { BitcoinSettingsPanel } from '../../components';
 import { Data, DataProvider, Handler } from '../../types';
+import { SettingsPanel } from './SettingsPanel';
 
 type BitcoinData = Data<workflow.CreateBitcoinTx, BitcoinEntry>;
 
@@ -28,7 +28,7 @@ export class BitcoinTransferFlow extends TransferFlow {
 
     const { setTransaction } = this.handler;
 
-    return <BitcoinSettingsPanel createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
+    return <SettingsPanel createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {

@@ -1,9 +1,9 @@
 import { EthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import { EthereumSettingsPanel } from '../components';
 import { Data, DataProvider, Handler } from '../types';
 import { CommonFlow } from './common';
+import { SettingsPanel } from '../blockchain/ethereum/SettingsPanel';
 
 type EthereumData = Data<workflow.AnyEthereumCreateTx, EthereumEntry>;
 
@@ -28,6 +28,6 @@ export abstract class EthereumCommonFlow extends CommonFlow {
 
     const { setTransaction } = this.handler;
 
-    return <EthereumSettingsPanel createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
+    return <SettingsPanel createTx={createTx} feeRange={range} initializing={loading} setTransaction={setTransaction} />;
   }
 }

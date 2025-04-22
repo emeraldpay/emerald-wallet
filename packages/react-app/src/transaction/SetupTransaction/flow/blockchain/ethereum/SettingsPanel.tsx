@@ -356,7 +356,7 @@ const EthTxSettings: React.FC<SettingsProps> = ({
   );
 };
 
-export const EthereumSettingsPanel: React.FC<PanelProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
+export const SettingsPanel: React.FC<PanelProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
   const factory = React.useMemo(
     () => amountFactory(createTx.blockchain) as CreateAmount<WeiAny>,
     [createTx.blockchain],

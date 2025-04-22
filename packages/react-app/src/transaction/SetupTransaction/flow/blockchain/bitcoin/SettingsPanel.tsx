@@ -64,7 +64,7 @@ function settingsSummary(fees: SatoshiAny): string {
   return buffer;
 }
 
-export const BitcoinSettingsPanel: React.FC<OwnProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
+export const SettingsPanel: React.FC<OwnProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
   const styles = useStyles().classes;
 
   const [useStdFee, setUseStdFee] = React.useState(true);
