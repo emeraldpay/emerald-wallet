@@ -38,6 +38,13 @@ declare module '@mui/material/styles/createTheme' {
       fontWeight?: number;
     };
   }
+
+}
+
+declare module '@mui/material/FormHelperText' {
+  interface FormHelperTextPropsVariantOverrides {
+    right
+  }
 }
 
 export default createTheme({
@@ -120,8 +127,18 @@ export default createTheme({
           lineHeight: 1,
           marginTop: 0,
           position: 'absolute',
+
+          variants: [
+            {
+              props: { variant: 'right' },
+              style: {
+                position: "inherit",
+                paddingLeft: spacing,
+              }
+            }
+          ]
         },
-      }
+      },
     },
     MuiOutlinedInput: {
       styleOverrides: {
