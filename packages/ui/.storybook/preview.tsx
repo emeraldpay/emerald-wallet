@@ -1,4 +1,4 @@
-import {Theme} from '@emeraldwallet/ui';
+import { EmeraldTheme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@mui/material/styles';
 import * as React from 'react';
 import { Preview } from '@storybook/react';
@@ -6,7 +6,7 @@ import { Preview } from '@storybook/react';
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={EmeraldTheme}>
         <Story />
       </ThemeProvider>
     ),

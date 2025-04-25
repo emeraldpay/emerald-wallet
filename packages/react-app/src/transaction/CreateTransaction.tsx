@@ -25,6 +25,29 @@ interface DispatchProps {
   reset(): void;
 }
 
+function getTitle(props: OwnProps) {
+  let title: string;
+
+  if (props.action === TxAction.APPROVE) {
+    if (props.initialAllowance == null) {
+      title = 'Setup Allowance';
+    } else {
+      title = 'Edit Allowance';
+    }
+  } else if (props.action === TxAction.CANCEL) {
+    title = 'Revoke Transaction';
+  } else if (props.action === TxAction.CONVERT) {
+    title = 'Convert Ether Transaction';
+  } else if (props.action === TxAction.RECOVERY) {
+    title = 'Recovery Transaction';
+  } else if (props.action === TxAction.SPEEDUP) {
+    title = 'Speed Up Transaction';
+  } else {
+    title = 'Create Transaction';
+  }
+  return title;
+}
+
 const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ stage, goBack, reset, ...props }) => {
   React.useEffect(
     () => {
@@ -36,32 +59,7 @@ const CreateTransaction: React.FC<OwnProps & StateProps & DispatchProps> = ({ st
     [],
   );
 
-  let title: string;
-
-  switch (props.action) {
-    case TxAction.APPROVE:
-      title = `${props.initialAllowance == null ? 'Create' : 'Edit'} Allowance`;
-
-      break;
-    case TxAction.CANCEL:
-      title = 'Revoke Transaction';
-
-      break;
-    case TxAction.CONVERT:
-      title = 'Convert Ether Transaction';
-
-      break;
-    case TxAction.RECOVERY:
-      title = 'Recovery Transaction';
-
-      break;
-    case TxAction.SPEEDUP:
-      title = 'Speed Up Transaction';
-
-      break;
-    default:
-      title = 'Create Transaction';
-  }
+  let title = getTitle(props);
 
   return (
     <Page leftIcon={<Back onClick={goBack} />} title={title}>

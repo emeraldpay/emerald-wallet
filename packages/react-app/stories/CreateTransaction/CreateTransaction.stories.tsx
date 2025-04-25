@@ -144,7 +144,7 @@ export default {
   ],
 } as Meta;
 
-export const Transfer = () => <CreateTransaction entryId="2a19e023-f119-4dab-b2cb-4b3e73fa32c9-0" />;
+export const BitcoinTransfer = () => <CreateTransaction entryId="2a19e023-f119-4dab-b2cb-4b3e73fa32c9-0" />;
 export const Approve = () => (
   <CreateTransaction action={TxAction.APPROVE} entryId="2a19e023-f119-4dab-b2cb-4b3e73fa32c9-1" />
 );

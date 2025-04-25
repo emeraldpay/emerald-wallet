@@ -30,6 +30,7 @@ export {
   Erc20TxDetails,
   EthereumTx,
   TxDetails,
+  UtxoOrder,
   fromBitcoinPlainTx,
   fromErc20PlainTx,
   fromEtherPlainTx,

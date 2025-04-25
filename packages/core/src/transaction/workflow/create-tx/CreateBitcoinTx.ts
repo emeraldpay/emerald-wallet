@@ -14,12 +14,19 @@ const MAX_SEQUENCE = 0xffffffff as const;
  */
 export const DEFAULT_VKB_FEE = 1024 as const;
 
+export type UtxoOrder = 'oldest' | 'newest' | 'random' | 'largest' | 'smallest';
+
 export interface BitcoinTxDetails {
   amount?: SatoshiAny;
   change?: SatoshiAny;
   from: InputUtxo[];
   target: TxTarget;
   to?: string;
+
+  /**
+   * Order in which to include UTXOs in the transaction. By default, it's "oldest".
+   */
+  utxoOrder: UtxoOrder;
 }
 
 export interface BitcoinTxOutput {
@@ -110,7 +117,7 @@ export class CreateBitcoinTx implements BitcoinTx {
   private readonly zero: SatoshiAny;
 
   constructor({ blockchain, changeAddress, entryId }: BitcoinTxOrigin, utxo: InputUtxo[]) {
-    this.tx = { from: [], target: TxTarget.MANUAL };
+    this.tx = { from: [], target: TxTarget.MANUAL, utxoOrder: 'oldest' };
 
     this.blockchain = blockchain;
     this.changeAddress = changeAddress;
@@ -225,6 +232,12 @@ export class CreateBitcoinTx implements BitcoinTx {
     this.rebalance();
   }
 
+  set utxoOrder(order: UtxoOrder) {
+    this.tx.utxoOrder = order;
+
+    this.rebalance();
+  }
+
   get totalAvailable(): SatoshiAny {
     return this.utxo
       .map((item) => this.amountDecoder(item.value))
@@ -299,14 +312,28 @@ export class CreateBitcoinTx implements BitcoinTx {
     const to = address == null ? [] : [{ address, amount: 0 }];
 
     if (this.tx.target === TxTarget.MANUAL) {
+      let utxo: InputUtxo[] = this.utxo.slice();
+
+      if (this.tx.utxoOrder === 'oldest') {
+        // do nothing as we expect them loaded in the right order
+      } else if (this.tx.utxoOrder === 'newest') {
+        utxo = utxo.reverse();
+      } else if (this.tx.utxoOrder === 'random') {
+        utxo = utxo.sort(() => Math.random() - 0.5);
+      } else if (this.tx.utxoOrder === 'largest') {
+        utxo = utxo.sort((a, b) => this.amountDecoder(b.value).compareTo(this.amountDecoder(a.value)));
+      } else if (this.tx.utxoOrder === 'smallest') {
+        utxo = utxo.sort((a, b) => this.amountDecoder(a.value).compareTo(this.amountDecoder(b.value)));
+      }
+
       if (amount == null || amount.isZero()) {
         this.tx.from = [];
 
         return false;
       }
 
-      for (let i = 0; i < this.utxo.length && send.minus(fees).isLessThan(amount); i++) {
-        from.push(this.utxo[i]);
+      for (let i = 0; i < utxo.length && send.minus(fees).isLessThan(amount); i++) {
+        from.push(utxo[i]);
 
         fees = this.estimateFeesFor(from, to);
         send = this.totalUtxo(from);

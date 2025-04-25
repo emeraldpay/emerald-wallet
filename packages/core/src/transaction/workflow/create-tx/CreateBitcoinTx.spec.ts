@@ -584,4 +584,95 @@ describe('CreateBitcoinTx', () => {
     expect(cancel.outputs).toEqual(expect.arrayContaining([changeAddress, changeAddress]));
     expect(cancel.outputs).not.toEqual(expect.arrayContaining([expect.objectContaining({ address: 'addrTo' })]));
   });
+
+  describe("With Source Order", () => {
+    it('Use largest inputs first', () => {
+      const tx = new CreateBitcoinTx(
+        {
+          blockchain: BlockchainCode.BTC,
+          entryId: basicEntryId,
+          changeAddress: 'addrchange',
+        },
+        [
+          { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+          { txid: '2', vout: 1, value: new Satoshi(3000).encode(), address: 'addr2' },
+          { txid: '3', vout: 1, value: new Satoshi(2000).encode(), address: 'addr2' },
+        ],
+      );
+
+      tx.to = 'addrTo';
+      tx.amount = new Satoshi(3500);
+      tx.feePrice = 1024;
+      tx.utxoOrder = 'largest';
+
+      const unsigned = tx.build();
+
+      expect(unsigned.inputs.length).toEqual(2);
+      expect(unsigned.inputs[0].txid).toEqual('2');
+      expect(unsigned.inputs[1].txid).toEqual('3');
+    });
+
+    it('Use smallest inputs first', () => {
+      const tx = new CreateBitcoinTx(
+        {
+          blockchain: BlockchainCode.BTC,
+          entryId: basicEntryId,
+          changeAddress: 'addrchange',
+        },
+        [
+          { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+          { txid: '2', vout: 1, value: new Satoshi(3000).encode(), address: 'addr2' },
+          { txid: '3', vout: 1, value: new Satoshi(2000).encode(), address: 'addr2' },
+        ],
+      );
+
+      tx.to = 'addrTo';
+      tx.amount = new Satoshi(3500);
+      tx.feePrice = 1024;
+      tx.utxoOrder = 'smallest';
+
+      const unsigned = tx.build();
+
+      expect(unsigned.inputs[0].txid).toEqual('1');
+      expect(unsigned.inputs[1].txid).toEqual('3');
+      expect(unsigned.inputs[2].txid).toEqual('2');
+      expect(unsigned.inputs.length).toEqual(3);
+    });
+
+    it('Use random inputs first', () => {
+      const tx = new CreateBitcoinTx(
+        {
+          blockchain: BlockchainCode.BTC,
+          entryId: basicEntryId,
+          changeAddress: 'addrchange',
+        },
+        [
+          { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+          { txid: '2', vout: 1, value: new Satoshi(2000).encode(), address: 'addr2' },
+          { txid: '3', vout: 1, value: new Satoshi(3000).encode(), address: 'addr3' },
+          { txid: '4', vout: 1, value: new Satoshi(4000).encode(), address: 'addr4' },
+          { txid: '5', vout: 1, value: new Satoshi(5000).encode(), address: 'addr5' },
+        ],
+      );
+
+      tx.to = 'addrTo';
+      tx.amount = new Satoshi(3500);
+      tx.feePrice = 1024;
+      tx.utxoOrder = 'random';
+
+      const all = [];
+
+      for (let i = 0; i < 100; i++) {
+        tx.rebalance()
+        const unsigned = tx.build();
+        all.push(unsigned.inputs.map((input) => input.txid).join(','));
+      }
+
+      const uniqSet = new Set(all);
+
+      expect(uniqSet.size).toBeLessThan(all.length);
+
+    });
+
+  });
 });

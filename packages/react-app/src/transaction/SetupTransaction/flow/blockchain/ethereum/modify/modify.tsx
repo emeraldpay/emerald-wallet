@@ -3,8 +3,8 @@ import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
 import { StoredTxView } from '../../../../../../common/StoredTxView';
 import { ModifyFlow } from '../../../common';
-import { EthereumFee } from '../../../components';
 import { Data, DataProvider, Handler } from '../../../types';
+import { SettingsPanel } from '../SettingsPanel';
 
 type EthereumData<T extends workflow.AnyEthereumCreateTx> = Data<T, EthereumEntry>;
 
@@ -36,7 +36,7 @@ export class EthereumModifyFlow<T extends workflow.AnyEthereumCreateTx> extends 
 
     const { setTransaction } = this.handler;
 
-    return <EthereumFee createTx={createTx} feeRange={transactionFee} setTransaction={setTransaction} />;
+    return <SettingsPanel createTx={createTx} feeRange={transactionFee} setTransaction={setTransaction} />;
   }
 
   render(): React.ReactElement {

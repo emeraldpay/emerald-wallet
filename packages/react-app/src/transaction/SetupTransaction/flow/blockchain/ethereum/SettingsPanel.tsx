@@ -1,17 +1,18 @@
 import { CreateAmount, Unit } from '@emeraldpay/bigamount';
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
-import {Button, FormAccordion, FormLabel, FormRow, Input} from '@emeraldwallet/ui';
-import {
-  Box,
-  FormControlLabel,
-  FormHelperText,
-  Slider,
-  Switch,
-  TextField
-} from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import { Blockchains, EthereumTransactionType, amountFactory, workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import {useState} from "react";
+import { makeStyles } from 'tss-react/mui';
+import { useState } from 'react';
+import { Box, FormControlLabel, FormHelperText, Slider, Switch, TextField } from '@mui/material';
+import { FormAccordion, FormLabel, FormRow } from '@emeraldwallet/ui';
+
+interface PanelProps {
+  createTx: workflow.AnyEthereumCreateTx;
+  feeRange: workflow.EthereumFeeRange;
+  initializing?: boolean;
+  setTransaction(transaction: workflow.AnyPlainTx): void;
+}
 
 const useStyles = makeStyles()({
   gasPriceHelp: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles()({
   }
 });
 
-interface OwnProps {
+interface SettingsProps {
   factory: CreateAmount<WeiAny>;
   initializing: boolean;
   supportEip1559: boolean;
@@ -75,6 +76,7 @@ type GasLimitFieldProps = {
   gasLimit: number;
   onOverride: (value?: number) => void;
 }
+
 const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
   const [useDefault, setUseDefault] = useState(true);
   const [value, setValue] = useState(gasLimit);
@@ -119,10 +121,10 @@ const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
       <FormLabel>Gas</FormLabel>
       <Box className={classes.inputField}>
         <Box>
-        <FormControlLabel
-          control={<Switch checked={useDefault} color="primary" onChange={onSwitch} />}
-          label={useDefault ? `Auto (${gasLimit})` : 'Manual'}
-        />
+          <FormControlLabel
+            control={<Switch checked={useDefault} color="primary" onChange={onSwitch} />}
+            label={useDefault ? `Auto (${gasLimit})` : 'Manual'}
+          />
           {!useDefault && editor}
         </Box>
       </Box>
@@ -130,25 +132,45 @@ const GasLimitField = ({gasLimit, onOverride}: GasLimitFieldProps) => {
   )
 }
 
-const EthTxSettings: React.FC<OwnProps> = ({
-  factory,
-  initializing,
-  supportEip1559,
-  useEip1559,
-  maxGasPrice,
-  stdMaxGasPrice,
-  lowMaxGasPrice,
-  highMaxGasPrice,
-  priorityGasPrice,
-  stdPriorityGasPrice,
-  lowPriorityGasPrice,
-  highPriorityGasPrice,
-  estimatedGasLimit,
-  onUse1559Change,
-  onMaxGasPriceChange,
-  onPriorityGasPriceChange,
-  onGasLimitChange,
-}) => {
+function settingsSummary(showEip1559: boolean, maxGasPriceByUnit: string, gasPriceUnit: Unit, priorityGasPriceByUnit: string, currentGasLimit: number): string {
+  let buffer = "";
+  if (showEip1559) {
+    buffer = "EIP-1559";
+  } else {
+    buffer = "Legacy Tx";
+  }
+  buffer += ` / ${maxGasPriceByUnit} ${gasPriceUnit.toString()}`;
+  if (showEip1559) {
+    buffer += ` Max Gas Price`;
+  } else {
+    buffer += ` Gas Price`;
+  }
+  if (showEip1559) {
+    buffer += ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price`;
+  }
+  buffer += ` / ${currentGasLimit} gas`;
+  return buffer;
+}
+
+const EthTxSettings: React.FC<SettingsProps> = ({
+                                             factory,
+                                             initializing,
+                                             supportEip1559,
+                                             useEip1559,
+                                             maxGasPrice,
+                                             stdMaxGasPrice,
+                                             lowMaxGasPrice,
+                                             highMaxGasPrice,
+                                             priorityGasPrice,
+                                             stdPriorityGasPrice,
+                                             lowPriorityGasPrice,
+                                             highPriorityGasPrice,
+                                             estimatedGasLimit,
+                                             onUse1559Change,
+                                             onMaxGasPriceChange,
+                                             onPriorityGasPriceChange,
+                                             onGasLimitChange,
+                                           }) => {
   const { classes } = useStyles();
 
   let gasPriceUnit: Unit = stdMaxGasPrice.getOptimalUnit(undefined, undefined, 0);
@@ -222,10 +244,7 @@ const EthTxSettings: React.FC<OwnProps> = ({
       title={
         <FormRow last>
           <FormLabel>Settings</FormLabel>
-          {showEip1559 ? 'EIP-1559' : 'Basic Type'} / {maxGasPriceByUnit} {gasPriceUnit.toString()}
-          {showEip1559 ? ' Max Gas Price' : ' Gas Price'}
-          {showEip1559 ? ` / ${priorityGasPriceByUnit} ${gasPriceUnit.toString()} Priority Gas Price` : null}
-          / {currentGasLimit} gas
+          {settingsSummary(showEip1559, maxGasPriceByUnit, gasPriceUnit, priorityGasPriceByUnit, currentGasLimit)}
         </FormRow>
       }
     >
@@ -337,4 +356,63 @@ const EthTxSettings: React.FC<OwnProps> = ({
   );
 };
 
-export default EthTxSettings;
+export const SettingsPanel: React.FC<PanelProps> = ({ createTx, feeRange, initializing = false, setTransaction }) => {
+  const factory = React.useMemo(
+    () => amountFactory(createTx.blockchain) as CreateAmount<WeiAny>,
+    [createTx.blockchain],
+  );
+
+  const zeroAmount = React.useMemo(() => factory(0), [factory]);
+
+  const handleUseEip1559Change = (checked: boolean): void => {
+    createTx.type = checked ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY;
+
+    setTransaction(createTx.dump());
+  };
+
+  const handleMaxGasPriceChange = (price: WeiAny): void => {
+    createTx.gasPrice = price;
+    createTx.maxGasPrice = price;
+
+    setTransaction(createTx.dump());
+  };
+
+  const handlePriorityGasPriceChange = (price: WeiAny): void => {
+    createTx.priorityGasPrice = price;
+
+    setTransaction(createTx.dump());
+  };
+
+  const handleGasLimitChange = (gasLimit: number): void => {
+    createTx.gas = gasLimit;
+
+    setTransaction(createTx.dump());
+  }
+
+  const { eip1559: supportEip1559 = false } = Blockchains[createTx.blockchain].params;
+
+  const isEip1559 = createTx.type === EthereumTransactionType.EIP1559;
+  const gasPrice = (isEip1559 ? createTx.maxGasPrice : createTx.gasPrice) ?? zeroAmount;
+
+  return (
+    <EthTxSettings
+      factory={factory}
+      initializing={initializing}
+      supportEip1559={supportEip1559}
+      useEip1559={isEip1559}
+      maxGasPrice={gasPrice}
+      stdMaxGasPrice={feeRange.stdMaxGasPrice}
+      lowMaxGasPrice={feeRange.lowMaxGasPrice}
+      highMaxGasPrice={feeRange.highMaxGasPrice}
+      priorityGasPrice={createTx.priorityGasPrice ?? zeroAmount}
+      stdPriorityGasPrice={feeRange.stdPriorityGasPrice}
+      lowPriorityGasPrice={feeRange.lowPriorityGasPrice}
+      highPriorityGasPrice={feeRange.highPriorityGasPrice}
+      estimatedGasLimit={createTx.gas}
+      onUse1559Change={handleUseEip1559Change}
+      onMaxGasPriceChange={handleMaxGasPriceChange}
+      onPriorityGasPriceChange={handlePriorityGasPriceChange}
+      onGasLimitChange={handleGasLimitChange}
+    />
+  );
+};

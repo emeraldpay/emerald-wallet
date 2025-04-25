@@ -34,7 +34,7 @@ export {
 } from './types';
 
 export { ApproveTarget, CreateErc20ApproveTx, Erc20ApproveTxDetails } from './CreateErc20ApproveTx';
-export { BitcoinTx, BitcoinTxDetails, BitcoinTxOrigin, CreateBitcoinTx } from './CreateBitcoinTx';
+export { BitcoinTx, BitcoinTxDetails, BitcoinTxOrigin, CreateBitcoinTx, UtxoOrder } from './CreateBitcoinTx';
 export { CreateBitcoinCancelTx } from './CreateBitcoinCancelTx';
 export { CreateBitcoinSpeedUpTx } from './CreateBitcoinSpeedUpTx';
 export { CreateErc20CancelTx } from './CreateErc20CancelTx';
