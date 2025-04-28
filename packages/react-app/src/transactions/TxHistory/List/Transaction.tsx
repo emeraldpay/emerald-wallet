@@ -298,8 +298,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
     }
   }
 
-  return (<div>sss</div>)
-
   return (
     <div className={styles.container} style={style}>
       <div className={styles.progress}>
