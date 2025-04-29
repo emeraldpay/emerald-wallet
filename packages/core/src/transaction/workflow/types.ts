@@ -1,5 +1,6 @@
 import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, InputUtxo, isBitcoin, isEthereum } from '../../blockchains';
+import { UtxoOrder } from './create-tx';
 
 export enum TxTarget {
   MANUAL,
@@ -50,6 +51,7 @@ export interface BitcoinPlainTx extends CommonTx {
   to?: string;
   vkbPrice: number;
   utxo: InputUtxo[];
+  utxoOrder: UtxoOrder;
 }
 
 export interface EthereumPlainTx extends CommonTx {
