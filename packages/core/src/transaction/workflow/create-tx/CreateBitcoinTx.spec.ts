@@ -674,5 +674,31 @@ describe('CreateBitcoinTx', () => {
 
     });
 
+    it('Saves UTXO Order to dump', () => {
+      const origin = {
+        blockchain: BlockchainCode.BTC,
+        entryId: basicEntryId,
+        changeAddress: 'addrchange',
+      };
+      const tx = new CreateBitcoinTx(
+        origin,
+        [
+          { txid: '1', vout: 0, value: new Satoshi(1000).encode(), address: 'addr1' },
+        ],
+      );
+
+      tx.to = 'addrTo';
+      tx.amount = new Satoshi(3500);
+      tx.feePrice = 1024;
+      tx.utxoOrder = 'largest';
+
+      let dump = tx.dump();
+      expect(dump.utxoOrder).toBe('largest');
+
+      let txRestored = CreateBitcoinTx.fromPlain(origin, dump);
+
+      expect(txRestored.utxoOrder).toBe('largest');
+    });
+
   });
 });

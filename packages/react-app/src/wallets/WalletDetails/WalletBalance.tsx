@@ -305,7 +305,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       if ((prev.fiatBalance == null && next.fiatBalance != null) || (prev.fiatBalance != null && next.fiatBalance == null)) {
         return false;
       }
-      if (prev.fiatBalance!!.equals(next.fiatBalance!!)) {
+      if (prev.fiatBalance != null && next.fiatBalance != null && !prev.fiatBalance!!.equals(next.fiatBalance!!)) {
         return false;
       }
       if (prev.hasAnyBalance !== next.hasAnyBalance) {

@@ -140,6 +140,7 @@ export class CreateBitcoinTx implements BitcoinTx {
     tx.target = plain.target;
     tx.to = plain.to;
     tx.vkbPrice = plain.vkbPrice;
+    tx.tx.utxoOrder = plain.utxoOrder;
     tx.rebalance();
 
     return tx;
@@ -238,6 +239,10 @@ export class CreateBitcoinTx implements BitcoinTx {
     this.rebalance();
   }
 
+  get utxoOrder(): UtxoOrder {
+    return this.tx.utxoOrder;
+  }
+
   get totalAvailable(): SatoshiAny {
     return this.utxo
       .map((item) => this.amountDecoder(item.value))
@@ -278,6 +283,7 @@ export class CreateBitcoinTx implements BitcoinTx {
       vkbPrice: this.vkbPrice,
       to: this.tx.to,
       utxo: this.utxo,
+      utxoOrder: this.tx.utxoOrder,
     };
   }
 
