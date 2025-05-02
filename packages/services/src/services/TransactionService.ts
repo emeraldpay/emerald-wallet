@@ -1,4 +1,4 @@
-import { Publisher, transaction as TransactionApi } from '@emeraldpay/api';
+import {AnyAddress, isSingleAddress, isXpubAddress, Publisher, transaction as TransactionApi} from '@emeraldpay/api';
 import { EntryIdOp, IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   Blockchains,
@@ -84,25 +84,22 @@ export class TransactionService implements Service {
 
     this.vault.listWallets().then((wallets) => {
       wallets.forEach((wallet) => {
-        const entryIdentifiers = wallet.entries.reduce<EntryIdentifier[]>((carry, entry) => {
-          const entryData = { entryId: entry.id, blockchain: entry.blockchain };
+        const entryIdentifiers: EntryIdentifier[] = [];
 
+        wallet.entries.forEach((entry) => {
+          const entryData = {entryId: entry.id, blockchain: entry.blockchain};
           if (isEthereumEntry(entry)) {
-            const { value: address } = entry.address ?? {};
-
-            if (address == null) {
-              return carry;
+            if (entry.address == null) {
+              return;
             }
 
-            return [...carry, { ...entryData, identifier: address }];
+            entryIdentifiers.push({...entryData, identifier: entry.address.value});
+          } else if (isBitcoinEntry(entry)) {
+            entry.xpub.forEach((xpub) => {
+              entryIdentifiers.push({...entryData, identifier: xpub.xpub});
+            })
           }
-
-          if (isBitcoinEntry(entry)) {
-            return [...carry, ...entry.xpub.map(({ xpub }) => ({ ...entryData, identifier: xpub }))];
-          }
-
-          return carry;
-        }, []);
+        });
 
         entryIdentifiers.forEach(({ blockchain, identifier }) => {
           if (resetCursors) {
@@ -160,7 +157,15 @@ export class TransactionService implements Service {
   private subscribe(identifier: string, blockchain: number, entryId: string): void {
     const blockchainCode = blockchainIdToCode(blockchain);
 
-    if (blockchain != 0) return;
+    let address: AnyAddress;
+    if (isSingleAddress(identifier)) {
+      address = identifier;
+    } else if (isXpubAddress(identifier)) {
+      address = identifier;
+    } else {
+      log.error(`Invalid address ${identifier} for ${blockchainCode} blockchain`);
+      return;
+    }
 
     this.persistentState.txhistory
       .getCursor(identifier)
@@ -172,7 +177,7 @@ export class TransactionService implements Service {
 
         const request: TransactionApi.GetTransactionsRequest = {
           blockchain,
-          address: identifier,
+          address,
           cursor: cursor ?? undefined,
         };
 
