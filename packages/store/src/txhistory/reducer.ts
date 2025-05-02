@@ -33,8 +33,10 @@ function onSetLastTxId(state: HistoryState, { txId }: LastTxIdAction): HistorySt
 }
 
 function onRemoveStoreTransaction(state: HistoryState, { txIds }: RemoveStoredTxAction): HistoryState {
-  return { ...state, transactions: state.transactions
-      .filter((tx) => tx.txId !in txIds) };
+  let transactions = state.transactions
+    .slice()
+    .filter((tx) => txIds.indexOf(tx.txId) === -1);
+  return { ...state, transactions };
 }
 
 function onUpdateStoreTransaction(
