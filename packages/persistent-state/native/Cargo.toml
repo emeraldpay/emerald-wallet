@@ -11,8 +11,8 @@ crate-type = ["cdylib"]
 [dependencies]
 #emerald-wallet-state = { path = "../../../../emerald-wallet-state" }
 emerald-wallet-state = { git = "https://github.com/emeraldpay/emerald-wallet-state", branch = "master" }
-#emerald-vault = "0.34.0"
-emerald-vault = { git = "https://github.com/emeraldpay/emerald-vault" }
+emerald-vault = "0.35"
+#emerald-vault = { git = "https://github.com/emeraldpay/emerald-vault" }
 bitcoin = "0.32.5"
 lazy_static = "1.4.0"
 serde = "1.0"

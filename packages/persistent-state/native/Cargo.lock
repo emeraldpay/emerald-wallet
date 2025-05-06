@@ -590,8 +590,9 @@ dependencies = [
 
 [[package]]
 name = "emerald-hwkey"
-version = "0.6.0-dev"
-source = "git+https://github.com/emeraldpay/emerald-hwkey?branch=master#0827c1d7deb4225d8067dda2d9b341caa6f69a51"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2bf2eca8e394aaac41cb391cff49dba4f133af370620c3eb98b63d68f6ec9de"
 dependencies = [
  "bitcoin",
  "byteorder",
@@ -606,56 +607,9 @@ dependencies = [
 
 [[package]]
 name = "emerald-vault"
-version = "0.35.0-dev"
-source = "git+https://github.com/emeraldpay/emerald-vault?branch=master#ab78dd3d239ce96f606c76f4edc2acb49a5bc112"
-dependencies = [
- "aes",
- "argon2",
- "base64",
- "bitcoin",
- "bitcoin_hashes 0.16.0",
- "byte-array-struct",
- "byteorder",
- "chrono",
- "csv",
- "ctr",
- "emerald-hwkey",
- "enum-display-derive",
- "ethabi",
- "ethers-core",
- "ethers-derive-eip712",
- "fs_extra",
- "glob",
- "hdpath",
- "hex",
- "hmac",
- "image",
- "itertools",
- "lazy_static",
- "log",
- "num",
- "num-bigint",
- "pbkdf2",
- "protobuf",
- "rand",
- "regex",
- "rlp 0.6.1",
- "scrypt",
- "secp256k1",
- "serde",
- "serde_derive",
- "serde_json",
- "sha2",
- "sha3",
- "time",
- "uuid",
- "zip",
-]
-
-[[package]]
-name = "emerald-vault"
-version = "0.35.0-dev"
-source = "git+https://github.com/emeraldpay/emerald-vault#ab78dd3d239ce96f606c76f4edc2acb49a5bc112"
+version = "0.35.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a7138bad9416d921bec503ff6e340693974566e8f2b4e462f33d340a3c8550cb"
 dependencies = [
  "aes",
  "argon2",
@@ -702,12 +656,12 @@ dependencies = [
 
 [[package]]
 name = "emerald-wallet-state"
-version = "0.3.0-dev"
-source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#431b2cb3091b6fff4dad103fceb71bcf08944cf4"
+version = "0.3.0"
+source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#7ca72425636fc6e74dde73a8423d5fd370de391a"
 dependencies = [
  "bitcoin",
  "chrono",
- "emerald-vault 0.35.0-dev (git+https://github.com/emeraldpay/emerald-vault?branch=master)",
+ "emerald-vault",
  "hex",
  "lazy_static",
  "num-bigint",
@@ -957,8 +911,9 @@ checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 
 [[package]]
 name = "hdpath"
-version = "0.7.0-dev"
-source = "git+https://github.com/emeraldpay/hdpath-rs#6573f9d541d2d5222514f672bb434027ccaa7a5c"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7ae08d01cf6bb705191768b0e18a1eb113dbf6af68332404b31756ef2071856"
 dependencies = [
  "bitcoin",
  "byteorder",
@@ -1471,7 +1426,7 @@ version = "2.12.0-dev"
 dependencies = [
  "bitcoin",
  "chrono",
- "emerald-vault 0.35.0-dev (git+https://github.com/emeraldpay/emerald-vault)",
+ "emerald-vault",
  "emerald-wallet-state",
  "lazy_static",
  "neon",
