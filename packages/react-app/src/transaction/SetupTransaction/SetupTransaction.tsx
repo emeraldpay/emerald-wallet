@@ -236,7 +236,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     let asset = txStash.selectors.getAsset(state) ?? initialAllowance?.token.address ?? initialAsset ?? coinTicker;
 
-    if (!assets.some(({ address, symbol }) => address === asset || symbol === asset)) {
+    if (assets.length > 0 && !assets.some(({ address, symbol }) => address === asset || symbol === asset)) {
       const [{ address, symbol }] = assets;
 
       asset = address ?? symbol;
