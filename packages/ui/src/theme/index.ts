@@ -157,6 +157,13 @@ export default createTheme({
         },
       }
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          padding: '0 10px'
+        }
+      }
+    },
     MuiInputAdornment: {
       styleOverrides: {
         root: {
