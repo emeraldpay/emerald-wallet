@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/services",
-  "version": "2.12.0",
+  "version": "2.12.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "Emerald Team",
@@ -18,7 +18,7 @@
     "@emeraldpay/bigamount": "^0.4.2",
     "@emeraldpay/bigamount-crypto": "^0.4.2",
     "@emeraldpay/emerald-vault-core": "^0.14.0",
-    "@emeraldwallet/core": "2.12.0",
+    "@emeraldwallet/core": "2.12.1",
     "@grpc/grpc-js": "^1.8.14",
     "ethers": "^6.13.5",
     "google-protobuf": "^3.21.2",
