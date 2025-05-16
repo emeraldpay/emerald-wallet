@@ -3710,20 +3710,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/de4af83e/emeraldpay-emerald-vault-core-v0.14.0-dev.tgz":
-  version: 0.14.0-dev
-  resolution: "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/de4af83e/emeraldpay-emerald-vault-core-v0.14.0-dev.tgz"
-  checksum: 41ae547da876bcd0bf910a59188a6bf551d7443d416a66235ddd6ee265292dd4611b068b27a10c63ab01f1840ae251f77998481d222924e83b716a44a8d44d25
+"@emeraldpay/emerald-vault-core@npm:0.14.0, @emeraldpay/emerald-vault-core@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@emeraldpay/emerald-vault-core@npm:0.14.0"
+  checksum: c42d61add001dacd7e94b4810ef3817215c90a10cc39d1448877e81b9c3f71293093e8c462248f851df3e079e0cc279915ff16aaae9eeb92fc4e01a15ac67c48
   languageName: node
   linkType: hard
 
-"@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/de4af83e/emeraldpay-emerald-vault-native-v0.14.0-dev.tgz":
-  version: 0.14.0-dev
-  resolution: "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/de4af83e/emeraldpay-emerald-vault-native-v0.14.0-dev.tgz"
+"@emeraldpay/emerald-vault-native@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@emeraldpay/emerald-vault-native@npm:0.14.0"
   dependencies:
-    "@emeraldpay/emerald-vault-core": 0.14.0-dev
+    "@emeraldpay/emerald-vault-core": 0.14.0
     "@emeraldpay/neon-frame": 0.2.0
-  checksum: be6b961bc70f9ccfd449de688a8dc99b82d49d763614b99a51d6ffa401aed6822871540614dd3188955b5a120ba64fa0d15368a460ce87a1ac1eb618fb9cee51
+  checksum: db5dfeb30f3616c6d064ab0e64fb6beffbad200516b7d69b769f486c4c7b489c5f4354107e378be35ad2a9f48e48172a04ee733d6186a61080597d6b5f32bf8b
   languageName: node
   linkType: hard
 
@@ -3745,13 +3745,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emeraldwallet/core@2.12.0-dev, @emeraldwallet/core@workspace:packages/core":
+"@emeraldwallet/core@2.12.1, @emeraldwallet/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/core@workspace:packages/core"
   dependencies:
     "@emeraldpay/bigamount": ^0.4.2
     "@emeraldpay/bigamount-crypto": ^0.4.2
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
     "@ethereumjs/common": ^3.2.0
     "@ethereumjs/tx": ^4.2.0
     "@ethersproject/abi": ^5.8.0
@@ -3778,8 +3778,8 @@ __metadata:
     "@babel/preset-react": ^7.26.3
     "@babel/runtime": ^7.27.0
     "@electron/remote": ^2.1.2
-    "@emeraldwallet/electron-app": 2.12.0-dev
-    "@emeraldwallet/ui": 2.12.0-dev
+    "@emeraldwallet/electron-app": 2.12.1
+    "@emeraldwallet/ui": 2.12.1
     "@types/jest": ^29.5.14
     "@types/node": ^20.17.27
     "@types/react": ^17.0.84
@@ -3815,15 +3815,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/electron-app@2.12.0-dev, @emeraldwallet/electron-app@workspace:packages/electron-app":
+"@emeraldwallet/electron-app@2.12.1, @emeraldwallet/electron-app@workspace:packages/electron-app":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/electron-app@workspace:packages/electron-app"
   dependencies:
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
-    "@emeraldpay/emerald-vault-native": ^0.14.0-dev
-    "@emeraldwallet/core": 2.12.0-dev
-    "@emeraldwallet/persistent-state": 2.12.0-dev
-    "@emeraldwallet/services": 2.12.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
+    "@emeraldpay/emerald-vault-native": ^0.14.0
+    "@emeraldwallet/core": 2.12.1
+    "@emeraldwallet/persistent-state": 2.12.1
+    "@emeraldwallet/services": 2.12.1
     "@types/jest": ^29.5.14
     "@types/node": ^20.17.27
     "@types/uuid": ^9.0.8
@@ -3839,13 +3839,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/persistent-state@2.12.0-dev, @emeraldwallet/persistent-state@workspace:packages/persistent-state":
+"@emeraldwallet/persistent-state@2.12.1, @emeraldwallet/persistent-state@workspace:packages/persistent-state":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/persistent-state@workspace:packages/persistent-state"
   dependencies:
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
     "@emeraldpay/neon-frame": ^0.2.0
-    "@emeraldwallet/core": 2.12.0-dev
+    "@emeraldwallet/core": 2.12.1
     cargo-cp-artifact: ^0.1.9
     jest: ^29.7.0
     jest-runner: ^29.7.0
@@ -3868,10 +3868,10 @@ __metadata:
     "@electron/remote": ^2.1.2
     "@emeraldpay/bigamount": ^0.4.2
     "@emeraldpay/bigamount-crypto": ^0.4.2
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
-    "@emeraldwallet/core": 2.12.0-dev
-    "@emeraldwallet/store": 2.12.0-dev
-    "@emeraldwallet/ui": 2.12.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
+    "@emeraldwallet/core": 2.12.1
+    "@emeraldwallet/store": 2.12.1
+    "@emeraldwallet/ui": 2.12.1
     "@emotion/react": ^11.14.0
     "@emotion/styled": ^11.14.0
     "@ethersproject/hash": ^5.8.0
@@ -3940,7 +3940,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/services@2.12.0-dev, @emeraldwallet/services@workspace:packages/services":
+"@emeraldwallet/services@2.12.1, @emeraldwallet/services@workspace:packages/services":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/services@workspace:packages/services"
   dependencies:
@@ -3948,8 +3948,8 @@ __metadata:
     "@emeraldpay/api-node": ^0.5.0
     "@emeraldpay/bigamount": ^0.4.2
     "@emeraldpay/bigamount-crypto": ^0.4.2
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
-    "@emeraldwallet/core": 2.12.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
+    "@emeraldwallet/core": 2.12.1
     "@grpc/grpc-js": ^1.8.14
     "@types/jest": ^29.5.14
     "@types/node": ^20.17.27
@@ -3964,14 +3964,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/store@2.12.0-dev, @emeraldwallet/store@workspace:packages/store":
+"@emeraldwallet/store@2.12.1, @emeraldwallet/store@workspace:packages/store":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/store@workspace:packages/store"
   dependencies:
     "@emeraldpay/bigamount": ^0.4.2
     "@emeraldpay/bigamount-crypto": ^0.4.2
-    "@emeraldpay/emerald-vault-core": ^0.14.0-dev
-    "@emeraldwallet/core": 2.12.0-dev
+    "@emeraldpay/emerald-vault-core": ^0.14.0
+    "@emeraldwallet/core": 2.12.1
     "@types/color-hash": ^1.0.5
     "@types/jest": ^29.5.14
     "@types/node": ^20.17.27
@@ -3993,7 +3993,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@emeraldwallet/ui@2.12.0-dev, @emeraldwallet/ui@workspace:packages/ui":
+"@emeraldwallet/ui@2.12.1, @emeraldwallet/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@emeraldwallet/ui@workspace:packages/ui"
   dependencies:
@@ -4004,7 +4004,7 @@ __metadata:
     "@emeraldpay/bigamount": ^0.4.2
     "@emeraldpay/bigamount-crypto": ^0.4.2
     "@emeraldpay/hashicon": 0.5.1
-    "@emeraldwallet/core": 2.12.0-dev
+    "@emeraldwallet/core": 2.12.1
     "@fontsource/inter": ^5.0.13
     "@fontsource/roboto-mono": ^5.0.13
     "@mui/icons-material": 5.17.1

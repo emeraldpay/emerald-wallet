@@ -233,11 +233,12 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
       {wallet != null && <WalletReference balances={balances} wallet={wallet} walletIcon={walletIcon} />}
       <Grid container>
         <Grid item xs={8}>
-          <Grid container className={classes.form}>
+          <Grid container spacing={2} className={classes.form}>
             <Grid item xs={9}>
               <FormControl fullWidth>
                 <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
                 <Select
+                  label={"Blockchain"}
                   disabled={availableBlockchains.length <= 1}
                   labelId="blockchain-select-label"
                   value={currentBlockchain}
@@ -257,6 +258,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   <InputLabel id="coin-select-label">Coin</InputLabel>
                   <Select
                     disabled={availableAccepts.length <= 1}
+                    label={"Coin"}
                     labelId="coin-select-label"
                     value={
                       isBitcoinAccept(currentAccept) || currentAccept.contractAddress == null
@@ -287,6 +289,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   <Select
                     disabled={availableAddresses.length <= 1}
                     labelId="address-select-label"
+                    label={"Address"}
                     value={currentAddress}
                     onChange={(event) => setCurrentAddress(event.target.value as string)}
                   >
